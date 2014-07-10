@@ -10,6 +10,8 @@ packages/*
 *.user
 *.sln.docstates
 
+EDR/*.user
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
