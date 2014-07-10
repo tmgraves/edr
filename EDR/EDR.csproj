@@ -253,9 +253,7 @@
     <Content Include="Views\Rehearsals\Edit.cshtml" />
     <Content Include="Views\Rehearsals\Index.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="App_Data\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>
