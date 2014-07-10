@@ -21,6 +21,9 @@ bld/
 [Bb]in/
 [Oo]bj/
 
+EDR/bin/*
+EDR/obj/*
+
 # Roslyn cache directories
 *.ide/
 
