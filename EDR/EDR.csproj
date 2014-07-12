@@ -175,9 +175,12 @@
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Concert.cs" />
+    <Compile Include="Models\Dance.cs" />
     <Compile Include="Models\Entity.cs" />
     <Compile Include="Models\Event.cs" />
+    <Compile Include="Models\Group.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\Place.cs" />
     <Compile Include="Models\Rehearsal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
