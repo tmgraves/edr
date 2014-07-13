@@ -257,9 +257,7 @@
     <Content Include="Views\Rehearsals\Edit.cshtml" />
     <Content Include="Views\Rehearsals\Index.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="NewFolder1\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>
