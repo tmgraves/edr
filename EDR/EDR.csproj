@@ -170,6 +170,7 @@
     <Compile Include="Controllers\ConcertsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\RehearsalsController.cs" />
+    <Compile Include="Data\ApplicationDbInitializer.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -256,7 +257,9 @@
     <Content Include="Views\Rehearsals\Edit.cshtml" />
     <Content Include="Views\Rehearsals\Index.cshtml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="NewFolder1\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>
