@@ -5,7 +5,7 @@ using System.Web;
 
 namespace EDR.Models
 {
-    public class DanceStyles
+    public class DanceStyles : Entity
     {
         public string Name { get; set; }
         public string Description { get; set; }
