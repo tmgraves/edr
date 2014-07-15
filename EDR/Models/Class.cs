@@ -7,5 +7,6 @@ namespace EDR.Models
 {
     public class Class : Event
     {
+        public virtual DanceStyle DanceStyle { get; set; }
     }
 }

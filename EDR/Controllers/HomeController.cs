@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EDR.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -10,6 +11,9 @@ namespace EDR.Controllers
     {
         public ActionResult Index()
         {
+            var context = new ApplicationDbContext();
+            var styles = context.DanceStyles.ToList();
+
             return View();
         }
 

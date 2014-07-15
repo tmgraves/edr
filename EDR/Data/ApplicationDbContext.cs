@@ -2,6 +2,7 @@
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 
@@ -20,5 +21,7 @@ namespace EDR.Data
             return new ApplicationDbContext();
         }
 
+        public DbSet<Class> Classes { get; set; }
+        public DbSet<DanceStyle> DanceStyles { get; set; }
     }
 }

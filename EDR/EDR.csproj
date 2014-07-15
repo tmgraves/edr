@@ -178,7 +178,7 @@
     </Compile>
     <Compile Include="Models\ViewModels\AccountViewModels.cs" />
     <Compile Include="Models\Class.cs" />
-    <Compile Include="Models\DanceStyles.cs" />
+    <Compile Include="Models\DanceStyle.cs" />
     <Compile Include="Models\Entity.cs" />
     <Compile Include="Models\Event.cs" />
     <Compile Include="Models\Group.cs" />
