@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace EDR.Models
+namespace EDR.Models.ViewModels
 {
     public class ExternalLoginConfirmationViewModel
     {

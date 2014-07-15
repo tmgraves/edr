@@ -11,6 +11,7 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Owin;
 using EDR.Models;
+using EDR.Models.ViewModels;
 
 namespace EDR.Controllers
 {

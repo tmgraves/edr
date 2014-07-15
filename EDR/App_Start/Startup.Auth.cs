@@ -8,6 +8,7 @@ using Microsoft.Owin.Security.Google;
 using Owin;
 using System;
 using EDR.Models;
+using EDR.Data;
 
 namespace EDR
 {

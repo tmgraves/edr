@@ -11,7 +11,7 @@ namespace EDR.Data
     {
         protected override void Seed(ApplicationDbContext context)
         {
-            base.Seed(context);
+            
         }
     }
 }
