@@ -1,34 +1,16 @@
-﻿using EDR.Data;
-using System;
-using System.Collections.Generic;
+﻿using EDR.Models.ViewModels;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace EDR.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         public ActionResult Index()
         {
-            var context = new ApplicationDbContext();
-            var styles = context.DanceStyles.ToList();
+            var classes = DataContext.Classes.Where(x => x.IsAvailable == true).ToList();
 
-            return View();
-        }
-
-        public ActionResult About()
-        {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
-        }
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
-
-            return View();
+            return View(classes);
         }
     }
 }

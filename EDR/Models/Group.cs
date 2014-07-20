@@ -5,7 +5,7 @@ using System.Web;
 
 namespace EDR.Models
 {
-    public class Group
+    public abstract class Group : Entity
     {
         public string GroupName { get; set; }
         public string GroupDescription { get; set; }
