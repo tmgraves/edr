@@ -8,6 +8,7 @@ namespace EDR.Models
 {
     public abstract class Place : Entity
     {
+        public string Name { get; set; }
         public string Address { get; set; }
         public string Address2 { get; set; }
         public string City { get; set; }
