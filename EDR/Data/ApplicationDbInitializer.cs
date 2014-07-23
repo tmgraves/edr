@@ -28,7 +28,6 @@ namespace EDR.Data
                 x.AddFromAssemblyContainingType<Class>();
                 x.Include<Class>()
                     .Setup(c => c.Name).Use<RandomStringSource>(10, 20)
-                    .Setup(c => c.Summary).Use<LoremIpsumSource>()
                     .Setup(c => c.Description).Use<LoremIpsumSource>(2)
                     .Setup(c => c.StartDate).Use<DateOfBirthSource>();
             });
@@ -128,17 +127,17 @@ namespace EDR.Data
             context.Nightclubs.Add(may);
             context.SaveChanges();
 
-            //context.Concerts.Add(new Concert() { Name = "Marc Anthony", Description = "Marc Anthony in concert", StartDate = Convert.ToDateTime("9/22/2014"), EndDate = Convert.ToDateTime("9/23/2014"), Price = 50, IsAvailable = true });
-            //context.Concerts.Add(new Concert() { Name = "Romeo Santos", Description = "Romeo Santos in concert", StartDate = Convert.ToDateTime("10/22/14 9:00 PM"), EndDate = Convert.ToDateTime("10/23/14 12:00 AM"), Price = 85 });
-            //context.Conferences.Add(new Conference() { Name = "LA Salsa Congress", Description = "LA Salsa Congress", StartDate = Convert.ToDateTime("5/23/14 6:00 PM"), EndDate = Convert.ToDateTime("5/27/14 6:00 AM"), Price = 340 });
-            //context.Conferences.Add(new Conference() { Name = "LA Bachata Festival", Description = "LA Bachata Festival", StartDate = Convert.ToDateTime("8/15/14 6:00 PM"), EndDate = Convert.ToDateTime("8/19/14 6:00 AM"), Price = 250 });
-            //context.OpenHouses.Add(new OpenHouse() { Name = "Summer Open House", Description = "Summer Open House", StartDate = Convert.ToDateTime("7/30/14 6:00 PM"), EndDate = Convert.ToDateTime("7/31/14 2:00 AM"), Price = 0 });
-            //context.OpenHouses.Add(new OpenHouse() { Name = "Dance Showcase", Description = "Dance Showcase", StartDate = Convert.ToDateTime("9/15/14 6:00 PM"), EndDate = Convert.ToDateTime("9/16/14 2:00 AM"), Price = 0 });
-            //context.Socials.Add(new Social() { Name = "Wednesday Salsa Social", Description = "Monsoon Social", StartDate = Convert.ToDateTime("7/23/14 8:00 PM"), EndDate = Convert.ToDateTime("7/24/14 2:00 AM"), Price = 12 });
-            //context.Socials.Add(new Social() { Name = "Noypitz Social", Description = "Noypitz Social", StartDate = Convert.ToDateTime("7/27/14 8:00 PM"), EndDate = Convert.ToDateTime("7/28/14 2:00 AM"), Price = 7 });
-            //context.Workshops.Add(new Workshop() { Name = "Pachanga Bootcamp", Description = "Pachanga Bootcamp", StartDate = Convert.ToDateTime("7/26/14 2:00 PM"), EndDate = Convert.ToDateTime("7/26/14 6:00 PM"), Price = 50 });
-            //context.Workshops.Add(new Workshop() { Name = "Bachata Bootcamp", Description = "Bachata Bootcamp", StartDate = Convert.ToDateTime("8/26/14 2:00 PM"), EndDate = Convert.ToDateTime("8/26/14 6:00 PM"), Price = 40 });
-            //context.Parties.Add(new Party() { Name = "Joe's Birthday", Description = "Joe's Birthday", StartDate = Convert.ToDateTime("9/26/14 2:00 PM"), EndDate = Convert.ToDateTime("9/26/14 6:00 PM"), Price = 10 });
+            context.Concerts.Add(new Concert() { Name = "Marc Anthony", Description = "Marc Anthony in concert", StartDate = Convert.ToDateTime("9/22/2014 8:00 PM"), EndDate = Convert.ToDateTime("9/23/2014 1:00 AM"), Price = 50, IsAvailable = true });
+            context.Concerts.Add(new Concert() { Name = "Romeo Santos", Description = "Romeo Santos in concert", StartDate = Convert.ToDateTime("10/22/14 9:00 PM"), EndDate = Convert.ToDateTime("10/23/14 12:00 AM"), Price = 85 });
+            context.Conferences.Add(new Conference() { Name = "LA Salsa Congress", Description = "LA Salsa Congress", StartDate = Convert.ToDateTime("5/23/14 6:00 PM"), EndDate = Convert.ToDateTime("5/27/14 6:00 AM"), Price = 340 });
+            context.Conferences.Add(new Conference() { Name = "LA Bachata Festival", Description = "LA Bachata Festival", StartDate = Convert.ToDateTime("8/15/14 6:00 PM"), EndDate = Convert.ToDateTime("8/19/14 6:00 AM"), Price = 250 });
+            context.OpenHouses.Add(new OpenHouse() { Name = "Summer Open House", Description = "Summer Open House", StartDate = Convert.ToDateTime("7/30/14 6:00 PM"), EndDate = Convert.ToDateTime("7/31/14 2:00 AM"), Price = 0 });
+            context.OpenHouses.Add(new OpenHouse() { Name = "Dance Showcase", Description = "Dance Showcase", StartDate = Convert.ToDateTime("9/15/14 6:00 PM"), EndDate = Convert.ToDateTime("9/16/14 2:00 AM"), Price = 0 });
+            context.Socials.Add(new Social() { Name = "Wednesday Salsa Social", Description = "Monsoon Social", StartDate = Convert.ToDateTime("7/23/14 8:00 PM"), EndDate = Convert.ToDateTime("7/24/14 2:00 AM"), Price = 12 });
+            context.Socials.Add(new Social() { Name = "Noypitz Social", Description = "Noypitz Social", StartDate = Convert.ToDateTime("7/27/14 8:00 PM"), EndDate = Convert.ToDateTime("7/28/14 2:00 AM"), Price = 7 });
+            context.Workshops.Add(new Workshop() { Name = "Pachanga Bootcamp", Description = "Pachanga Bootcamp", StartDate = Convert.ToDateTime("7/26/14 2:00 PM"), EndDate = Convert.ToDateTime("7/26/14 6:00 PM"), Price = 50 });
+            context.Workshops.Add(new Workshop() { Name = "Bachata Bootcamp", Description = "Bachata Bootcamp", StartDate = Convert.ToDateTime("8/26/14 2:00 PM"), EndDate = Convert.ToDateTime("8/26/14 6:00 PM"), Price = 40 });
+            context.Parties.Add(new Party() { Name = "Joe's Birthday", Description = "Joe's Birthday", StartDate = Convert.ToDateTime("9/26/14 2:00 PM"), EndDate = Convert.ToDateTime("9/26/14 6:00 PM"), Price = 10 });
             context.SaveChanges();
 
             context.Teams.Add(new Team() { GroupName = "Christian Team 1 Salsa", GroupDescription = "Level 1 Salsa Performance Team", SkillLevel = 2, TeamManagerName = "Fred Smith", Public = true, FacebookLink = "www.facebook.com/profiles/team1salsa" });
