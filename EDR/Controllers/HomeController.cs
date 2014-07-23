@@ -12,5 +12,7 @@ namespace EDR.Controllers
 
             return View(classes);
         }
+
+        public ActionResult Explore() { return View(); } 
     }
 }
