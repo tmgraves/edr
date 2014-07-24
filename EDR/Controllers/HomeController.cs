@@ -1,5 +1,6 @@
 ﻿using EDR.Models.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -16,9 +17,18 @@ namespace EDR.Controllers
 
         public ActionResult Explore() { return View(); }
 
-        public ActionResult Learn(string danceStyle) 
+        public ActionResult Learn(string id) 
         {
-            var classes = DataContext.Classes.Where(x => x.DanceStyle.Name == danceStyle).ToList();
+            var DanceStyleLst = new List<string>();
+
+            var DanceStyleQry = from s in DataContext.DanceStyles
+                           orderby s.Name
+                           select s.Name;
+
+            DanceStyleLst.AddRange(DanceStyleQry.Distinct());
+            ViewBag.danceStyle = new SelectList(DanceStyleLst); 
+
+            var classes = DataContext.Classes.Where(x => x.DanceStyle.Name == id).ToList();
 
             return View(classes);
         }

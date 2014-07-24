@@ -7,10 +7,10 @@
 <h2>Learn to Dance</h2>
 
 <p>
-    @using (Html.BeginForm())
+    @using (Html.BeginForm("Learn", "Home", FormMethod.Get))
     {
     <p>
-        Title: @Html.TextBox("DanceStyle") <br />
+        Dance Style: @Html.DropDownList("DanceStyle", "All")
         <input type="submit" value="Filter" />
     </p>
     }
