@@ -262,6 +262,7 @@
     <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Home\Explore.cshtml" />
+    <Content Include="Views\Home\Learn.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
