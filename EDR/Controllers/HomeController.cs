@@ -17,7 +17,7 @@ namespace EDR.Controllers
 
         public ActionResult Explore() { return View(); }
 
-        public ActionResult Learn(string id) 
+        public ActionResult Learn(string danceStyle) 
         {
             var DanceStyleLst = new List<string>();
 
@@ -26,9 +26,9 @@ namespace EDR.Controllers
                            select s.Name;
 
             DanceStyleLst.AddRange(DanceStyleQry.Distinct());
-            ViewBag.danceStyle = new SelectList(DanceStyleLst); 
+            ViewBag.danceStyle = new SelectList(DanceStyleLst);
 
-            var classes = DataContext.Classes.Where(x => x.DanceStyle.Name == id).ToList();
+            var classes = DataContext.Classes.Where(x => x.DanceStyle.Name == danceStyle).ToList();
 
             return View(classes);
         }
