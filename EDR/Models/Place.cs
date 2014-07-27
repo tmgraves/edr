@@ -1,4 +1,5 @@
-﻿namespace EDR.Models
+﻿using System.Collections.Generic;
+namespace EDR.Models
 {
     public abstract class Place : Entity
     {
@@ -9,5 +10,7 @@
         public string State { get; set; }
         public string Zip { get; set; }
         public string Country { get; set; }
+
+        public virtual ICollection<Event> Events { get; set; }
     }
 }

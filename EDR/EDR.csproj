@@ -168,7 +168,9 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\PlaceController.cs" />
     <Compile Include="Data\ApplicationDbContext.cs" />
     <Compile Include="Data\ApplicationDbInitializer.cs" />
     <Compile Include="Global.asax.cs">
@@ -260,6 +262,8 @@
     <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Home\Explore.cshtml" />
+    <Content Include="Views\Event\Details.cshtml" />
+    <Content Include="Views\Place\Details.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

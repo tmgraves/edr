@@ -6,64 +6,38 @@
 
 <h1 class="page-header">Learn to Dance</h1>
 
-<div class="row">
-    <div class="col-md-2">
-        @using (Html.BeginForm("Index", "Home", FormMethod.Get))
+
+<table class="table table-striped table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Place</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Price</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Events)
         {
-            foreach (var item in Model.DanceStyles)
-            {
-                <div class="form-group">
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" name="styles" value="@item.Id">
-                            @item.Name
-                        </label>
-                    </div>
-                </div>
-            }
-
-            <div class="form-group">
-                <input type="submit" value="Filter Classes" class="btn btn-primary" />
-            </div>
-        }
-    </div>
-    <div class="col-md-10">
-        <table class="table table-striped table-bordered table-hover">
             <tr>
-                <th>Name</th>
-                <th>Style</th>
-                <th>Place</th>
-                <th>Start</th>
-                <th>End</th>
-                <th>Price</th>
+                <td>
+                    @Html.ActionLink(item.Name, "Details", "Event", new { id = item.Id }, null)
+                </td>
+                <td>
+                    @Html.ActionLink(item.Place.Name, "Details", "Place", new { id = item.Place.Id }, null)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StartDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EndDate)
+                </td>
+                <td>
+                    @(item.Price.HasValue ? item.Price.ToString() : "Free")
+                </td>
             </tr>
-
-            @foreach (EDR.Models.Class item in Model.Classes)
-            {
-                <tr>
-                    <td>
-                        @Html.ActionLink(item.Name, "Details", "Classes", new { id = item.Id }, null)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.DanceStyle.Name)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Place.Name)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.StartDate)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.EndDate)
-                    </td>
-                    <td>
-                        @(item.Price.HasValue ? item.Price.ToString() : "Free")
-                    </td>
-                </tr>
-            }
-
-        </table>
-    </div>
-</div>
-
+        }
+    </tbody>
+</table>
 

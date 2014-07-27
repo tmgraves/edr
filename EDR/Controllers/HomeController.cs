@@ -12,18 +12,7 @@ namespace EDR.Controllers
         public ActionResult Index(IEnumerable<int> styles)
         {
             var viewModel = new HomeIndexViewModel();
-            viewModel.DanceStyles = DataContext.DanceStyles.ToList();
-
-            if (styles != null && styles.Count() > 0)
-                viewModel.Classes = (from result in DataContext.Events.OfType<Class>()
-                                    where result.IsAvailable == true
-                                    where styles.Contains(result.DanceStyle.Id)
-                                    select result).ToList();
-            else
-                viewModel.Classes = DataContext.Events.OfType<Class>().Where(x => x.IsAvailable == true).ToList();
-
-            var studios = DataContext.Places.OfType<Studio>().ToList();
-            var theaters = DataContext.Places.OfType<Theater>().ToList();
+            viewModel.Events = DataContext.Events.Where(x => x.IsAvailable == true).ToList();
 
             return View(viewModel);
         }
