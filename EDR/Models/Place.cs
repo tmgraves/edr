@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
-
-namespace EDR.Models
+﻿namespace EDR.Models
 {
-    public class Place : Entity
+    public abstract class Place : Entity
     {
         public string Name { get; set; }
         public string Address { get; set; }
