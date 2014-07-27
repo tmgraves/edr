@@ -33,40 +33,6 @@ namespace EDR.Data
             });
             IGenerationSession session = factory.CreateSession();
 
-            // Seed data
-            var style1 = new DanceStyle { Name = "Salsa (on 1)" };
-            var style2 = new DanceStyle { Name = "Salsa (on 2)" };
-            var style3 = new DanceStyle { Name = "Bachata" };
-            var style4 = new DanceStyle { Name = "Cha cha cha" };
-            var style5 = new DanceStyle { Name = "Tango" };
-            var style6 = new DanceStyle { Name = "Mambo" };
-
-            var classes = session.List<Class>(100)
-                .First(20)
-                    .Impose(x => x.DanceStyle, style1)
-                    .Impose(x => x.Price, (decimal)25.00)
-                .Next(20)
-                    .Impose(x => x.DanceStyle, style2)
-                    .Impose(x => x.Price, (decimal)20.00)
-                .Next(10)
-                    .Impose(x => x.DanceStyle, style3)
-                    .Impose(x => x.Price, (decimal)10.00)
-                .Next(20)
-                    .Impose(x => x.DanceStyle, style4)
-                    .Impose(x => x.Price, (decimal)5.00)
-                .Next(20)
-                    .Impose(x => x.DanceStyle, style5)
-                .Next(20)
-                    .Impose(x => x.DanceStyle, style6)
-                .All()
-                    .Impose(x => x.EndDate, DateTime.Now.AddDays(30))
-                    .Impose(x => x.IsAvailable, true)
-                .Get();
-
-            // Save seeded data
-            context.Classes.AddRange(classes);
-            context.SaveChanges();
-
             // Initialize identiy managers
             var userManager = new ApplicationUserManager(new UserStore<ApplicationUser>(context));
             var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
@@ -113,6 +79,43 @@ namespace EDR.Data
             var zan = new Nightclub() { Name = "Zanzibar", Address = "1301 5th St", City = "Santa Monica", State = "CA", Zip = "90401" };
             var may = new Nightclub() { Name = "Mayan", Address = "1038 S Hill St", City = "Los Angeles", State = "CA", Zip = "90015" };
 
+            // Seed data
+            var style1 = new DanceStyle { Name = "Salsa (on 1)" };
+            var style2 = new DanceStyle { Name = "Salsa (on 2)" };
+            var style3 = new DanceStyle { Name = "Bachata" };
+            var style4 = new DanceStyle { Name = "Cha cha cha" };
+            var style5 = new DanceStyle { Name = "Tango" };
+            var style6 = new DanceStyle { Name = "Mambo" };
+
+            var classes = session.List<Class>(110)
+                .First(20)
+                    .Impose(x => x.DanceStyle, style1)
+                    .Impose(x => x.Price, (decimal)25.00)
+                    .Impose(x => x.Place, thd)
+                .Next(20)
+                    .Impose(x => x.DanceStyle, style2)
+                    .Impose(x => x.Price, (decimal)20.00)
+                    .Impose(x => x.Place, kar)
+                .Next(10)
+                    .Impose(x => x.DanceStyle, style3)
+                    .Impose(x => x.Price, (decimal)10.00)
+                    .Impose(x => x.Place, zan)
+                .Next(20)
+                    .Impose(x => x.DanceStyle, style4)
+                    .Impose(x => x.Price, (decimal)5.00)
+                    .Impose(x => x.Place, may)
+                .Next(20)
+                    .Impose(x => x.DanceStyle, style5)
+                    .Impose(x => x.Place, gre)
+                .Next(20)
+                    .Impose(x => x.DanceStyle, style6)
+                    .Impose(x => x.Place, hb)
+                .All()
+                    .Impose(x => x.EndDate, DateTime.Now.AddDays(30))
+                    .Impose(x => x.IsAvailable, true)
+                .Get();
+
+            context.Classes.AddRange(classes);
             context.Restaurants.Add(res);
             context.Restaurants.Add(res2);
             context.Hotels.Add(trop);

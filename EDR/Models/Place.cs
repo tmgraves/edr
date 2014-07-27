@@ -6,7 +6,7 @@ using System.Web;
 
 namespace EDR.Models
 {
-    public abstract class Place : Entity
+    public class Place : Entity
     {
         public string Name { get; set; }
         public string Address { get; set; }

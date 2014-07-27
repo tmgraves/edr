@@ -14,12 +14,12 @@ namespace EDR.Controllers
             viewModel.DanceStyles = DataContext.DanceStyles.ToList();
 
             if (styles != null && styles.Count() > 0)
-                viewModel.Classes = from result in DataContext.Classes
+                viewModel.Classes = (from result in DataContext.Classes
                                     where result.IsAvailable == true
                                     where styles.Contains(result.DanceStyle.Id)
-                                    select result;
+                                    select result).ToList();
             else
-                viewModel.Classes = DataContext.Classes.Where(x => x.IsAvailable == true);
+                viewModel.Classes = DataContext.Classes.Where(x => x.IsAvailable == true).ToList(); ;
 
             return View(viewModel);
         }
