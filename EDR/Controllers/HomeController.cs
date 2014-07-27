@@ -8,29 +8,25 @@ namespace EDR.Controllers
 {
     public class HomeController : BaseController
     {
-        public ActionResult Index()
+        public ActionResult Index(IEnumerable<int> styles)
         {
-            var classes = DataContext.Classes.Where(x => x.IsAvailable == true).ToList();
+            var viewModel = new HomeIndexViewModel();
+            viewModel.DanceStyles = DataContext.DanceStyles.ToList();
 
-            return View(classes);
+            if (styles != null && styles.Count() > 0)
+                viewModel.Classes = from result in DataContext.Classes
+                                    where result.IsAvailable == true
+                                    where styles.Contains(result.DanceStyle.Id)
+                                    select result;
+            else
+                viewModel.Classes = DataContext.Classes.Where(x => x.IsAvailable == true);
+
+            return View(viewModel);
         }
 
-        public ActionResult Explore() { return View(); }
-
-        public ActionResult Learn(string danceStyle) 
+        public ActionResult Explore()
         {
-            var DanceStyleLst = new List<string>();
-
-            var DanceStyleQry = from s in DataContext.DanceStyles
-                           orderby s.Name
-                           select s.Name;
-
-            DanceStyleLst.AddRange(DanceStyleQry.Distinct());
-            ViewBag.danceStyle = new SelectList(DanceStyleLst);
-
-            var classes = DataContext.Classes.Where(x => x.DanceStyle.Name == danceStyle).ToList();
-
-            return View(classes);
+            return View();
         }
     }
 }

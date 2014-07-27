@@ -1,43 +1,61 @@
-﻿@model IEnumerable<EDR.Models.Class>
+﻿@model EDR.Models.ViewModels.HomeIndexViewModel
 
 @{
     ViewBag.Title = "Welcome";
 }
 
-<h1 class="page-header">Available Classes</h1>
+<h1 class="page-header">Learn to Dance</h1>
 
-<table class="table table-striped table-bordered table-hover">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Name)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.StartDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.EndDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Price)
-        </th>
-    </tr>
+<div class="row">
+    <div class="col-md-2">
+        @using (Html.BeginForm("Index", "Home", FormMethod.Get))
+        {
+            foreach (var item in Model.DanceStyles)
+            {
+                <div class="form-group">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="styles" value="@item.Id">
+                            @item.Name
+                        </label>
+                    </div>
+                </div>
+            }
 
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EndDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Price)
-            </td>
-        </tr>
-    }
+            <div class="form-group">
+                <input type="submit" value="Filter Classes" class="btn btn-primary" />
+            </div>
+        }
+    </div>
+    <div class="col-md-10">
+        <table class="table table-striped table-bordered table-hover">
+            <tr>
+                <th>Name</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Price</th>
+            </tr>
 
-</table>
+            @foreach (var item in Model.Classes)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.StartDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EndDate)
+                    </td>
+                    <td>
+                        @(item.Price.HasValue ? item.Price.ToString() : "Free")
+                    </td>
+                </tr>
+            }
+
+        </table>
+    </div>
+</div>
+
+
