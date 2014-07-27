@@ -1,15 +1,9 @@
-﻿using AutoPoco;
-using AutoPoco.DataSources;
-using AutoPoco.Engine;
-using EDR.Models;
+﻿using EDR.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Globalization;
-using System.Linq;
-using System.Web;
 
 namespace EDR.Data
 {
@@ -17,22 +11,6 @@ namespace EDR.Data
     {
         protected override void Seed(ApplicationDbContext context)
         {
-            // Initialize hydrator
-            IGenerationSessionFactory factory = AutoPocoContainer.Configure(x =>
-            {
-                x.Conventions(c =>
-                {
-                    c.UseDefaultConventions();
-                });
-
-                x.AddFromAssemblyContainingType<Class>();
-                x.Include<Class>()
-                    .Setup(c => c.Name).Use<RandomStringSource>(10, 20)
-                    .Setup(c => c.Description).Use<LoremIpsumSource>(2)
-                    .Setup(c => c.StartDate).Use<DateOfBirthSource>();
-            });
-            IGenerationSession session = factory.CreateSession();
-
             // Initialize identiy managers
             var userManager = new ApplicationUserManager(new UserStore<ApplicationUser>(context));
             var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
@@ -86,17 +64,27 @@ namespace EDR.Data
             // Seed events
             var events = new List<Event>()
             {
-                new Concert() { Name = "Marc Anthony", Description = "Marc Anthony in concert", StartDate = Convert.ToDateTime("9/22/2014 8:00 PM"), EndDate = Convert.ToDateTime("9/23/2014 1:00 AM"), Price = 50, IsAvailable = true },
-                new Concert() { Name = "Romeo Santos", Description = "Romeo Santos in concert", StartDate = Convert.ToDateTime("10/22/14 9:00 PM"), EndDate = Convert.ToDateTime("10/23/14 12:00 AM"), Price = 85, IsAvailable = true  },
-                new Conference() { Name = "LA Salsa Congress", Description = "LA Salsa Congress", StartDate = Convert.ToDateTime("5/23/14 6:00 PM"), EndDate = Convert.ToDateTime("5/27/14 6:00 AM"), Price = 340, IsAvailable = true  },
-                new Conference() { Name = "LA Bachata Festival", Description = "LA Bachata Festival", StartDate = Convert.ToDateTime("8/15/14 6:00 PM"), EndDate = Convert.ToDateTime("8/19/14 6:00 AM"), Price = 250, IsAvailable = true  },
-                new OpenHouse() { Name = "Summer Open House", Description = "Summer Open House", StartDate = Convert.ToDateTime("7/30/14 6:00 PM"), EndDate = Convert.ToDateTime("7/31/14 2:00 AM"), Price = 0, IsAvailable = true  },
-                new OpenHouse() { Name = "Dance Showcase", Description = "Dance Showcase", StartDate = Convert.ToDateTime("9/15/14 6:00 PM"), EndDate = Convert.ToDateTime("9/16/14 2:00 AM"), Price = 0, IsAvailable = true  },
-                new Social() { Name = "Wednesday Salsa Social", Description = "Monsoon Social", StartDate = Convert.ToDateTime("7/23/14 8:00 PM"), EndDate = Convert.ToDateTime("7/24/14 2:00 AM"), Price = 12, IsAvailable = true  },
-                new Social() { Name = "Noypitz Social", Description = "Noypitz Social", StartDate = Convert.ToDateTime("7/27/14 8:00 PM"), EndDate = Convert.ToDateTime("7/28/14 2:00 AM"), Price = 7, IsAvailable = true  },
-                new Workshop() { Name = "Pachanga Bootcamp", Description = "Pachanga Bootcamp", StartDate = Convert.ToDateTime("7/26/14 2:00 PM"), EndDate = Convert.ToDateTime("7/26/14 6:00 PM"), Price = 50, IsAvailable = true  },
-                new Workshop() { Name = "Bachata Bootcamp", Description = "Bachata Bootcamp", StartDate = Convert.ToDateTime("8/26/14 2:00 PM"), EndDate = Convert.ToDateTime("8/26/14 6:00 PM"), Price = 40, IsAvailable = true  },
-                new Party() { Name = "Joe's Birthday", Description = "Joe's Birthday", StartDate = Convert.ToDateTime("9/26/14 2:00 PM"), EndDate = Convert.ToDateTime("9/26/14 6:00 PM"), Price = 10, IsAvailable = true  }
+                new Concert() { Name = "Marc Anthony", Description = "Marc Anthony in concert", Place = places[4], StartDate = Convert.ToDateTime("9/22/2014 8:00 PM"), EndDate = Convert.ToDateTime("9/23/2014 1:00 AM"), Price = 50, IsAvailable = true },
+                new Concert() { Name = "Romeo Santos", Description = "Romeo Santos in concert", Place = places[5], StartDate = Convert.ToDateTime("10/22/14 9:00 PM"), EndDate = Convert.ToDateTime("10/23/14 12:00 AM"), Price = 85, IsAvailable = true  },
+                new Conference() { Name = "LA Salsa Congress", Description = "LA Salsa Congress", Place = places[2], StartDate = Convert.ToDateTime("5/23/14 6:00 PM"), EndDate = Convert.ToDateTime("5/27/14 6:00 AM"), Price = 340, IsAvailable = true  },
+                new Conference() { Name = "LA Bachata Festival", Description = "LA Bachata Festival", Place = places[3], StartDate = Convert.ToDateTime("8/15/14 6:00 PM"), EndDate = Convert.ToDateTime("8/19/14 6:00 AM"), Price = 250, IsAvailable = true  },
+                new OpenHouse() { Name = "Summer Open House", Description = "Summer Open House", Place = places[6], StartDate = Convert.ToDateTime("7/30/14 6:00 PM"), EndDate = Convert.ToDateTime("7/31/14 2:00 AM"), Price = 0, IsAvailable = true  },
+                new OpenHouse() { Name = "Dance Showcase", Description = "Dance Showcase", Place = places[7], StartDate = Convert.ToDateTime("9/15/14 6:00 PM"), EndDate = Convert.ToDateTime("9/16/14 2:00 AM"), Price = 0, IsAvailable = true  },
+                new Social() { Name = "Wednesday Salsa Social", Description = "Monsoon Social", Place = places[10], StartDate = Convert.ToDateTime("7/23/14 8:00 PM"), EndDate = Convert.ToDateTime("7/24/14 2:00 AM"), Price = 12, IsAvailable = true  },
+                new Social() { Name = "Noypitz Social", Description = "Noypitz Social", Place = places[11], StartDate = Convert.ToDateTime("7/27/14 8:00 PM"), EndDate = Convert.ToDateTime("7/28/14 2:00 AM"), Price = 7, IsAvailable = true  },
+                new Workshop() { Name = "Pachanga Bootcamp", Description = "Pachanga Bootcamp", Place = places[8], StartDate = Convert.ToDateTime("7/26/14 2:00 PM"), EndDate = Convert.ToDateTime("7/26/14 6:00 PM"), Price = 50, IsAvailable = true  },
+                new Workshop() { Name = "Bachata Bootcamp", Description = "Bachata Bootcamp", Place = places[9], StartDate = Convert.ToDateTime("8/26/14 2:00 PM"), EndDate = Convert.ToDateTime("8/26/14 6:00 PM"), Price = 40, IsAvailable = true  },
+                new Party() { Name = "Joe's Birthday", Description = "Joe's Birthday", Place = places[11], StartDate = Convert.ToDateTime("9/26/14 2:00 PM"), EndDate = Convert.ToDateTime("9/26/14 6:00 PM"), Price = 10, IsAvailable = true  },
+                
+                new Class() { Name = "Learn to salsa", Description = " These salsa dance classes are step by step, fun and social salsa lessons that get everyone dancing.", DanceStyle = styles[0], Place = places[6], StartDate = DateTime.Today, EndDate = DateTime.Today.AddDays(1), Price = 10, IsAvailable = true },
+                new Class() { Name = "Beginners salsa", Description = "Learn salsa with a step by step, fun and social salsa lessons.", DanceStyle = styles[0], Place = places[6], StartDate = DateTime.Today, EndDate = DateTime.Today.AddDays(1), Price = 10, IsAvailable = true },
+                new Class() { Name = "Enjoy salsa", Description = "Enjoy salsa with a step by step, fun and social salsa lessons that will have you smiling.", DanceStyle = styles[1], Place = places[7], StartDate = DateTime.Today, EndDate = DateTime.Today.AddDays(1), Price = 15, IsAvailable = true },
+                new Class() { Name = "Salsa workout", Description = "Get a workout with this fun and social salsa lessons that has everyone sweating.", DanceStyle = styles[1], Place = places[7], StartDate = DateTime.Today, EndDate = DateTime.Today.AddDays(1), Price = 20, IsAvailable = true },
+                new Class() { Name = "Salsa bootcamp", Description = "Salsa bootcamp is a step by step, fun and social salsa lessons that get everyone dancing.", DanceStyle = styles[1], Place = places[7], StartDate = DateTime.Today, EndDate = DateTime.Today.AddDays(1), Price = 25, IsAvailable = true },
+                new Class() { Name = "Learn Bachata", Description = "Learn the bachata with experienced instructors and great music.", DanceStyle = styles[2], Place = places[10], StartDate = DateTime.Today, EndDate = DateTime.Today.AddDays(1), Price = 5, IsAvailable = true },
+                new Class() { Name = "Cha cha cha with us", Description = "Get out here and cha cha cha with an exciting group of dancers.", DanceStyle = styles[3], Place = places[11], StartDate = DateTime.Today, EndDate = DateTime.Today.AddDays(1), Price = 5, IsAvailable = true },
+                new Class() { Name = "Learn to tango", Description = "No better time them now to learn to tango.", DanceStyle = styles[4], Place = places[10], StartDate = DateTime.Today, EndDate = DateTime.Today.AddDays(1), Price = 10, IsAvailable = true },
+                new Class() { Name = "Master the mambo", Description = "Great mambo class for intermediate to advanced mambo'rs.", DanceStyle = styles[5], Place = places[11], StartDate = DateTime.Today, EndDate = DateTime.Today.AddDays(1), Price = 10, IsAvailable = true }
             };
 
             // Seed groups
@@ -111,35 +99,6 @@ namespace EDR.Data
             context.Events.AddRange(events);
             context.Groups.AddRange(groups);
             context.SaveChanges();
-
-            //var classes = session.List<Class>(110)
-            //    .First(20)
-            //        .Impose(x => x.DanceStyle, style1)
-            //        .Impose(x => x.Price, (decimal)25.00)
-            //        .Impose(x => x.Place, thd)
-            //    .Next(20)
-            //        .Impose(x => x.DanceStyle, style2)
-            //        .Impose(x => x.Price, (decimal)20.00)
-            //        .Impose(x => x.Place, kar)
-            //    .Next(10)
-            //        .Impose(x => x.DanceStyle, style3)
-            //        .Impose(x => x.Price, (decimal)10.00)
-            //        .Impose(x => x.Place, zan)
-            //    .Next(20)
-            //        .Impose(x => x.DanceStyle, style4)
-            //        .Impose(x => x.Price, (decimal)5.00)
-            //        .Impose(x => x.Place, may)
-            //    .Next(20)
-            //        .Impose(x => x.DanceStyle, style5)
-            //        .Impose(x => x.Place, gre)
-            //    .Next(20)
-            //        .Impose(x => x.DanceStyle, style6)
-            //        .Impose(x => x.Place, hb)
-            //    .All()
-            //        .Impose(x => x.EndDate, DateTime.Now.AddDays(30))
-            //        .Impose(x => x.IsAvailable, true)
-            //    .Get();
-            //context.Classes.AddRange(classes);
         }
     }
 }
