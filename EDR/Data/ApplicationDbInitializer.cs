@@ -58,7 +58,9 @@ namespace EDR.Data
                 new ConferenceCenter() { Name = "LA Convention Center", Address = "1201 S Figueroa St", City = "Los Angeles", State = "CA", Zip = "90015", Country = "USA" },
                 new ConferenceCenter() { Name = "Anaheim Convention Center", Address = "800 W Katella Ave", City = "Anaheim", State = "CA", Zip = "92802", Country = "USA" },
                 new Nightclub() { Name = "Zanzibar", Address = "1301 5th St", City = "Santa Monica", State = "CA", Zip = "90401", Country = "USA" },
-                new Nightclub() { Name = "Mayan", Address = "1038 S Hill St", City = "Los Angeles", State = "CA", Zip = "90015", Country = "USA" }
+                new Nightclub() { Name = "Mayan", Address = "1038 S Hill St", City = "Los Angeles", State = "CA", Zip = "90015", Country = "USA" },
+                new Studio() { Name = "Dance Doctor", Address = "1440 4th St", City = "Santa Monica", State = "CA", Zip = "90401", Country = "USA" },
+                new Studio() { Name = "Granada", Address = "17 S 1st St", City = "Alhambra", State = "CA", Zip = "91801", Country = "USA" }
             };
 
             // Seed events
