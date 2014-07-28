@@ -29,5 +29,7 @@ namespace EDR.Models
         public bool IsAvailable { get; set; }
 
         public virtual Place Place { get; set; }
+
+        public ICollection<DanceStyle> DanceStyles { get; set; }
     }
 }

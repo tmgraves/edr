@@ -7,5 +7,8 @@ namespace EDR.Models
 {
     public class Workshop : Event
     {
+        public int SkillLevel { get; set; }
+
+        public string Prerequisite { get; set; }
     }
 }
