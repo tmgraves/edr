@@ -264,6 +264,7 @@
     <Content Include="Views\Home\Explore.cshtml" />
     <Content Include="Views\Event\Details.cshtml" />
     <Content Include="Views\Place\Details.cshtml" />
+    <Content Include="Views\Home\Learn.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

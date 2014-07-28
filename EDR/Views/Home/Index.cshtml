@@ -4,40 +4,131 @@
     ViewBag.Title = "Welcome";
 }
 
-<h1 class="page-header">Learn to Dance</h1>
+<h1 class="page-header">Start Dancing</h1>
 
 
-<table class="table table-striped table-bordered table-hover">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Place</th>
-            <th>Start</th>
-            <th>End</th>
-            <th>Price</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.Events)
-        {
-            <tr>
-                <td>
-                    @Html.ActionLink(item.Name, "Details", "Event", new { id = item.Id }, null)
-                </td>
-                <td>
-                    @Html.ActionLink(item.Place.Name, "Details", "Place", new { id = item.Place.Id }, null)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.StartDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.EndDate)
-                </td>
-                <td>
-                    @(item.Price.HasValue ? item.Price.ToString() : "Free")
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="row list-group">
+    <div class="item  col-xs-6 col-lg-6">
+        <div class="thumbnail">
+            <div class="caption">
+                <a class="btn btn-success" href="~/Home/Explore">
+                    <h2 class="group inner list-group-item-heading">
+                        Explore Dance
+                    </h2>
+                </a>
+                <p class="group inner list-group-item-text">
+                    Explore the different dance styles that are available.
+                </p>
+                <p class="group inner list-group-item-text">
+                    <ul>
+                        <li>View Videos of different Dance Styles</li>
+                        <li>Listen to different styles of Dance Music</li>
+                        <li>Find out where you dance different styles</li>
+                    </ul>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="item  col-xs-6 col-lg-6">
+        <div class="thumbnail">
+            <div class="caption">
+                <a class="btn btn-success" href="~/Home/Learn">
+                    <h2 class="group inner list-group-item-heading">
+                        Learn to Dance
+                    </h2>
+                </a>
+                <p class="group inner list-group-item-text">
+                    Take your next step to learn to dance...
+                </p>
+                <p class="group inner list-group-item-text">
+                    <ul>
+                        <li>Find Classes & Workshops in your area</li>
+                        <li>Read Reviews/Comments from other people</li>
+                        <li>Find Concerts, Socials, Conferences, and other Events</li>
+                    </ul>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="item  col-xs-3 col-lg-3">
+        <div class="thumbnail">
+            <div class="caption">
+                <a class="btn btn-success">
+                    <h2 class="group inner list-group-item-heading">
+                        Dancers
+                    </h2>
+                </a>
+                <p class="group inner list-group-item-text">
+                    <ul>
+                        <li>Update your profile</li>
+                        <li>Find Concerts, Socials, Conferences, and other Events</li>
+                        <li>Pick your Dance Styles</li>
+                        <li>Connect with other Dancers</li>
+                        <li>Find a team/Check out your Team(s)</li>
+                        <li>Find Classes/View Current Classes/Track your Progress</li>
+                        <li>Post Reviews and Comments</li>
+                    </ul>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="item  col-xs-3 col-lg-3">
+        <div class="thumbnail">
+            <div class="caption">
+                <a class="btn btn-success">
+                    <h2 class="group inner list-group-item-heading">
+                        Teachers
+                    </h2>
+                </a>
+                <p class="group inner list-group-item-text">
+                    <ul>
+                        <li>Update your profile</li>
+                        <li>Pick your Dance Styles</li>
+                        <li>Update your Teaching Schedule</li>
+                        <li>Update Appearances/Performances</li>
+                        <li>View your Performance Teams/Set up new Teams</li>
+                        <li>Post Comments</li>
+                    </ul>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="item  col-xs-3 col-lg-3">
+        <div class="thumbnail">
+            <div class="caption">
+                <a class="btn btn-success">
+                    <h2 class="group inner list-group-item-heading">
+                        Promoters
+                    </h2>
+                </a>
+                <p class="group inner list-group-item-text">
+                    <ul>
+                        <li>Update your profile</li>
+                        <li>Post Concerts, Socials, and other Events</li>
+                        <li>View your events/Create guest lists/Post pictures and Videos</li>
+                    </ul>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="item  col-xs-3 col-lg-3">
+        <div class="thumbnail">
+            <div class="caption">
+                <a class="btn btn-success">
+                    <h2 class="group inner list-group-item-heading">
+                        Studio Owners
+                    </h2>
+                </a>
+                <p class="group inner list-group-item-text">
+                    <ul>
+                        <li>Update your Studio Profile</li>
+                        <li>Post and Promote Classes and Workshops</li>
+                        <li>Connect with Teachers</li>
+                        <li>Post and Promote Socials, Open Houses and other Events</li>
+                    </ul>
+                </p>
+            </div>
+        </div>
+    </div>
 
+</div>

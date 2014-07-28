@@ -9,17 +9,22 @@ namespace EDR.Controllers
 {
     public class HomeController : BaseController
     {
-        public ActionResult Index(IEnumerable<int> styles)
+        public ActionResult Index()
         {
-            var viewModel = new HomeIndexViewModel();
-            viewModel.Events = DataContext.Events.Where(x => x.IsAvailable == true).ToList();
-
-            return View(viewModel);
+            return View();
         }
 
         public ActionResult Explore()
         {
             return View();
+        }
+
+        public ActionResult Learn(IEnumerable<int> styles)
+        {
+            var viewModel = new HomeIndexViewModel();
+            viewModel.Events = DataContext.Events.Where(x => x.IsAvailable == true).ToList();
+
+            return View(viewModel);
         }
     }
 }
