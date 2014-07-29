@@ -17,7 +17,7 @@ namespace EDR.Data
 
             // Seed users
             var user = new ApplicationUser() { UserName = "user@gmail.com", Email = "user@gmail.com", FirstName = "Johnny", LastName = "Depp", ZipCode = "90210" };
-            var tchr = new ApplicationUser() { UserName = "teacher@gmail.com", Email = "teacher@gmail.com", FirstName = "Angelina", LastName = "Jolie", ZipCode = "90210" };
+            var tchr = new Teacher() { UserName = "teacher@gmail.com", Email = "teacher@gmail.com", FirstName = "Angelina", LastName = "Jolie", ZipCode = "90210" };
             var prom = new ApplicationUser() { UserName = "promoter@gmail.com", Email = "promoter@gmail.com", FirstName = "Katy", LastName = "Perry", ZipCode = "90210" };
 
             // Save seeded users
@@ -97,19 +97,19 @@ namespace EDR.Data
 
             for (DateTime day = Convert.ToDateTime("7/28/14 8:00pm"); day < DateTime.Today.AddYears(1); day = day.AddDays(7))
             {
-                salsaclasses.Add(new Class() { Name = "Advanced Salsa Class", Description = "Learn advanced Salsa techniques.  Learn better footwork, spins, styling.  This is a very challenging advanced class, so prerequisite is to have a firm understanding of beginnner and intermediate Salsa techniques and footwork.  For more information, ask the instructor.", DanceStyles = new List<DanceStyle> { styles[0] }, Place = places[6], StartDate = day, EndDate = day.AddHours(1), Price = 15, IsAvailable = true, Prerequisite="Beginner and Intermediate Salsa", SkillLevel=4 });
+                salsaclasses.Add(new Class() { Name = "Advanced Salsa Class", Description = "Learn advanced Salsa techniques.  Learn better footwork, spins, styling.  This is a very challenging advanced class, so prerequisite is to have a firm understanding of beginnner and intermediate Salsa techniques and footwork.  For more information, ask the instructor.", DanceStyles = new List<DanceStyle> { styles[0] }, Place = places[6], StartDate = day, EndDate = day.AddHours(1), Price = 15, IsAvailable = true, Prerequisite="Beginner and Intermediate Salsa", SkillLevel=4, Teachers=new List<Teacher> {tchr} });
             }
             for (DateTime day = Convert.ToDateTime("7/29/14 8:00pm"); day < DateTime.Today.AddYears(1); day = day.AddDays(7))
             {
-                salsaclasses.Add(new Class() { Name = "Learn to salsa", Description = "Learn the basics of Salsa dancing.  Meet fun people in the process.  Stick around for social dancing to try out your new moves!", DanceStyles = new List<DanceStyle> { styles[0] }, Place = places[14], StartDate = day, EndDate = day.AddHours(2), Price = 10, IsAvailable = true, Prerequisite = "None", SkillLevel = 1 });
+                salsaclasses.Add(new Class() { Name = "Learn to salsa", Description = "Learn the basics of Salsa dancing.  Meet fun people in the process.  Stick around for social dancing to try out your new moves!", DanceStyles = new List<DanceStyle> { styles[0] }, Place = places[14], StartDate = day, EndDate = day.AddHours(2), Price = 10, IsAvailable = true, Prerequisite = "None", SkillLevel = 1, Teachers = new List<Teacher> { tchr } });
             }
             for (DateTime day = Convert.ToDateTime("7/29/14 9:00pm"); day < DateTime.Today.AddYears(1); day = day.AddDays(7))
             {
-                salsaclasses.Add(new Class() { Name = "Bachata Class", Description = "Learn to dance Bachata.  Learn footwork, partnering, and styling techniques.  And stick around for social afterward.", DanceStyles = new List<DanceStyle> { styles[2] }, Place = places[13], StartDate = day, EndDate = day.AddHours(1), Price = 15, IsAvailable = true, Prerequisite = "None", SkillLevel = 2 });
+                salsaclasses.Add(new Class() { Name = "Bachata Class", Description = "Learn to dance Bachata.  Learn footwork, partnering, and styling techniques.  And stick around for social afterward.", DanceStyles = new List<DanceStyle> { styles[2] }, Place = places[13], StartDate = day, EndDate = day.AddHours(1), Price = 15, IsAvailable = true, Prerequisite = "None", SkillLevel = 2, Teachers = new List<Teacher> { tchr } });
             }
             for (DateTime day = Convert.ToDateTime("7/30/14 7:00pm"); day < DateTime.Today.AddYears(1); day = day.AddDays(7))
             {
-                salsaclasses.Add(new Class() { Name = "Advanced Bachata", Description = "Learn advanced bachata techniques, styling, and patterns.  Must have solid understanding of basic and intermediate bachata skills.", DanceStyles = new List<DanceStyle> { styles[2] }, Place = places[12], StartDate = day, EndDate = day.AddHours(1), Price = 15, IsAvailable = true, Prerequisite = "Beginner and Intermediate Bachata", SkillLevel = 3 });
+                salsaclasses.Add(new Class() { Name = "Advanced Bachata", Description = "Learn advanced bachata techniques, styling, and patterns.  Must have solid understanding of basic and intermediate bachata skills.", DanceStyles = new List<DanceStyle> { styles[2] }, Place = places[12], StartDate = day, EndDate = day.AddHours(1), Price = 15, IsAvailable = true, Prerequisite = "Beginner and Intermediate Bachata", SkillLevel = 3, Teachers = new List<Teacher> { tchr } });
             }
 
             // Seed groups

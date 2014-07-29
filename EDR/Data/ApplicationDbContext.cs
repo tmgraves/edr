@@ -60,5 +60,6 @@ namespace EDR.Data
         public DbSet<Event> Events { get; set; }
         public DbSet<Group> Groups { get; set; }
         public DbSet<DanceStyle> DanceStyles { get; set; }
+        public DbSet<Class> Classes { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Data.Entity;
+using System.ComponentModel.DataAnnotations;
 
 namespace EDR.Models
 {
@@ -21,5 +22,14 @@ namespace EDR.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string ZipCode { get; set; }
+
+        [Display(Name = "Full Name")]
+        public string FullName
+        { 
+            get
+            {
+                return FirstName + " " + LastName;
+            }
+        }
     }
 }

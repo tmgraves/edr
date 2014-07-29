@@ -21,8 +21,8 @@ namespace EDR.Controllers
 
         public ActionResult Learn(IEnumerable<int> styles)
         {
-            var viewModel = new HomeIndexViewModel();
-            viewModel.Events = DataContext.Events.Where(x => x.IsAvailable == true).ToList();
+            var viewModel = new HomeLearnViewModel();
+            viewModel.Classes = DataContext.Classes.Where(x => x.IsAvailable == true).ToList();
 
             return View(viewModel);
         }

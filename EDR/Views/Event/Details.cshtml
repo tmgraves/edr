@@ -7,3 +7,11 @@
 <h1 class="page-header">@Model.Name <small>at @Html.ActionLink(@Model.Place.Name, "Details", "Place", new { id = Model.Place.Id }, null)</small></h1>
 
 <p class="lead">@Model.Description</p>
+
+<h2>Dance Styles</h2>
+<ul>
+    @foreach (var item in Model.DanceStyles)
+    {
+        <li>@Html.DisplayFor(modelItem => item.Name)</li>
+    }
+</ul>

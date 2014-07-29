@@ -7,7 +7,7 @@ using System.Web.Mvc;
 
 namespace EDR.Controllers
 {
-    public class EventController : BaseController
+    public class ClassController : BaseController
     {
         public ActionResult Details(int id)
         {
@@ -16,13 +16,14 @@ namespace EDR.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var model = DataContext.Events.Where(x => x.Id == id).FirstOrDefault();
+            var model = DataContext.Classes.Where(x => x.Id == id).FirstOrDefault();
             if (model == null)
             {
                 return HttpNotFound();
             }
 
             DataContext.Entry(model).Collection(x => x.DanceStyles).Load();
+            DataContext.Entry(model).Collection(x => x.Teachers).Load();
 
             return View(model);
         }
