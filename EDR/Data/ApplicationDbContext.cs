@@ -41,6 +41,9 @@ namespace EDR.Data
             modelBuilder.Entity<ConferenceCenter>().ToTable("ConferenceCenters");
             modelBuilder.Entity<Studio>().ToTable("Studios");
 
+            // Event Series
+            modelBuilder.Entity<ClassSeries>().ToTable("ClassSeries");
+
             // Events
             modelBuilder.Entity<Class>().ToTable("Classes");
             modelBuilder.Entity<Conference>().ToTable("Conferences");
@@ -54,12 +57,18 @@ namespace EDR.Data
             // Groups
             modelBuilder.Entity<Team>().ToTable("Teams");
             modelBuilder.Entity<School>().ToTable("Schools");
+
+            // Reviews
+            modelBuilder.Entity<Review>().ToTable("Reviews");
         }
 
         public DbSet<Place> Places { get; set; }
         public DbSet<Event> Events { get; set; }
+        public DbSet<Series> Series { get; set; }
         public DbSet<Group> Groups { get; set; }
         public DbSet<DanceStyle> DanceStyles { get; set; }
         public DbSet<Class> Classes { get; set; }
+        public DbSet<ClassSeries> ClassSeries { get; set; }
+        public DbSet<Review> Reviews { get; set; }
     }
 }

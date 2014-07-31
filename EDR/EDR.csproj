@@ -169,6 +169,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\ClassController.cs" />
+    <Compile Include="Controllers\ClassSeriesController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PlaceController.cs" />
@@ -177,6 +178,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\ClassSeries.cs" />
     <Compile Include="Models\Concert.cs" />
     <Compile Include="Models\Conference.cs" />
     <Compile Include="Models\ConferenceCenter.cs" />
@@ -185,6 +187,8 @@
     <Compile Include="Models\Party.cs" />
     <Compile Include="Models\Rehearsal.cs" />
     <Compile Include="Models\Restaurant.cs" />
+    <Compile Include="Models\Review.cs" />
+    <Compile Include="Models\Series.cs" />
     <Compile Include="Models\Social.cs" />
     <Compile Include="Models\Teacher.cs" />
     <Compile Include="Models\Theater.cs" />
@@ -269,8 +273,11 @@
     <Content Include="Views\Place\Details.cshtml" />
     <Content Include="Views\Home\Learn.cshtml" />
     <Content Include="Views\Class\Details.cshtml" />
+    <Content Include="Views\ClassSeries\Details.cshtml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Views\Series\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>

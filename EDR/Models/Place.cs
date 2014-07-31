@@ -12,5 +12,6 @@ namespace EDR.Models
         public string Country { get; set; }
 
         public virtual ICollection<Event> Events { get; set; }
+        public virtual ICollection<Review> Reviews { get; set; }
     }
 }

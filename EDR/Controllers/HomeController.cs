@@ -23,6 +23,7 @@ namespace EDR.Controllers
         {
             var viewModel = new HomeLearnViewModel();
             viewModel.Classes = DataContext.Classes.Where(x => x.IsAvailable == true).ToList();
+            viewModel.ClassSeries = DataContext.ClassSeries.Where(x => x.IsAvailable == true).ToList();
 
             return View(viewModel);
         }

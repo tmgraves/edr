@@ -6,7 +6,15 @@ using System.Web;
 
 namespace EDR.Models
 {
-    public abstract class Event : Entity
+    public enum Frequency
+    {
+        Daily,
+        Weekly,
+        Monthly,
+        Yearly
+    }
+
+    public class Series : Entity
     {
         [Required]
         public string Name { get; set; }
@@ -14,7 +22,7 @@ namespace EDR.Models
         public string Description { get; set; }
 
         [DataType(DataType.Date)]
-        [Display(Name="Start Date")]
+        [Display(Name = "Start Date")]
         [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime StartDate { get; set; }
 
@@ -22,6 +30,12 @@ namespace EDR.Models
         [Display(Name = "End Date")]
         [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime EndDate { get; set; }
+
+        public Frequency Frequency { get; set; }
+
+        public DayOfWeek Day { get; set; }
+
+        public TimeSpan Time { get; set; }
 
         [DataType(DataType.Currency)]
         public Nullable<decimal> Price { get; set; }
@@ -32,7 +46,7 @@ namespace EDR.Models
 
         public ICollection<DanceStyle> DanceStyles { get; set; }
 
-        public virtual Series Series { get; set; }
+        public ICollection<Event> Events { get; set; }
 
         public ICollection<Review> Reviews { get; set; }
     }
