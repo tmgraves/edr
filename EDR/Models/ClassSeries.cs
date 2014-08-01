@@ -12,5 +12,6 @@ namespace EDR.Models
         public string Prerequisite { get; set; }
 
         public ICollection<Teacher> Teachers { get; set; }
+        public ICollection<Class> Classes { get; set; }
     }
 }
