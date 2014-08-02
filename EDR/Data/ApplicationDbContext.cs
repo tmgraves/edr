@@ -67,10 +67,10 @@ namespace EDR.Data
         public DbSet<Series> Series { get; set; }
         public DbSet<Group> Groups { get; set; }
         public DbSet<DanceStyle> DanceStyles { get; set; }
-
-        // TODO: REMOVE THESE DBSETS
-        public DbSet<Class> Classes { get; set; }
-        public DbSet<ClassSeries> ClassSeries { get; set; }
         public DbSet<Review> Reviews { get; set; }
+
+        //// TODO: REMOVE THESE DBSETS
+        //public DbSet<Class> Classes { get; set; }
+        //public DbSet<ClassSeries> ClassSeries { get; set; }
     }
 }

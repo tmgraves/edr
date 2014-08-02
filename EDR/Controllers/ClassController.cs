@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EDR.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -16,14 +17,15 @@ namespace EDR.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var model = DataContext.Classes.Where(x => x.Id == id).FirstOrDefault();
+            var model = DataContext.Events.OfType<Class>().Where(x => x.Id == id).FirstOrDefault();
             if (model == null)
             {
                 return HttpNotFound();
             }
 
-            //DataContext.Entry(model).Collection(x => x.DanceStyles).Load();
-            //DataContext.Entry(model).Collection(x => x.Teachers).Load();
+            model.DanceStyles = DataContext.DanceStyles.Where(c => c.Events.Any(e => e.Id == id)).ToList();
+            model.Reviews = DataContext.Reviews.Where(c => c.Id == id).ToList();
+            model.Teachers = DataContext.Users.OfType<Teacher>().Where(t => t.Classes.Any(c => c.Id == id)).ToList();
 
             return View(model);
         }

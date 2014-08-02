@@ -18,8 +18,6 @@ namespace EDR.Models
 
         public DateTime ReviewDate { get; set; }
 
-        public virtual Series Series { get; set; }
-
         public virtual Event Event { get; set; }
 
         public virtual Teacher Teacher { get; set; }

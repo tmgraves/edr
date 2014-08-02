@@ -37,6 +37,8 @@ namespace EDR.Models
 
         public TimeSpan Time { get; set; }
 
+        public TimeSpan EndTime { get; set; }
+
         [DataType(DataType.Currency)]
         public Nullable<decimal> Price { get; set; }
 
@@ -47,7 +49,5 @@ namespace EDR.Models
         public ICollection<DanceStyle> DanceStyles { get; set; }
 
         public ICollection<Event> Events { get; set; }
-
-        public ICollection<Review> Reviews { get; set; }
     }
 }

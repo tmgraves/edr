@@ -1,4 +1,5 @@
 ﻿@model EDR.Models.ClassSeries
+@using EDR.Models
 
 @{
     ViewBag.Title = "Details";
@@ -10,7 +11,7 @@
 
 <p><strong>Frequency: </strong>@Model.Frequency</p>
 <p><strong>Day: </strong>@Model.Day</p>
-<p><strong>Time: </strong>@DateTime.Today.Add(Model.Time).ToString("%h:mm tt")</p>
+<p><strong>Time: </strong>@DateTime.Today.Add(Model.Time).ToString("%h:mm tt") to @DateTime.Today.Add(Model.EndTime).ToString("%h:mm tt")</p>
 <p><strong>Price: </strong>@Model.Price</p>
 
 <h4>Dance Styles</h4>
@@ -29,9 +30,12 @@
 </ul>
 <h4>Reviews</h4>
 <ul>
-    @foreach (var item in Model.Reviews)
+    @foreach (var item in Model.Events)
     {
-        <li>@Html.DisplayFor(modelItem => item.ReviewDate)<br />@Html.DisplayFor(modelItem => item.ReviewText)<br />Rating: @Html.DisplayFor(modelItem => item.Rating)<br />Author: @Html.DisplayFor(modelItem => item.Author.FirstName)</li>
+        foreach (var r in item.Reviews)
+        {
+            <li>@Html.DisplayFor(modelItem => r.ReviewDate) - @Html.DisplayFor(modelItem => r.ReviewText)<br />Rating: @Html.DisplayFor(modelItem => r.Rating)<br />Author: @Html.DisplayFor(modelItem => r.Author.FirstName)</li>
+        }
     }
 </ul>
 <h4>Upcoming Classes</h4>
@@ -42,11 +46,11 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model.Events)
+        @foreach (var item in Model.Events.OfType<Class>())
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.StartDate)
+                    @Html.ActionLink(item.StartDate.ToString("MMM dd, yyyy"), "Details", "Class", new { id = item.Id }, null)
                 </td>
             </tr>
         }
