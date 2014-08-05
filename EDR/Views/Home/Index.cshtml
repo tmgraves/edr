@@ -4,75 +4,51 @@
     ViewBag.Title = "Welcome";
 }
 
-<h1 class="page-header">Start Dancing</h1>
+@section jumbotron
+{
+<div class="jumbotron">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Explore Dance</h2>
+                <p class="lead">Explore the different dance styles that are available.</p>
+                <ul>
+                    <li>View Videos of different Dance Styles</li>
+                    <li>Listen to different styles of Dance Music</li>
+                    <li>Find out where you can dance different styles</li>
+                </ul>
+                <a href="@Url.Action("Explore", "Home")" class="btn btn-primary">Start Exploring</a>
+            </div>
+            <div class="col-md-6">
+                <h2>Learn to Dance</h2>
+                <p class="lead">Take your next step to learn to dance...</p>
+                <ul>
+                    <li>Find Classes & Workshops in your area</li>
+                    <li>Read Reviews/Comments from other people</li>
+                    <li>Find Concerts, Socials, Conferences, and other Events</li>
+                </ul>
+                <a href="@Url.Action("Learn", "Home")" class="btn btn-primary">Get Started</a>
+            </div>
+        </div>
+    </div>
+</div>
+}
 
+<div class="row">
+    <div class="col-md-4">
+        <h3>Dancers</h3>
+        <ul>
+            <li>Update your profile</li>
+            <li>Find Concerts, Socials, Conferences, and other Events</li>
+            <li>Pick your Dance Styles</li>
+            <li>Connect with other Dancers</li>
+            <li>Find a team/Check out your Team(s)</li>
+            <li>Find Classes/View Current Classes/Track your Progress</li>
+            <li>Post Reviews and Comments</li>
+        </ul>
+     </div>
 
-<div class="row list-group">
-    <div class="item  col-xs-6 col-lg-6">
-        <div class="thumbnail">
-            <div class="caption">
-                <a class="btn btn-success" href="~/Home/Explore">
-                    <h2 class="group inner list-group-item-heading">
-                        Explore Dance
-                    </h2>
-                </a>
-                <p class="group inner list-group-item-text">
-                    Explore the different dance styles that are available.
-                </p>
-                <p class="group inner list-group-item-text">
-                    <ul>
-                        <li>View Videos of different Dance Styles</li>
-                        <li>Listen to different styles of Dance Music</li>
-                        <li>Find out where you can dance different styles</li>
-                    </ul>
-                </p>
-            </div>
-        </div>
-    </div>
-    <div class="item  col-xs-6 col-lg-6">
-        <div class="thumbnail">
-            <div class="caption">
-                <a class="btn btn-success" href="~/Home/Learn">
-                    <h2 class="group inner list-group-item-heading">
-                        Learn to Dance
-                    </h2>
-                </a>
-                <p class="group inner list-group-item-text">
-                    Take your next step to learn to dance...
-                </p>
-                <p class="group inner list-group-item-text">
-                    <ul>
-                        <li>Find Classes & Workshops in your area</li>
-                        <li>Read Reviews/Comments from other people</li>
-                        <li>Find Concerts, Socials, Conferences, and other Events</li>
-                    </ul>
-                </p>
-            </div>
-        </div>
-    </div>
-    <div class="item  col-xs-3 col-lg-3">
-        <div class="thumbnail">
-            <div class="caption">
-                <a class="btn btn-success">
-                    <h2 class="group inner list-group-item-heading">
-                        Dancers
-                    </h2>
-                </a>
-                <p class="group inner list-group-item-text">
-                    <ul>
-                        <li>Update your profile</li>
-                        <li>Find Concerts, Socials, Conferences, and other Events</li>
-                        <li>Pick your Dance Styles</li>
-                        <li>Connect with other Dancers</li>
-                        <li>Find a team/Check out your Team(s)</li>
-                        <li>Find Classes/View Current Classes/Track your Progress</li>
-                        <li>Post Reviews and Comments</li>
-                    </ul>
-                </p>
-            </div>
-        </div>
-    </div>
-    <div class="item  col-xs-3 col-lg-3">
+    <div class="col-xs-3 col-lg-3">
         <div class="thumbnail">
             <div class="caption">
                 <a class="btn btn-success">
@@ -93,7 +69,7 @@
             </div>
         </div>
     </div>
-    <div class="item  col-xs-3 col-lg-3">
+    <div class="col-xs-3 col-lg-3">
         <div class="thumbnail">
             <div class="caption">
                 <a class="btn btn-success">
@@ -111,7 +87,7 @@
             </div>
         </div>
     </div>
-    <div class="item  col-xs-3 col-lg-3">
+    <div class="col-xs-3 col-lg-3">
         <div class="thumbnail">
             <div class="caption">
                 <a class="btn btn-success">

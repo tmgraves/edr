@@ -28,7 +28,10 @@
             </div>
         </div>
     </div>
-    <div class="container body-content">
+
+    @RenderSection("jumbotron", required: false)
+
+    <div class="container">
         @RenderBody()
         <hr />
         <footer>
