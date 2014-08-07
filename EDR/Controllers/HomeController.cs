@@ -16,7 +16,9 @@ namespace EDR.Controllers
 
         public ActionResult Explore()
         {
-            return View();
+            var viewModel = new HomeExploreViewModel();
+            viewModel.DanceStyles = DataContext.DanceStyles.ToList();
+            return View(viewModel);
         }
 
         public ActionResult Learn(IEnumerable<int> styles)

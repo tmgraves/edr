@@ -37,12 +37,14 @@ namespace EDR.Data
             // Seed dance styles
             var styles = new List<DanceStyle>()
             {
-                new DanceStyle { Name = "Salsa" },
-                new DanceStyle { Name = "Pachanga" },
-                new DanceStyle { Name = "Bachata" },
-                new DanceStyle { Name = "Cha cha cha" },
-                new DanceStyle { Name = "Tango" },
-                new DanceStyle { Name = "Mambo" }
+                new DanceStyle { Name = "Salsa", YouTubeVideoID="sAmBsIZAbO8", Description="Salsa is a popular form of social dance that originated in New York with strong influences from Latin America, particularly Cuba and Puerto Rico." },
+                new DanceStyle { Name = "Pachanga", YouTubeVideoID="8uvi_-UKGmA", Description="As a dance, pachanga has been described as 'a happy-go-lucky dance' of Cuban origin with a Charleston flavor due to the double bending and straightening of the knees. It is danced to the downbeat of four-four time to the usual mambo offbeat music characterized by the charanga instrumentation of flutes, violins, and drums." },
+                new DanceStyle { Name = "Bachata", YouTubeVideoID="Ig_oVESyLFI", Description="The Dominican Bachata dance style is the original style of Bachata, originating from the Dominican Republic where the music also was born." },
+                new DanceStyle { Name = "Cha cha cha", YouTubeVideoID="wcO-GEhZEFs", Description="As described above, the basis of the modern dance was laid down in the 1950s by Pierre & Lavelle[10] and developed in the 1960s by Walter Laird and other top competitors of the time. The basic steps taught to learners today are based on these accounts." },
+                new DanceStyle { Name = "Tango", YouTubeVideoID="J6Ja5soU-5M", Description="Argentine tango dancing consists of a variety of styles that developed in different regions and eras, and in response to the crowding of the venue and even the fashions in clothing. Even though the present forms developed in Argentina and Uruguay, they were also exposed to influences re-imported from Europe and North America." },
+                new DanceStyle { Name = "Mambo", YouTubeVideoID="ecjSMANTuaU", Description="Mambo is a Latin dance of Cuba. Mambo music was invented during the 1930s by Arsenio Rodríguez,[1] developed in Havana by Cachao and made popular by Dámaso Pérez Prado and Benny Moré." },
+                new DanceStyle { Name = "Hustle", YouTubeVideoID="NllknGUIOWE", Description="The Hustle is a catchall name for some disco dances which were extremely popular in the 1970s. Today it mostly refers to the unique partner dance done in ballrooms and nightclubs to disco music.[1] It has some features in common with swing dance." },
+                new DanceStyle { Name = "West Coast Swing", YouTubeVideoID="8_pQ-tcKnbY", Description="West Coast Swing (WCS aka Push or Whip) is a partner dance with roots in Lindy Hop. It is characterized by a distinctive elastic look that results from its basic extension-compression technique of partner connection, and is danced primarily in a slotted area on the dance floor. " }
             };
 
             // Seed places

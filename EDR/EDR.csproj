@@ -204,6 +204,7 @@
     <Compile Include="Models\School.cs" />
     <Compile Include="Models\Studio.cs" />
     <Compile Include="Models\Team.cs" />
+    <Compile Include="Models\ViewModels\HomeExploreViewModel.cs" />
     <Compile Include="Models\ViewModels\HomeIndexViewModel.cs" />
     <Compile Include="Models\ViewModels\HomeLearnViewModel.cs" />
     <Compile Include="Models\Workshop.cs" />
