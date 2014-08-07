@@ -6,23 +6,23 @@
 
 <h1 class="page-header">Learn to Dance</h1>
 
-<h4>Class Series</h4>
+<h4>Classes</h4>
 <table class="table table-striped table-bordered table-hover">
     <thead>
         <tr>
             <th>Name</th>
             <th>Place</th>
-            <th>Start</th>
-            <th>End</th>
+            <th>Date</th>
+            <th>Teachers</th>
             <th>Price</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model.ClassSeries)
+        @foreach (var item in Model.Classes)
         {
             <tr>
                 <td>
-                    @Html.ActionLink(item.Name, "Details", "ClassSeries", new { id = item.Id }, null)
+                    @Html.ActionLink(item.Name, "Details", "Class", new { id = item.Id }, null)
                 </td>
                 <td>
                     @Html.ActionLink(item.Place.Name, "Details", "Place", new { id = item.Place.Id }, null)
@@ -31,7 +31,13 @@
                     @Html.DisplayFor(modelItem => item.StartDate)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.EndDate)
+                    @if (item.Teachers != null)
+                    {
+                        foreach (var t in item.Teachers)
+                        {
+                            @Html.ActionLink(t.FullName, "Details", "Teacher", new { id = t.Id }, null) <br />
+                        }
+                    }
                 </td>
                 <td>
                     @(item.Price.HasValue ? item.Price.ToString() : "Free")

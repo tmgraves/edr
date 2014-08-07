@@ -21,7 +21,14 @@
 <ul>
     @foreach (var item in Model.Teachers)
     {
-        <li>@Html.DisplayFor(modelItem => item.FullName)</li>
+        <li>@Html.ActionLink(item.FullName, "Details", "Teacher", new { id = item.Id }, null)</li>
+    }
+</ul>
+<h4>Reviews</h4>
+<ul>
+    @foreach (var r in Model.Reviews)
+    {
+        <li>@Html.DisplayFor(modelItem => r.ReviewDate) - @Html.DisplayFor(modelItem => r.ReviewText)<br />Rating: @Html.DisplayFor(modelItem => r.Rating)<br />Author: @Html.DisplayFor(modelItem => r.Author.FirstName)</li>
     }
 </ul>
 <p>
