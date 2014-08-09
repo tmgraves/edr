@@ -7,13 +7,24 @@
 <h1 class="page-header">Learn to Dance</h1>
 
 <h4>Classes</h4>
+@using (Html.BeginForm("Learn", "Home", FormMethod.Get))
+{
+    <p>
+        Choose a Dance Style: @Html.DropDownList("danceStyle", "All")
+        Choose a Teacher: @Html.DropDownList("teacher", "All")
+        Choose a Place: @Html.DropDownList("place", "All")
+        <input type="submit" value="Filter" />
+    </p>
+}
+ 
 <table class="table table-striped table-bordered table-hover">
     <thead>
         <tr>
-            <th>Name</th>
-            <th>Place</th>
             <th>Date</th>
+            <th>Class Name</th>
+            <th>Place</th>
             <th>Teachers</th>
+            <th>Dance Style(s)</th>
             <th>Price</th>
         </tr>
     </thead>
@@ -22,13 +33,13 @@
         {
             <tr>
                 <td>
+                    @String.Format("{0:dddd, M/d/yy h:mm tt}", item.StartDate)
+                </td>
+                <td>
                     @Html.ActionLink(item.Name, "Details", "Class", new { id = item.Id }, null)
                 </td>
                 <td>
                     @Html.ActionLink(item.Place.Name, "Details", "Place", new { id = item.Place.Id }, null)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.StartDate)
                 </td>
                 <td>
                     <ul class="list-inline">
@@ -37,6 +48,17 @@
                             foreach (var t in item.Teachers)
                             {
                                 <li>@Html.ActionLink(t.FullName, "Details", "Teacher", new { id = t.Id }, null)</li>
+                            }
+                        }
+                    </ul>
+                </td>
+                <td>
+                    <ul class="list-inline">
+                        @if (item.DanceStyles != null)
+                        {
+                            foreach (var s in item.DanceStyles)
+                            {
+                                <li>@Html.ActionLink(s.Name, "Details", "DanceStyle", new { id = s.Id }, null)</li>
                             }
                         }
                     </ul>
