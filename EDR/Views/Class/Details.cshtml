@@ -10,14 +10,14 @@
 
 <p><strong>Date/Time:</strong> @Model.StartDate.ToLongDateString() - @Model.StartDate.ToShortTimeString() to @Model.EndDate.ToShortTimeString()</p>
 <strong>Dance Styles</strong>
-<ul>
+<ul class="list-inline">
     @foreach (var item in Model.DanceStyles)
     {
         <li>@Html.DisplayFor(modelItem => item.Name)</li>
     }
 </ul>
 <strong>Teacher(s)</strong>
-<ul>
+<ul class="list-inline">
     @foreach (var item in Model.Teachers)
     {
         <li>@Html.ActionLink(item.FullName, "Details", "Teacher", new { id = item.Id }, null)</li>

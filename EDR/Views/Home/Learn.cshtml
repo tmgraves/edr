@@ -31,13 +31,15 @@
                     @Html.DisplayFor(modelItem => item.StartDate)
                 </td>
                 <td>
-                    @if (item.Teachers != null)
-                    {
-                        foreach (var t in item.Teachers)
+                    <ul class="list-inline">
+                        @if (item.Teachers != null)
                         {
-                            @Html.ActionLink(t.FullName, "Details", "Teacher", new { id = t.Id }, null) <br />
+                            foreach (var t in item.Teachers)
+                            {
+                                <li>@Html.ActionLink(t.FullName, "Details", "Teacher", new { id = t.Id }, null)</li>
+                            }
                         }
-                    }
+                    </ul>
                 </td>
                 <td>
                     @(item.Price.HasValue ? item.Price.ToString() : "Free")
