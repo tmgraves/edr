@@ -11,8 +11,7 @@
     {
         <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
             <div class="thumbnail">
-                @*<img src="https://img.youtube.com/vi/sAmBsIZAbO8/hqdefault.jpg" />*@
-                <iframe width=" 350" height="200" src="//www.youtube.com/embed/@Html.DisplayFor(s => item.YouTubeVideoID)" frameborder="0" allowfullscreen></iframe>
+                <a href="@Url.Action("Details", "DanceStyle", new { id = item.Id }, null)"><img src="https://img.youtube.com/vi/@Html.DisplayFor(s => item.YouTubeVideoID)/mqdefault.jpg" /></a>
                 <div class="caption">
                     <h4 class="group inner list-group-item-heading">
                         @Html.DisplayFor(n => item.Name)

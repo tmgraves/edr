@@ -33,7 +33,7 @@ namespace EDR.Controllers
             ViewBag.place = new SelectList(PlaceLst, "Id", "Name", place);
 
             var viewModel = new HomeLearnViewModel();
-            viewModel.Classes = DataContext.Events.Include("Teachers").Include("DanceStyles").OfType<Class>().Where(x => x.IsAvailable == true).ToList();
+            viewModel.Classes = DataContext.Events.Include("Teachers").Include("DanceStyles").OfType<Class>().Where(x => x.IsAvailable == true).Where(y => y.StartDate >= DateTime.Now).OrderBy(z => z.StartDate).ToList();
             viewModel.ClassSeries = DataContext.Series.Include("DanceStyles").OfType<ClassSeries>().Where(x => x.IsAvailable == true).ToList();
 
             if (danceStyle != null)
@@ -42,7 +42,7 @@ namespace EDR.Controllers
                 viewModel.ClassSeries = viewModel.ClassSeries.Where(x => x.DanceStyles.Any(s => s.Id == danceStyle));
             }
 
-            if (teacher != "")
+            if (teacher != null && teacher != "")
             {
                 viewModel.Classes = viewModel.Classes.Where(x => x.Teachers.Any(t => t.Id == teacher));
                 viewModel.ClassSeries = viewModel.ClassSeries.Where(x => x.Teachers.Any(t => t.Id == teacher));

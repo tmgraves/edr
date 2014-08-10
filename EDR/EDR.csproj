@@ -170,6 +170,7 @@
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\ClassController.cs" />
     <Compile Include="Controllers\ClassSeriesController.cs" />
+    <Compile Include="Controllers\DanceStyleController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PlaceController.cs" />
@@ -275,6 +276,10 @@
     <Content Include="Views\Home\Learn.cshtml" />
     <Content Include="Views\Class\Details.cshtml" />
     <Content Include="Views\ClassSeries\Details.cshtml" />
+    <Content Include="Views\DanceStyle\Create.cshtml" />
+    <Content Include="Views\DanceStyle\Delete.cshtml" />
+    <Content Include="Views\DanceStyle\Details.cshtml" />
+    <Content Include="Views\DanceStyle\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Series\" />
