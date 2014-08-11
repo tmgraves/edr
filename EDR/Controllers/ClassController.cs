@@ -1,4 +1,5 @@
 ﻿using EDR.Models;
+using EDR.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,7 @@ namespace EDR.Controllers
             model.DanceStyles = DataContext.DanceStyles.Where(c => c.Events.Any(e => e.Id == id)).ToList();
             model.Reviews = DataContext.Reviews.Where(c => c.Id == id).ToList();
             model.Teachers = DataContext.Users.OfType<Teacher>().Where(t => t.Classes.Any(c => c.Id == id)).ToList();
+            model.Users = DataContext.Users.Where(u => u.Events.Any(e => e.Id == id)).ToList();
 
             return View(model);
         }

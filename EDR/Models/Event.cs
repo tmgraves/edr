@@ -35,5 +35,7 @@ namespace EDR.Models
         public virtual Series Series { get; set; }
 
         public ICollection<Review> Reviews { get; set; }
+
+        public ICollection<ApplicationUser> Users { get; set; }
     }
 }

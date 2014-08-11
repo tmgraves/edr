@@ -4,6 +4,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Data.Entity;
 using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
 namespace EDR.Models
 {
@@ -31,5 +32,7 @@ namespace EDR.Models
                 return FirstName + " " + LastName;
             }
         }
+
+        public ICollection<Event> Events { get; set; }
     }
 }

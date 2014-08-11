@@ -1,0 +1,23 @@
+﻿@model EDR.Models.ViewModels.EventSignupViewModel
+
+@{
+    ViewBag.Title = "Signup";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Signup</h2>
+
+<p><strong>Event: </strong>@Model.Event.Name</p>
+<p><strong>Day: </strong>@Model.Event.StartDate.ToLongDateString()</p>
+<p><strong>Time: </strong>@Model.Event.StartDate.ToLongTimeString()</p>
+<p><strong>Price: </strong>@Model.Event.Price</p>
+
+@using (Html.BeginForm("Signup", "Event", FormMethod.Post))
+{
+    @Html.HiddenFor(x => x.UserId)
+    @Html.HiddenFor(x => x.EventId)
+    <button type="submit" id="btnAdd" name="Command" value="Add">Add to Calendar</button>
+}
+<p>
+    @Html.ActionLink("Back to List", "Learn", "Home")
+</p>

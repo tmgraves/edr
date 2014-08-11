@@ -21,7 +21,7 @@ namespace EDR.Controllers
             return View(viewModel);
         }
 
-        public ActionResult Learn(int? danceStyle, string teacher, int? place)
+        public ActionResult Learn(int? danceStyle, string teacher, int? place, int? skillLevel)
         {
             var DanceStyleLst = DataContext.DanceStyles.ToList();
             ViewBag.danceStyle = new SelectList(DanceStyleLst, "Id", "Name", danceStyle);
@@ -32,8 +32,11 @@ namespace EDR.Controllers
             var PlaceLst = DataContext.Places.ToList();
             ViewBag.place = new SelectList(PlaceLst, "Id", "Name", place);
 
+            var SkillLevelLst = new List<int> { 1, 2, 3, 4, 5 };
+            ViewBag.skillLevel = new SelectList(SkillLevelLst);
+
             var viewModel = new HomeLearnViewModel();
-            viewModel.Classes = DataContext.Events.Include("Teachers").Include("DanceStyles").OfType<Class>().Where(x => x.IsAvailable == true).Where(y => y.StartDate >= DateTime.Now).OrderBy(z => z.StartDate).ToList();
+            viewModel.Classes = DataContext.Events.Include("Teachers").Include("DanceStyles").Include("Users").OfType<Class>().Where(x => x.IsAvailable == true).Where(y => y.StartDate >= DateTime.Now).OrderBy(z => z.StartDate).ToList();
             viewModel.ClassSeries = DataContext.Series.Include("DanceStyles").OfType<ClassSeries>().Where(x => x.IsAvailable == true).ToList();
 
             if (danceStyle != null)
@@ -52,6 +55,12 @@ namespace EDR.Controllers
             {
                 viewModel.Classes = viewModel.Classes.Where(x => x.Place.Id == place);
                 viewModel.ClassSeries = viewModel.ClassSeries.Where(x => x.Place.Id == place);
+            }
+
+            if (skillLevel != null)
+            {
+                viewModel.Classes = viewModel.Classes.Where(x => x.SkillLevel == skillLevel);
+                viewModel.ClassSeries = viewModel.ClassSeries.Where(x => x.SkillLevel == skillLevel);
             }
 
             return View(viewModel);
