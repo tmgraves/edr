@@ -24,12 +24,12 @@ namespace EDR.Controllers
 
             var viewModel = new DanceStyleDetailViewModel();
             viewModel.DanceStyle = DataContext.DanceStyles.Find(id);
-            viewModel.Classes = DataContext.Events.Include("Teachers").Include("DanceStyles").Include("Users").OfType<Class>().Where(c => c.DanceStyles.Any(s => s.Id == id)).Where(x => x.IsAvailable == true).Where(y => y.StartDate >= DateTime.Now).OrderBy(z => z.StartDate).ToList();
-            viewModel.Socials = DataContext.Events.Include("DanceStyles").Include("Users").OfType<Social>().Where(c => c.DanceStyles.Any(s => s.Id == id)).Where(x => x.IsAvailable == true).Where(y => y.StartDate >= DateTime.Now).OrderBy(z => z.StartDate).ToList();
-            viewModel.Concerts = DataContext.Events.Include("DanceStyles").Include("Users").OfType<Concert>().Where(c => c.DanceStyles.Any(s => s.Id == id)).Where(x => x.IsAvailable == true).Where(y => y.StartDate >= DateTime.Now).OrderBy(z => z.StartDate).ToList();
-            viewModel.Conferences = DataContext.Events.Include("DanceStyles").Include("Users").OfType<Conference>().Where(c => c.DanceStyles.Any(s => s.Id == id)).Where(x => x.IsAvailable == true).Where(y => y.StartDate >= DateTime.Now).OrderBy(z => z.StartDate).ToList();
-            viewModel.Parties = DataContext.Events.Include("DanceStyles").Include("Users").OfType<Party>().Where(c => c.DanceStyles.Any(s => s.Id == id)).Where(x => x.IsAvailable == true).Where(y => y.StartDate >= DateTime.Now).OrderBy(z => z.StartDate).ToList();
-            viewModel.OpenHouses = DataContext.Events.Include("DanceStyles").Include("Users").OfType<OpenHouse>().Where(c => c.DanceStyles.Any(s => s.Id == id)).Where(x => x.IsAvailable == true).Where(y => y.StartDate >= DateTime.Now).OrderBy(z => z.StartDate).ToList();
+            viewModel.Classes = DataContext.Events.Include("Teachers").Include("DanceStyles").Include("Users").OfType<Class>().Where(c => c.DanceStyles.Any(s => s.Id == id)).Where(x => x.IsAvailable == true).Where(y => y.StartDate >= DateTime.Now).OrderBy(z => z.StartDate).ToList().Take(5);
+            viewModel.Socials = DataContext.Events.Include("DanceStyles").Include("Users").OfType<Social>().Where(c => c.DanceStyles.Any(s => s.Id == id)).Where(x => x.IsAvailable == true).Where(y => y.StartDate >= DateTime.Now).OrderBy(z => z.StartDate).ToList().Take(5);
+            viewModel.Concerts = DataContext.Events.Include("DanceStyles").Include("Users").OfType<Concert>().Where(c => c.DanceStyles.Any(s => s.Id == id)).Where(x => x.IsAvailable == true).Where(y => y.StartDate >= DateTime.Now).OrderBy(z => z.StartDate).ToList().Take(5);
+            viewModel.Conferences = DataContext.Events.Include("DanceStyles").Include("Users").OfType<Conference>().Where(c => c.DanceStyles.Any(s => s.Id == id)).Where(x => x.IsAvailable == true).Where(y => y.StartDate >= DateTime.Now).OrderBy(z => z.StartDate).ToList().Take(5);
+            viewModel.Parties = DataContext.Events.Include("DanceStyles").Include("Users").OfType<Party>().Where(c => c.DanceStyles.Any(s => s.Id == id)).Where(x => x.IsAvailable == true).Where(y => y.StartDate >= DateTime.Now).OrderBy(z => z.StartDate).ToList().Take(5);
+            viewModel.OpenHouses = DataContext.Events.Include("DanceStyles").Include("Users").OfType<OpenHouse>().Where(c => c.DanceStyles.Any(s => s.Id == id)).Where(x => x.IsAvailable == true).Where(y => y.StartDate >= DateTime.Now).OrderBy(z => z.StartDate).ToList().Take(5);
 
             return View(viewModel);
         }
