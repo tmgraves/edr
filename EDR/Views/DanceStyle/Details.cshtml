@@ -1,4 +1,4 @@
-﻿@model EDR.Models.DanceStyle
+﻿@model EDR.Models.ViewModels.DanceStyleDetailViewModel
 
 @{
     ViewBag.Title = "Details";
@@ -12,19 +12,19 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.Name)
+            @Html.DisplayNameFor(model => model.DanceStyle.Name)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Name)
+            @Html.DisplayFor(model => model.DanceStyle.Name)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.Description)
+            @Html.DisplayNameFor(model => model.DanceStyle.Description)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Description)
+            @Html.DisplayFor(model => model.DanceStyle.Description)
         </dd>
 
         <dt>
@@ -32,12 +32,82 @@
         </dt>
 
         <dd>
-            <iframe width=" 500" height="300" src="//www.youtube.com/embed/@Html.DisplayFor(model => model.YouTubeVideoID)" frameborder="0" allowfullscreen></iframe>
+            <iframe width=" 500" height="300" src="//www.youtube.com/embed/@Html.DisplayFor(model => model.DanceStyle.YouTubeVideoID)" frameborder="0" allowfullscreen></iframe>
         </dd>
 
     </dl>
 </div>
+<h2>Available Classes</h2>
+<table class="table table-striped table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Class</th>
+            <th>Teacher(s)</th>
+            <th>Dance Style(s)</th>
+            <th>Level</th>
+            <th>Attendees</th>
+            <th>Price</th>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <th></th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Classes)
+        {
+            <tr>
+                <td>
+                    @String.Format("{0:dddd, M/d/yy}", item.StartDate)<br />
+                    @String.Format("{0:h:mm tt}", item.StartDate)
+                </td>
+                <td>
+                    @Html.ActionLink(item.Name, "Details", "Class", new { id = item.Id }, null)<br />
+                    Location:@Html.ActionLink(item.Place.Name, "Details", "Place", new { id = item.Place.Id }, null)<br />
+                </td>
+                <td>
+                    <ul class="list-inline">
+                        @if (item.Teachers != null)
+                        {
+                            foreach (var t in item.Teachers)
+                            {
+                                <li>@Html.ActionLink(t.FullName, "Details", "Teacher", new { id = t.Id }, null)</li>
+                            }
+                        }
+                    </ul>
+                </td>
+                <td>
+                    <ul class="list-inline">
+                        @if (item.DanceStyles != null)
+                        {
+                            foreach (var s in item.DanceStyles)
+                            {
+                                <li>@Html.ActionLink(s.Name, "Details", "DanceStyle", new { id = s.Id }, null)</li>
+                            }
+                        }
+                    </ul>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SkillLevel)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Users.Count)
+                </td>
+                <td>
+                    @(item.Price.HasValue ? item.Price.ToString() : "Free")
+                </td>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <td>
+                        @Html.ActionLink("Add to Calendar", "Signup", "Event", new { id = item.Id }, null)<br />
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Edit", "Edit", new { id = Model.DanceStyle.Id }) |
     @Html.ActionLink("Back to List", "Explore", "Home")
 </p>

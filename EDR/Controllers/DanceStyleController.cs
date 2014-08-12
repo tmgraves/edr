@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using EDR.Data;
 using EDR.Models;
+using EDR.Models.ViewModels;
 
 namespace EDR.Controllers
 {
@@ -20,12 +21,12 @@ namespace EDR.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            DanceStyle danceStyle = DataContext.DanceStyles.Find(id);
-            if (danceStyle == null)
-            {
-                return HttpNotFound();
-            }
-            return View(danceStyle);
+
+            var viewModel = new DanceStyleDetailViewModel();
+            viewModel.DanceStyle = DataContext.DanceStyles.Find(id);
+            viewModel.Classes = DataContext.Events.Include("Teachers").Include("DanceStyles").Include("Users").OfType<Class>().Where(c => c.DanceStyles.Any(s => s.Id == id)).Where(x => x.IsAvailable == true).Where(y => y.StartDate >= DateTime.Now).OrderBy(z => z.StartDate).ToList();
+
+            return View(viewModel);
         }
 
         // GET: DanceStyle/Create

@@ -23,9 +23,12 @@
         <li>@Html.ActionLink(item.FullName, "Details", "Teacher", new { id = item.Id }, null)</li>
     }
 </ul>
+@if (User.Identity.IsAuthenticated)
+{
 <p>
     @Html.ActionLink("Add to Your Calendar", "Signup", "Event", new { id = Model.Id }, null)
 </p>
+}
 <strong>Reviews</strong>
 <ul>
     @foreach (var r in Model.Reviews)

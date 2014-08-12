@@ -28,7 +28,10 @@
             <th>Level</th>
             <th>Attendees</th>
             <th>Price</th>
-            <th></th>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <th></th>
+            }
         </tr>
     </thead>
     <tbody>
@@ -74,9 +77,12 @@
                 <td>
                     @(item.Price.HasValue ? item.Price.ToString() : "Free")
                 </td>
-                <td>
-                    @Html.ActionLink("Add to Calendar", "Signup", "Event", new { id = item.Id }, null)<br />
-                </td>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <td>
+                        @Html.ActionLink("Add to Calendar", "Signup", "Event", new { id = item.Id }, null)<br />
+                    </td>
+                }
             </tr>
         }
     </tbody>
