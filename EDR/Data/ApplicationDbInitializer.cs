@@ -123,6 +123,13 @@ namespace EDR.Data
                 salsaclasses.Add(new Class() { Name = "Advanced Bachata", Description = "Learn advanced bachata techniques, styling, and patterns.  Must have solid understanding of basic and intermediate bachata skills.", DanceStyles = new List<DanceStyle> { styles[2] }, Place = places[12], StartDate = day, EndDate = day.AddHours(1), Price = 15, IsAvailable = true, Prerequisite = "Beginner and Intermediate Bachata", SkillLevel = 3, Teachers = new List<Teacher> { tchr2 }, Series = salsaDDBacClassSeries });
             }
 
+            var socials = new List<Social>();
+            for (DateTime day = Convert.ToDateTime("7/23/14 8:00pm"); day < DateTime.Today.AddYears(1); day = day.AddDays(7))
+            {
+                socials.Add(new Social() { Name = "Wednesday Salsa Social", Description = "Monsoon Social", Place = places[10], StartDate = day, EndDate = day.AddHours(4), Price = 0, IsAvailable = true, DanceStyles = latinstyles });
+            }
+            context.Events.AddRange(socials);
+
             // Seed groups
             var groups = new List<Group>()
             {
