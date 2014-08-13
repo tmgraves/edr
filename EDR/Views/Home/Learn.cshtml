@@ -1,4 +1,5 @@
 ﻿@model EDR.Models.ViewModels.HomeLearnViewModel
+@using EDR.Models
 
 @{
     ViewBag.Title = "Learn to Dance";
@@ -44,7 +45,7 @@
                 </td>
                 <td>
                     @Html.ActionLink(item.Name, "Details", "Class", new { id = item.Id }, null)<br />
-                    Location:@Html.ActionLink(item.Place.Name, "Details", "Place", new { id = item.Place.Id }, null)<br />
+                    Location:@Html.ActionLink(item.Place.Name, "Details", typeof(Studio).IsAssignableFrom(item.Place.GetType()) ? "Studio" : "Place", new { id = item.Place.Id }, null)<br />
                 </td>
                 <td>
                     <ul class="list-inline">
