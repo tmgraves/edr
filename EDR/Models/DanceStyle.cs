@@ -14,5 +14,7 @@ namespace EDR.Models
         public ICollection<Event> Events { get; set; }
 
         public ICollection<Series> Series { get; set; }
+
+        public ICollection<Teacher> Teachers { get; set; }
     }
 }

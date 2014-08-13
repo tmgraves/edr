@@ -10,5 +10,7 @@ namespace EDR.Models
         public int SkillLevel { get; set; }
 
         public string Prerequisite { get; set; }
+
+        public ICollection<Teacher> Teachers { get; set; }
     }
 }

@@ -42,7 +42,7 @@
                         {
                             foreach (var t in item.Teachers)
                             {
-                                <li>@Html.ActionLink(t.FullName, "Details", "Teacher", new { id = t.Id }, null)</li>
+                                <li>@Html.ActionLink(t.FullName, "Details", "Teacher", new { username = t.UserName }, null)</li>
                             }
                         }
                     </ul>

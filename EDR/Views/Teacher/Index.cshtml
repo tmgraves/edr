@@ -1,0 +1,38 @@
+﻿@model IEnumerable<EDR.Models.Teacher>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.FullName)
+        </th>
+        <th>
+            Dance Styles
+        </th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.ActionLink(item.FullName, "Details", new { username = item.UserName })
+        </td>
+        <td>
+            <ul class="list-inline">
+                @foreach (var style in item.DanceStyles)
+                {
+                    <li>@Html.DisplayFor(modelItem => style.Name)</li>
+                }
+            </ul>
+        </td>
+    </tr>
+}
+
+</table>

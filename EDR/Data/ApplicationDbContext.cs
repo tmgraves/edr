@@ -69,6 +69,8 @@ namespace EDR.Data
         public DbSet<DanceStyle> DanceStyles { get; set; }
         public DbSet<Review> Reviews { get; set; }
 
+        public System.Data.Entity.DbSet<EDR.Models.Teacher> IdentityUsers { get; set; }
+
         //// TODO: REMOVE THESE DBSETS
         //public DbSet<Class> Classes { get; set; }
         //public DbSet<ClassSeries> ClassSeries { get; set; }
