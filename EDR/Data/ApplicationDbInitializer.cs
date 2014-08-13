@@ -35,9 +35,9 @@ namespace EDR.Data
 
             // Seed users
             var user = new ApplicationUser() { UserName = "user@gmail.com", Email = "user@gmail.com", FirstName = "Johnny", LastName = "Depp", ZipCode = "90210" };
-            var tchr = new Teacher() { UserName = "teacher@gmail.com", Email = "teacher@gmail.com", FirstName = "Liz", LastName = "Lirases", ZipCode = "90210", Resume="Liz Lira, the 'Rose of Salsa,' was born in La Paz, Bolivia, and immigrated to the United States at the early age of eight. Making Southern California her new home, she embraced the art of dance and excelled in both ballet and jazz.", DanceStyles=latinstyles };
+            var tchr = new Teacher() { UserName = "teacher@gmail.com", Email = "teacher@gmail.com", FirstName = "Liz", LastName = "Lirases", ZipCode = "90210", Resume="Liz Lira, the 'Rose of Salsa,' was born in La Paz, Bolivia, and immigrated to the United States at the early age of eight. Making Southern California her new home, she embraced the art of dance and excelled in both ballet and jazz.", DanceStyles=latinstyles, FacebookLink="https://www.facebook.com/liz.lirala", Website="http://www.lizlira.com/" };
             var prom = new ApplicationUser() { UserName = "promoter@gmail.com", Email = "promoter@gmail.com", FirstName = "Katy", LastName = "Perry", ZipCode = "90210" };
-            var tchr2 = new Teacher() { UserName = "teacher2@gmail.com", Email = "teacher2@gmail.com", FirstName = "Eddie", LastName = "Torres", ZipCode = "90056", Resume="Eddie Torres (born on July 3, 1950), also known as 'The Mambo King', is a salsa dance instructor.[1] Torres' technique developed from various sources including Afro-Cuban son, mambo, and North American jazz dance. [2] He is one of the more popular dancers of New York style salsa. He is famous for his way of dancing and teaching salsa, with the female starting to move forward (always On 2 timing).[3] Torres' style can be contrasted with the more showy Los Angeles style.", DanceStyles=latinstyles };
+            var tchr2 = new Teacher() { UserName = "teacher2@gmail.com", Email = "teacher2@gmail.com", FirstName = "Eddie", LastName = "Torres", ZipCode = "90056", Resume="Eddie Torres (born on July 3, 1950), also known as 'The Mambo King', is a salsa dance instructor.[1] Torres' technique developed from various sources including Afro-Cuban son, mambo, and North American jazz dance. [2] He is one of the more popular dancers of New York style salsa. He is famous for his way of dancing and teaching salsa, with the female starting to move forward (always On 2 timing).[3] Torres' style can be contrasted with the more showy Los Angeles style.", DanceStyles=latinstyles, FacebookLink="https://www.facebook.com/pages/Eddie-Torres/160918620698544", Website="http://www.eddietorresny.com/Eddie_Torres_NY/Eddie_Torres_NY.com.html" };
 
             // Save seeded users
             userManager.Create(user, "Passw0rd!");
@@ -55,21 +55,21 @@ namespace EDR.Data
             // Seed places
             var places = new List<Place>()
             {
-                new Restaurant() { Name = "El Floridita", Address = "1253 Vine St", City = "Los Angeles", State = "CA", Zip = "90038", Country = "USA" },
-                new Restaurant() { Name = "Monsoon Cafe", Address = "1212 3rd St", City = "Santa Monica", State = "CA", Zip = "90401", Country = "USA" },
-                new Hotel() { Name = "Tropicana", Address = "3801 Las Vegas Boulevard South", City = "Las Vegas", State = "NV", Zip = "89109", Country = "USA" },
-                new Hotel() { Name = "Hilton", Address = "2100 E Mariposa Ave", City = "El Segundo", State = "CA", Zip = "90245", Country = "USA" },
-                new Theater() { Name = "Nokia", Address = "777 Chick Hearn Ct", City = "Los Angeles", State = "CA", Zip = "90015", Country = "USA" },
-                new Theater() { Name = "Hollywood Bowl", Address = "2301 N Highland Ave", City = "Los Angeles", State = "CA", Zip = "90068", Country = "USA" },
-                new Studio() { Name = "3rd Street Dance", Address = "8558 W 3rd St", City = "Los Angeles", State = "CA", Zip = "90048", Country = "USA" },
-                new Studio() { Name = "Karavan", Address = "1626 S Central Ave", City = "Glendale", State = "CA", Zip = "91204", Country = "USA" },
-                new ConferenceCenter() { Name = "LA Convention Center", Address = "1201 S Figueroa St", City = "Los Angeles", State = "CA", Zip = "90015", Country = "USA" },
-                new ConferenceCenter() { Name = "Anaheim Convention Center", Address = "800 W Katella Ave", City = "Anaheim", State = "CA", Zip = "92802", Country = "USA" },
-                new Nightclub() { Name = "Zanzibar", Address = "1301 5th St", City = "Santa Monica", State = "CA", Zip = "90401", Country = "USA" },
-                new Nightclub() { Name = "Mayan", Address = "1038 S Hill St", City = "Los Angeles", State = "CA", Zip = "90015", Country = "USA" },
-                new Studio() { Name = "Dance Doctor", Address = "1440 4th St", City = "Santa Monica", State = "CA", Zip = "90401", Country = "USA" },
-                new Studio() { Name = "Granada", Address = "17 S 1st St", City = "Alhambra", State = "CA", Zip = "91801", Country = "USA" },
-                new Nightclub() { Name = "Ixtapa", Address = "119 E Colorado Blvd", City = "Pasadena", State = "CA", Zip = "91105", Country = "USA" }
+                new Restaurant() { Name = "El Floridita", Address = "1253 Vine St", City = "Los Angeles", State = "CA", Zip = "90038", Country = "USA", FacebookLink="https://www.facebook.com/elfloridita", Website="http://www.elfloridita.com/" },
+                new Restaurant() { Name = "Monsoon Cafe", Address = "1212 3rd St", City = "Santa Monica", State = "CA", Zip = "90401", Country = "USA", FacebookLink="https://www.facebook.com/monsoonsalsanight?fref=ts&ref=br_tf", Website="https://www.facebook.com/MonsoonCafeSM"  },
+                new Hotel() { Name = "Tropicana", Address = "3801 Las Vegas Boulevard South", City = "Las Vegas", State = "NV", Zip = "89109", Country = "USA", FacebookLink="https://www.facebook.com/troplv", Website="http://www.troplv.com/" },
+                new Hotel() { Name = "Hilton", Address = "2100 E Mariposa Ave", City = "El Segundo", State = "CA", Zip = "90245", Country = "USA", FacebookLink="https://www.facebook.com/HiltonLAX", Website="http://www.hilton.com/AirportLAX" },
+                new Theater() { Name = "Nokia", Address = "777 Chick Hearn Ct", City = "Los Angeles", State = "CA", Zip = "90015", Country = "USA", FacebookLink="https://www.facebook.com/nokiala", Website="http://www.nokiatheatrelalive.com/" },
+                new Theater() { Name = "Hollywood Bowl", Address = "2301 N Highland Ave", City = "Los Angeles", State = "CA", Zip = "90068", Country = "USA", FacebookLink="https://www.facebook.com/HollywoodBowl", Website="http://www.hollywoodbowl.com/" },
+                new Studio() { Name = "3rd Street Dance", Address = "8558 W 3rd St", City = "Los Angeles", State = "CA", Zip = "90048", Country = "USA", FacebookLink="https://www.facebook.com/3rdstreetdance", Website="http://www.thirdstreetdance.com/" },
+                new Studio() { Name = "Karavan", Address = "1626 S Central Ave", City = "Glendale", State = "CA", Zip = "91204", Country = "USA", FacebookLink="https://www.facebook.com/pages/Karavan-Dance-Studio/160508247306728", Website="http://karavandancestudio.com" },
+                new ConferenceCenter() { Name = "LA Convention Center", Address = "1201 S Figueroa St", City = "Los Angeles", State = "CA", Zip = "90015", Country = "USA", FacebookLink="https://www.facebook.com/ConventionLA", Website="http://www.lacclink.com" },
+                new ConferenceCenter() { Name = "Anaheim Convention Center", Address = "800 W Katella Ave", City = "Anaheim", State = "CA", Zip = "92802", Country = "USA", FacebookLink="https://www.facebook.com/AnaheimConventionCenter", Website="http://www.anaheimconventioncenter.com/" },
+                new Nightclub() { Name = "Zanzibar", Address = "1301 5th St", City = "Santa Monica", State = "CA", Zip = "90401", Country = "USA", FacebookLink="https://www.facebook.com/ZanzibarLive", Website="http://www.zanzibarlive.com/" },
+                new Nightclub() { Name = "Mayan", Address = "1038 S Hill St", City = "Los Angeles", State = "CA", Zip = "90015", Country = "USA", FacebookLink="https://www.facebook.com/the.mayan.la", Website="http://www.clubmayan.com/" },
+                new Studio() { Name = "Dance Doctor", Address = "1440 4th St", City = "Santa Monica", State = "CA", Zip = "90401", Country = "USA", FacebookLink="https://www.facebook.com/JohnCasseseTheDanceDoctor", Website="http://www.dancedoctor.com/" },
+                new Studio() { Name = "Granada", Address = "17 S 1st St", City = "Alhambra", State = "CA", Zip = "91801", Country = "USA", FacebookLink="https://www.facebook.com/TheGranadaLAAlhambra", Website="http://www.thegranadala.com/" },
+                new Nightclub() { Name = "Ixtapa", Address = "119 E Colorado Blvd", City = "Pasadena", State = "CA", Zip = "91105", Country = "USA", FacebookLink="https://www.facebook.com/pages/IXTAPA-LOUNGE/188629852685", Website="http://www.cantinaixtapa.com/" }
             };
 
             var events = new List<Event>()

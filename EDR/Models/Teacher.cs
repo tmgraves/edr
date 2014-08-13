@@ -9,6 +9,8 @@ namespace EDR.Models
     {
         public int Experience { get; set; }
         public string Resume { get; set; }
+        public string FacebookLink { get; set; }
+        public string Website { get; set; }
 
         public ICollection<DanceStyle> DanceStyles { get; set; }
         public ICollection<Class> Classes { get; set; }

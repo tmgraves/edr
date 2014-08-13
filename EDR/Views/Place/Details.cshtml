@@ -7,7 +7,12 @@
 
 <h1 class="page-header">@Model.Place.Name</h1>
 <p class="lead">@Model.Place.Address, @Model.Place.City, @Model.Place.State @Model.Place.Zip</p>
-
+<p>
+    <a href='@Model.Place.FacebookLink' target="_blank">@Model.Place.FacebookLink</a>
+</p>
+<p>
+    <a href='@Model.Place.Website' target="_blank">@Model.Place.Website</a>
+</p>
 @using (Html.BeginForm("Details", "Place", FormMethod.Get))
 {
     <p>

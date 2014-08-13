@@ -10,8 +10,8 @@ namespace EDR.Models
     {
         [Required]
         public string Name { get; set; }
-
         public string Description { get; set; }
+        public string FacebookLink { get; set; }
 
         [DataType(DataType.Date)]
         [Display(Name="Start Date")]

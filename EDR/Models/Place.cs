@@ -10,6 +10,8 @@ namespace EDR.Models
         public string State { get; set; }
         public string Zip { get; set; }
         public string Country { get; set; }
+        public string FacebookLink { get; set; }
+        public string Website { get; set; }
 
         public virtual ICollection<Event> Events { get; set; }
         public virtual ICollection<Review> Reviews { get; set; }
