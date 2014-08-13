@@ -5,20 +5,10 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Details</h2>
+<h1 class="page-header">@Model.DanceStyle.Name</h1>
 
 <div>
-    <h4>DanceStyle</h4>
-    <hr />
     <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.DanceStyle.Name)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.DanceStyle.Name)
-        </dd>
-
         <dt>
             @Html.DisplayNameFor(model => model.DanceStyle.Description)
         </dt>

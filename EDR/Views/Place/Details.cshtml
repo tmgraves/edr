@@ -7,6 +7,15 @@
 <h1 class="page-header">@Model.Place.Name</h1>
 <p class="lead">@Model.Place.Address, @Model.Place.City, @Model.Place.State @Model.Place.Zip</p>
 
+@using (Html.BeginForm("Details", "Place", FormMethod.Get))
+{
+    <p>
+        Choose a Dance Style: @Html.DropDownList("danceStyle", "All")
+        Choose a Teacher: @Html.DropDownList("teacher", "All")
+        Choose Skill Level: @Html.DropDownList("skillLevel", "All")
+        <input type="submit" value="Search" />
+    </p>
+}
 <h2>Available Classes</h2>
 <table class="table table-striped table-bordered table-hover">
     <thead>

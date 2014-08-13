@@ -20,7 +20,7 @@
 <ul class="list-inline">
     @foreach (var item in Model.Teachers)
     {
-        <li>@Html.ActionLink(item.FullName, "Details", "Teacher", new { id = item.Id }, null)</li>
+        <li>@Html.ActionLink(item.FullName, "Details", "Teacher", new { username = item.UserName }, null)</li>
     }
 </ul>
 @if (User.Identity.IsAuthenticated)
