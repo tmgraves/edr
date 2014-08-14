@@ -36,6 +36,7 @@
         <li>@Html.DisplayFor(modelItem => r.ReviewDate) - @Html.DisplayFor(modelItem => r.ReviewText)<br />Rating: @Html.DisplayFor(modelItem => r.Rating)<br />Author: @Html.DisplayFor(modelItem => r.Author.FirstName)</li>
     }
 </ul>
+@Html.ActionLink("Add a Review", "CreateReview")
 <p>
     @Html.ActionLink("Back to List", "Learn", "Home")
 </p>

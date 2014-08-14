@@ -31,5 +31,10 @@ namespace EDR.Controllers
 
             return View(model);
         }
+
+        public ActionResult CreateReview()
+        {
+            return View();
+        }
     }
 }
