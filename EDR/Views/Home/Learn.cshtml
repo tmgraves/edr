@@ -40,8 +40,12 @@
         {
             <tr>
                 <td>
-                    @String.Format("{0:dddd, M/d/yy}", item.StartDate)<br />
-                    @String.Format("{0:h:mm tt}", item.StartDate)
+                    @item.Day<br />
+                    @(item.Interval == null ? "" : (item.Interval == 2 ? "Bi-" : (item.Interval == 3 ? "Tri-" : "")))  @item.Frequency<br />
+                    @DateTime.Today.Add(item.Time).ToString("%h:mm tt")<br />
+                    @item.Duration.ToString(@"hh\:mm") Hour(s)
+                    @*@String.Format("{0:dddd, M/d/yy}", item.StartDate)<br />
+                    @String.Format("{0:h:mm tt}", item.StartDate)*@
                 </td>
                 <td>
                     @Html.ActionLink(item.Name, "Details", "Class", new { id = item.Id }, null)<br />

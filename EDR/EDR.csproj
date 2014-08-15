@@ -287,8 +287,8 @@
     <Content Include="Views\DanceStyle\Edit.cshtml" />
     <Content Include="Views\Event\Signup.cshtml" />
     <Content Include="Views\Teacher\Details.cshtml" />
-    <Content Include="Views\Teacher\Index.cshtml" />
     <Content Include="Views\Class\CreateReview.cshtml" />
+    <Content Include="Views\Home\Teachers.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Series\" />

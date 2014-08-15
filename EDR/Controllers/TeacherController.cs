@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using EDR.Data;
 using EDR.Models;
@@ -14,14 +10,6 @@ namespace EDR.Controllers
 {
     public class TeacherController : BaseController
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
-
-        // GET: Teacher
-        public ActionResult Index()
-        {
-            return View(DataContext.IdentityUsers.OfType<Teacher>().Include("DanceStyles").ToList());
-        }
-
         // GET: Teacher/Details/5
         public ActionResult Details(string username)
         {

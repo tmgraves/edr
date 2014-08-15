@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using System.Data.Entity;
 
 namespace EDR.Controllers
 {
@@ -36,7 +37,7 @@ namespace EDR.Controllers
             ViewBag.skillLevel = new SelectList(SkillLevelLst);
 
             var viewModel = new HomeLearnViewModel();
-            viewModel.Classes = DataContext.Events.Include("Teachers").Include("DanceStyles").Include("Users").OfType<Class>().Where(x => x.IsAvailable == true).Where(y => y.StartDate >= DateTime.Now).OrderBy(z => z.StartDate).ToList();
+            viewModel.Classes = DataContext.Events.Include("Teachers").Include("DanceStyles").Include("Users").OfType<Class>().Where(x => x.IsAvailable == true).Where(y => !y.Recurring ? (y.StartDate >= DateTime.Now) : (y.StartDate <= DateTime.Now && (y.EndDate == null || y.EndDate >= DateTime.Now))).OrderBy(z => z.StartDate).ToList();
             viewModel.ClassSeries = DataContext.Series.Include("DanceStyles").OfType<ClassSeries>().Where(x => x.IsAvailable == true).ToList();
 
             if (danceStyle != null)
@@ -64,6 +65,11 @@ namespace EDR.Controllers
             }
 
             return View(viewModel);
+        }
+
+        public ActionResult Teachers()
+        {
+            return View(DataContext.IdentityUsers.OfType<Teacher>().Include("DanceStyles").ToList());
         }
     }
 }

@@ -103,31 +103,14 @@ namespace EDR.Data
 
             var salsaclasses = new List<Class>();
 
-            for (DateTime day = Convert.ToDateTime("7/28/14 8:00pm"); day < DateTime.Today.AddYears(1); day = day.AddDays(7))
-            {
-                salsaclasses.Add(new Class() { Name = "Advanced Salsa Class", Description = "Learn advanced Salsa techniques.  Learn better footwork, spins, styling.  This is a very challenging advanced class, so prerequisite is to have a firm understanding of beginnner and intermediate Salsa techniques and footwork.  For more information, ask the instructor.", DanceStyles = new List<DanceStyle> { styles[0] }, Place = places[6], StartDate = day, EndDate = day.AddHours(1), Price = 15, IsAvailable = true, Prerequisite = "Beginner and Intermediate Salsa", SkillLevel = 4, Teachers = new List<Teacher> { tchr }, Series = salsa3rdStClassSeries });
-            }
-
-            for (DateTime day = Convert.ToDateTime("7/29/14 8:00pm"); day < DateTime.Today.AddYears(1); day = day.AddDays(7))
-            {
-                salsaclasses.Add(new Class() { Name = "Learn to salsa", Description = "Learn the basics of Salsa dancing.  Meet fun people in the process.  Stick around for social dancing to try out your new moves!", DanceStyles = new List<DanceStyle> { styles[0] }, Place = places[14], StartDate = day, EndDate = day.AddHours(2), Price = 10, IsAvailable = true, Prerequisite = "None", SkillLevel = 1, Teachers = new List<Teacher> { tchr2 }, Series = salsaIxSalClassSeries });
-            }
-
-            for (DateTime day = Convert.ToDateTime("7/29/14 9:00pm"); day < DateTime.Today.AddYears(1); day = day.AddDays(7))
-            {
-                salsaclasses.Add(new Class() { Name = "Bachata Class", Description = "Learn to dance Bachata.  Learn footwork, partnering, and styling techniques.  And stick around for social afterward.", DanceStyles = new List<DanceStyle> { styles[2] }, Place = places[13], StartDate = day, EndDate = day.AddHours(1), Price = 15, IsAvailable = true, Prerequisite = "None", SkillLevel = 2, Teachers = new List<Teacher> { tchr, tchr2 }, Series = salsaGraBacClassSeries });
-            }
-
-            for (DateTime day = Convert.ToDateTime("7/30/14 7:00pm"); day < DateTime.Today.AddYears(1); day = day.AddDays(7))
-            {
-                salsaclasses.Add(new Class() { Name = "Advanced Bachata", Description = "Learn advanced bachata techniques, styling, and patterns.  Must have solid understanding of basic and intermediate bachata skills.", DanceStyles = new List<DanceStyle> { styles[2] }, Place = places[12], StartDate = day, EndDate = day.AddHours(1), Price = 15, IsAvailable = true, Prerequisite = "Beginner and Intermediate Bachata", SkillLevel = 3, Teachers = new List<Teacher> { tchr2 }, Series = salsaDDBacClassSeries });
-            }
+            salsaclasses.Add(new Class() { Name = "Advanced Salsa Class", Description = "Learn advanced Salsa techniques.  Learn better footwork, spins, styling.  This is a very challenging advanced class, so prerequisite is to have a firm understanding of beginnner and intermediate Salsa techniques and footwork.  For more information, ask the instructor.", DanceStyles = new List<DanceStyle> { styles[0] }, Place = places[6], StartDate = Convert.ToDateTime("7/28/14 8:00pm"), EndDate = null, Price = 15, IsAvailable = true, Prerequisite = "Beginner and Intermediate Salsa", SkillLevel = 4, Teachers = new List<Teacher> { tchr }, Time=new TimeSpan(20,00,00), Duration=new TimeSpan(1,00,00), Recurring=true, Frequency=Frequency.Weekly, Day=DayOfWeek.Monday, Interval=1 });
+            salsaclasses.Add(new Class() { Name = "Learn to salsa", Description = "Learn the basics of Salsa dancing.  Meet fun people in the process.  Stick around for social dancing to try out your new moves!", DanceStyles = new List<DanceStyle> { styles[0] }, Place = places[14], StartDate = Convert.ToDateTime("7/29/14 8:00pm"), EndDate = null, Price = 10, IsAvailable = true, Prerequisite = "None", SkillLevel = 1, Teachers = new List<Teacher> { tchr2 }, Time = new TimeSpan(20, 00, 00), Duration = new TimeSpan(1, 00, 00), Recurring = true, Frequency = Frequency.Weekly, Day = DayOfWeek.Tuesday, Interval = 1 });
+            salsaclasses.Add(new Class() { Name = "Bachata Class", Description = "Learn to dance Bachata.  Learn footwork, partnering, and styling techniques.  And stick around for social afterward.", DanceStyles = new List<DanceStyle> { styles[2] }, Place = places[13], StartDate = Convert.ToDateTime("7/29/14 9:00pm"), EndDate = null, Price = 15, IsAvailable = true, Prerequisite = "None", SkillLevel = 2, Teachers = new List<Teacher> { tchr, tchr2 }, Time = new TimeSpan(21, 00, 00), Duration = new TimeSpan(1, 00, 00), Recurring = true, Frequency = Frequency.Weekly, Day = DayOfWeek.Tuesday, Interval = 1 });
+            salsaclasses.Add(new Class() { Name = "Advanced Bachata", Description = "Learn advanced bachata techniques, styling, and patterns.  Must have solid understanding of basic and intermediate bachata skills.", DanceStyles = new List<DanceStyle> { styles[2] }, Place = places[12], StartDate = Convert.ToDateTime("7/30/14 7:00pm"), EndDate = null, Price = 15, IsAvailable = true, Prerequisite = "Beginner and Intermediate Bachata", SkillLevel = 3, Teachers = new List<Teacher> { tchr2 }, Time = new TimeSpan(19, 00, 00), Duration = new TimeSpan(1, 00, 00), Recurring = true, Frequency = Frequency.Weekly, Day = DayOfWeek.Wednesday, Interval = 1 });
 
             var socials = new List<Social>();
-            for (DateTime day = Convert.ToDateTime("7/23/14 8:00pm"); day < DateTime.Today.AddYears(1); day = day.AddDays(7))
-            {
-                socials.Add(new Social() { Name = "Wednesday Salsa Social", Description = "Monsoon Social", Place = places[10], StartDate = day, EndDate = day.AddHours(4), Price = 0, IsAvailable = true, DanceStyles = latinstyles });
-            }
+            socials.Add(new Social() { Name = "Wednesday Salsa Social", Description = "Monsoon Social", Place = places[1], StartDate = Convert.ToDateTime("7/23/14 8:00pm"), EndDate = null, Price = 0, IsAvailable = true, DanceStyles = latinstyles, Time = new TimeSpan(21, 00, 00), Duration = new TimeSpan(5, 00, 00), Recurring = true, Frequency = Frequency.Weekly, Day = DayOfWeek.Wednesday, Interval = 1 });
+            socials.Add(new Social() { Name = "Monday Zanzibar Salsa Social", Description = "Zanzibar Social", Place = places[10], StartDate = Convert.ToDateTime("7/1/14 8:00pm"), EndDate = null, Price = 0, IsAvailable = true, DanceStyles = latinstyles, Time = new TimeSpan(21, 00, 00), Duration = new TimeSpan(5, 00, 00), Recurring = true, Frequency = Frequency.Weekly, Day = DayOfWeek.Monday, Interval = 1 });
             context.Events.AddRange(socials);
 
             // Seed groups
@@ -141,14 +124,14 @@ namespace EDR.Data
             //  Seed Reviews
             var reviews = new List<Review>()
             {
-                new Review() { Author=user, ReviewText="This class is great.  I got a lot out of it.", Rating=4, ReviewDate=DateTime.Now, Event = salsaclasses[10] },
-                new Review() { Author=prom, ReviewText="Friendly teacher, challenging class, good students.  BYOP.", Rating=3, ReviewDate=DateTime.Now.AddDays(-8), Event = salsaclasses[11] },
-                new Review() { Author=user, ReviewText="This class was average.  I didn't learn much.", Rating=2, ReviewDate=DateTime.Now.AddDays(-2), Event = salsaclasses[70] },
-                new Review() { Author=prom, ReviewText="Definitely BYOP.  The students aren't that advanced yet.", Rating=3, ReviewDate=DateTime.Now.AddDays(-5), Event = salsaclasses[71] },
-                new Review() { Author=user, ReviewText="I'm a beginner dancer and this class was really hard", Rating=4, ReviewDate=DateTime.Now.AddDays(-3), Event = salsaclasses[130] },
-                new Review() { Author=prom, ReviewText="Class was too hard for me.", Rating=2, ReviewDate=DateTime.Now.AddDays(-9), Event = salsaclasses[131] },
-                new Review() { Author=user, ReviewText="This class was really hard.  #BYOP.", Rating=3, ReviewDate=DateTime.Now.AddDays(-11), Event = salsaclasses[190] },
-                new Review() { Author=prom, ReviewText="Definitely BYOP.  Usually a small class.", Rating=4, ReviewDate=DateTime.Now.AddDays(-13), Event = salsaclasses[191] }
+                new Review() { Author=user, ReviewText="This class is great.  I got a lot out of it.", Rating=4, ReviewDate=DateTime.Now, Event = salsaclasses[0] },
+                new Review() { Author=prom, ReviewText="Friendly teacher, challenging class, good students.  BYOP.", Rating=3, ReviewDate=DateTime.Now.AddDays(-8), Event = salsaclasses[0] },
+                new Review() { Author=user, ReviewText="This class was average.  I didn't learn much.", Rating=2, ReviewDate=DateTime.Now.AddDays(-2), Event = salsaclasses[1] },
+                new Review() { Author=prom, ReviewText="Definitely BYOP.  The students aren't that advanced yet.", Rating=3, ReviewDate=DateTime.Now.AddDays(-5), Event = salsaclasses[1] },
+                new Review() { Author=user, ReviewText="I'm a beginner dancer and this class was really hard", Rating=4, ReviewDate=DateTime.Now.AddDays(-3), Event = salsaclasses[2] },
+                new Review() { Author=prom, ReviewText="Class was too hard for me.", Rating=2, ReviewDate=DateTime.Now.AddDays(-9), Event = salsaclasses[2] },
+                new Review() { Author=user, ReviewText="This class was really hard.  #BYOP.", Rating=3, ReviewDate=DateTime.Now.AddDays(-11), Event = salsaclasses[3] },
+                new Review() { Author=prom, ReviewText="Definitely BYOP.  Usually a small class.", Rating=4, ReviewDate=DateTime.Now.AddDays(-13), Event = salsaclasses[3] }
             };
             context.Reviews.AddRange(reviews);
 
