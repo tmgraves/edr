@@ -10,7 +10,7 @@ namespace EDR.Utilities
     {
         public static DateTime GetNextDate(DateTime start, Frequency frequency, int interval, DayOfWeek day)
         {
-            DateTime date = DateTime.Today;
+            DateTime date = start;
             if (start < DateTime.Today)
             {
                 switch (frequency)

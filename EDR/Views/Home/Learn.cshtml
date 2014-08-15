@@ -102,38 +102,121 @@
     </tbody>
 </table>
 
-@*<h4>Available Classes</h4>
+<h4>Workshops</h4>
 <table class="table table-striped table-bordered table-hover">
     <thead>
         <tr>
-            <th>Name</th>
-            <th>Place</th>
-            <th>Start</th>
-            <th>End</th>
+            <th>Date</th>
+            <th>Workshop</th>
+            <th>Teacher(s)</th>
+            <th>Dance Style(s)</th>
+            <th>Level</th>
+            <th>Attendees</th>
             <th>Price</th>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <th></th>
+            }
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model.Classes)
+        @foreach (var item in Model.Workshops)
         {
             <tr>
                 <td>
-                    @Html.ActionLink(item.Name, "Details", "Class", new { id = item.Id }, null)
+                    @if (item.Recurring)
+                    {
+                        <strong>Next Workshop:</strong> @ApplicationUtility.GetNextDate(item.StartDate, item.Frequency, item.Interval, item.Day).ToLongDateString()<br />
+                        @item.Day @:(@(item.Interval == null ? "" : (item.Interval == 2 ? "Bi-" : (item.Interval == 3 ? "Tri-" : "")))@item.Frequency)<br />
+                        @DateTime.Today.Add(item.Time).ToString("%h:mm tt")@:~@DateTime.Today.Add(item.Time).Add(item.Duration).ToString("%h:mm tt")
+                        @*@String.Format("{0:dddd, M/d/yy}", item.StartDate)<br />
+                            @String.Format("{0:h:mm tt}", item.StartDate)*@
+                    }
+                    else
+                    {
+                        @item.StartDate.ToLongDateString()
+                        @DateTime.Today.Add(item.Time).ToString("%h:mm tt")@:~@DateTime.Today.Add(item.Time).Add(item.Duration).ToString("%h:mm tt")
+                    }
                 </td>
                 <td>
-                    @Html.ActionLink(item.Place.Name, "Details", "Place", new { id = item.Place.Id }, null)
+                    @Html.ActionLink(item.Name, "Details", "Class", new { id = item.Id }, null)<br />
+                    @*Location:@Html.ActionLink(item.Place.Name, "Details", typeof(Studio).IsAssignableFrom(item.Place.GetType()) ? "Studio" : "Place", new { id = item.Place.Id }, null)<br />*@
+                    Location:@Html.ActionLink(item.Place.Name, "Details", "Place", new { id = item.Place.Id }, null)<br />
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.StartDate)
+                    <ul class="list-inline">
+                        @if (item.Teachers != null)
+                        {
+                            foreach (var t in item.Teachers)
+                            {
+                                <li>@Html.ActionLink(t.FullName, "Details", "Teacher", new { username = t.UserName }, null)</li>
+                            }
+                        }
+                    </ul>
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.EndDate)
+                    <ul class="list-inline">
+                        @if (item.DanceStyles != null)
+                        {
+                            foreach (var s in item.DanceStyles)
+                            {
+                                <li>@Html.ActionLink(s.Name, "Details", "DanceStyle", new { id = s.Id }, null)</li>
+                            }
+                        }
+                    </ul>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SkillLevel)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Users.Count)
                 </td>
                 <td>
                     @(item.Price.HasValue ? item.Price.ToString() : "Free")
                 </td>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <td>
+                        @Html.ActionLink("Add to Calendar", "Signup", "Event", new { id = item.Id }, null)<br />
+                    </td>
+                }
             </tr>
         }
     </tbody>
-</table>*@
+</table>
+
+@*<h4>Available Classes</h4>
+    <table class="table table-striped table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Place</th>
+                <th>Start</th>
+                <th>End</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Classes)
+            {
+                <tr>
+                    <td>
+                        @Html.ActionLink(item.Name, "Details", "Class", new { id = item.Id }, null)
+                    </td>
+                    <td>
+                        @Html.ActionLink(item.Place.Name, "Details", "Place", new { id = item.Place.Id }, null)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.StartDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EndDate)
+                    </td>
+                    <td>
+                        @(item.Price.HasValue ? item.Price.ToString() : "Free")
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>*@
 

@@ -8,12 +8,12 @@
 
 <p class="lead">@Model.Description</p>
 
-<p><strong>Date/Time:</strong> @Model.StartDate.ToLongDateString() - @Model.StartDate.ToShortTimeString() to @Model.EndDate.ToShortTimeString()</p>
+<p><strong>Date/Time:</strong> @Model.StartDate.ToLongDateString() - @Model.StartDate.ToShortTimeString() to @DateTime.Today.Add(Model.Time).Add(Model.Duration).ToShortTimeString()</p>
 <strong>Dance Styles</strong>
 <ul class="list-inline">
     @foreach (var item in Model.DanceStyles)
     {
-        <li>@Html.DisplayFor(modelItem => item.Name)</li>
+        <li>@Html.ActionLink(item.Name, "Details", "DanceStyle", new { id = item.Id }, null)</li>
     }
 </ul>
 <strong>Teacher(s)</strong>

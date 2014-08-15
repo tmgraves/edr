@@ -37,8 +37,9 @@ namespace EDR.Controllers
             ViewBag.skillLevel = new SelectList(SkillLevelLst);
 
             var viewModel = new HomeLearnViewModel();
-            viewModel.Classes = DataContext.Events.Include("Teachers").Include("DanceStyles").Include("Users").OfType<Class>().Where(x => x.IsAvailable == true).Where(y => !y.Recurring ? (y.StartDate >= DateTime.Now) : (y.StartDate <= DateTime.Now && (y.EndDate == null || y.EndDate >= DateTime.Now))).OrderBy(z => z.StartDate).ToList();
-            viewModel.ClassSeries = DataContext.Series.Include("DanceStyles").OfType<ClassSeries>().Where(x => x.IsAvailable == true).ToList();
+            viewModel.Classes = DataContext.Events.OfType<Class>().Include("Teachers").Include("DanceStyles").Include("Users").Where(x => x.IsAvailable == true).Where(y => !y.Recurring ? (y.StartDate >= DateTime.Now) : ((y.EndDate == null || y.EndDate >= DateTime.Now))).OrderBy(z => z.StartDate).ToList();
+            viewModel.Workshops = DataContext.Events.OfType<Workshop>().Include("Teachers").Include("DanceStyles").Include("Users").Where(x => x.IsAvailable == true).Where(y => !y.Recurring ? (y.StartDate >= DateTime.Now) : ((y.EndDate == null || y.EndDate >= DateTime.Now))).OrderBy(z => z.StartDate).ToList();
+            viewModel.ClassSeries = DataContext.Series.OfType<ClassSeries>().Include("DanceStyles").Where(x => x.IsAvailable == true).ToList();
 
             if (danceStyle != null)
             {

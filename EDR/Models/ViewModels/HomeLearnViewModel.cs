@@ -9,6 +9,7 @@ namespace EDR.Models.ViewModels
     {
         public IEnumerable<ClassSeries> ClassSeries { get; set; }
         public IEnumerable<Class> Classes { get; set; }
+        public IEnumerable<Workshop> Workshops { get; set; }
         public IEnumerable<DanceStyle> DanceStyles { get; set; }
     }
 }
