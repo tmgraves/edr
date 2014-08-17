@@ -49,14 +49,14 @@
                     {
                         <strong>Next Class:</strong> @ApplicationUtility.GetNextDate(item.StartDate, item.Frequency, item.Interval, item.Day).ToLongDateString()<br />
                         @item.Day @:(@(item.Interval == null ? "" : (item.Interval == 2 ? "Bi-" : (item.Interval == 3 ? "Tri-" : "")))@item.Frequency)<br />
-                        @DateTime.Today.Add(item.Time).ToString("%h:mm tt")@:~@DateTime.Today.Add(item.Time).Add(item.Duration).ToString("%h:mm tt")
+                        @DateTime.Today.Add(item.Time).ToString("%h:mm tt")@:~@DateTime.Today.Add(item.Time).AddMinutes(item.Duration).ToString("%h:mm tt")
                         @*@String.Format("{0:dddd, M/d/yy}", item.StartDate)<br />
                         @String.Format("{0:h:mm tt}", item.StartDate)*@
                     }
                     else
                     {
                         @item.StartDate.ToLongDateString()
-                        @DateTime.Today.Add(item.Time).ToString("%h:mm tt")@:~@DateTime.Today.Add(item.Time).Add(item.Duration).ToString("%h:mm tt")
+                        @DateTime.Today.Add(item.Time).ToString("%h:mm tt")@:~@DateTime.Today.Add(item.Time).AddMinutes(item.Duration).ToString("%h:mm tt")
                     }
                 </td>
                 <td>

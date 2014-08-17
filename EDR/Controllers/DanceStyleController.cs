@@ -24,9 +24,9 @@ namespace EDR.Controllers
 
             var viewModel = new DanceStyleDetailViewModel();
             viewModel.DanceStyle = DataContext.DanceStyles.Where(x => x.Id == id).FirstOrDefault();
-            viewModel.Classes = DataContext.Events.OfType<Class>().Include("Teachers").Include("DanceStyles").Include("Users").Where(x => x.DanceStyles.Any(s => s.Id == id)).Where(x => x.IsAvailable == true).Where(y => !y.Recurring ? (y.StartDate >= DateTime.Now) : ((y.EndDate == null || y.EndDate >= DateTime.Now))).ToList();
-            viewModel.Workshops = DataContext.Events.OfType<Workshop>().Include("Teachers").Include("DanceStyles").Include("Users").Where(x => x.DanceStyles.Any(s => s.Id == id)).Where(x => x.IsAvailable == true).Where(y => !y.Recurring ? (y.StartDate >= DateTime.Now) : ((y.EndDate == null || y.EndDate >= DateTime.Now))).ToList();
-            var events = DataContext.Events.Include("DanceStyles").Include("Users").Where(x => x.DanceStyles.Any(s => s.Id == id)).Where(x => x.IsAvailable == true).Where(y => !y.Recurring ? (y.StartDate >= DateTime.Now) : (y.StartDate <= DateTime.Now && (y.EndDate == null || y.EndDate >= DateTime.Now))).ToList();
+            viewModel.Classes = DataContext.Events.OfType<Class>().Include("Teachers").Include("DanceStyles").Include("Users").Where(x => x.DanceStyles.Any(s => s.Id == id)).Where(x => x.IsAvailable == true).Where(y => y.EndDate == null || y.EndDate >= DateTime.Now).ToList();
+            viewModel.Workshops = DataContext.Events.OfType<Workshop>().Include("Teachers").Include("DanceStyles").Include("Users").Where(x => x.DanceStyles.Any(s => s.Id == id)).Where(x => x.IsAvailable == true).Where(y => y.EndDate == null || y.EndDate >= DateTime.Now).ToList();
+            var events = DataContext.Events.Include("DanceStyles").Include("Users").Where(x => x.DanceStyles.Any(s => s.Id == id)).Where(x => x.IsAvailable == true).Where(y => y.EndDate == null || y.EndDate >= DateTime.Now).ToList();
             viewModel.Socials = events.OfType<Social>().ToList();
             viewModel.Concerts = events.OfType<Concert>().ToList();
             viewModel.Conferences = events.OfType<Conference>().ToList();

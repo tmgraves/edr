@@ -14,7 +14,7 @@ namespace EDR.Models
         public string FacebookLink { get; set; }
 
         [DataType(DataType.Date)]
-        [Display(Name="Start Date")]
+        [Display(Name = "Start Date")]
         [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
         public DateTime StartDate { get; set; }
 
@@ -33,7 +33,7 @@ namespace EDR.Models
         public int Interval { get; set; }
         public DayOfWeek Day { get; set; }
         public TimeSpan Time { get; set; }
-        public TimeSpan Duration { get; set; }
+        public int Duration { get; set; }
 
         public virtual Place Place { get; set; }
 

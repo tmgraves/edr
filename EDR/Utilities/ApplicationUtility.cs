@@ -38,5 +38,10 @@ namespace EDR.Utilities
 
             return (date);
         }
+
+        public static int CalculateTime(int days, int hours, int minutes)
+        {
+            return ((days * 24 * 60) + (hours * 60) + minutes);
+        }
     }
 }
