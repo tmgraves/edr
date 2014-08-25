@@ -32,9 +32,29 @@ namespace EDR.Controllers
             return View(model);
         }
 
-        public ActionResult CreateReview()
+        public ActionResult CreateReview(int id)
         {
-            return View();
+            var review = new Review();
+            review.Event.Id = id;
+            return View(review);
         }
+
+        // POST: DanceStyle/Create
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CreateReview([Bind(Include = "EventId, ReviewText, Rating")] Review review)
+        {
+            if (ModelState.IsValid)
+            {
+                DataContext.Reviews.Add(review);
+                DataContext.SaveChanges();
+                return RedirectToAction("Details/" + review.Event.Id.ToString());
+            }
+
+            return View(review);
+        }
+    
     }
 }
