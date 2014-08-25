@@ -16,7 +16,7 @@
         <li>@Html.ActionLink(item.Name, "Details", "DanceStyle", new { id = item.Id }, null)</li>
     }
 </ul>
-<strong>Teacher(s)</strong>
+<strong>Teacher(s):</strong>
 <ul class="list-inline">
     @foreach (var item in Model.Teachers)
     {
@@ -36,7 +36,10 @@
         <li>@Html.DisplayFor(modelItem => r.ReviewDate) - @Html.DisplayFor(modelItem => r.ReviewText)<br />Rating: @Html.DisplayFor(modelItem => r.Rating)<br />Author: @Html.DisplayFor(modelItem => r.Author.FirstName)</li>
     }
 </ul>
-@Html.ActionLink("Add a Review", "CreateReview")
+@if (User.Identity.IsAuthenticated)
+{
+    @Html.ActionLink("Add a Review", "CreateReview", new { id = Model.Id }, null)
+}
 <p>
     @Html.ActionLink("Back to List", "Learn", "Home")
 </p>

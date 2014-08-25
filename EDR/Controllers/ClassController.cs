@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Microsoft.AspNet.Identity;
 
 namespace EDR.Controllers
 {
@@ -25,7 +26,7 @@ namespace EDR.Controllers
             }
 
             model.DanceStyles = DataContext.DanceStyles.Where(c => c.Events.Any(e => e.Id == id)).ToList();
-            model.Reviews = DataContext.Reviews.Where(c => c.Id == id).ToList();
+            model.Reviews = DataContext.Reviews.Where(c => c.Event.Id == id).OrderByDescending(x => x.ReviewDate).ToList();
             model.Teachers = DataContext.Users.OfType<Teacher>().Where(t => t.Classes.Any(c => c.Id == id)).ToList();
             model.Users = DataContext.Users.Where(u => u.Events.Any(e => e.Id == id)).ToList();
 
@@ -34,9 +35,9 @@ namespace EDR.Controllers
 
         public ActionResult CreateReview(int id)
         {
-            var review = new Review();
-            review.Event.Id = id;
-            return View(review);
+            var viewModel = new EventReviewViewModel();
+            viewModel.EventId = id;
+            return View("CreateReview", viewModel);
         }
 
         // POST: DanceStyle/Create
@@ -44,17 +45,14 @@ namespace EDR.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CreateReview([Bind(Include = "EventId, ReviewText, Rating")] Review review)
+        public ActionResult CreateReview([Bind(Include = "EventId, Review")] EventReviewViewModel viewModel)
         {
-            if (ModelState.IsValid)
-            {
-                DataContext.Reviews.Add(review);
-                DataContext.SaveChanges();
-                return RedirectToAction("Details/" + review.Event.Id.ToString());
-            }
-
-            return View(review);
+            viewModel.Review.Event = DataContext.Events.Find(viewModel.EventId);
+            viewModel.Review.ReviewDate = DateTime.Now;
+            viewModel.Review.Author = DataContext.Users.Find(User.Identity.GetUserId());
+            DataContext.Reviews.Add(viewModel.Review);
+            DataContext.SaveChanges();
+            return RedirectToAction("Details/" + viewModel.EventId.ToString());
         }
-    
     }
 }
