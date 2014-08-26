@@ -18,8 +18,7 @@ namespace EDR.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var viewModel = new TeacherDetailViewModel();
-            viewModel.Teacher = DataContext.IdentityUsers.OfType<Teacher>().Include("Classes").Include("Workshops").Include("DanceStyles").Where(x => x.UserName == username).FirstOrDefault();
+            var viewModel = DataContext.IdentityUsers.OfType<Teacher>().Include("Classes").Include("Workshops").Include("DanceStyles").Where(x => x.UserName == username).FirstOrDefault();
 
             return View(viewModel);
         }

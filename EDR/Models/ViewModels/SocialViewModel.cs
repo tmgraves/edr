@@ -5,11 +5,8 @@ using System.Web;
 
 namespace EDR.Models.ViewModels
 {
-    public class DanceStyleDetailViewModel
+    public class SocialViewModel
     {
-        public DanceStyle DanceStyle { get; set; }
-        public IEnumerable<Class> Classes { get; set; }
-        public IEnumerable<Workshop> Workshops { get; set; }
         public IEnumerable<Social> Socials { get; set; }
         public IEnumerable<Concert> Concerts { get; set; }
         public IEnumerable<Conference> Conferences { get; set; }

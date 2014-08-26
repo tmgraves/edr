@@ -21,7 +21,7 @@
 <div class="tabbable">
     <ul class="nav nav-tabs nav-justified" role="tablist">
         <li class="active"><a href="#classes" data-toggle="tab">Classes (@Model.Classes.Count().ToString())</a></li>
-        <li><a href="#workshops" data-toggle="tab">Workshops (@Model.Classes.Count().ToString())</a></li>
+        <li><a href="#workshops" data-toggle="tab">Workshops (@Model.Workshops.Count().ToString())</a></li>
     </ul>
     <div class="tab-content">
         <div id="classes" class="tab-pane active">
@@ -56,9 +56,8 @@
                                 }
                                 else
                                 {
-                                    @item.StartDate.ToLongDateString()
-                                    @DateTime.Today.Add(item.Time).ToString("%h:mm tt")@:~@DateTime.Today.Add(item.Time).AddMinutes(item.Duration).ToString("%h:mm tt")
-                    }
+                                    @item.StartDate.ToLongDateString()<br />@DateTime.Today.Add(item.Time).ToString("%h:mm tt")@:~@DateTime.Today.Add(item.Time).AddMinutes(item.Duration).ToString("%h:mm tt")
+                                }
                             </td>
                             <td>
                                 @Html.ActionLink(item.Name, "Details", "Class", new { id = item.Id }, null)<br />
@@ -139,7 +138,7 @@
                                 }
                                 else
                                 {
-                                    @item.StartDate.ToLongDateString()
+                                    @item.StartDate.ToLongDateString()<br />
                                     @DateTime.Today.Add(item.Time).ToString("%h:mm tt")@:~@DateTime.Today.Add(item.Time).AddMinutes(item.Duration).ToString("%h:mm tt")
                     }
                             </td>
@@ -192,6 +191,8 @@
         </div>
     </div><!-- /.tab-content -->
 </div><!-- /.tabbable -->
+
+<a href="@Request.UrlReferrer.ToString()">Back</a>
 
 @*<h4>Available Classes</h4>
     <table class="table table-striped table-bordered table-hover">

@@ -22,6 +22,41 @@ namespace EDR.Controllers
             return View(viewModel);
         }
 
+        public ActionResult Social(int? danceStyle, int? place)
+        {
+            var DanceStyleLst = DataContext.DanceStyles.ToList();
+            ViewBag.danceStyle = new SelectList(DanceStyleLst, "Id", "Name", danceStyle);
+
+            var PlaceLst = DataContext.Places.ToList();
+            ViewBag.place = new SelectList(PlaceLst, "Id", "Name", place);
+
+            var viewModel = new SocialViewModel();
+            viewModel.Socials = DataContext.Events.OfType<Social>().Include("DanceStyles").Include("Users").Where(x => x.IsAvailable == true).Where(y => y.EndDate == null || y.EndDate >= DateTime.Now).OrderBy(z => z.StartDate).ToList();
+            viewModel.Concerts = DataContext.Events.OfType<Concert>().Include("DanceStyles").Include("Users").Where(x => x.IsAvailable == true).Where(y => y.EndDate == null || y.EndDate >= DateTime.Now).OrderBy(z => z.StartDate).ToList();
+            viewModel.Conferences = DataContext.Events.OfType<Conference>().Include("DanceStyles").Include("Users").Where(x => x.IsAvailable == true).Where(y => y.EndDate == null || y.EndDate >= DateTime.Now).OrderBy(z => z.StartDate).ToList();
+            viewModel.Parties = DataContext.Events.OfType<Party>().Include("DanceStyles").Include("Users").Where(x => x.IsAvailable == true).Where(y => y.EndDate == null || y.EndDate >= DateTime.Now).OrderBy(z => z.StartDate).ToList();
+            viewModel.OpenHouses = DataContext.Events.OfType<OpenHouse>().Include("DanceStyles").Include("Users").Where(x => x.IsAvailable == true).Where(y => y.EndDate == null || y.EndDate >= DateTime.Now).OrderBy(z => z.StartDate).ToList();
+
+            if (danceStyle != null)
+            {
+                viewModel.Socials = viewModel.Socials.Where(x => x.DanceStyles.Any(s => s.Id == danceStyle));
+                viewModel.Concerts = viewModel.Concerts.Where(x => x.DanceStyles.Any(s => s.Id == danceStyle));
+                viewModel.Conferences = viewModel.Conferences.Where(x => x.DanceStyles.Any(s => s.Id == danceStyle));
+                viewModel.Parties = viewModel.Parties.Where(x => x.DanceStyles.Any(s => s.Id == danceStyle));
+                viewModel.OpenHouses = viewModel.OpenHouses.Where(x => x.DanceStyles.Any(s => s.Id == danceStyle));
+            }
+
+            if (place != null)
+            {
+                viewModel.Socials = viewModel.Socials.Where(x => x.Place.Id == place);
+                viewModel.Concerts = viewModel.Concerts.Where(x => x.Place.Id == place);
+                viewModel.Conferences = viewModel.Conferences.Where(x => x.Place.Id == place);
+                viewModel.Parties = viewModel.Parties.Where(x => x.Place.Id == place);
+                viewModel.OpenHouses = viewModel.OpenHouses.Where(x => x.Place.Id == place);
+            }
+            return View(viewModel);
+        }
+
         public ActionResult Learn(int? danceStyle, string teacher, int? place, int? skillLevel)
         {
             var DanceStyleLst = DataContext.DanceStyles.ToList();
@@ -44,24 +79,28 @@ namespace EDR.Controllers
             if (danceStyle != null)
             {
                 viewModel.Classes = viewModel.Classes.Where(x => x.DanceStyles.Any(s => s.Id == danceStyle));
+                viewModel.Workshops = viewModel.Workshops.Where(x => x.DanceStyles.Any(s => s.Id == danceStyle));
                 viewModel.ClassSeries = viewModel.ClassSeries.Where(x => x.DanceStyles.Any(s => s.Id == danceStyle));
             }
 
             if (teacher != null && teacher != "")
             {
                 viewModel.Classes = viewModel.Classes.Where(x => x.Teachers.Any(t => t.Id == teacher));
+                viewModel.Workshops = viewModel.Workshops.Where(x => x.Teachers.Any(t => t.Id == teacher));
                 viewModel.ClassSeries = viewModel.ClassSeries.Where(x => x.Teachers.Any(t => t.Id == teacher));
             }
 
             if (place != null)
             {
                 viewModel.Classes = viewModel.Classes.Where(x => x.Place.Id == place);
+                viewModel.Workshops = viewModel.Workshops.Where(x => x.Place.Id == place);
                 viewModel.ClassSeries = viewModel.ClassSeries.Where(x => x.Place.Id == place);
             }
 
             if (skillLevel != null)
             {
                 viewModel.Classes = viewModel.Classes.Where(x => x.SkillLevel == skillLevel);
+                viewModel.Workshops = viewModel.Workshops.Where(x => x.SkillLevel == skillLevel);
                 viewModel.ClassSeries = viewModel.ClassSeries.Where(x => x.SkillLevel == skillLevel);
             }
 
