@@ -9,6 +9,7 @@ using Owin;
 using System;
 using EDR.Models;
 using EDR.Data;
+using Microsoft.Owin.Security.Facebook;
 
 namespace EDR
 {
@@ -47,9 +48,35 @@ namespace EDR
             //   consumerKey: "",
             //   consumerSecret: "");
 
-            app.UseFacebookAuthentication(
-               appId: "1634016200156058",
-               appSecret: "17e338c89fc606e10ab6ec541671f58c");
+            var x = new FacebookAuthenticationOptions();
+            x.Scope.Add("email");
+            //x.Scope.Add("first_name");
+            //x.Scope.Add("last_name");
+            //  x.Scope.Add("link");
+            x.AppId = "1634016200156058";
+            x.AppSecret = "17e338c89fc606e10ab6ec541671f58c";
+            x.Provider = new FacebookAuthenticationProvider()
+            {
+                OnAuthenticated = async context =>
+                {
+                    context.Identity.AddClaim(new System.Security.Claims.Claim("FacebookAccessToken", context.AccessToken));
+                    foreach (var claim in context.User)
+                    {
+                        var claimType = string.Format("urn:facebook:{0}", claim.Key);
+                        string claimValue = claim.Value.ToString();
+                        if (!context.Identity.HasClaim(claimType, claimValue))
+                            context.Identity.AddClaim(new System.Security.Claims.Claim(claimType, claimValue, "XmlSchemaString", "Facebook"));
+
+                    }
+
+                }
+            };
+
+            x.SignInAsAuthenticationType = DefaultAuthenticationTypes.ExternalCookie;
+            app.UseFacebookAuthentication(x);
+            //app.UseFacebookAuthentication(
+            //   appId: "1634016200156058",
+            //   appSecret: "17e338c89fc606e10ab6ec541671f58c");
 
             //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
             //{
