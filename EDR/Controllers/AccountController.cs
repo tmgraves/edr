@@ -5,6 +5,8 @@ using Microsoft.Owin.Security;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace EDR.Controllers
 {
@@ -377,7 +379,11 @@ namespace EDR.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
-                var user = new ApplicationUser() { UserName = model.Email, Email = model.Email };
+                var firstNameClaim = info.ExternalIdentity.Claims.First(c => c.Type == "urn:facebook:first_name");
+                var firstName = firstNameClaim != null ? firstNameClaim.Value : null;
+                var lastNameClaim = info.ExternalIdentity.Claims.First(c => c.Type == "urn:facebook:last_name");
+                var lastName = lastNameClaim != null ? lastNameClaim.Value : null;
+                var user = new ApplicationUser() { UserName = model.Email, Email = model.Email, FirstName = firstName, LastName = lastName };
                 IdentityResult result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
