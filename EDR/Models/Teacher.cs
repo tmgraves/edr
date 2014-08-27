@@ -17,5 +17,6 @@ namespace EDR.Models
         public ICollection<ClassSeries> ClassSeries { get; set; }
         public ICollection<Review> Reviews { get; set; }
         public ICollection<Workshop> Workshops { get; set; }
+        public ICollection<Rehearsal> Rehearsals { get; set; }
     }
 }

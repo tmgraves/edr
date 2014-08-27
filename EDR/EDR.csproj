@@ -184,9 +184,12 @@
     <Compile Include="Models\Concert.cs" />
     <Compile Include="Models\Conference.cs" />
     <Compile Include="Models\ConferenceCenter.cs" />
+    <Compile Include="Models\Dancer.cs" />
     <Compile Include="Models\Hotel.cs" />
     <Compile Include="Models\OpenHouse.cs" />
+    <Compile Include="Models\Owner.cs" />
     <Compile Include="Models\Party.cs" />
+    <Compile Include="Models\Promoter.cs" />
     <Compile Include="Models\Rehearsal.cs" />
     <Compile Include="Models\Restaurant.cs" />
     <Compile Include="Models\Review.cs" />
