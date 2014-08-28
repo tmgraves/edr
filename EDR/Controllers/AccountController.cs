@@ -328,7 +328,7 @@ namespace EDR.Controllers
                 // If the user does not have an account, then prompt the user to create an account
                 ViewBag.ReturnUrl = returnUrl;
                 ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
-                return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = loginInfo.Email });
+                return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { UserName = loginInfo.DefaultUserName });
             }
         }
 
@@ -383,7 +383,9 @@ namespace EDR.Controllers
                 var firstName = firstNameClaim != null ? firstNameClaim.Value : null;
                 var lastNameClaim = info.ExternalIdentity.Claims.First(c => c.Type == "urn:facebook:last_name");
                 var lastName = lastNameClaim != null ? lastNameClaim.Value : null;
-                var user = new ApplicationUser() { UserName = model.Email, Email = model.Email, FirstName = firstName, LastName = lastName };
+                var emailClaim = info.ExternalIdentity.Claims.First(c => c.Type == "urn:facebook:email");
+                var email = firstNameClaim != null ? emailClaim.Value : null;
+                var user = new ApplicationUser() { UserName = model.UserName, Email = email, FirstName = firstName, LastName = lastName };
                 IdentityResult result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {

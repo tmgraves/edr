@@ -35,7 +35,7 @@ namespace EDR.Data
             var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
 
             // Seed users
-            var user = new ApplicationUser() { UserName = "user@gmail.com", Email = "user@gmail.com", FirstName = "Johnny", LastName = "Depp", ZipCode = "90210" };
+            var user = new ApplicationUser() { UserName = "user1", Email = "user@gmail.com", FirstName = "Johnny", LastName = "Depp", ZipCode = "90210" };
             var liz = new ApplicationUser() { UserName = "teacher@gmail.com", Email = "teacher@gmail.com", FirstName = "Liz", LastName = "Lirases", ZipCode = "90210" };
             var tchr = new Teacher()    { ApplicationUser=liz, Resume = "Liz Lira, the 'Rose of Salsa,' was born in La Paz, Bolivia, and immigrated to the United States at the early age of eight. Making Southern California her new home, she embraced the art of dance and excelled in both ballet and jazz.", DanceStyles = latinstyles, FacebookLink = "https://www.facebook.com/liz.lirala", Website = "http://www.lizlira.com/" };
             var prom = new ApplicationUser() { UserName = "promoter@gmail.com", Email = "promoter@gmail.com", FirstName = "Katy", LastName = "Perry", ZipCode = "90210" };

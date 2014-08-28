@@ -5,9 +5,8 @@ namespace EDR.Models.ViewModels
     public class ExternalLoginConfirmationViewModel
     {
         [Required]
-        [EmailAddress]
-        [Display(Name = "Email")]
-        public string Email { get; set; }
+        [Display(Name = "User name")]
+        public string UserName { get; set; }
     }
 
     public class ExternalLoginListViewModel
