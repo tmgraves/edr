@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using EDR.Data;
 using EDR.Models;
 using EDR.Models.ViewModels;
+using System.Web.Security;
 
 namespace EDR.Controllers
 {
@@ -18,7 +19,7 @@ namespace EDR.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var viewModel = DataContext.IdentityUsers.OfType<Teacher>().Include("Classes").Include("Workshops").Include("DanceStyles").Where(x => x.UserName == username).FirstOrDefault();
+            var viewModel = DataContext.Teachers.Include("ApplicationUser").Include("Classes").Include("Workshops").Include("DanceStyles").Where(x => x.ApplicationUser.UserName == username).FirstOrDefault();
 
             return View(viewModel);
         }

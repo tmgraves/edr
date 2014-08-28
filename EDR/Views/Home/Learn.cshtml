@@ -70,7 +70,7 @@
                                     {
                                         foreach (var t in item.Teachers)
                                         {
-                                            <li>@Html.ActionLink(t.FullName, "Details", "Teacher", new { username = t.UserName }, null)</li>
+                                            <li>@Html.ActionLink(t.ApplicationUser.FullName, "Details", "Teacher", new { username = t.ApplicationUser.UserName }, null)</li>
                                         }
                                     }
                                 </ul>
@@ -153,7 +153,7 @@
                                     {
                                         foreach (var t in item.Teachers)
                                         {
-                                            <li>@Html.ActionLink(t.FullName, "Details", "Teacher", new { username = t.UserName }, null)</li>
+                                            <li>@Html.ActionLink(t.ApplicationUser.FullName, "Details", "Teacher", new { username = t.ApplicationUser.UserName }, null)</li>
                                         }
                                     }
                                 </ul>

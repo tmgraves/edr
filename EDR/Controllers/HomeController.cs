@@ -62,46 +62,42 @@ namespace EDR.Controllers
             var DanceStyleLst = DataContext.DanceStyles.ToList();
             ViewBag.danceStyle = new SelectList(DanceStyleLst, "Id", "Name", danceStyle);
 
-            var TeacherLst = DataContext.Users.OfType<Teacher>().ToList();
-            ViewBag.teacher = new SelectList(TeacherLst, "Id", "FullName", teacher);
-
             var PlaceLst = DataContext.Places.ToList();
             ViewBag.place = new SelectList(PlaceLst, "Id", "Name", place);
 
             var SkillLevelLst = new List<int> { 1, 2, 3, 4, 5 };
             ViewBag.skillLevel = new SelectList(SkillLevelLst);
 
+            var TeacherLst = DataContext.Teachers.ToList();
+            ViewBag.teacher = new SelectList(TeacherLst, "ApplicationUser.Id", "ApplicationUser.FullName", teacher);
+
+            var teachers = DataContext.Teachers.Include("ApplicationUser");
             var viewModel = new HomeLearnViewModel();
-            viewModel.Classes = DataContext.Events.OfType<Class>().Include("Teachers").Include("DanceStyles").Include("Users").Where(x => x.IsAvailable == true).Where(y => y.EndDate == null || y.EndDate >= DateTime.Now).OrderBy(z => z.StartDate).ToList();
-            viewModel.Workshops = DataContext.Events.OfType<Workshop>().Include("Teachers").Include("DanceStyles").Include("Users").Where(x => x.IsAvailable == true).Where(y => y.EndDate == null || y.EndDate >= DateTime.Now).OrderBy(z => z.StartDate).ToList();
-            viewModel.ClassSeries = DataContext.Series.OfType<ClassSeries>().Include("DanceStyles").Where(x => x.IsAvailable == true).ToList();
+            viewModel.Classes = DataContext.Events.OfType<Class>().Include("Teachers").Include("Teachers.ApplicationUser").Include("DanceStyles").Include("Users").Where(x => x.IsAvailable == true).Where(y => y.EndDate == null || y.EndDate >= DateTime.Now).OrderBy(z => z.StartDate).ToList();
+            viewModel.Workshops = DataContext.Events.OfType<Workshop>().Include("Teachers").Include("Teachers.ApplicationUser").Include("DanceStyles").Include("Users").Where(x => x.IsAvailable == true).Where(y => y.EndDate == null || y.EndDate >= DateTime.Now).OrderBy(z => z.StartDate).ToList();
 
             if (danceStyle != null)
             {
                 viewModel.Classes = viewModel.Classes.Where(x => x.DanceStyles.Any(s => s.Id == danceStyle));
                 viewModel.Workshops = viewModel.Workshops.Where(x => x.DanceStyles.Any(s => s.Id == danceStyle));
-                viewModel.ClassSeries = viewModel.ClassSeries.Where(x => x.DanceStyles.Any(s => s.Id == danceStyle));
             }
 
             if (teacher != null && teacher != "")
             {
-                viewModel.Classes = viewModel.Classes.Where(x => x.Teachers.Any(t => t.Id == teacher));
-                viewModel.Workshops = viewModel.Workshops.Where(x => x.Teachers.Any(t => t.Id == teacher));
-                viewModel.ClassSeries = viewModel.ClassSeries.Where(x => x.Teachers.Any(t => t.Id == teacher));
+                viewModel.Classes = viewModel.Classes.Where(x => x.Teachers.Any(t => t.ApplicationUser.Id == teacher));
+                viewModel.Workshops = viewModel.Workshops.Where(x => x.Teachers.Any(t => t.ApplicationUser.Id == teacher));
             }
 
             if (place != null)
             {
                 viewModel.Classes = viewModel.Classes.Where(x => x.Place.Id == place);
                 viewModel.Workshops = viewModel.Workshops.Where(x => x.Place.Id == place);
-                viewModel.ClassSeries = viewModel.ClassSeries.Where(x => x.Place.Id == place);
             }
 
             if (skillLevel != null)
             {
                 viewModel.Classes = viewModel.Classes.Where(x => x.SkillLevel == skillLevel);
                 viewModel.Workshops = viewModel.Workshops.Where(x => x.SkillLevel == skillLevel);
-                viewModel.ClassSeries = viewModel.ClassSeries.Where(x => x.SkillLevel == skillLevel);
             }
 
             return View(viewModel);
@@ -109,7 +105,7 @@ namespace EDR.Controllers
 
         public ActionResult Teachers()
         {
-            return View(DataContext.IdentityUsers.OfType<Teacher>().Include("DanceStyles").ToList());
+            return View(DataContext.Teachers.Include("DanceStyles").ToList());
         }
     }
 }

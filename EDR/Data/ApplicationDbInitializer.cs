@@ -36,22 +36,25 @@ namespace EDR.Data
 
             // Seed users
             var user = new ApplicationUser() { UserName = "user@gmail.com", Email = "user@gmail.com", FirstName = "Johnny", LastName = "Depp", ZipCode = "90210" };
-            var tchr = new Teacher() { UserName = "teacher@gmail.com", Email = "teacher@gmail.com", FirstName = "Liz", LastName = "Lirases", ZipCode = "90210", Resume = "Liz Lira, the 'Rose of Salsa,' was born in La Paz, Bolivia, and immigrated to the United States at the early age of eight. Making Southern California her new home, she embraced the art of dance and excelled in both ballet and jazz.", DanceStyles = latinstyles, FacebookLink = "https://www.facebook.com/liz.lirala", Website = "http://www.lizlira.com/" };
+            var liz = new ApplicationUser() { UserName = "teacher@gmail.com", Email = "teacher@gmail.com", FirstName = "Liz", LastName = "Lirases", ZipCode = "90210" };
+            var tchr = new Teacher()    { ApplicationUser=liz, Resume = "Liz Lira, the 'Rose of Salsa,' was born in La Paz, Bolivia, and immigrated to the United States at the early age of eight. Making Southern California her new home, she embraced the art of dance and excelled in both ballet and jazz.", DanceStyles = latinstyles, FacebookLink = "https://www.facebook.com/liz.lirala", Website = "http://www.lizlira.com/" };
             var prom = new ApplicationUser() { UserName = "promoter@gmail.com", Email = "promoter@gmail.com", FirstName = "Katy", LastName = "Perry", ZipCode = "90210" };
-            var tchr2 = new Teacher() { UserName = "teacher2@gmail.com", Email = "teacher2@gmail.com", FirstName = "Eddie", LastName = "Torres", ZipCode = "90056", Resume = "Eddie Torres (born on July 3, 1950), also known as 'The Mambo King', is a salsa dance instructor.[1] Torres' technique developed from various sources including Afro-Cuban son, mambo, and North American jazz dance. [2] He is one of the more popular dancers of New York style salsa. He is famous for his way of dancing and teaching salsa, with the female starting to move forward (always On 2 timing).[3] Torres' style can be contrasted with the more showy Los Angeles style.", DanceStyles = latinstyles, FacebookLink = "https://www.facebook.com/pages/Eddie-Torres/160918620698544", Website = "http://www.eddietorresny.com/Eddie_Torres_NY/Eddie_Torres_NY.com.html" };
+            var eddie = new ApplicationUser() { UserName = "teacher2@gmail.com", Email = "teacher2@gmail.com", FirstName = "Eddie", LastName = "Torres", ZipCode = "90056" };
+            var tchr2 = new Teacher() { ApplicationUser=eddie, Resume = "Eddie Torres (born on July 3, 1950), also known as 'The Mambo King', is a salsa dance instructor.[1] Torres' technique developed from various sources including Afro-Cuban son, mambo, and North American jazz dance. [2] He is one of the more popular dancers of New York style salsa. He is famous for his way of dancing and teaching salsa, with the female starting to move forward (always On 2 timing).[3] Torres' style can be contrasted with the more showy Los Angeles style.", DanceStyles = latinstyles, FacebookLink = "https://www.facebook.com/pages/Eddie-Torres/160918620698544", Website = "http://www.eddietorresny.com/Eddie_Torres_NY/Eddie_Torres_NY.com.html" };
 
             // Save seeded users
             userManager.Create(user, "Passw0rd!");
-            userManager.Create(tchr, "Passw0rd!");
+            userManager.Create(liz, "Passw0rd!");
             userManager.Create(prom, "Passw0rd!");
+            userManager.Create(eddie, "Passw0rd!");
 
             // Save seeded roles 
             roleManager.Create(new IdentityRole("Teacher"));
             roleManager.Create(new IdentityRole("Promoter"));
 
             // Assign users to role
-            userManager.AddToRole(tchr.Id, "Teacher");
-            userManager.AddToRole(prom.Id, "Promoter");
+            userManager.AddToRole(liz.Id, "Teacher");
+            userManager.AddToRole(eddie.Id, "Promoter");
 
             // Seed places
             var places = new List<Place>()

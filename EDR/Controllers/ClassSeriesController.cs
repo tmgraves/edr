@@ -28,7 +28,7 @@ namespace EDR.Controllers
             //model.Classes = DataContext.Events.Where(x => x.Series.Id == id).OfType<Class>().ToList(); // Notice the .OfType<>() to filter specific types
             model.Events = DataContext.Events.Include("Reviews").Where(x => x.Series.Id == id).OrderBy(x => x.StartDate).ToList(); // Notice the .OfType<>() to filter specific types
             model.DanceStyles = DataContext.DanceStyles.Where(c => c.Events.Any(e => e.Series.Id == id)).ToList();
-            model.Teachers = DataContext.Users.OfType<Teacher>().Where(t => t.ClassSeries.Any(c => c.Id == id)).ToList();
+            model.Teachers = DataContext.Teachers.Where(t => t.ClassSeries.Any(c => c.Id == id)).ToList();
 
             //model.Reviews = DataContext.Series.Single(s => s.Id == id).Reviews;
             //model.Teachers = DataContext.Series.OfType<ClassSeries>().Single(s => s.Id == id).Teachers;

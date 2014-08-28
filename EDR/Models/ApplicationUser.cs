@@ -34,5 +34,9 @@ namespace EDR.Models
         }
 
         public ICollection<Event> Events { get; set; }
+        public ICollection<Teacher> Teachers { get; set; }
+        public ICollection<Owner> Owners { get; set; }
+        public ICollection<Dancer> Dancers { get; set; }
+        public ICollection<Promoter> Promoters { get; set; }
     }
 }

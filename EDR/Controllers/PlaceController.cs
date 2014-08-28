@@ -18,8 +18,8 @@ namespace EDR.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var TeacherLst = DataContext.IdentityUsers.OfType<Teacher>().Where(x => x.Classes.Any(c => c.Place.Id == id) || x.Workshops.Any(w => w.Place.Id == id));
-            ViewBag.teacher = new SelectList(TeacherLst, "Id", "FullName", teacher);
+            var TeacherLst = DataContext.Teachers.Where(x => x.Classes.Any(c => c.Place.Id == id) || x.Workshops.Any(w => w.Place.Id == id));
+            ViewBag.teacher = new SelectList(TeacherLst, "ApplicationUser.Id", "ApplicationUser.FullName", teacher);
 
             var DanceStyleLst = DataContext.DanceStyles.ToList();
             ViewBag.danceStyle = new SelectList(DanceStyleLst, "Id", "Name", danceStyle);
@@ -29,7 +29,7 @@ namespace EDR.Controllers
 
             var viewModel = new PlaceDetailViewModel();
             viewModel.Place = DataContext.Places.Find(id);
-            viewModel.Classes = DataContext.Events.Include("Teachers").Include("DanceStyles").Include("Users").OfType<Class>().Where(c => c.Place.Id == id).Where(x => x.IsAvailable == true).Where(y => !y.Recurring ? (y.StartDate >= DateTime.Now) : (y.StartDate <= DateTime.Now && (y.EndDate == null || y.EndDate >= DateTime.Now))).OrderBy(z => z.StartDate).ToList();
+            viewModel.Classes = DataContext.Events.Include("Teachers").Include("Teachers.ApplicationUser").Include("DanceStyles").Include("Users").OfType<Class>().Where(c => c.Place.Id == id).Where(x => x.IsAvailable == true).Where(y => !y.Recurring ? (y.StartDate >= DateTime.Now) : (y.StartDate <= DateTime.Now && (y.EndDate == null || y.EndDate >= DateTime.Now))).OrderBy(z => z.StartDate).ToList();
             var Events = DataContext.Events.Include("DanceStyles").Include("Users").Where(c => c.Place.Id == id).Where(x => x.IsAvailable == true).Where(y => y.StartDate >= DateTime.Now).OrderBy(z => z.StartDate).ToList().Take(5);
 
             if (danceStyle != null)
@@ -40,7 +40,7 @@ namespace EDR.Controllers
 
             if (teacher != null && teacher != "")
             {
-                viewModel.Classes = viewModel.Classes.Where(x => x.Teachers.Any(t => t.Id == teacher));
+                viewModel.Classes = viewModel.Classes.Where(x => x.Teachers.Any(t => t.ApplicationUser.Id == teacher));
             }
 
             if (skillLevel != null)

@@ -5,7 +5,7 @@
     ViewBag.Title = "Details";
 }
 
-<h1 class="page-header">@Model.FullName</h1>
+<h1 class="page-header">@Model.ApplicationUser.FullName</h1>
 
 <div>
     <dl class="dl-horizontal">
@@ -48,7 +48,7 @@
     </dl>
 </div>
 <p>
-    <a href="@Url.Action("Learn", "Home", new { teacher = Model.Id }, null)" class="btn btn-primary">Find Where @Model.FullName is Teaching</a>
+    <a href="@Url.Action("Learn", "Home", new { teacher = Model.ApplicationUser.Id }, null)" class="btn btn-primary">Find Where @Model.ApplicationUser.FullName is Teaching</a>
 </p>
 <p>
     <a href="@Request.UrlReferrer.ToString()">Back</a>
