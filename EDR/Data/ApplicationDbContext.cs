@@ -70,6 +70,8 @@ namespace EDR.Data
         public DbSet<Review> Reviews { get; set; }
 
         public DbSet<Teacher> Teachers { get; set; }
+        public DbSet<Promoter> Promoters { get; set; }
+        public DbSet<Owner> Owners { get; set; }
         public DbSet<IdentityUser> IdentityUsers { get; set; }
 
         //// TODO: REMOVE THESE DBSETS

@@ -4,35 +4,50 @@
     ViewBag.Title = "My Account";
 }
 
-<h2>@ViewBag.Title.</h2>
+<h2 class="page-header">@ViewBag.Title.</h2>
 
-@Html.ActionLink("View Your Dancer Profile", "DancerProfile")
-@Html.ActionLink("View Your Teacher Profile", "TeacherProfile")
-<p class="text-success">@ViewBag.StatusMessage</p>
-<div class="tabbable">
-    <ul class="nav nav-pills" role="tablist">
-        <li class="active"><a href="#password" data-toggle="tab">Set Password</a></li>
-        <li><a href="#externallogin" data-toggle="tab">Linked Logins</a></li>
-    </ul>
-    <div class="tab-content">
-        <div id="password" class="tab-pane active">
-            @if (ViewBag.HasLocalPassword)
+
+    <div class="col-md-3">
+        <ul class="nav nav-pills nav-stacked">
+            <li><a href="/Dancer/@User.Identity.Name">View Your Dancer Profile</a></li>
+            @if(User.IsInRole("Owner"))
             {
-                @Html.Partial("_ChangePasswordPartial")
+                <li><a href="/Owner/@User.Identity.Name">View Your Owner Profile</a></li>
             }
-            else
+            @if (User.IsInRole("Teacher"))
             {
-                @Html.Partial("_SetPasswordPartial")
+                <li><a href="/Teacher/@User.Identity.Name">View Your Teacher Profile</a></li>
             }
-        </div>
-        <div id="externallogin" class="tab-pane">
-            <section id="externalLogins">
-                @Html.Action("RemoveAccountList")
-                @Html.Partial("_ExternalLoginsListPartial", new ExternalLoginListViewModel { Action = "LinkLogin", ReturnUrl = ViewBag.ReturnUrl })
-            </section>
-        </div>
+            @if (User.IsInRole("Promoter"))
+            {
+                <li><a href="/Promoter/@User.Identity.Name">View Your Promoter Profile</a></li>
+            }
+        </ul>
     </div>
-</div>
+    <div class="col-md-9">
+        @*<p class="text-success">@ViewBag.StatusMessage</p>*@
+            <div id="password" class="tab-pane active">
+                @if (ViewBag.HasLocalPassword)
+                {
+                    @Html.Partial("_ChangePasswordPartial")
+                }
+                else
+                {
+                    @Html.Partial("_SetPasswordPartial")
+                }
+            </div>
+            <div id="externallogin" class="tab-pane">
+                <section id="externalLogins">
+                    @Html.Action("RemoveAccountList")
+                    @Html.Partial("_ExternalLoginsListPartial", new ExternalLoginListViewModel { Action = "LinkLogin", ReturnUrl = ViewBag.ReturnUrl })
+                </section>
+            </div>
+     </div>
+
+
+
+
+
     @section Scripts {
         @Scripts.Render("~/bundles/jqueryval")
     }

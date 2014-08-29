@@ -14,13 +14,13 @@ namespace EDR.Models
         public string Website { get; set; }
 
         [Required]
-        public ApplicationUser ApplicationUser { get; set; }
+        public virtual ApplicationUser ApplicationUser { get; set; }
 
-        public ICollection<DanceStyle> DanceStyles { get; set; }
-        public ICollection<Class> Classes { get; set; }
-        public ICollection<ClassSeries> ClassSeries { get; set; }
-        public ICollection<Review> Reviews { get; set; }
-        public ICollection<Workshop> Workshops { get; set; }
-        public ICollection<Rehearsal> Rehearsals { get; set; }
+        public virtual ICollection<DanceStyle> DanceStyles { get; set; }
+        public virtual ICollection<Class> Classes { get; set; }
+        public virtual ICollection<ClassSeries> ClassSeries { get; set; }
+        public virtual ICollection<Review> Reviews { get; set; }
+        public virtual ICollection<Workshop> Workshops { get; set; }
+        public virtual ICollection<Rehearsal> Rehearsals { get; set; }
     }
 }

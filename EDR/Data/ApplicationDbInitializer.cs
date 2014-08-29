@@ -49,6 +49,7 @@ namespace EDR.Data
             userManager.Create(eddie, "Passw0rd!");
 
             // Save seeded roles 
+            roleManager.Create(new IdentityRole("Owner"));
             roleManager.Create(new IdentityRole("Teacher"));
             roleManager.Create(new IdentityRole("Promoter"));
 

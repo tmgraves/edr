@@ -8,10 +8,11 @@ namespace EDR.Models
 {
     public class Owner : Entity
     {
-        [Required]
-        public ApplicationUser ApplicationUser { get; set; }
         public string ContactEmail { get; set; }
 
-        public ICollection<Place> Places { get; set; }
+        [Required]
+        public virtual ApplicationUser ApplicationUser { get; set; }
+
+        public virtual ICollection<Place> Places { get; set; }
     }
 }
