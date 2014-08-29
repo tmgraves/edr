@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.Entity;
 
 namespace EDR.Controllers
 {
@@ -434,6 +435,36 @@ namespace EDR.Controllers
             var linkedAccounts = UserManager.GetLogins(User.Identity.GetUserId());
             ViewBag.ShowRemoveButton = HasPassword() || linkedAccounts.Count > 1;
             return (ActionResult)PartialView("_RemoveAccountPartial", linkedAccounts);
+        }
+
+        // GET: /Account/Manage
+        public ActionResult TeacherProfile()
+        {
+            var user = User.Identity.GetUserId();
+            var viewModel = DataContext.Teachers.Where(x => x.ApplicationUser.Id == user).FirstOrDefault();
+            if (viewModel == null)
+            {
+                var teacher = new Teacher { ApplicationUser = DataContext.Users.Find(User.Identity.GetUserId()) };
+                DataContext.Teachers.Add(teacher);
+                DataContext.SaveChanges();
+                viewModel = DataContext.Teachers.Where(x => x.ApplicationUser.Id == user).FirstOrDefault();
+            }
+            return View(viewModel);
+        }
+
+        //
+        // POST: /Account/Manage
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult TeacherProfile([Bind(Include = "ApplicationUser,Experience,Resume, FacebookLink, Website")] Teacher teacher)
+        {
+            if (ModelState.IsValid)
+            {
+                DataContext.Entry(teacher).State = EntityState.Modified;
+                DataContext.SaveChanges();
+                return RedirectToAction("TeacherProfile");
+            }
+            return View(teacher);
         }
 
         #region Helpers

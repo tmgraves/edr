@@ -294,8 +294,11 @@
     <Content Include="Views\Class\CreateReview.cshtml" />
     <Content Include="Views\Home\Teachers.cshtml" />
     <Content Include="Views\Home\Social.cshtml" />
+    <Content Include="Views\Account\DancerProfile.cshtml" />
+    <Content Include="Views\Account\TeacherProfile.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Views\Account\RoleProfiles\" />
     <Folder Include="Views\Series\" />
   </ItemGroup>
   <ItemGroup>
