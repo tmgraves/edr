@@ -5,7 +5,7 @@ using System.Web;
 
 namespace EDR.Models.ViewModels
 {
-    public class OwnerViewModel
+    public class TeacherEditViewModel
     {
         // TODO: FILL IN PROPERTIES NEEDED FOR VIEW
 

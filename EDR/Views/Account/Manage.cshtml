@@ -14,13 +14,25 @@
             {
                 <li><a href="/Owner/@User.Identity.Name">View Your Owner Profile</a></li>
             }
+            else
+            {
+                <li>@Html.ActionLink("Apply for Owner Profile", "Apply", "Owner")</li>
+            }
             @if (User.IsInRole("Teacher"))
             {
                 <li><a href="/Teacher/@User.Identity.Name">View Your Teacher Profile</a></li>
             }
+            else
+            {
+                <li>@Html.ActionLink("Apply for Teacher Profile", "Apply", "Teacher")</li>
+            }
             @if (User.IsInRole("Promoter"))
             {
                 <li><a href="/Promoter/@User.Identity.Name">View Your Promoter Profile</a></li>
+            }
+            else
+            {
+                <li>@Html.ActionLink("Apply for Promoter Profile", "Apply", "Promoter")</li>
             }
         </ul>
     </div>
