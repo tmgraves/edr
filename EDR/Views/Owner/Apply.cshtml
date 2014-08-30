@@ -1,8 +1,19 @@
 ﻿@model EDR.Models.ViewModels.OwnerApplyViewModel
 
 @{
-    ViewBag.Title = "Owner Apply";
+    ViewBag.Title = "Owner Application";
 }
 
-<h2 class="page-header">Owner Apply</h2>
-
+<h2 class="page-header">Owner Application</h2>
+@if (Model.Owner != null)
+{
+    <h5>You've already applied to be an Owner.  Your application is under review.</h5>
+    @Html.ActionLink("Back to Account", "Manage", "Account")
+}
+else
+{
+    using (Html.BeginForm())
+    {
+        <input type="submit" value="Apply to be an Owner" class="btn btn-default" />
+    }
+}

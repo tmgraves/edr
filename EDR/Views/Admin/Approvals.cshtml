@@ -1,0 +1,78 @@
+﻿@model EDR.Models.ViewModels.AdminApprovalsViewModel
+
+@{
+    ViewBag.Title = "Approvals";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h4>Teacher Approvals</h4>
+<table class="table table-striped table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Teacher</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Teachers)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ApplicationUser.FullName)
+                </td>
+                <td>
+                    @Html.ActionLink("Approve", "ApproveTeacher", new { teacherId = item.ApplicationUser.Id, approved = true }, null)
+                    @Html.ActionLink("Deny", "ApproveTeacher", new { teacherId = item.ApplicationUser.Id, approved = false }, null)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h4>Owner Approvals</h4>
+<table class="table table-striped table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Owner</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Owners)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ApplicationUser.FullName)
+                </td>
+                <td>
+                    @Html.ActionLink("Approve", "ApproveOwner", new { ownerId = item.ApplicationUser.Id, approved = true }, null)
+                    @Html.ActionLink("Deny", "ApproveOwner", new { ownerId = item.ApplicationUser.Id, approved = false }, null)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h4>Promoter Approvals</h4>
+<table class="table table-striped table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Promoter</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Promoters)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ApplicationUser.FullName)
+                </td>
+                <td>
+                    @Html.ActionLink("Approve", "ApprovePromoter", new { promoterId = item.ApplicationUser.Id, approved = true }, null)
+                    @Html.ActionLink("Deny", "ApprovePromoter", new { promoterId = item.ApplicationUser.Id, approved = false }, null)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

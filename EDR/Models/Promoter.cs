@@ -11,6 +11,8 @@ namespace EDR.Models
         public string ContactEmail { get; set; }
         public string FacebookLink { get; set; }
         public string Website { get; set; }
+        public bool? Approved { get; set; }
+        public DateTime? ApproveDate { get; set; }
 
         [Required]
         public virtual ApplicationUser ApplicationUser { get; set; }

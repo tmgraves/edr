@@ -9,6 +9,8 @@ namespace EDR.Models
     public class Owner : Entity
     {
         public string ContactEmail { get; set; }
+        public bool? Approved { get; set; }
+        public DateTime? ApproveDate { get; set; }
 
         [Required]
         public virtual ApplicationUser ApplicationUser { get; set; }

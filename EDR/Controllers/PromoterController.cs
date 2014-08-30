@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using System.Net;
+using EDR.Models;
 
 namespace EDR.Controllers
 {
@@ -61,9 +62,18 @@ namespace EDR.Controllers
             var user = UserManager.FindByName(User.Identity.Name);
 
             var viewModel = new PromoterApplyViewModel();
-            viewModel.Name = user.FullName;
+            viewModel.Promoter = DataContext.Promoters.Where(x => x.ApplicationUser.Id == user.Id).FirstOrDefault();
 
             return View(viewModel);
+        }
+
+        // POST: Promoter Apply
+        [HttpPost]
+        public ActionResult Apply(Promoter promoter)
+        {
+            DataContext.Promoters.Add(new Promoter { ApplicationUser = DataContext.Users.Find(User.Identity.GetUserId()) });
+            DataContext.SaveChanges();
+            return RedirectToAction("Manage", "Account");
         }
     }
 }

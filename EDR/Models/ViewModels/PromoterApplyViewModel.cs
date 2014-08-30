@@ -7,8 +7,6 @@ namespace EDR.Models.ViewModels
 {
     public class PromoterApplyViewModel
     {
-        // TODO: FILL IN PROPERTIES NEEDED FOR VIEW
-
-        public string Name { get; set; }
+        public Promoter Promoter { get; set; }
     }
 }

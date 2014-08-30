@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Data.Entity;
+using EDR.Utilities;
 
 namespace EDR.Controllers
 {
@@ -32,7 +33,8 @@ namespace EDR.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await UserManager.FindAsync(model.Email, model.Password);
+                //  var user = await UserManager.FindAsync(model.Email, model.Password);
+                var user = await UserManager.FindByNameOrEmailAsync(model.Email, model.Password);
                 if (user != null)
                 {
                     await SignInAsync(user, model.RememberMe);

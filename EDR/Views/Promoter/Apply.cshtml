@@ -1,8 +1,19 @@
 ﻿@model EDR.Models.ViewModels.PromoterApplyViewModel
 
 @{
-    ViewBag.Title = "Promoter Apply";
+    ViewBag.Title = "Promoter Application";
 }
 
-<h2 class="page-header">Promoter Apply</h2>
-
+<h2 class="page-header">Promoter Application</h2>
+@if (Model.Promoter != null)
+{
+    <h5>You've already applied to be a Promoter.  Your application is under review.</h5>
+    @Html.ActionLink("Back to Account", "Manage", "Account")
+}
+else
+{
+    using (Html.BeginForm())
+    {
+        <input type="submit" value="Apply to be a Promoter" class="btn btn-default" />
+    }
+}

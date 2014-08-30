@@ -70,7 +70,7 @@
                                     {
                                         foreach (var t in item.Teachers)
                                         {
-                                            <li>@Html.ActionLink(t.ApplicationUser.FullName, "Details", "Teacher", new { username = t.ApplicationUser.UserName }, null)</li>
+                                            <li>@Html.ActionLink(t.ApplicationUser.FullName, "View", "Teacher", new { username = t.ApplicationUser.UserName }, null)</li>
                                         }
                                     }
                                 </ul>

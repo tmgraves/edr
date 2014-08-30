@@ -41,21 +41,25 @@ namespace EDR.Data
             var prom = new ApplicationUser() { UserName = "promoter@gmail.com", Email = "promoter@gmail.com", FirstName = "Katy", LastName = "Perry", ZipCode = "90210" };
             var eddie = new ApplicationUser() { UserName = "teacher2@gmail.com", Email = "teacher2@gmail.com", FirstName = "Eddie", LastName = "Torres", ZipCode = "90056" };
             var tchr2 = new Teacher() { ApplicationUser=eddie, Resume = "Eddie Torres (born on July 3, 1950), also known as 'The Mambo King', is a salsa dance instructor.[1] Torres' technique developed from various sources including Afro-Cuban son, mambo, and North American jazz dance. [2] He is one of the more popular dancers of New York style salsa. He is famous for his way of dancing and teaching salsa, with the female starting to move forward (always On 2 timing).[3] Torres' style can be contrasted with the more showy Los Angeles style.", DanceStyles = latinstyles, FacebookLink = "https://www.facebook.com/pages/Eddie-Torres/160918620698544", Website = "http://www.eddietorresny.com/Eddie_Torres_NY/Eddie_Torres_NY.com.html" };
+            var tad = new ApplicationUser() { UserName = "tad1", Email = "tadashigraves@gmail.com", FirstName = "Tad", LastName = "Graves", ZipCode = "90065" };
 
             // Save seeded users
             userManager.Create(user, "Passw0rd!");
             userManager.Create(liz, "Passw0rd!");
             userManager.Create(prom, "Passw0rd!");
             userManager.Create(eddie, "Passw0rd!");
+            userManager.Create(tad, "Passw0rd!");
 
             // Save seeded roles 
             roleManager.Create(new IdentityRole("Owner"));
             roleManager.Create(new IdentityRole("Teacher"));
             roleManager.Create(new IdentityRole("Promoter"));
+            roleManager.Create(new IdentityRole("Admin"));
 
             // Assign users to role
             userManager.AddToRole(liz.Id, "Teacher");
             userManager.AddToRole(eddie.Id, "Promoter");
+            userManager.AddToRole(tad.Id, "Admin");
 
             // Seed places
             var places = new List<Place>()

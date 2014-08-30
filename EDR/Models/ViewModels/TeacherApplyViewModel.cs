@@ -7,8 +7,6 @@ namespace EDR.Models.ViewModels
 {
     public class TeacherApplyViewModel
     {
-        // TODO: FILL IN PROPERTIES NEEDED FOR VIEW
-
-        public string Name { get; set; }
+        public Teacher Teacher { get; set; }
     }
 }

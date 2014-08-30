@@ -1,8 +1,19 @@
 ﻿@model EDR.Models.ViewModels.TeacherApplyViewModel
 
 @{
-    ViewBag.Title = "Teacher Apply";
+    ViewBag.Title = "Teacher Application";
 }
 
-<h2 class="page-header">Teacher Apply</h2>
-
+<h2 class="page-header">Teacher Application</h2>
+@if (Model.Teacher != null)
+{
+    <h5>You've already applied to be a Teacher.  Your application is under review.</h5>
+    @Html.ActionLink("Back to Account", "Manage", "Account")
+}
+else
+{
+    using (Html.BeginForm())
+    {
+        <input type="submit" value="Apply to be a Teacher" class="btn btn-default" />
+    }
+}

@@ -6,6 +6,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
+using EDR.Models;
 
 namespace EDR.Controllers
 {
@@ -61,9 +62,18 @@ namespace EDR.Controllers
             var user = UserManager.FindByName(User.Identity.Name);
 
             var viewModel = new TeacherApplyViewModel();
-            viewModel.Name = user.FullName;
+            viewModel.Teacher = DataContext.Teachers.Where(x => x.ApplicationUser.Id == user.Id).FirstOrDefault();
 
             return View(viewModel);
+        }
+
+        // POST: Teacher Apply
+        [HttpPost]
+        public ActionResult Apply(Teacher teacher)
+        {
+            DataContext.Teachers.Add(new Teacher { ApplicationUser = DataContext.Users.Find(User.Identity.GetUserId()) });
+            DataContext.SaveChanges();
+            return RedirectToAction("Manage", "Account");
         }
     }
 }

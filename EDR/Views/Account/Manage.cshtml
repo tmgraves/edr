@@ -16,7 +16,7 @@
             }
             else
             {
-                <li>@Html.ActionLink("Apply for Owner Profile", "Apply", "Owner")</li>
+                <li>@Html.ActionLink("Apply to become an Owner", "Apply", "Owner")</li>
             }
             @if (User.IsInRole("Teacher"))
             {
@@ -24,7 +24,7 @@
             }
             else
             {
-                <li>@Html.ActionLink("Apply for Teacher Profile", "Apply", "Teacher")</li>
+                <li>@Html.ActionLink("Apply to become a Teacher", "Apply", "Teacher")</li>
             }
             @if (User.IsInRole("Promoter"))
             {
@@ -32,7 +32,7 @@
             }
             else
             {
-                <li>@Html.ActionLink("Apply for Promoter Profile", "Apply", "Promoter")</li>
+                <li>@Html.ActionLink("Apply to become a Promoter", "Apply", "Promoter")</li>
             }
         </ul>
     </div>
