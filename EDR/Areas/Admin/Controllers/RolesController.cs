@@ -1,23 +1,31 @@
-﻿using EDR.Models;
+﻿using EDR.Controllers;
+using EDR.Models;
+using EDR.Models.ViewModels;
+using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Validation;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using EDR.Models.ViewModels;
-using System.Threading.Tasks;
-using System.Data.Entity.Validation;
+using Microsoft.AspNet.Identity;
 
-namespace EDR.Controllers
+namespace EDR.Areas.Admin.Controllers
 {
-    public class AdminController : BaseController
+    public class RolesController : BaseController
     {
+        // GET: Admin/Roles
+        public ActionResult Index()
+        {
+            return View();
+        }
+
         // GET: Admin
-        [Authorize(Roles="Admin")]
+        [Authorize(Roles = "Admin")]
         public ActionResult Approvals()
         {
-            var viewModel = new AdminApprovalsViewModel();
+            var viewModel = new RoleApprovalsViewModel();
             viewModel.Teachers = DataContext.Teachers.Include("ApplicationUser").Where(x => x.Approved == null);
             viewModel.Owners = DataContext.Owners.Include("ApplicationUser").Where(x => x.Approved == null);
             viewModel.Promoters = DataContext.Promoters.Include("ApplicationUser").Where(x => x.Approved == null);
@@ -30,12 +38,18 @@ namespace EDR.Controllers
             var teacher = DataContext.Teachers.Where(x => x.ApplicationUser.Id == teacherId).Include("ApplicationUser").FirstOrDefault();
             teacher.Approved = approved;
             teacher.ApproveDate = DateTime.Today;
+            var userManager = new ApplicationUserManager(new UserStore<ApplicationUser>(DataContext));
+
             if (ModelState.IsValid)
             {
                 try
                 {
                     DataContext.Entry(teacher).State = EntityState.Modified;
                     DataContext.SaveChanges();
+                    if (!UserManager.IsInRole(teacher.ApplicationUser.Id, "Teacher"))
+                    {
+                        UserManager.AddToRole(teacher.ApplicationUser.Id, "Teacher");
+                    }
                     return RedirectToAction("Approvals");
                 }
                 catch (DbEntityValidationException ex)
@@ -58,6 +72,10 @@ namespace EDR.Controllers
                 {
                     DataContext.Entry(owner).State = EntityState.Modified;
                     DataContext.SaveChanges();
+                    if (!UserManager.IsInRole(owner.ApplicationUser.Id, "Owner"))
+                    {
+                        UserManager.AddToRole(owner.ApplicationUser.Id, "Owner");
+                    }
                     return RedirectToAction("Approvals");
                 }
                 catch (DbEntityValidationException ex)
@@ -80,6 +98,10 @@ namespace EDR.Controllers
                 {
                     DataContext.Entry(promoter).State = EntityState.Modified;
                     DataContext.SaveChanges();
+                    if (!UserManager.IsInRole(promoter.ApplicationUser.Id, "Promoter"))
+                    {
+                        UserManager.AddToRole(promoter.ApplicationUser.Id, "Promoter");
+                    }
                     return RedirectToAction("Approvals");
                 }
                 catch (DbEntityValidationException ex)

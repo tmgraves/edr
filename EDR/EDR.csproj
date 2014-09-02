@@ -166,8 +166,9 @@
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
+    <Compile Include="Areas\Admin\Controllers\RolesController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\ClassController.cs" />
     <Compile Include="Controllers\ClassSeriesController.cs" />
@@ -212,7 +213,7 @@
     <Compile Include="Models\School.cs" />
     <Compile Include="Models\Studio.cs" />
     <Compile Include="Models\Team.cs" />
-    <Compile Include="Models\ViewModels\AdminApprovalsViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\ViewModels\RoleApprovalsViewModel.cs" />
     <Compile Include="Models\ViewModels\DancerEditViewModel.cs" />
     <Compile Include="Models\ViewModels\DancerViewViewModel.cs" />
     <Compile Include="Models\ViewModels\EventReviewViewModel.cs" />
@@ -251,6 +252,10 @@
     <Content Include="Content\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Content\bootstrap.css.map" />
+    <Content Include="Areas\Admin\Views\web.config" />
+    <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Admin\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\Admin\Views\Roles\Approvals.cshtml" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -322,7 +327,6 @@
     <Content Include="Views\Owner\Apply.cshtml" />
     <Content Include="Views\Owner\Edit.cshtml" />
     <Content Include="Views\Dancer\Edit.cshtml" />
-    <Content Include="Views\Admin\Approvals.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Series\" />
