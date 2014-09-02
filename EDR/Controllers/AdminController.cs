@@ -27,7 +27,7 @@ namespace EDR.Controllers
         [Authorize(Roles = "Admin")]
         public ActionResult ApproveTeacher(string teacherId, bool approved)
         {
-            var teacher = DataContext.Teachers.Where(x => x.ApplicationUser.Id == teacherId).FirstOrDefault();
+            var teacher = DataContext.Teachers.Where(x => x.ApplicationUser.Id == teacherId).Include("ApplicationUser").FirstOrDefault();
             teacher.Approved = approved;
             teacher.ApproveDate = DateTime.Today;
             if (ModelState.IsValid)
@@ -49,7 +49,7 @@ namespace EDR.Controllers
         [Authorize(Roles = "Admin")]
         public ActionResult ApproveOwner(string ownerId, bool approved)
         {
-            var owner = DataContext.Owners.Where(x => x.ApplicationUser.Id == ownerId).FirstOrDefault();
+            var owner = DataContext.Owners.Where(x => x.ApplicationUser.Id == ownerId).Include("ApplicationUser").FirstOrDefault();
             owner.Approved = approved;
             owner.ApproveDate = DateTime.Today;
             if (ModelState.IsValid)
@@ -71,7 +71,7 @@ namespace EDR.Controllers
         [Authorize(Roles = "Admin")]
         public ActionResult ApprovePromoter(string promoterId, bool approved)
         {
-            var promoter = DataContext.Promoters.Where(x => x.ApplicationUser.Id == promoterId).FirstOrDefault();
+            var promoter = DataContext.Promoters.Where(x => x.ApplicationUser.Id == promoterId).Include("ApplicationUser").FirstOrDefault();
             promoter.Approved = approved;
             promoter.ApproveDate = DateTime.Today;
             if (ModelState.IsValid)
