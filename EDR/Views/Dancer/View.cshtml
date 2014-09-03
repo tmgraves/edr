@@ -1,16 +1,47 @@
 ﻿@model EDR.Models.ViewModels.DancerViewViewModel
 
 @{
-    ViewBag.Title = "Dancer " + Model.Name;
+    ViewBag.Title = "Dancer - " + Model.Dancer.FirstName;
 }
 
-<h2 class="page-header">Dancer: @Model.Name</h2>
+<h1 class="page-header">@Model.Dancer.FirstName</h1>
 
-@if (User.Identity != null && User.Identity.Name == Model.Username)
+<div class="well">
+    <dl class="dl-horizontal">
+        <dt>
+            Experience
+        </dt>
+
+        <dd>
+            @Model.Dancer.Experience Year(s)
+        </dd>
+
+        <dt>
+            Location
+        </dt>
+
+        <dd>
+            Location
+        </dd>
+
+        <dt>
+            Dance Styles
+        </dt>
+
+        <dd>
+            <ul class="list-inline">
+                @foreach (var item in Model.Dancer.DanceStyles)
+                {
+                    <li>@Html.ActionLink(item.Name, "Details", "DanceStyle", new { id = item.Id }, null)</li>
+                }
+            </ul>
+        </dd>
+    </dl>
+@if (User.Identity != null && User.Identity.Name == Model.Dancer.UserName)
 {
-    <div class="well">
-        <h3>Welcome to your dancer profile</h3>
-        <a class="btn btn-primary" href="@Url.Action("Edit", "Dancer")">Edit Profile</a>
-    </div>
+    <a class="btn btn-primary" href="@Url.Action("Edit", "Dancer")">Edit Profile</a>
 }
-
+</div>
+<p>
+    @Html.ActionLink("Back to List", "Index")
+</p>

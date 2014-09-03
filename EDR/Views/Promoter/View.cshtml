@@ -1,8 +1,64 @@
 ﻿@model EDR.Models.ViewModels.PromoterViewViewModel
 
 @{
-    ViewBag.Title = "Promoter" + Model.Name;
+    ViewBag.Title = "Promoter - " + Model.Promoter.ApplicationUser.FullName;
 }
 
-<h2 class="page-header">Promoter: @Model.Name</h2>
+<h1 class="page-header">@Model.Promoter.ApplicationUser.FullName</h1>
 
+<div>
+    <dl class="dl-horizontal">
+        <dt>
+            Contact
+        </dt>
+
+        <dd>
+            @Model.Promoter.ContactEmail
+        </dd>
+
+        <dt>
+            Website
+        </dt>
+
+        <dd>
+            @Model.Promoter.Website
+        </dd>
+
+        <dt>
+            Facebook
+        </dt>
+
+        <dd>
+            @Model.Promoter.Facebook
+        </dd>
+
+        <dt>
+            Location
+        </dt>
+
+        <dd>
+            Location
+        </dd>
+
+
+        <dt>
+            Events
+        </dt>
+
+        <dd>
+            <ul class="list-inline">
+                @foreach (var item in Model.Promoter.Events)
+                {
+                    <li>@Html.ActionLink(item.Name, "Details", "Event", new { id = item.Id }, null)</li>
+                }
+            </ul>
+        </dd>
+    </dl>
+    @if (User.Identity != null && User.Identity.Name == Model.Promoter.ApplicationUser.UserName)
+    {
+        <a class="btn btn-primary" href="@Url.Action("Edit", "Promoter")">Edit Profile</a>
+    }
+</div>
+<p>
+    @Html.ActionLink("Back to List", "Index")
+</p>

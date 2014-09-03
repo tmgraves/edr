@@ -1,8 +1,63 @@
 ﻿@model EDR.Models.ViewModels.OwnerViewViewModel
 
 @{
-    ViewBag.Title = "Owner " + Model.Name;
+    ViewBag.Title = "Owner - " + Model.Owner.ApplicationUser.FirstName;
 }
 
-<h2 class="page-header">Owner: @Model.Name</h2>
+<h1 class="page-header">@Model.Owner.ApplicationUser.FirstName</h1>
 
+<div class="well">
+    <dl class="dl-horizontal">
+        <dt>
+            Contact
+        </dt>
+
+        <dd>
+            @Model.Owner.ContactEmail
+        </dd>
+
+        <dt>
+            Website
+        </dt>
+
+        <dd>
+            @Model.Owner.Website
+        </dd>
+
+        <dt>
+            Facebook
+        </dt>
+
+        <dd>
+            @Model.Owner.Facebook
+        </dd>
+
+        <dt>
+            Location
+        </dt>
+
+        <dd>
+            Location
+        </dd>
+
+        <dt>
+            Places
+        </dt>
+
+        <dd>
+            <ul class="list-inline">
+                @foreach (var item in Model.Owner.Places)
+                {
+                    <li>@Html.ActionLink(item.Name, "Details", "Place", new { id = item.Id }, null)</li>
+                }
+            </ul>
+        </dd>
+    </dl>
+    @if (User.Identity != null && User.Identity.Name == Model.Owner.ApplicationUser.UserName)
+    {
+        <a class="btn btn-primary" href="@Url.Action("Edit", "Owner")">Edit Profile</a>
+    }
+</div>
+<p>
+    @Html.ActionLink("Back to List", "Index")
+</p>

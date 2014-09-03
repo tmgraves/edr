@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using System.Net;
 using EDR.Models;
+using System.Data.Entity;
 
 namespace EDR.Controllers
 {
@@ -30,7 +31,7 @@ namespace EDR.Controllers
 
             // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE PromoterViewModel)
             var viewModel = new PromoterViewViewModel();
-            viewModel.Name = promoter.ApplicationUser.FullName;
+            viewModel.Promoter = DataContext.Promoters.Where(x => x.ApplicationUser.UserName == username).Include("Events").FirstOrDefault();
 
             return View(viewModel);
         }

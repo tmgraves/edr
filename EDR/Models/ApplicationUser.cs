@@ -23,6 +23,7 @@ namespace EDR.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string ZipCode { get; set; }
+        public int Experience { get; set; }
 
         [Display(Name = "Full Name")]
         public string FullName

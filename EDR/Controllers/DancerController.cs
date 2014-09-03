@@ -7,6 +7,10 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using EDR.Models.ViewModels;
+using System.Data;
+using System.Data.Entity;
+using EDR.Models;
+using EDR.Data;
 
 namespace EDR.Controllers
 {
@@ -27,8 +31,7 @@ namespace EDR.Controllers
 
             // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE DancerViewModel)
             var viewModel = new DancerViewViewModel();
-            viewModel.Username = dancer.UserName;
-            viewModel.Name = dancer.FullName;
+            viewModel.Dancer = DataContext.Users.Where(x => x.UserName == username).Include("DanceStyles").Include("Events").FirstOrDefault();
             
             return View(viewModel);
         }

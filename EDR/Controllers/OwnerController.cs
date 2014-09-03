@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using EDR.Models;
+using System.Data.Entity;
 
 namespace EDR.Controllers
 {
@@ -30,7 +31,7 @@ namespace EDR.Controllers
 
             // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE PromoterViewModel)
             var viewModel = new OwnerViewViewModel();
-            viewModel.Name = owner.ApplicationUser.FullName;
+            viewModel.Owner = DataContext.Owners.Where(x => x.ApplicationUser.UserName == username).Include("ApplicationUser").Include("Places").FirstOrDefault();
 
             return View(viewModel);
         }

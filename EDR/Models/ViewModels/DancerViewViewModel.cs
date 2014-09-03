@@ -9,7 +9,6 @@ namespace EDR.Models.ViewModels
     {
         // TODO: FILL IN PROPERTIES NEEDED FOR VIEW
 
-        public string Name { get; set; }
-        public string Username { get; set; }
+        public ApplicationUser Dancer { get; set; }
     }
 }

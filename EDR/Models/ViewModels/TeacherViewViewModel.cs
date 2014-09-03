@@ -9,6 +9,6 @@ namespace EDR.Models.ViewModels
     {
         // TODO: FILL IN PROPERTIES NEEDED FOR VIEW
 
-        public string Name { get; set; }
+        public Teacher Teacher { get; set; }
     }
 }

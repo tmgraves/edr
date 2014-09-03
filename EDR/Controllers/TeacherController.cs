@@ -1,5 +1,7 @@
 ﻿using EDR.Models.ViewModels;
 using System;
+using System.Data;
+using System.Data.Entity;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -30,7 +32,7 @@ namespace EDR.Controllers
 
             // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE TeacherViewModel)
             var viewModel = new TeacherViewViewModel();
-            viewModel.Name = teacher.ApplicationUser.FullName;
+            viewModel.Teacher = DataContext.Teachers.Include("Classes").Include("Workshops").Include("DanceStyles").Include("ApplicationUser").Where(x => x.ApplicationUser.UserName == username).FirstOrDefault();
 
             return View(viewModel);
         }

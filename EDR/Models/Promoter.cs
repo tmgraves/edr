@@ -9,7 +9,7 @@ namespace EDR.Models
     public class Promoter : Entity
     {
         public string ContactEmail { get; set; }
-        public string FacebookLink { get; set; }
+        public string Facebook { get; set; }
         public string Website { get; set; }
         public bool? Approved { get; set; }
         public DateTime? ApproveDate { get; set; }
@@ -17,9 +17,6 @@ namespace EDR.Models
         [Required]
         public virtual ApplicationUser ApplicationUser { get; set; }
 
-        public virtual ICollection<Concert> Concerts { get; set; }
-        public virtual ICollection<Conference> Conferences { get; set; }
-        public virtual ICollection<Social> Socials { get; set; }
-        public virtual ICollection<Workshop> Workshops { get; set; }
+        public virtual ICollection<Event> Events { get; set; }
     }
 }

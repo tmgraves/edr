@@ -36,12 +36,19 @@ namespace EDR.Data
 
             // Seed users
             var user = new ApplicationUser() { UserName = "user1", Email = "user@gmail.com", FirstName = "Johnny", LastName = "Depp", ZipCode = "90210" };
-            var liz = new ApplicationUser() { UserName = "teacher@gmail.com", Email = "teacher@gmail.com", FirstName = "Liz", LastName = "Lirases", ZipCode = "90210" };
+            var liz = new ApplicationUser() { UserName = "lizlira", Email = "teacher@gmail.com", FirstName = "Liz", LastName = "Lirases", ZipCode = "90210" };
             var tchr = new Teacher()    { ApplicationUser=liz, Resume = "Liz Lira, the 'Rose of Salsa,' was born in La Paz, Bolivia, and immigrated to the United States at the early age of eight. Making Southern California her new home, she embraced the art of dance and excelled in both ballet and jazz.", DanceStyles = latinstyles, FacebookLink = "https://www.facebook.com/liz.lirala", Website = "http://www.lizlira.com/", Approved=true, ApproveDate=DateTime.Today };
-            var prom = new ApplicationUser() { UserName = "promoter@gmail.com", Email = "promoter@gmail.com", FirstName = "Katy", LastName = "Perry", ZipCode = "90210" };
-            var eddie = new ApplicationUser() { UserName = "teacher2@gmail.com", Email = "teacher2@gmail.com", FirstName = "Eddie", LastName = "Torres", ZipCode = "90056" };
+            var prom = new ApplicationUser() { UserName = "promoter1", Email = "promoter@gmail.com", FirstName = "Katy", LastName = "Perry", ZipCode = "90210" };
+            var eddie = new ApplicationUser() { UserName = "eddietorres", Email = "teacher2@gmail.com", FirstName = "Eddie", LastName = "Torres", ZipCode = "90056" };
             var tchr2 = new Teacher() { ApplicationUser = eddie, Resume = "Eddie Torres (born on July 3, 1950), also known as 'The Mambo King', is a salsa dance instructor.[1] Torres' technique developed from various sources including Afro-Cuban son, mambo, and North American jazz dance. [2] He is one of the more popular dancers of New York style salsa. He is famous for his way of dancing and teaching salsa, with the female starting to move forward (always On 2 timing).[3] Torres' style can be contrasted with the more showy Los Angeles style.", DanceStyles = latinstyles, FacebookLink = "https://www.facebook.com/pages/Eddie-Torres/160918620698544", Website = "http://www.eddietorresny.com/Eddie_Torres_NY/Eddie_Torres_NY.com.html", Approved = true, ApproveDate = DateTime.Today };
-            var tad = new ApplicationUser() { UserName = "tad1", Email = "tadashigraves@gmail.com", FirstName = "Tad", LastName = "Graves", ZipCode = "90065" };
+            var tad = new ApplicationUser() { UserName = "tad1", Email = "tadashigraves@gmail.com", FirstName = "Tad", LastName = "Graves", ZipCode = "90065", Experience=3, DanceStyles=latinstyles };
+            var tadteach = new Teacher() { ApplicationUser = tad, Experience = 5, Approved = true, ApproveDate = DateTime.Today, DanceStyles = latinstyles, Resume = "Cali-Style Salsa, also known as Colombian Salsa, is based on geographical location of the Colombian City of Cali. Cali is also known as the 'Capital de la Salsa' (World's Salsa Capital); due to salsa music being the main genre in parties, nightclubs and festivals in the 21st century.", Website = "http://www.tadteacher.com", FacebookLink = "http://www.facebook.com/tadteacher" };
+            var tadowner = new Owner() { ApplicationUser = tad, Approved = true, ApproveDate = DateTime.Today, ContactEmail = "tadowner@gmail.com", Facebook = "http://www.facebook.com/tadowner", Website = "http://www.tadowner.com" };
+            var tadprom = new Promoter() { ApplicationUser = tad, Approved = true, ApproveDate = DateTime.Today, ContactEmail = "tadprom@gmail.com", Facebook = "http://www.facebook.com/tadprom", Website = "http://www.tadprom.com" };
+
+            //context.Teachers.Add(tadteach);
+            //context.Owners.Add(tadowner);
+            //context.Promoters.Add(tadprom);
 
             // Save seeded users
             userManager.Create(user, "Passw0rd!");
@@ -60,6 +67,9 @@ namespace EDR.Data
             userManager.AddToRole(liz.Id, "Teacher");
             userManager.AddToRole(eddie.Id, "Promoter");
             userManager.AddToRole(tad.Id, "Admin");
+            userManager.AddToRole(tad.Id, "Teacher");
+            userManager.AddToRole(tad.Id, "Owner");
+            userManager.AddToRole(tad.Id, "Promoter");
 
             // Seed places
             var places = new List<Place>()
