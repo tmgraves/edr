@@ -44,5 +44,7 @@ namespace EDR.Models
         public ICollection<Review> Reviews { get; set; }
 
         public ICollection<ApplicationUser> Users { get; set; }
+
+        public ICollection<Promoter> Promoters { get; set; }
     }
 }

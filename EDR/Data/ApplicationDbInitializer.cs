@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using EDR.Utilities;
+using System.Data.Entity.Validation;
 
 namespace EDR.Data
 {
@@ -42,13 +43,6 @@ namespace EDR.Data
             var eddie = new ApplicationUser() { UserName = "eddietorres", Email = "teacher2@gmail.com", FirstName = "Eddie", LastName = "Torres", ZipCode = "90056" };
             var tchr2 = new Teacher() { ApplicationUser = eddie, Resume = "Eddie Torres (born on July 3, 1950), also known as 'The Mambo King', is a salsa dance instructor.[1] Torres' technique developed from various sources including Afro-Cuban son, mambo, and North American jazz dance. [2] He is one of the more popular dancers of New York style salsa. He is famous for his way of dancing and teaching salsa, with the female starting to move forward (always On 2 timing).[3] Torres' style can be contrasted with the more showy Los Angeles style.", DanceStyles = latinstyles, FacebookLink = "https://www.facebook.com/pages/Eddie-Torres/160918620698544", Website = "http://www.eddietorresny.com/Eddie_Torres_NY/Eddie_Torres_NY.com.html", Approved = true, ApproveDate = DateTime.Today };
             var tad = new ApplicationUser() { UserName = "tad1", Email = "tadashigraves@gmail.com", FirstName = "Tad", LastName = "Graves", ZipCode = "90065", Experience=3, DanceStyles=latinstyles };
-            var tadteach = new Teacher() { ApplicationUser = tad, Experience = 5, Approved = true, ApproveDate = DateTime.Today, DanceStyles = latinstyles, Resume = "Cali-Style Salsa, also known as Colombian Salsa, is based on geographical location of the Colombian City of Cali. Cali is also known as the 'Capital de la Salsa' (World's Salsa Capital); due to salsa music being the main genre in parties, nightclubs and festivals in the 21st century.", Website = "http://www.tadteacher.com", FacebookLink = "http://www.facebook.com/tadteacher" };
-            var tadowner = new Owner() { ApplicationUser = tad, Approved = true, ApproveDate = DateTime.Today, ContactEmail = "tadowner@gmail.com", Facebook = "http://www.facebook.com/tadowner", Website = "http://www.tadowner.com" };
-            var tadprom = new Promoter() { ApplicationUser = tad, Approved = true, ApproveDate = DateTime.Today, ContactEmail = "tadprom@gmail.com", Facebook = "http://www.facebook.com/tadprom", Website = "http://www.tadprom.com" };
-
-            //context.Teachers.Add(tadteach);
-            //context.Owners.Add(tadowner);
-            //context.Promoters.Add(tadprom);
 
             // Save seeded users
             userManager.Create(user, "Passw0rd!");
@@ -56,6 +50,7 @@ namespace EDR.Data
             userManager.Create(prom, "Passw0rd!");
             userManager.Create(eddie, "Passw0rd!");
             userManager.Create(tad, "Passw0rd!");
+
 
             // Save seeded roles 
             roleManager.Create(new IdentityRole("Owner"));
@@ -159,6 +154,24 @@ namespace EDR.Data
             context.Events.AddRange(events);
             context.Groups.AddRange(groups);
             context.SaveChanges();
+
+            try
+            {
+                var id = tad.Id;
+                var tadteach = new Teacher() { ApplicationUser = tad, Experience = 5, Approved = true, ApproveDate = DateTime.Today, DanceStyles = latinstyles, Resume = "Cali-Style Salsa, also known as Colombian Salsa, is based on geographical location of the Colombian City of Cali. Cali is also known as the 'Capital de la Salsa' (World's Salsa Capital); due to salsa music being the main genre in parties, nightclubs and festivals in the 21st century.", Website = "http://www.tadteacher.com", FacebookLink = "http://www.facebook.com/tadteacher" };
+                var tadowner = new Owner() { ApplicationUser = tad, Approved = true, ApproveDate = DateTime.Today, ContactEmail = "tadowner@gmail.com", Facebook = "http://www.facebook.com/tadowner", Website = "http://www.tadowner.com", Places = places.GetRange(1, 3) };
+                var tadprom = new Promoter() { ApplicationUser = tad, Approved = true, ApproveDate = DateTime.Today, ContactEmail = "tadprom@gmail.com", Facebook = "http://www.facebook.com/tadprom", Website = "http://www.tadprom.com", Events = events.GetRange(7,2) };
+                context.Teachers.AddRange(new List<Teacher> { tadteach });
+                context.SaveChanges();
+                context.Owners.AddRange(new List<Owner> { tadowner });
+                context.SaveChanges();
+                context.Promoters.AddRange(new List<Promoter> { tadprom });
+                context.SaveChanges();
+            }
+            catch (DbEntityValidationException ex)
+            {
+                var er = ex.EntityValidationErrors;
+            }
         }
     }
 }

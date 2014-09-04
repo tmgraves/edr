@@ -15,5 +15,6 @@ namespace EDR.Models
 
         public virtual ICollection<Event> Events { get; set; }
         public virtual ICollection<Review> Reviews { get; set; }
+        public virtual ICollection<Place> Places { get; set; }
     }
 }
