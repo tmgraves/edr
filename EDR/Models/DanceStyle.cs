@@ -11,10 +11,9 @@ namespace EDR.Models
         public string Description { get; set; }
         public string YouTubeVideoID { get; set; }
 
+        public ICollection<ApplicationUser> Dancers { get; set; }
         public ICollection<Event> Events { get; set; }
-
         public ICollection<Series> Series { get; set; }
-
         public ICollection<Teacher> Teachers { get; set; }
     }
 

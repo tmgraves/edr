@@ -34,7 +34,7 @@
 
         <dd>
             <ul class="list-inline">
-                @foreach (var item in Model.Dancer.DanceStyles)
+                @foreach (var item in Model.Dancer.DanceStyles.OrderBy(x => x.Name))
                 {
                     <li>@Html.ActionLink(item.Name, "Details", "DanceStyle", new { id = item.Id }, null)</li>
                 }

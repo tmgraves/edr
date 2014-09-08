@@ -63,7 +63,7 @@ namespace EDR.Controllers
             {
                 styles.Add(new DanceStyleListItem { Id = s.Id, Name = s.Name });
             }
-            model.AvailableStyles = styles;
+            model.AvailableStyles = styles.OrderBy(x => x.Name);
 
             return model;
         }
@@ -74,18 +74,21 @@ namespace EDR.Controllers
         {
             if (ModelState.IsValid)
             {
-                var dancer = DataContext.Users.Where(x => x.Id == model.Dancer.Id);
+                var dancer = DataContext.Users.Where(x => x.Id == model.Dancer.Id).Include("DanceStyles").FirstOrDefault();
+                dancer.Experience = model.Dancer.Experience;
+                var styles = DataContext.DanceStyles.Where(x => model.PostedStyles.DanceStyleIds.Contains(x.Id.ToString())).ToList();
 
-                var styles = new List<DanceStyle>();
-
-                foreach(var x in model.PostedStyles.DanceStyleIds)
+                dancer.DanceStyles.Clear();
+                
+                foreach(DanceStyle s in styles)
                 {
-                    var i = Convert.ToInt32(x);
-                    //  styles.Add(new DanceStyle { Id = model.PostedStyles.DanceStyleIds[i] });
+                    dancer.DanceStyles.Add(s);
                 }
-                DataContext.Entry(model).State = EntityState.Modified;
+
+                DataContext.Entry(dancer).State = EntityState.Modified;
                 DataContext.SaveChanges();
-                return RedirectToAction("Index");
+                dancer = DataContext.Users.Where(x => x.Id == model.Dancer.Id).Include("DanceStyles").FirstOrDefault();
+                return RedirectToAction("Manage", "Account");
             }
             return View(model);
         }
