@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data.Entity;
 using EDR.Utilities;
+using System.Security.Claims;
 
 namespace EDR.Controllers
 {
@@ -387,8 +388,12 @@ namespace EDR.Controllers
                 var lastNameClaim = info.ExternalIdentity.Claims.First(c => c.Type == "urn:facebook:last_name");
                 var lastName = lastNameClaim != null ? lastNameClaim.Value : null;
                 var emailClaim = info.ExternalIdentity.Claims.First(c => c.Type == "urn:facebook:email");
-                var email = firstNameClaim != null ? emailClaim.Value : null;
-                var user = new ApplicationUser() { UserName = model.UserName, Email = email, FirstName = firstName, LastName = lastName };
+                var email = emailClaim != null ? emailClaim.Value : null;
+                var usernameClaim = info.ExternalIdentity.Claims.First(c => c.Type == "urn:facebook:id");
+                var username = usernameClaim != null ? usernameClaim.Value : null;
+                var tokenClaim = info.ExternalIdentity.Claims.First(c => c.Type == "urn:facebook:access_token");
+                var token = tokenClaim != null ? tokenClaim.Value : null;
+                var user = new ApplicationUser() { UserName = model.UserName, Email = email, FirstName = firstName, LastName = lastName, FacebookToken = token, FacebookUsername = username };
                 IdentityResult result = await UserManager.CreateAsync(user);
                 if (result.Succeeded)
                 {

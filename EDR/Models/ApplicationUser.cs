@@ -25,6 +25,9 @@ namespace EDR.Models
         public string ZipCode { get; set; }
         public int Experience { get; set; }
 
+        public string FacebookUsername { get; set; }
+        public string FacebookToken { get; set; }
+
         [Display(Name = "Full Name")]
         public string FullName
         { 

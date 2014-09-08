@@ -4,6 +4,10 @@
     ViewBag.Title = "Dancer - " + Model.Dancer.FirstName;
 }
 
+@if (Model.Dancer.FacebookUsername != null)
+{ 
+<img src="http://graph.facebook.com/@Model.Dancer.FacebookUsername/picture?type=normal" />
+}
 <h1 class="page-header">@Model.Dancer.FirstName</h1>
 
 <div class="well">

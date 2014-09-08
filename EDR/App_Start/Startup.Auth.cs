@@ -60,7 +60,9 @@ namespace EDR
             {
                 OnAuthenticated = async context =>
                 {
-                    context.Identity.AddClaim(new System.Security.Claims.Claim("FacebookAccessToken", context.AccessToken));
+                    //  context.Identity.AddClaim(new System.Security.Claims.Claim("FacebookAccessToken", context.AccessToken));
+                    context.Identity.AddClaim(new System.Security.Claims.Claim("urn:facebook:access_token", context.AccessToken));
+                    context.Identity.AddClaim(new System.Security.Claims.Claim("urn:facebook:email", context.Email));
                     foreach (var claim in context.User)
                     {
                         var claimType = string.Format("urn:facebook:{0}", claim.Key);

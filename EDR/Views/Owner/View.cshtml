@@ -4,7 +4,11 @@
     ViewBag.Title = "Owner - " + Model.Owner.ApplicationUser.FirstName;
 }
 
-<h1 class="page-header">@Model.Owner.ApplicationUser.FirstName</h1>
+@if (Model.Owner.ApplicationUser.FacebookUsername != null)
+{
+    <img src="http://graph.facebook.com/@Model.Owner.ApplicationUser.FacebookUsername/picture?type=normal" />
+}
+<h1 class="page-header">@Model.Owner.ApplicationUser.FullName</h1>
 
 <div class="well">
     <dl class="dl-horizontal">
