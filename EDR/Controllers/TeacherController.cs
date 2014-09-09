@@ -40,19 +40,66 @@ namespace EDR.Controllers
         [Authorize]
         public ActionResult Edit()
         {
-            var teacher = DataContext.Teachers
-                .Where(x => x.ApplicationUser.UserName == User.Identity.Name)
-                .FirstOrDefault();
+            var viewModel = GetInitialTeacherEditViewModel();
 
-            if (teacher == null)
+            if (viewModel.Teacher == null)
             {
                 return HttpNotFound();
             }
 
-            var viewModel = new TeacherEditViewModel();
-            viewModel.Name = teacher.ApplicationUser.FullName;
-
             return View(viewModel);
+        }
+
+        private TeacherEditViewModel GetInitialTeacherEditViewModel()
+        {
+            var model = new TeacherEditViewModel();
+            var id = User.Identity.GetUserId();
+            model.Teacher = DataContext.Teachers.Where(x => x.ApplicationUser.Id == id).Include("ApplicationUser").Include("DanceStyles").FirstOrDefault();
+
+            var selectedStyles = new List<DanceStyleListItem>();
+            foreach (DanceStyle ss in model.Teacher.DanceStyles)
+            {
+                selectedStyles.Add(new DanceStyleListItem { Id = ss.Id, Name = ss.Name });
+            }
+            model.SelectedStyles = selectedStyles;
+
+            var styles = new List<DanceStyleListItem>();
+            foreach (DanceStyle s in DataContext.DanceStyles)
+            {
+                styles.Add(new DanceStyleListItem { Id = s.Id, Name = s.Name });
+            }
+            model.AvailableStyles = styles.OrderBy(x => x.Name);
+
+            return model;
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(TeacherEditViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var teacher = DataContext.Teachers.Where(x => x.ApplicationUser.Id == model.Teacher.ApplicationUser.Id).Include("ApplicationUser").Include("DanceStyles").FirstOrDefault();
+                teacher.Experience = model.Teacher.Experience;
+                teacher.FacebookLink = model.Teacher.FacebookLink;
+                teacher.Resume = model.Teacher.Resume;
+                teacher.Website = model.Teacher.Website;
+                teacher.ContactEmail = model.Teacher.ContactEmail;
+
+                var styles = DataContext.DanceStyles.Where(x => model.PostedStyles.DanceStyleIds.Contains(x.Id.ToString())).ToList();
+
+                teacher.DanceStyles.Clear();
+
+                foreach (DanceStyle s in styles)
+                {
+                    teacher.DanceStyles.Add(s);
+                }
+
+                DataContext.Entry(teacher).State = EntityState.Modified;
+                DataContext.SaveChanges();
+                return RedirectToAction("Manage", "Account");
+            }
+            return View(model);
         }
 
         [Authorize]

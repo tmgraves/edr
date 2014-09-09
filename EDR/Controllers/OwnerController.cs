@@ -39,8 +39,10 @@ namespace EDR.Controllers
         [Authorize]
         public ActionResult Edit()
         {
+            var id = User.Identity.GetUserId();
             var owner = DataContext.Owners
-                .Where(x => x.ApplicationUser.UserName == User.Identity.Name)
+                .Where(x => x.ApplicationUser.Id == id)
+                .Include("ApplicationUser")
                 .FirstOrDefault();
 
             if (owner == null)
@@ -49,8 +51,7 @@ namespace EDR.Controllers
             }
 
             var viewModel = new OwnerEditViewModel();
-            var id = User.Identity.GetUserId();
-            viewModel.Owner = DataContext.Owners.Where(x => x.ApplicationUser.Id == id).FirstOrDefault();
+            viewModel.Owner = owner;
 
             return View(viewModel);
         }

@@ -9,6 +9,9 @@ namespace EDR.Models.ViewModels
     {
         // TODO: FILL IN PROPERTIES NEEDED FOR VIEW
 
-        public string Name { get; set; }
+        public Teacher Teacher { get; set; }
+        public IEnumerable<DanceStyleListItem> AvailableStyles { get; set; }
+        public IEnumerable<DanceStyleListItem> SelectedStyles { get; set; }
+        public PostedStyles PostedStyles { get; set; }
     }
 }
