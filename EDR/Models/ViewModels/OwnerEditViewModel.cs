@@ -8,7 +8,6 @@ namespace EDR.Models.ViewModels
     public class OwnerEditViewModel
     {
         // TODO: FILL IN PROPERTIES NEEDED FOR VIEW
-
-        public string Name { get; set; }
+        public Owner Owner { get; set; }
     }
 }

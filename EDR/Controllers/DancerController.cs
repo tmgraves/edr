@@ -87,7 +87,6 @@ namespace EDR.Controllers
 
                 DataContext.Entry(dancer).State = EntityState.Modified;
                 DataContext.SaveChanges();
-                dancer = DataContext.Users.Where(x => x.Id == model.Dancer.Id).Include("DanceStyles").FirstOrDefault();
                 return RedirectToAction("Manage", "Account");
             }
             return View(model);

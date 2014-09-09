@@ -49,9 +49,28 @@ namespace EDR.Controllers
             }
 
             var viewModel = new OwnerEditViewModel();
-            viewModel.Name = owner.ApplicationUser.FullName;
+            var id = User.Identity.GetUserId();
+            viewModel.Owner = DataContext.Owners.Where(x => x.ApplicationUser.Id == id).FirstOrDefault();
 
             return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(OwnerEditViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var owner = DataContext.Owners.Where(x => x.ApplicationUser.Id == model.Owner.ApplicationUser.Id).Include("ApplicationUser").FirstOrDefault();
+                owner.ContactEmail = model.Owner.ContactEmail;
+                owner.Website = model.Owner.Website;
+                owner.Facebook = model.Owner.Facebook;
+
+                DataContext.Entry(owner).State = EntityState.Modified;
+                DataContext.SaveChanges();
+                return RedirectToAction("Manage", "Account");
+            }
+            return View(model);
         }
 
         [Authorize]
