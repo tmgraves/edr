@@ -22,7 +22,6 @@ namespace EDR.Models
 
         [Required]
         public virtual ApplicationUser ApplicationUser { get; set; }
-
         public virtual ICollection<Place> Places { get; set; }
     }
 }

@@ -31,5 +31,6 @@ namespace EDR.Models
         public virtual ICollection<Review> Reviews { get; set; }
         public virtual ICollection<Workshop> Workshops { get; set; }
         public virtual ICollection<Rehearsal> Rehearsals { get; set; }
+        public virtual ICollection<Place> Places { get; set; }
     }
 }

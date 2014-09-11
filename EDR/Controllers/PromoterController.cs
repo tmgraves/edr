@@ -39,8 +39,9 @@ namespace EDR.Controllers
         [Authorize]
         public ActionResult Edit()
         {
+            var id = User.Identity.GetUserId();
             var promoter = DataContext.Promoters
-                .Where(x => x.ApplicationUser.UserName == User.Identity.Name)
+                .Where(x => x.ApplicationUser.Id == id)
                 .FirstOrDefault();
 
             if (promoter == null)
@@ -49,9 +50,27 @@ namespace EDR.Controllers
             }
 
             var viewModel = new PromoterEditViewModel();
-            viewModel.Name = promoter.ApplicationUser.FullName;
+            viewModel.Promoter = promoter;
 
             return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(PromoterEditViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var promoter = DataContext.Promoters.Where(x => x.ApplicationUser.Id == model.Promoter.ApplicationUser.Id).Include("ApplicationUser").FirstOrDefault();
+                promoter.ContactEmail = model.Promoter.ContactEmail;
+                promoter.Website = model.Promoter.Website;
+                promoter.Facebook = model.Promoter.Facebook;
+
+                DataContext.Entry(promoter).State = EntityState.Modified;
+                DataContext.SaveChanges();
+                return RedirectToAction("Manage", "Account");
+            }
+            return View(model);
         }
 
         [Authorize]
