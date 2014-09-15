@@ -57,6 +57,10 @@
             </ul>
         </dd>
     </dl>
+@if (User.Identity != null && User.Identity.Name == Model.Owner.ApplicationUser.UserName)
+{
+    <a href="@Url.Action("Create", "Event", new { role = "Owner", eventType = "Class" }, null)" class="btn btn-primary">Post a new Class</a>
+}
     @if (User.Identity != null && User.Identity.Name == Model.Owner.ApplicationUser.UserName)
     {
         <a class="btn btn-primary" href="@Url.Action("Edit", "Owner")">Edit Profile</a>

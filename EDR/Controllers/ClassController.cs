@@ -38,32 +38,6 @@ namespace EDR.Controllers
             return View(model);
         }
 
-        [Authorize(Roles = "Teacher, Owner")]
-        public ActionResult Create()
-        {
-            var model = GetInitialClassCreateViewModel();
-            return View(model);
-        }
-
-        private ClassCreateViewModel GetInitialClassCreateViewModel()
-        {
-            var model = new ClassCreateViewModel();
-            var id = User.Identity.GetUserId();
-
-            var selectedStyles = new List<DanceStyleListItem>();
-            var styles = new List<DanceStyleListItem>();
-            foreach (DanceStyle s in DataContext.DanceStyles)
-            {
-                styles.Add(new DanceStyleListItem { Id = s.Id, Name = s.Name });
-            }
-            model.AvailableStyles = styles.OrderBy(x => x.Name);
-
-            model.PlaceList = new SelectList(DataContext.Places.Where(x => x.Teachers.Any(t => t.ApplicationUser.Id == id) || x.Owners.Any(t => t.ApplicationUser.Id == id)).OrderBy(x => x.Name), "Id", "Name", null);
-            //  model.PlaceList = DataContext.Places.Where(x => x.Teachers.Any(t => t.ApplicationUser.Id == id) || x.Owners.Any(t => t.ApplicationUser.Id == id)).Select(p => new SelectListItem() { Text = p.Name, Value = p.Id.ToString() }).ToList();
-    
-            return model;
-        }
-
         public ActionResult CreateReview(int id)
         {
             var viewModel = new EventReviewViewModel();

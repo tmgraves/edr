@@ -14,6 +14,12 @@ namespace EDR
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
+                name: "EventCreate",
+                url: "{role}/{eventType}/Create",
+                defaults: new { controller = "Event", action = "Create", role = UrlParameter.Optional, eventType = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
                 name: "DancerEdit",
                 url: "Dancer/Edit",
                 defaults: new { controller = "Dancer", action = "Edit" }

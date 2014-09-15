@@ -220,9 +220,9 @@
     <Compile Include="Models\Studio.cs" />
     <Compile Include="Models\Team.cs" />
     <Compile Include="Areas\Admin\Models\ViewModels\RoleApprovalsViewModel.cs" />
-    <Compile Include="Models\ViewModels\ClassCreateViewModel.cs" />
     <Compile Include="Models\ViewModels\DancerEditViewModel.cs" />
     <Compile Include="Models\ViewModels\DancerViewViewModel.cs" />
+    <Compile Include="Models\ViewModels\EventCreateViewModel.cs" />
     <Compile Include="Models\ViewModels\EventReviewViewModel.cs" />
     <Compile Include="Models\ViewModels\EventSignupViewModel.cs" />
     <Compile Include="Models\ViewModels\HomeExploreViewModel.cs" />
@@ -335,6 +335,7 @@
     <Content Include="Views\Owner\Edit.cshtml" />
     <Content Include="Views\Dancer\Edit.cshtml" />
     <Content Include="Views\Class\Create.cshtml" />
+    <Content Include="Views\Event\Create.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Series\" />

@@ -10,7 +10,7 @@
 @using (Html.BeginForm()) 
 {
     @Html.AntiForgeryToken()
-    
+    @Html.Hidden(Model.ReferrerType)
     <div class="form-horizontal">
         <h4>Class</h4>
         <hr />
