@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using EDR.Models;
+using System.Data.Entity.Validation;
 
 namespace EDR.Controllers
 {
@@ -96,7 +97,9 @@ namespace EDR.Controllers
         {
             if (ModelState.IsValid)
             {
-                //var teacher = DataContext.Promoters.Where(x => x.ApplicationUser.Id == model.Promoter.ApplicationUser.Id).Include("ApplicationUser").FirstOrDefault();
+                var event1 = model.Event;
+                DataContext.Events.Add(model.Event);
+                DataContext.SaveChanges();
                 //promoter.ContactEmail = model.Promoter.ContactEmail;
                 //promoter.Website = model.Promoter.Website;
                 //promoter.Facebook = model.Promoter.Facebook;
@@ -104,6 +107,10 @@ namespace EDR.Controllers
                 //DataContext.Entry(promoter).State = EntityState.Modified;
                 //DataContext.SaveChanges();
                 return RedirectToAction("Manage", "Account");
+            }
+            else
+            {
+                var allErrors = ModelState.Values.SelectMany(v => v.Errors);
             }
             return View(model);
         }

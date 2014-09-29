@@ -6,13 +6,13 @@ using System.Web;
 
 namespace EDR.Models
 {
-    public abstract class Event : Entity
+    public class Event : Entity
     {
         [Required]
         public string Name { get; set; }
         public string Description { get; set; }
         [Display(Name = "Facebook Page")]
-        [RegularExpression("http[s]?://(www|[a-zA-Z]{2}-[a-zA-Z]{2})\\.facebook\\.com/(pages/[a-zA-Z0-9\\.-]+/[0-9]+|[a-zA-Z0-9\\.-]+)[/]?$", ErrorMessage = "Please enter a valid facebook page.")]
+        [RegularExpression("http[s]?://(www.facebook.com)/?[a-zA-Z0-9/\\-\\.]*", ErrorMessage = "Please enter a valid facebook page.")]
         public string FacebookLink { get; set; }
 
         [DataType(DataType.Date)]
@@ -34,7 +34,9 @@ namespace EDR.Models
         public Frequency Frequency { get; set; }
         public int Interval { get; set; }
         public DayOfWeek Day { get; set; }
-        public TimeSpan Time { get; set; }
+        [DataType(DataType.Time)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:H:mm tt}")]
+        public DateTime Time { get; set; }
         public int Duration { get; set; }
 
         public virtual Place Place { get; set; }

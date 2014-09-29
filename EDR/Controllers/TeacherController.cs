@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using EDR.Models;
+using System.Text.RegularExpressions;
 
 namespace EDR.Controllers
 {
@@ -40,7 +41,8 @@ namespace EDR.Controllers
         [Authorize]
         public ActionResult Edit()
         {
-            var viewModel = GetInitialTeacherEditViewModel();
+            var viewModel = new TeacherEditViewModel();
+            LoadStyles(viewModel);
 
             if (viewModel.Teacher == null)
             {
@@ -50,9 +52,8 @@ namespace EDR.Controllers
             return View(viewModel);
         }
 
-        private TeacherEditViewModel GetInitialTeacherEditViewModel()
+        private void LoadStyles(TeacherEditViewModel model)
         {
-            var model = new TeacherEditViewModel();
             var id = User.Identity.GetUserId();
             model.Teacher = DataContext.Teachers.Where(x => x.ApplicationUser.Id == id).Include("ApplicationUser").Include("DanceStyles").FirstOrDefault();
 
@@ -69,8 +70,6 @@ namespace EDR.Controllers
                 styles.Add(new DanceStyleListItem { Id = s.Id, Name = s.Name });
             }
             model.AvailableStyles = styles.OrderBy(x => x.Name);
-
-            return model;
         }
 
         [HttpPost]
@@ -99,6 +98,7 @@ namespace EDR.Controllers
                 DataContext.SaveChanges();
                 return RedirectToAction("Manage", "Account");
             }
+            LoadStyles(model);
             return View(model);
         }
 

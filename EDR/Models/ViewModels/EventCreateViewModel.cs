@@ -16,8 +16,8 @@ namespace EDR.Models.ViewModels
         public int SkillLevel { get; set; }
         [Display(Name = "Prerequisite(s)")]
         public string Prerequisite { get; set; }
-        public ICollection<Teacher> Teachers { get; set; }
         public List<SelectListItem> PlaceList { get; set; }
+        public int PlaceId { get; set; }
         public IEnumerable<DanceStyleListItem> AvailableStyles { get; set; }
         public PostedStyles PostedStyles { get; set; }
     }

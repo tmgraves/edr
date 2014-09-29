@@ -11,7 +11,7 @@ namespace EDR.Models
         public int Experience { get; set; }
         public string Resume { get; set; }
         [Display(Name = "Facebook Page")]
-        [RegularExpression("http[s]?://(www|[a-zA-Z]{2}-[a-zA-Z]{2})\\.facebook\\.com/(pages/[a-zA-Z0-9\\.-]+/[0-9]+|[a-zA-Z0-9\\.-]+)[/]?$", ErrorMessage = "Please enter a valid facebook page.")]
+        [RegularExpression("http[s]?://(www.facebook.com)/?[a-zA-Z0-9/\\-\\.]*", ErrorMessage = "Please enter a valid facebook page.")]
         public string FacebookLink { get; set; }
         [Display(Name = "Owner Website")]
         [Url(ErrorMessage = "Please enter a valid webiste address")]
