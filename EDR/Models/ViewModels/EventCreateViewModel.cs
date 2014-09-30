@@ -19,6 +19,7 @@ namespace EDR.Models.ViewModels
         public List<SelectListItem> PlaceList { get; set; }
         public int PlaceId { get; set; }
         public IEnumerable<DanceStyleListItem> AvailableStyles { get; set; }
+        public IEnumerable<DanceStyleListItem> SelectedStyles { get; set; }
         public PostedStyles PostedStyles { get; set; }
     }
 }

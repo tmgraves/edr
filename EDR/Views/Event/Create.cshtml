@@ -1,4 +1,5 @@
 ﻿@model EDR.Models.ViewModels.EventCreateViewModel
+@using MvcCheckBoxList.Model
 
 @{
     ViewBag.Title = "Create";
@@ -37,6 +38,18 @@
                 @Html.EditorFor(model => model.Event.Description, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.Event.Description, "", new { @class = "text-danger" })
             </div>
+        </div>
+
+        <div class="form-group">
+            <section class="checkBoxListFor">
+                Dance Styles
+                @Html.CheckBoxListFor(model => model.PostedStyles.DanceStyleIds,
+                                model => model.AvailableStyles,
+                                style => style.Id,
+                                style => style.Name,
+                                model => model.SelectedStyles,
+                                Position.Horizontal)
+            </section>
         </div>
 
         <div class="form-group">

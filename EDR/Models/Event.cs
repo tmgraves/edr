@@ -15,6 +15,7 @@ namespace EDR.Models
         [RegularExpression("http[s]?://(www.facebook.com)/?[a-zA-Z0-9/\\-\\.]*", ErrorMessage = "Please enter a valid facebook page.")]
         public string FacebookLink { get; set; }
 
+        [Required]
         [DataType(DataType.Date)]
         [Display(Name = "Start Date")]
         [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
@@ -30,6 +31,7 @@ namespace EDR.Models
 
         public bool IsAvailable { get; set; }
 
+        [Required]
         public bool Recurring { get; set; }
         public Frequency Frequency { get; set; }
         public int Interval { get; set; }
