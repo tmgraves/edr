@@ -36,9 +36,6 @@ namespace EDR.Models
         public Frequency Frequency { get; set; }
         public int Interval { get; set; }
         public DayOfWeek Day { get; set; }
-        [DataType(DataType.Time)]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:H:mm tt}")]
-        public DateTime Time { get; set; }
         public int Duration { get; set; }
 
         public virtual Place Place { get; set; }

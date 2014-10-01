@@ -8,8 +8,8 @@
 
 <h2>Create</h2>
 
-@using (Html.BeginForm())
-{
+@using (Html.BeginForm("Create", "Event", FormMethod.Post))
+    {
     @Html.AntiForgeryToken()
     @Html.Hidden(Model.Role)
     <div class="form-horizontal">
@@ -19,7 +19,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Event.Place, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownList("PlaceId", Model.PlaceList, "- Select a Place -")
+                @Html.DropDownList("PlaceId", Model.PlaceList, "- Select a Place -", new { @class = "form-control" } )
                 @Html.ValidationMessageFor(model => model.Event.Place, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -42,13 +42,13 @@
 
         <div class="form-group">
             <section class="checkBoxListFor">
-                Dance Styles
-                @Html.CheckBoxListFor(model => model.PostedStyles.DanceStyleIds,
-                                model => model.AvailableStyles,
-                                style => style.Id,
-                                style => style.Name,
-                                model => model.SelectedStyles,
-                                Position.Horizontal)
+                @Html.LabelFor(model => model.Event.Name, "Dance Styles", htmlAttributes: new { @class = "control-label col-md-2" })
+                    @Html.CheckBoxListFor(model => model.PostedStyles.DanceStyleIds,
+                                    model => model.AvailableStyles,
+                                    style => style.Id,
+                                    style => style.Name,
+                                    model => model.SelectedStyles,
+                                    Position.Horizontal)
             </section>
         </div>
 
@@ -65,6 +65,22 @@
             <div class="col-md-10">
                 @Html.EditorFor(model => model.Event.StartDate, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.Event.StartDate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Time, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Time, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Time, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Event.Duration, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Event.Duration, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Event.Duration, "", new { @class = "text-danger" })
             </div>
         </div>
 
@@ -133,22 +149,6 @@
             <div class="col-md-10">
                 @Html.EditorFor(model => model.Event.Interval, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.Event.Interval, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Event.Time, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Event.Time, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Event.Time, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Event.Duration, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Event.Duration, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Event.Duration, "", new { @class = "text-danger" })
             </div>
         </div>
 

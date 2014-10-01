@@ -10,6 +10,9 @@ namespace EDR.Models.ViewModels
     public class EventCreateViewModel
     {
         public Event Event { get; set; }
+        [DataType(DataType.Time)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:H:mm tt}")]
+        public DateTime Time { get; set; }
         public string EventType { get; set; }
         public string Role { get; set; }
         [Display(Name = "Your Skill Level (1-5)")]

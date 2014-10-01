@@ -1,4 +1,5 @@
 ﻿@model EDR.Models.Class
+@using EDR.Utilities
 
 @{
     ViewBag.Title = "Class Details";
@@ -8,7 +9,21 @@
 
 <p class="lead">@Model.Description</p>
 
-<p><strong>Date/Time:</strong> @Model.StartDate.ToLongDateString() - @Model.StartDate.ToShortTimeString() to @DateTime.Today.Add(Model.Time).AddMinutes(Model.Duration).ToShortTimeString()</p>
+<p>
+    @if (Model.Recurring)
+    {
+        <strong>Next Class:</strong> @ApplicationUtility.GetNextDate(Model.StartDate, Model.Frequency, Model.Interval, Model.Day).ToLongDateString()<br />
+        <strong>Time:</strong> @Model.StartDate.ToString("%h:mm tt")@:~@Model.StartDate.AddMinutes(Model.Duration).ToString("%h:mm tt")<br />
+        <strong>Frequency:</strong> @Model.Day @:(@(Model.Interval == null ? "" : (Model.Interval == 2 ? "Bi-" : (Model.Interval == 3 ? "Tri-" : "")))@Model.Frequency)
+    }
+    else
+    {
+        @:<strong>Date/Time:</strong> @Model.StartDate.ToLongDateString() - @Model.StartDate.ToShortTimeString() to @Model.StartDate.AddMinutes(Model.Duration).ToShortTimeString()
+    }
+</p>
+<p>
+    <a href='@Model.FacebookLink' target="_blank">@Model.FacebookLink</a>
+</p>
 <strong>Dance Styles</strong>
 <ul class="list-inline">
     @foreach (var item in Model.DanceStyles)

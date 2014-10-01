@@ -125,6 +125,7 @@ namespace EDR.Controllers
             {
                 var event1 = model.Event;
                 event1.Day = model.Event.StartDate.DayOfWeek;
+                event1.StartDate = event1.StartDate.AddHours(model.Time.Hour).AddMinutes(model.Time.Minute);
                 event1.Place = DataContext.Places.Find(model.PlaceId);
                 var id = User.Identity.GetUserId();
 
@@ -190,7 +191,6 @@ namespace EDR.Controllers
                 Frequency = event1.Frequency,
                 Interval = event1.Interval,
                 Day = event1.Day,
-                Time = event1.Time,
                 Duration = event1.Duration,
                 Place = event1.Place,
                 Teachers = new List<Teacher>(),
@@ -215,7 +215,6 @@ namespace EDR.Controllers
                 Frequency = event1.Frequency,
                 Interval = event1.Interval,
                 Day = event1.Day,
-                Time = event1.Time,
                 Duration = event1.Duration,
                 Place = event1.Place,
                 Teachers = new List<Teacher>(),
