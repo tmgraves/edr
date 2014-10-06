@@ -48,7 +48,7 @@
                             <td>
                                 @if (item.Recurring)
                                 {
-                                    <strong>Next Class:</strong> @ApplicationUtility.GetNextDate(item.StartDate, item.Frequency, item.Interval, item.Day).ToLongDateString()<br />
+                                    <strong>Next Class:</strong> @ApplicationUtility.GetNextDate(item.StartDate, item.Frequency, (int)item.Interval, item.Day).ToLongDateString()<br />
                                     @item.Day @:(@(item.Interval == null ? "" : (item.Interval == 2 ? "Bi-" : (item.Interval == 3 ? "Tri-" : "")))@item.Frequency)<br />
                                     @item.StartDate.ToString("%h:mm tt")@:~@item.StartDate.AddMinutes(item.Duration).ToString("%h:mm tt")
                                     @*@String.Format("{0:dddd, M/d/yy}", item.StartDate)<br />
@@ -130,7 +130,7 @@
                             <td>
                                 @if (item.Recurring)
                                 {
-                                    <strong>Next Workshop:</strong> @ApplicationUtility.GetNextDate(item.StartDate, item.Frequency, item.Interval, item.Day).ToLongDateString()<br />
+                                    <strong>Next Workshop:</strong> @ApplicationUtility.GetNextDate(item.StartDate, item.Frequency, (int)item.Interval, item.Day).ToLongDateString()<br />
                                     @item.Day @:(@(item.Interval == null ? "" : (item.Interval == 2 ? "Bi-" : (item.Interval == 3 ? "Tri-" : "")))@item.Frequency)<br />
                                     @item.StartDate.ToString("%h:mm tt")@:~@item.StartDate.AddMinutes(item.Duration).ToString("%h:mm tt")
                                     @*@String.Format("{0:dddd, M/d/yy}", item.StartDate)<br />
@@ -140,7 +140,7 @@
                                 {
                                     @item.StartDate.ToLongDateString()<br />
                                     @item.StartDate.ToString("%h:mm tt")@:~@item.StartDate.AddMinutes(item.Duration).ToString("%h:mm tt")
-                    }
+                                }
                             </td>
                             <td>
                                 @Html.ActionLink(item.Name, "Details", "Class", new { id = item.Id }, null)<br />

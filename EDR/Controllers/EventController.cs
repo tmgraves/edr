@@ -55,9 +55,13 @@ namespace EDR.Controllers
         }
 
         [Authorize(Roles = "Teacher, Owner")]
-        public ActionResult Create(string role, string eventType)
+        public ActionResult Create(string role, string eventType, int? placeId)
         {
             var model = GetInitialClassCreateViewModel(role, eventType);
+            if (placeId != null)
+            {
+                model.PlaceId = (int)placeId;
+            }
             return View(model);
         }
 
@@ -68,26 +72,7 @@ namespace EDR.Controllers
             model.Role = role;
             model.EventType = eventType;
 
-            var selectedStyles = new List<DanceStyleListItem>();
-            model.SelectedStyles = selectedStyles;
-
-            var styles = new List<DanceStyleListItem>();
-            foreach (DanceStyle s in DataContext.DanceStyles)
-            {
-                styles.Add(new DanceStyleListItem { Id = s.Id, Name = s.Name });
-            }
-            model.AvailableStyles = styles.OrderBy(x => x.Name);
-
-            if (role == "Teacher")
-            {
-                model.PlaceList = DataContext.Places.Where(x => x.Teachers.Any(t => t.ApplicationUser.Id == id)).Select(p => new SelectListItem() { Text = p.Name, Value = p.Id.ToString() }).ToList();
-            }
-            else if (role == "Owner")
-            {
-                model.PlaceList = DataContext.Places.Where(x => x.Owners.Any(t => t.ApplicationUser.Id == id)).Select(p => new SelectListItem() { Text = p.Name, Value = p.Id.ToString() }).ToList();
-            }
-            //  model.PlaceList = new SelectList(DataContext.Places.Where(x => x.Teachers.Any(t => t.ApplicationUser.Id == id) || x.Owners.Any(t => t.ApplicationUser.Id == id)).OrderBy(x => x.Name), "Id", "Name", null);
-            //  model.PlaceList = DataContext.Places.Where(x => x.Teachers.Any(t => t.ApplicationUser.Id == id) || x.Owners.Any(t => t.ApplicationUser.Id == id)).Select(p => new SelectListItem() { Text = p.Name, Value = p.Id.ToString() }).ToList();
+            LoadModel(model);
 
             return model;
         }
@@ -113,6 +98,10 @@ namespace EDR.Controllers
             else if (model.Role == "Owner")
             {
                 model.PlaceList = DataContext.Places.Where(x => x.Owners.Any(t => t.ApplicationUser.Id == id)).Select(p => new SelectListItem() { Text = p.Name, Value = p.Id.ToString() }).ToList();
+            }
+            else if (model.Role == "Promoter")
+            {
+                model.PlaceList = DataContext.Places.Where(x => x.Promoters.Any(t => t.ApplicationUser.Id == id)).Select(p => new SelectListItem() { Text = p.Name, Value = p.Id.ToString() }).ToList();
             }
         }
 
@@ -149,7 +138,7 @@ namespace EDR.Controllers
                     }
                     DataContext.Events.Add(class1);
                 }
-                if (model.EventType == "Workshop")
+                else if (model.EventType == "Workshop")
                 {
                     var workshop1 = ConvertToWorkshop(event1);
                     if (model.Role == "Teacher")
@@ -158,6 +147,36 @@ namespace EDR.Controllers
                         workshop1.Teachers.Add(teacher);
                     }
                     DataContext.Events.Add(workshop1);
+                }
+                else if (model.EventType == "Social")
+                {
+                    var social = ConvertToSocial(event1);
+                    if (model.Role == "Promoter")
+                    {
+                        var promoter = DataContext.Promoters.Include("ApplicationUser").Where(x => x.ApplicationUser.Id == id).FirstOrDefault();
+                        social.Promoters.Add(promoter);
+                    }
+                    DataContext.Events.Add(social);
+                }
+                else if (model.EventType == "Concert")
+                {
+                    var concert = ConvertToConcert(event1);
+                    if (model.Role == "Promoter")
+                    {
+                        var promoter = DataContext.Promoters.Include("ApplicationUser").Where(x => x.ApplicationUser.Id == id).FirstOrDefault();
+                        concert.Promoters.Add(promoter);
+                    }
+                    DataContext.Events.Add(concert);
+                }
+                else if (model.EventType == "Conference")
+                {
+                    var conference = ConvertToConference(event1);
+                    if (model.Role == "Promoter")
+                    {
+                        var promoter = DataContext.Promoters.Include("ApplicationUser").Where(x => x.ApplicationUser.Id == id).FirstOrDefault();
+                        conference.Promoters.Add(promoter);
+                    }
+                    DataContext.Events.Add(conference);
                 }
                 DataContext.SaveChanges();
                 //promoter.ContactEmail = model.Promoter.ContactEmail;
@@ -202,7 +221,7 @@ namespace EDR.Controllers
 
         public Workshop ConvertToWorkshop(Event event1)
         {
-            var workshop1 = new Workshop()
+            var workshop = new Workshop()
             {
                 Name = event1.Name,
                 Description = event1.Description,
@@ -221,7 +240,148 @@ namespace EDR.Controllers
                 DanceStyles = event1.DanceStyles
             };
 
-            return workshop1;
+            return workshop;
+        }
+
+        public Social ConvertToSocial(Event event1)
+        {
+            var social = new Social()
+            {
+                Name = event1.Name,
+                Description = event1.Description,
+                FacebookLink = event1.FacebookLink,
+                StartDate = event1.StartDate,
+                EndDate = event1.EndDate,
+                Price = event1.Price,
+                IsAvailable = event1.IsAvailable,
+                Recurring = event1.Recurring,
+                Frequency = event1.Frequency,
+                Interval = event1.Interval,
+                Day = event1.Day,
+                Duration = event1.Duration,
+                Place = event1.Place,
+                DanceStyles = event1.DanceStyles,
+                Promoters = new List<Promoter>()
+            };
+
+            return social;
+        }
+
+        public Concert ConvertToConcert(Event event1)
+        {
+            var concert = new Concert()
+            {
+                Name = event1.Name,
+                Description = event1.Description,
+                FacebookLink = event1.FacebookLink,
+                StartDate = event1.StartDate,
+                EndDate = event1.EndDate,
+                Price = event1.Price,
+                IsAvailable = event1.IsAvailable,
+                Recurring = event1.Recurring,
+                Frequency = event1.Frequency,
+                Interval = event1.Interval,
+                Day = event1.Day,
+                Duration = event1.Duration,
+                Place = event1.Place,
+                DanceStyles = event1.DanceStyles,
+                Promoters = new List<Promoter>()
+            };
+
+            return concert;
+        }
+
+        public Conference ConvertToConference(Event event1)
+        {
+            var conference = new Conference()
+            {
+                Name = event1.Name,
+                Description = event1.Description,
+                FacebookLink = event1.FacebookLink,
+                StartDate = event1.StartDate,
+                EndDate = event1.EndDate,
+                Price = event1.Price,
+                IsAvailable = event1.IsAvailable,
+                Recurring = event1.Recurring,
+                Frequency = event1.Frequency,
+                Interval = event1.Interval,
+                Day = event1.Day,
+                Duration = event1.Duration,
+                Place = event1.Place,
+                DanceStyles = event1.DanceStyles,
+                Promoters = new List<Promoter>()
+            };
+
+            return conference;
+        }
+
+        public OpenHouse ConvertToOpenHouse(Event event1)
+        {
+            var openHouse = new OpenHouse()
+            {
+                Name = event1.Name,
+                Description = event1.Description,
+                FacebookLink = event1.FacebookLink,
+                StartDate = event1.StartDate,
+                EndDate = event1.EndDate,
+                Price = event1.Price,
+                IsAvailable = event1.IsAvailable,
+                Recurring = event1.Recurring,
+                Frequency = event1.Frequency,
+                Interval = event1.Interval,
+                Day = event1.Day,
+                Duration = event1.Duration,
+                Place = event1.Place,
+                DanceStyles = event1.DanceStyles
+            };
+
+            return openHouse;
+        }
+
+        public Party ConvertToParty(Event event1)
+        {
+            var party = new Party()
+            {
+                Name = event1.Name,
+                Description = event1.Description,
+                FacebookLink = event1.FacebookLink,
+                StartDate = event1.StartDate,
+                EndDate = event1.EndDate,
+                Price = event1.Price,
+                IsAvailable = event1.IsAvailable,
+                Recurring = event1.Recurring,
+                Frequency = event1.Frequency,
+                Interval = event1.Interval,
+                Day = event1.Day,
+                Duration = event1.Duration,
+                Place = event1.Place,
+                DanceStyles = event1.DanceStyles
+            };
+
+            return party;
+        }
+
+        public Rehearsal ConvertToRehearsal(Event event1)
+        {
+            var rehearsal = new Rehearsal()
+            {
+                Name = event1.Name,
+                Description = event1.Description,
+                FacebookLink = event1.FacebookLink,
+                StartDate = event1.StartDate,
+                EndDate = event1.EndDate,
+                Price = event1.Price,
+                IsAvailable = event1.IsAvailable,
+                Recurring = event1.Recurring,
+                Frequency = event1.Frequency,
+                Interval = event1.Interval,
+                Day = event1.Day,
+                Duration = event1.Duration,
+                Place = event1.Place,
+                DanceStyles = event1.DanceStyles
+            };
+
+            return rehearsal;
         }
     }
 }

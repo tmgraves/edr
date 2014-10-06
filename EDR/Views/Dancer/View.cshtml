@@ -40,7 +40,24 @@
                 }
             </ul>
         </dd>
+
+        <dt>
+            My Parties
+        </dt>
+
+        <dd>
+            <ul class="list-inline">
+                @foreach (var item in Model.Dancer.Parties)
+                {
+                    <li>@Html.ActionLink(item.Name, "Details", "Event", new { id = item.Id }, null)</li>
+                }
+            </ul>
+        </dd>
     </dl>
+@if (User.Identity != null && User.Identity.Name == Model.Dancer.UserName)
+{
+    <a href="@Url.Action("Create", "Event", new { role = "Dancer", eventType = "Party" }, null)">Add a Party</a>
+}
 @if (User.Identity != null && User.Identity.Name == Model.Dancer.UserName)
 {
     <a class="btn btn-primary" href="@Url.Action("Edit", "Dancer")">Edit Profile</a>

@@ -18,5 +18,6 @@ namespace EDR.Models
         public virtual ICollection<Place> Places { get; set; }
         public virtual ICollection<Owner> Owners { get; set; }
         public virtual ICollection<Teacher> Teachers { get; set; }
+        public virtual ICollection<Promoter> Promoters { get; set; }
     }
 }

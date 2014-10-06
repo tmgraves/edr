@@ -42,5 +42,6 @@ namespace EDR.Models
         public virtual ICollection<Owner> Owners { get; set; }
         public virtual ICollection<Promoter> Promoters { get; set; }
         public virtual ICollection<DanceStyle> DanceStyles { get; set; }
+        public virtual ICollection<Party> Parties { get; set; }
     }
 }

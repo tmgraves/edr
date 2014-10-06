@@ -7,5 +7,6 @@ namespace EDR.Models
 {
     public class Party : Event
     {
+        public ApplicationUser Dancer { get; set; }
     }
 }

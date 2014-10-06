@@ -84,7 +84,7 @@
                 <td>
                     @if (item.Recurring)
                     {
-                        <strong>Next Class:</strong> @ApplicationUtility.GetNextDate(item.StartDate, item.Frequency, item.Interval, item.Day).ToLongDateString()<br />
+                        <strong>Next Class:</strong> @ApplicationUtility.GetNextDate(item.StartDate, item.Frequency, (int)item.Interval, item.Day).ToLongDateString()<br />
                         <strong>Time:</strong> @item.StartDate.ToString("%h:mm tt")@:~@item.StartDate.AddMinutes(item.Duration).ToString("%h:mm tt")<br />
                         <strong>Frequency:</strong> @item.Day @:(@(item.Interval == null ? "" : (item.Interval == 2 ? "Bi-" : (item.Interval == 3 ? "Tri-" : "")))@item.Frequency)
                     }

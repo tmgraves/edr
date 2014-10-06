@@ -58,6 +58,14 @@
             </ul>
         </dd>
     </dl>
+@if (User.Identity != null && User.Identity.Name == Model.Promoter.ApplicationUser.UserName)
+{
+    <p>
+        <a href="@Url.Action("Create", "Event", new { role = "Promoter", eventType = "Social" }, null)">Add a Social</a>
+        <a href="@Url.Action("Create", "Event", new { role = "Promoter", eventType = "Concert" }, null)">Add a Concert</a>
+        <a href="@Url.Action("Create", "Event", new { role = "Promoter", eventType = "Conference" }, null)">Add a Conference</a>
+    </p>
+}
     @if (User.Identity != null && User.Identity.Name == Model.Promoter.ApplicationUser.UserName)
     {
         <a class="btn btn-primary" href="@Url.Action("Edit", "Promoter")">Edit Profile</a>

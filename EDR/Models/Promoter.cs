@@ -24,5 +24,6 @@ namespace EDR.Models
         public virtual ApplicationUser ApplicationUser { get; set; }
 
         public virtual ICollection<Event> Events { get; set; }
+        public virtual ICollection<Place> Places { get; set; }
     }
 }

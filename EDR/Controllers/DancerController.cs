@@ -74,7 +74,7 @@ namespace EDR.Controllers
         {
             if (ModelState.IsValid)
             {
-                var dancer = DataContext.Users.Where(x => x.Id == model.Dancer.Id).Include("DanceStyles").FirstOrDefault();
+                var dancer = DataContext.Users.Where(x => x.Id == model.Dancer.Id).Include("DanceStyles").Include("Parties").FirstOrDefault();
                 dancer.Experience = model.Dancer.Experience;
                 var styles = DataContext.DanceStyles.Where(x => model.PostedStyles.DanceStyleIds.Contains(x.Id.ToString())).ToList();
 

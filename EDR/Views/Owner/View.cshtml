@@ -56,14 +56,16 @@
                 }
             </ul>
         </dd>
+
     </dl>
 @if (User.Identity != null && User.Identity.Name == Model.Owner.ApplicationUser.UserName)
 {
     <a href="@Url.Action("Create", "Event", new { role = "Owner", eventType = "Class" }, null)">Add a Class</a>
-}
-@if (User.Identity != null && User.Identity.Name == Model.Owner.ApplicationUser.UserName)
-{
-    <a href="@Url.Action("Create", "Event", new { role = "Teacher", eventType = "Workshop" }, null)">Add a Workshop</a>
+    <a href="@Url.Action("Create", "Event", new { role = "Owner", eventType = "Workshop" }, null)">Add a Workshop</a>
+    <a href="@Url.Action("Create", "Event", new { role = "Owner", eventType = "Social" }, null)">Add a Social</a>
+    <a href="@Url.Action("Create", "Event", new { role = "Owner", eventType = "Concert" }, null)">Add a Concert</a>
+    <a href="@Url.Action("Create", "Event", new { role = "Owner", eventType = "Conference" }, null)">Add a Conference</a>
+    <a href="@Url.Action("Create", "Event", new { role = "Owner", eventType = "OpenHouse" }, null)">Add a Open House</a>
 }
 @if (User.Identity != null && User.Identity.Name == Model.Owner.ApplicationUser.UserName)
 {

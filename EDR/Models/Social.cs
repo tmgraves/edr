@@ -7,5 +7,6 @@ namespace EDR.Models
 {
     public class Social : Event
     {
+        public ICollection<Promoter> Promoters { get; set; }
     }
 }

@@ -34,7 +34,7 @@ namespace EDR.Models
         [Required]
         public bool Recurring { get; set; }
         public Frequency Frequency { get; set; }
-        public int Interval { get; set; }
+        public int? Interval { get; set; }
         public DayOfWeek Day { get; set; }
         public int Duration { get; set; }
 

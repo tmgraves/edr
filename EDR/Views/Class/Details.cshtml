@@ -12,7 +12,7 @@
 <p>
     @if (Model.Recurring)
     {
-        <strong>Next Class:</strong> @ApplicationUtility.GetNextDate(Model.StartDate, Model.Frequency, Model.Interval, Model.Day).ToLongDateString()<br />
+        <strong>Next Class:</strong> @ApplicationUtility.GetNextDate(Model.StartDate, Model.Frequency, (int)Model.Interval, Model.Day).ToLongDateString()<br />
         <strong>Time:</strong> @Model.StartDate.ToString("%h:mm tt")@:~@Model.StartDate.AddMinutes(Model.Duration).ToString("%h:mm tt")<br />
         <strong>Frequency:</strong> @Model.Day @:(@(Model.Interval == null ? "" : (Model.Interval == 2 ? "Bi-" : (Model.Interval == 3 ? "Tri-" : "")))@Model.Frequency)
     }
