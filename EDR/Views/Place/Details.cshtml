@@ -7,7 +7,9 @@
     ViewBag.Title = Model.Place.Name;
 }
 
-<h1 class="page-header">@Model.Place.Name</h1>
+<h1 class="page-header">@Model.Place.Name
+    <a style="font-size: medium;" href="@Url.Action("List", "Place")">View all Places</a>
+</h1>
 <p class="lead">@Model.Place.Address, @Model.Place.City, @Model.Place.State @Model.Place.Zip</p>
 <p>
     <a href='@Model.Place.FacebookLink' target="_blank">@Model.Place.FacebookLink</a>
@@ -18,10 +20,10 @@
 @using (Html.BeginForm("Details", "Place", FormMethod.Get))
 {
     <p>
-        Choose a Dance Style: @Html.DropDownList("DanceStyle", Model.DanceStyleList, "All", new { @class = "form-control" })
-        Choose a Teacher: @Html.DropDownList("Teacher", Model.TeacherList, "All", new { @class = "form-control" })
-        Choose Skill Level: @Html.DropDownList("SkillLevel", Model.SkillLevelList, "All", new { @class = "form-control" })
-        <input type="submit" value="Search" />
+        @Html.Label("Choose a Dance Style:", htmlAttributes: new { @class = "control-label col-md-2" })@Html.DropDownList("DanceStyle", Model.DanceStyleList, "All", new { @class = "form-control" })
+        @Html.Label("Choose a Teacher:", htmlAttributes: new { @class = "control-label col-md-2" })@Html.DropDownList("Teacher", Model.TeacherList, "All", new { @class = "form-control" })
+        @Html.Label("Choose Skill Level:", htmlAttributes: new { @class = "control-label col-md-2" })@Html.DropDownList("SkillLevel", Model.SkillLevelList, "All", new { @class = "form-control" })
+        <input type="submit" value="Search" class="btn btn-primary" />
     </p>
 }
 <h2>Available Classes
@@ -82,7 +84,7 @@
                         {
                             foreach (var t in item.Teachers)
                             {
-                                <li>@Html.ActionLink(t.ApplicationUser.FullName, "Details", "Teacher", new { username = t.ApplicationUser.UserName }, null)</li>
+                                <li>@Html.ActionLink(t.ApplicationUser.FullName, "View", "Teacher", new { username = t.ApplicationUser.UserName }, null)</li>
                             }
                         }
                     </ul>
@@ -177,7 +179,7 @@
                         {
                             foreach (var t in item.Teachers)
                             {
-                                <li>@Html.ActionLink(t.ApplicationUser.FullName, "Details", "Teacher", new { username = t.ApplicationUser.UserName }, null)</li>
+                                <li>@Html.ActionLink(t.ApplicationUser.FullName, "View", "Teacher", new { username = t.ApplicationUser.UserName }, null)</li>
                             }
                         }
                     </ul>
@@ -461,7 +463,7 @@
     </tbody>
 </table>
 <h2>Parties
-@if (User.Identity != null)
+@if (User.Identity != null && User.Identity.IsAuthenticated)
 {
     <a style="font-size: medium;" href="@Url.Action("Create", "Event", new { role = "Dancer", eventType = "Party" }, null)">Add a Party</a>
 }

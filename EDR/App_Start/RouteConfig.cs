@@ -41,6 +41,11 @@ namespace EDR
                 defaults: new { controller = "Teacher", action = "Apply" }
             );
             routes.MapRoute(
+                name: "TeacherList",
+                url: "Teacher/List",
+                defaults: new { controller = "Teacher", action = "List" }
+            );
+            routes.MapRoute(
                 name: "Teacher",
                 url: "Teacher/{username}",
                 defaults: new { controller = "Teacher", action = "View" }

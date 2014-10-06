@@ -15,6 +15,19 @@ namespace EDR.Controllers
 {
     public class TeacherController : BaseController
     {
+        public ActionResult List(int? danceStyle)
+        {
+            var model = new TeacherListViewModel();
+            model.Teachers = DataContext.Teachers.Include("ApplicationUser").Include("DanceStyles");
+            model.DanceStyleList = DataContext.DanceStyles.Select(d => new SelectListItem() { Text = d.Name, Value = d.Id.ToString() }).ToList();
+
+            if (danceStyle != null)
+            {
+                model.Teachers = model.Teachers.Where(x => x.DanceStyles.Any(s => s.Id == danceStyle));
+            }
+            return View(model);
+        }
+
         public ActionResult View(string username)
         {
             if (String.IsNullOrWhiteSpace(username))

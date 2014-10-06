@@ -1,0 +1,46 @@
+﻿@model EDR.Models.ViewModels.TeacherListViewModel
+
+@{
+    ViewBag.Title = "List of Teachers";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>List of Teachers</h2>
+@using (Html.BeginForm("List", "Teacher", FormMethod.Get))
+{
+    <p>
+        @Html.Label("Choose a Dance Style:", htmlAttributes: new { @class = "control-label col-md-2" })
+        @Html.DropDownList("DanceStyle", Model.DanceStyleList, "All", new { @class = "form-control" })
+        <input type="submit" value="Search" class="btn btn-primary" />
+    </p>
+}
+<table class="table">
+    <tr>
+        <th>
+            Name
+        </th>
+        <th>
+            Dance Styles
+        </th>
+    </tr>
+
+@foreach (var item in Model.Teachers) {
+    <tr>
+        <td>
+            @Html.ActionLink(item.ApplicationUser.FullName, "View", "Teacher", new { username = item.ApplicationUser.UserName }, null)
+        </td>
+        <td>
+            <ul class="list-inline">
+                @if (item.DanceStyles != null)
+                {
+                    foreach (var s in item.DanceStyles)
+                    {
+                        <li>@Html.ActionLink(s.Name, "Details", "DanceStyle", new { id = s.Id }, null)</li>
+                    }
+                }
+            </ul>
+        </td>
+    </tr>
+}
+
+</table>

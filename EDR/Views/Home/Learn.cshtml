@@ -6,7 +6,9 @@
     ViewBag.Title = "Learn to Dance";
 }
 
-<h1 class="page-header">Find a Class</h1>
+<h1 class="page-header">Find a Class
+    <a style="font-size: medium;" href="@Url.Action("List", "Teacher")">View all Teachers</a>
+</h1>
 
 @using (Html.BeginForm("Learn", "Home", FormMethod.Get))
 {
@@ -15,7 +17,7 @@
         Choose a Teacher: @Html.DropDownList("teacher", "All")
         Choose a Place: @Html.DropDownList("place", "All")
         Choose Skill Level: @Html.DropDownList("skillLevel", "All")
-        <input type="submit" value="Search" />
+        <input type="submit" value="Search" class="btn btn-primary" />
     </p>
 }
 <div class="tabbable">
@@ -153,7 +155,7 @@
                                     {
                                         foreach (var t in item.Teachers)
                                         {
-                                            <li>@Html.ActionLink(t.ApplicationUser.FullName, "Details", "Teacher", new { username = t.ApplicationUser.UserName }, null)</li>
+                                            <li>@Html.ActionLink(t.ApplicationUser.FullName, "View", "Teacher", new { username = t.ApplicationUser.UserName }, null)</li>
                                         }
                                     }
                                 </ul>

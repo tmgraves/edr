@@ -11,6 +11,19 @@ namespace EDR.Controllers
 {
     public class PlaceController : BaseController
     {
+        public ActionResult List()
+        {
+            var model = new PlaceListViewModel();
+            model.ConferenceCenters = DataContext.Places.OfType<ConferenceCenter>().ToList();
+            model.Hotels = DataContext.Places.OfType<Hotel>().ToList();
+            model.Nightclubs = DataContext.Places.OfType<Nightclub>().ToList();
+            model.Restaurants = DataContext.Places.OfType<Restaurant>().ToList();
+            model.Studios = DataContext.Places.OfType<Studio>().ToList();
+            model.Theaters = DataContext.Places.OfType<Theater>().ToList();
+
+            return View(model);
+        }
+
         public ActionResult Details(int id, int? danceStyle, string teacher, int? skillLevel)
         {
             if (id == null)

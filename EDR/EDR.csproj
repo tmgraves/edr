@@ -232,12 +232,14 @@
     <Compile Include="Models\ViewModels\OwnerEditViewModel.cs" />
     <Compile Include="Models\ViewModels\OwnerViewViewModel.cs" />
     <Compile Include="Models\ViewModels\PlaceDetailViewModel.cs" />
+    <Compile Include="Models\ViewModels\PlaceListViewModel.cs" />
     <Compile Include="Models\ViewModels\PromoterApplyViewModel.cs" />
     <Compile Include="Models\ViewModels\PromoterEditViewModel.cs" />
     <Compile Include="Models\ViewModels\PromoterViewViewModel.cs" />
     <Compile Include="Models\ViewModels\SocialViewModel.cs" />
     <Compile Include="Models\ViewModels\TeacherApplyViewModel.cs" />
     <Compile Include="Models\ViewModels\TeacherEditViewModel.cs" />
+    <Compile Include="Models\ViewModels\TeacherListViewModel.cs" />
     <Compile Include="Models\ViewModels\TeacherViewViewModel.cs" />
     <Compile Include="Models\Workshop.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -336,6 +338,8 @@
     <Content Include="Views\Dancer\Edit.cshtml" />
     <Content Include="Views\Class\Create.cshtml" />
     <Content Include="Views\Event\Create.cshtml" />
+    <Content Include="Views\Teacher\List.cshtml" />
+    <Content Include="Views\Place\List.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Series\" />

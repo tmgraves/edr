@@ -9,7 +9,9 @@
 {
     <img src="http://graph.facebook.com/@Model.Teacher.ApplicationUser.FacebookUsername/picture?type=normal" />
 }
-<h1 class="page-header">@Model.Teacher.ApplicationUser.FullName</h1>
+<h1 class="page-header">@Model.Teacher.ApplicationUser.FullName
+    <a style="font-size: medium;" href="@Url.Action("List", "Teacher")">View all Teachers</a>
+</h1>
 
 <div>
     <dl class="dl-horizontal">
@@ -177,7 +179,7 @@
                         {
                             foreach (var t in item.Teachers)
                             {
-                                <li>@Html.ActionLink(t.ApplicationUser.FullName, "Details", "Teacher", new { username = t.ApplicationUser.UserName }, null)</li>
+                                <li>@Html.ActionLink(t.ApplicationUser.FullName, "View", "Teacher", new { username = t.ApplicationUser.UserName }, null)</li>
                             }
                         }
                     </ul>
@@ -217,6 +219,3 @@
 {
     <a class="btn btn-primary" href="@Url.Action("Edit", "Teacher")">Edit Profile</a>
 }
-<p>
-    @Html.ActionLink("Back to List", "Index")
-</p>

@@ -1,0 +1,196 @@
+﻿@model EDR.Models.ViewModels.PlaceListViewModel
+
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>List of Places</h2>
+
+<div class="tabbable">
+    <ul class="nav nav-tabs nav-justified" role="tablist">
+        <li class="active"><a href="#studios" data-toggle="tab">Studios (@Model.Studios.Count().ToString())</a></li>
+        <li><a href="#restaurants" data-toggle="tab">Restaurants (@Model.Restaurants.Count().ToString())</a></li>
+        <li><a href="#hotels" data-toggle="tab">Hotels (@Model.Hotels.Count().ToString())</a></li>
+        <li><a href="#nightclubs" data-toggle="tab">Nightclubs (@Model.Nightclubs.Count().ToString())</a></li>
+        <li><a href="#conferencecenters" data-toggle="tab">Conference Centers (@Model.ConferenceCenters.Count().ToString())</a></li>
+        <li><a href="#theaters" data-toggle="tab">Theaters (@Model.Theaters.Count().ToString())</a></li>
+    </ul>
+    <div class="tab-content">
+        <div id="studios" class="tab-pane active">
+            <table class="table">
+                <tr>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        Address
+                    </th>
+                </tr>
+
+                @foreach (var item in Model.Studios)
+                {
+                    <tr>
+                        <td>
+                            @Html.ActionLink(item.Name, "Details", "Place", new { id = item.Id }, null)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Address)
+                            @Html.DisplayFor(modelItem => item.Address2)<br />
+                            @Html.DisplayFor(modelItem => item.City),  
+                            @Html.DisplayFor(modelItem => item.State)  
+                            @Html.DisplayFor(modelItem => item.Zip)
+                        </td>
+                    </tr>
+                }
+
+            </table>
+        </div>
+        <div id="theaters" class="tab-pane active">
+            <table class="table">
+                <tr>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        Address
+                    </th>
+                </tr>
+
+                @foreach (var item in Model.Theaters)
+                {
+                    <tr>
+                        <td>
+                            @Html.ActionLink(item.Name, "Details", "Place", new { id = item.Id }, null)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Address)
+                            @Html.DisplayFor(modelItem => item.Address2)<br />
+                            @Html.DisplayFor(modelItem => item.City),
+                            @Html.DisplayFor(modelItem => item.State)
+                            @Html.DisplayFor(modelItem => item.Zip)
+                        </td>
+                    </tr>
+                }
+
+            </table>
+        </div>
+        <div id="restaurants" class="tab-pane active">
+            <table class="table">
+                <tr>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        Address
+                    </th>
+                </tr>
+
+                @foreach (var item in Model.Restaurants)
+                {
+                    <tr>
+                        <td>
+                            @Html.ActionLink(item.Name, "Details", "Place", new { id = item.Id }, null)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Address)
+                            @Html.DisplayFor(modelItem => item.Address2)<br />
+                            @Html.DisplayFor(modelItem => item.City),
+                            @Html.DisplayFor(modelItem => item.State)
+                            @Html.DisplayFor(modelItem => item.Zip)
+                        </td>
+                    </tr>
+                }
+
+            </table>
+        </div>
+        <div id="nightclubs" class="tab-pane active">
+            <table class="table">
+                <tr>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        Address
+                    </th>
+                </tr>
+
+                @foreach (var item in Model.Nightclubs)
+                {
+                    <tr>
+                        <td>
+                            @Html.ActionLink(item.Name, "Details", "Place", new { id = item.Id }, null)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Address)
+                            @Html.DisplayFor(modelItem => item.Address2)<br />
+                            @Html.DisplayFor(modelItem => item.City),
+                            @Html.DisplayFor(modelItem => item.State)
+                            @Html.DisplayFor(modelItem => item.Zip)
+                        </td>
+                    </tr>
+                }
+
+            </table>
+        </div>
+        <div id="hotels" class="tab-pane active">
+            <table class="table">
+                <tr>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        Address
+                    </th>
+                </tr>
+
+                @foreach (var item in Model.Hotels)
+                {
+                    <tr>
+                        <td>
+                            @Html.ActionLink(item.Name, "Details", "Place", new { id = item.Id }, null)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Address)
+                            @Html.DisplayFor(modelItem => item.Address2)<br />
+                            @Html.DisplayFor(modelItem => item.City),
+                            @Html.DisplayFor(modelItem => item.State)
+                            @Html.DisplayFor(modelItem => item.Zip)
+                        </td>
+                    </tr>
+                }
+
+            </table>
+        </div>
+        <div id="conferencecenters" class="tab-pane active">
+            <table class="table">
+                <tr>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        Address
+                    </th>
+                </tr>
+
+                @foreach (var item in Model.ConferenceCenters)
+                {
+                    <tr>
+                        <td>
+                            @Html.ActionLink(item.Name, "Details", "Place", new { id = item.Id }, null)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Address)
+                            @Html.DisplayFor(modelItem => item.Address2)<br />
+                            @Html.DisplayFor(modelItem => item.City),
+                            @Html.DisplayFor(modelItem => item.State)
+                            @Html.DisplayFor(modelItem => item.Zip)
+                        </td>
+                    </tr>
+                }
+
+            </table>
+        </div>
+    </div>
+</div>
+
