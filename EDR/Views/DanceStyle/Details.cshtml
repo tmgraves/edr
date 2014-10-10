@@ -19,6 +19,22 @@
         </dd>
 
         <dt>
+            @Html.DisplayNameFor(model => model.Teachers)
+        </dt>
+
+        <dd>
+            <ul class="list-inline">
+                @if (Model.Teachers != null)
+                {
+                    foreach (var t in Model.Teachers)
+                    {
+                        <li>@Html.ActionLink(t.ApplicationUser.FullName, "View", "Teacher", new { username = t.ApplicationUser.UserName }, null)</li>
+                    }
+                }
+            </ul>
+        </dd>
+
+        <dt>
             Video
         </dt>
 

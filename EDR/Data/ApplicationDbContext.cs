@@ -40,6 +40,7 @@ namespace EDR.Data
             modelBuilder.Entity<Nightclub>().ToTable("Nightclubs");
             modelBuilder.Entity<ConferenceCenter>().ToTable("ConferenceCenters");
             modelBuilder.Entity<Studio>().ToTable("Studios");
+            modelBuilder.Entity<OtherPlace>().ToTable("OtherPlaces");
 
             // Event Series
             modelBuilder.Entity<ClassSeries>().ToTable("ClassSeries");

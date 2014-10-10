@@ -1,0 +1,24 @@
+﻿@model EDR.Models.ViewModels.OwnerListViewModel
+
+@{
+    ViewBag.Title = "List of Owners";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>List of Owners</h2>
+<table class="table">
+    <tr>
+        <th>
+            Name
+        </th>
+    </tr>
+
+@foreach (var item in Model.Owners) {
+    <tr>
+        <td>
+            @Html.ActionLink(item.ApplicationUser.FullName, "View", "Owner", new { username = item.ApplicationUser.UserName }, null)
+        </td>
+    </tr>
+}
+
+</table>

@@ -13,6 +13,14 @@ namespace EDR.Controllers
 {
     public class OwnerController : BaseController
     {
+        public ActionResult List()
+        {
+            var model = new OwnerListViewModel();
+            model.Owners = DataContext.Owners.Include("ApplicationUser");
+
+            return View(model);
+        }
+
         public ActionResult View(string username)
         {
             if (String.IsNullOrWhiteSpace(username))

@@ -54,7 +54,7 @@ namespace EDR.Controllers
             return RedirectToAction("Learn", "Home");
         }
 
-        [Authorize(Roles = "Teacher, Owner")]
+        [Authorize]
         public ActionResult Create(string role, string eventType, int? placeId)
         {
             var model = GetInitialClassCreateViewModel(role, eventType);
@@ -105,7 +105,7 @@ namespace EDR.Controllers
             }
         }
 
-        [Authorize(Roles = "Teacher, Owner")]
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(EventCreateViewModel model)
@@ -177,6 +177,13 @@ namespace EDR.Controllers
                         conference.Promoters.Add(promoter);
                     }
                     DataContext.Events.Add(conference);
+                }
+                else if (model.EventType == "Party")
+                {
+                    event1.Place = new OtherPlace { Name = model.Name, Address = model.Address, Address2 = model.Address2, City = model.City, State = model.State.ToString(), Zip = model.Zip };
+                    var party = ConvertToParty(event1);
+                    party.Dancer = DataContext.Users.Find(id);
+                    DataContext.Events.Add(party);
                 }
                 DataContext.SaveChanges();
                 //promoter.ContactEmail = model.Promoter.ContactEmail;

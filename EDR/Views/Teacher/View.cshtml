@@ -58,11 +58,12 @@
         </dd>
     </dl>
 </div>
-<h2>Classes</h2>
-@if (User.Identity != null && User.Identity.Name == Model.Teacher.ApplicationUser.UserName)
-{
-    <a href="@Url.Action("Create", "Event", new { role = "Teacher", eventType = "Class" }, null)">Add a Class</a>
-}
+<h2>Classes
+    @if (User.Identity != null && User.Identity.Name == Model.Teacher.ApplicationUser.UserName)
+    {
+        <a style="font-size: small; vertical-align: bottom;" href="@Url.Action("Create", "Event", new { role = "Teacher", eventType = "Class" }, null)">Add a Class</a>
+    }
+</h2>
 <table class="table table-striped table-bordered table-hover">
     <thead>
         <tr>
@@ -140,11 +141,12 @@
         }
     </tbody>
 </table>
-<h2>Workshops</h2>
-@if (User.Identity != null && User.Identity.Name == Model.Teacher.ApplicationUser.UserName)
-{
-    <a href="@Url.Action("Create", "Event", new { role = "Teacher", eventType = "Workshop" }, null)">Add a Workshop</a>
-}
+<h2>Workshops
+    @if (User.Identity != null && User.Identity.Name == Model.Teacher.ApplicationUser.UserName)
+    {
+        <a style="font-size: small; vertical-align: bottom;" href="@Url.Action("Create", "Event", new { role = "Teacher", eventType = "Workshop" }, null)">Add a Workshop</a>
+    }
+</h2>
 <table class="table table-striped table-bordered table-hover">
     <thead>
         <tr>

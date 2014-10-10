@@ -34,6 +34,7 @@ namespace EDR.Controllers
             var viewModel = new PlaceDetailViewModel();
             viewModel.Place = DataContext.Places.Include("Teachers").Include("Owners").Where(x => x.Id == id).FirstOrDefault();
             viewModel.DanceStyleList = DataContext.DanceStyles.Select(d => new SelectListItem() { Text = d.Name, Value = d.Id.ToString() }).ToList();
+            viewModel.Owners = DataContext.Owners.Where(y => y.Places.Any(x => x.Id == id)).ToList();
             viewModel.TeacherList = DataContext.Teachers.Where(x => x.Classes.Any(c => c.Place.Id == id) || x.Workshops.Any(w => w.Place.Id == id)).Select(t => new SelectListItem() { Text = t.ApplicationUser.FirstName + " " + t.ApplicationUser.LastName, Value = t.ApplicationUser.Id.ToString() }).ToList();
             var date = DateTime.Now.AddDays(21);
             viewModel.Classes = DataContext.Events.Include("Teachers").Include("Teachers.ApplicationUser").Include("DanceStyles").Include("Users").OfType<Class>().Where(c => c.Place.Id == id).Where(x => x.IsAvailable == true).Where(y => !y.Recurring ? (y.StartDate >= DateTime.Now) : (y.StartDate <= date && (y.EndDate == null || y.EndDate >= DateTime.Now))).OrderBy(z => z.StartDate).ToList();

@@ -7,12 +7,24 @@ using Microsoft.AspNet.Identity;
 using EDR.Models.ViewModels;
 using System.Data.Entity;
 using EDR.Models;
+using Facebook;
+using Microsoft.AspNet.Facebook;
+using Microsoft.AspNet.Facebook.Client;
+using System.Threading.Tasks;
 
 namespace EDR.Controllers
 {
     public class DancerController : BaseController
     {
-        public ActionResult View(string username)
+        public ActionResult List()
+        {
+            var model = new DancerListViewModel();
+            model.Dancers = DataContext.Users;
+
+            return View(model);
+        }
+
+        public async Task<ActionResult> View(string username)
         {
             if (String.IsNullOrWhiteSpace(username))
             {
@@ -27,7 +39,25 @@ namespace EDR.Controllers
 
             var viewModel = new DancerViewViewModel();
             viewModel.Dancer = dancer;
-            
+
+            var user = DataContext.Users.Where(x => x.UserName == username).FirstOrDefault();
+
+            var fb = new FacebookClient(user.FacebookToken);
+            dynamic myInfo = fb.Get("/me/friends?fields=id,name,email,link"); 
+            var friendsList = new List<FacebookFriendViewModel>();
+            foreach (dynamic friend in myInfo.data)
+            {
+                friendsList.Add(new FacebookFriendViewModel()
+                   {
+                       Id = friend.id,
+                       Name = friend.name,
+                       Link = friend.link,
+                       ImageURL = @"https://graph.facebook.com/" + friend.id + "/picture?type=small",
+                       Email = friend.email
+                   });
+            }
+            viewModel.FriendList = friendsList;
+
             return View(viewModel);
         }
 

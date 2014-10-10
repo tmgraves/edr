@@ -4,7 +4,7 @@
     ViewBag.Title = "Explore Dancing";
 }
 
-<h1 class="page-header">Explore Dance</h1>
+<h1 class="page-header">Pick a Dance Style...</h1>
 
 <div class="row list-group">
     @foreach (var item in Model.DanceStyles)
@@ -20,6 +20,7 @@
                         @Html.DisplayFor(d => item.Description)
                     </p>
                     <p>
+                        <a href="@Url.Action("Learn", "Home", new { danceStyle = item.Id }, null)" class="btn btn-primary">Find a @item.Name Class</a>
                         <a href="@Url.Action("Details", "DanceStyle", new { id = item.Id }, null)" class="btn btn-primary">Explore @item.Name</a>
                     </p>
                 </div>

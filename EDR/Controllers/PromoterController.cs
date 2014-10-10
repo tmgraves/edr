@@ -13,6 +13,14 @@ namespace EDR.Controllers
 {
     public class PromoterController : BaseController
     {
+        public ActionResult List()
+        {
+            var model = new PromoterListViewModel();
+            model.Promoters = DataContext.Promoters.Include("ApplicationUser");
+
+            return View(model);
+        }
+
         public ActionResult View(string username)
         {
             if (String.IsNullOrWhiteSpace(username))

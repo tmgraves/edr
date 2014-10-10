@@ -10,5 +10,6 @@ namespace EDR.Models.ViewModels
         // TODO: FILL IN PROPERTIES NEEDED FOR VIEW
 
         public ApplicationUser Dancer { get; set; }
+        public IEnumerable<FacebookFriendViewModel> FriendList { get; set; }
     }
 }

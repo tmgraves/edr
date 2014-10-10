@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using EDR.Enums;
 
 namespace EDR.Models.ViewModels
 {
@@ -15,12 +16,19 @@ namespace EDR.Models.ViewModels
         public DateTime Time { get; set; }
         public string EventType { get; set; }
         public string Role { get; set; }
-        [Display(Name = "Your Skill Level (1-5)")]
-        public int SkillLevel { get; set; }
+        [Display(Name = "Your Skill Level")]
+        public SkillLevel SkillLevel { get; set; }
         [Display(Name = "Prerequisite(s)")]
         public string Prerequisite { get; set; }
         public List<SelectListItem> PlaceList { get; set; }
         public int PlaceId { get; set; }
+        [Display(Name = "Name of the Location")]
+        public string Name { get; set; }
+        public string Address { get; set; }
+        public string Address2 { get; set; }
+        public string City { get; set; }
+        public State State { get; set; }
+        public string Zip { get; set; }
         public IEnumerable<DanceStyleListItem> AvailableStyles { get; set; }
         public IEnumerable<DanceStyleListItem> SelectedStyles { get; set; }
         public PostedStyles PostedStyles { get; set; }

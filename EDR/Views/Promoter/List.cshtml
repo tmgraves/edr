@@ -1,0 +1,25 @@
+﻿@model EDR.Models.ViewModels.PromoterListViewModel
+
+@{
+    ViewBag.Title = "List of Promoters";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>List of Promoters</h2>
+<table class="table">
+    <tr>
+        <th>
+            Name
+        </th>
+    </tr>
+
+@foreach (var item in Model.Promoters)
+{
+    <tr>
+        <td>
+            @Html.ActionLink(item.ApplicationUser.FullName, "View", "Promoter", new { username = item.ApplicationUser.UserName }, null)
+        </td>
+    </tr>
+}
+
+</table>

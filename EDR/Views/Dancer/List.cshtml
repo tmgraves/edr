@@ -1,0 +1,25 @@
+﻿@model EDR.Models.ViewModels.DancerListViewModel
+
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>List of Dancers</h2>
+<table class="table">
+    <tr>
+        <th>
+            Name
+        </th>
+    </tr>
+
+    @foreach (var item in Model.Dancers)
+    {
+        <tr>
+            <td>
+                @Html.ActionLink(item.FullName, "View", "Dancer", new { username = item.UserName }, null)
+            </td>
+        </tr>
+    }
+
+</table>

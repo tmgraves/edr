@@ -22,7 +22,7 @@ namespace EDR.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var viewModel = DataContext.DanceStyles.Find(id);
+            var viewModel = DataContext.DanceStyles.Include("Teachers").Where(x => x.Id == id).FirstOrDefault();
 
             return View(viewModel);
         }

@@ -4,11 +4,17 @@
     ViewBag.Title = "Dancer - " + Model.Dancer.FirstName;
 }
 
+<h1 class="page-header">
 @if (Model.Dancer.FacebookUsername != null)
-{ 
-<img src="http://graph.facebook.com/@Model.Dancer.FacebookUsername/picture?type=normal" />
+{
+    <img src="http://graph.facebook.com/@Model.Dancer.FacebookUsername/picture?type=normal" />
 }
-<h1 class="page-header">@Model.Dancer.FirstName</h1>
+<span style="vertical-align: bottom;">@Model.Dancer.FirstName</span>
+@if (User.Identity != null && User.Identity.Name == Model.Dancer.UserName)
+{
+    <a style="font-size: small; vertical-align: bottom;" href="@Url.Action("Edit", "Dancer")">Edit Profile</a>
+}
+</h1>
 
 <div class="well">
     <dl class="dl-horizontal">
@@ -42,27 +48,85 @@
         </dd>
 
         <dt>
-            My Parties
+            Facebook Friends
         </dt>
 
         <dd>
-            <ul class="list-inline">
-                @foreach (var item in Model.Dancer.Parties)
+                @if (Model.FriendList != null && Model.FriendList.Count() > 0)
                 {
-                    <li>@Html.ActionLink(item.Name, "Details", "Event", new { id = item.Id }, null)</li>
+                    foreach (var myFriend in @Model.FriendList)
+                    {
+                        <a href="@myFriend.Link" target="_blank">
+                            <div class="photoTile">
+                                @if (myFriend.ImageURL != null)
+                                {
+                                    <img src="@myFriend.ImageURL" />
+                                }
+                                <label>@myFriend.Name</label>
+                            </div>
+                        </a>
                 }
-            </ul>
+                }
+                else
+                {
+                    @:No friends found.
+                }
         </dd>
     </dl>
-@if (User.Identity != null && User.Identity.Name == Model.Dancer.UserName)
-{
-    <a href="@Url.Action("Create", "Event", new { role = "Dancer", eventType = "Party" }, null)">Add a Party</a>
-}
-@if (User.Identity != null && User.Identity.Name == Model.Dancer.UserName)
-{
-    <a class="btn btn-primary" href="@Url.Action("Edit", "Dancer")">Edit Profile</a>
-}
 </div>
+<h2>Parties
+@if (User.Identity != null && User.Identity.Name == Model.Dancer.UserName)
+{
+    <a style="font-size: small; vertical-align: bottom;" href="@Url.Action("Create", "Event", new { role = "Dancer", eventType = "Party" }, null)">Add a Party</a>
+}
+</h2>
+    <table class="table table-striped table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Party</th>
+                <th>Where</th>
+                <th>When</th>
+                <th>Price</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Dancer.Parties)
+                {
+                <tr>
+                    <td>
+                        <strong>@item.Name</strong><br />
+                        Dance Styles:<ul class="list-inline">
+                            @if (item.DanceStyles != null)
+                            {
+                                foreach (var s in item.DanceStyles)
+                                {
+                                    <li>@Html.ActionLink(s.Name, "Details", "DanceStyle", new { id = s.Id }, null)</li>
+                                }
+                            }
+                        </ul>
+                    </td>
+                    <td>
+                        @Html.ActionLink(item.Place.Name, "Details", "Place", new { id = item.Place.Id }, null)<br />
+                        @item.Place.Address
+                        @item.Place.Address2<br />
+                        @item.Place.City,
+                        @item.Place.State
+                        @item.Place.Zip
+                    </td>
+                    <td>
+                        @item.StartDate.ToLongDateString()<br />@item.StartDate.ToString("%h:mm tt")~@item.StartDate.AddMinutes(item.Duration).ToString("%h:mm tt")
+                    </td>
+                    <td>
+                        @(item.Price.HasValue ? String.Format("{0:c}", item.Price) : "Free")
+                    </td>
+                    <td>
+                        @Html.ActionLink("View this Party", "Details", "Event", new { id = item.Id }, htmlAttributes: new { @class = "btn btn-primary" })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 <p>
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Back to List", "List")
 </p>

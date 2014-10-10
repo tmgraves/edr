@@ -393,25 +393,40 @@ namespace EDR.Controllers
                 var username = usernameClaim != null ? usernameClaim.Value : null;
                 var tokenClaim = info.ExternalIdentity.Claims.First(c => c.Type == "urn:facebook:access_token");
                 var token = tokenClaim != null ? tokenClaim.Value : null;
-                var user = new ApplicationUser() { UserName = model.UserName, Email = email, FirstName = firstName, LastName = lastName, FacebookToken = token, FacebookUsername = username };
-                IdentityResult result = await UserManager.CreateAsync(user);
-                if (result.Succeeded)
+
+                var user = new ApplicationUser();
+                IdentityResult result = new IdentityResult();
+
+                if (DataContext.Users.Where(x => x.Email == email).Count() == 1)
                 {
-                    result = await UserManager.AddLoginAsync(user.Id, info.Login);
-                    if (result.Succeeded)
+                    user = DataContext.Users.Where(x => x.Email == email).FirstOrDefault();
+                    user.FacebookToken = token;
+                    user.FacebookUsername = username;
+                    DataContext.SaveChanges();
+                }
+                else
+                {
+                    user = new ApplicationUser() { UserName = model.UserName, Email = email, FirstName = firstName, LastName = lastName, FacebookToken = token, FacebookUsername = username };
+                    result = await UserManager.CreateAsync(user);
+                    if (!result.Succeeded)
                     {
-                        await SignInAsync(user, isPersistent: false);
-                        
-                        // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
-                        // Send an email with this link
-                        // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                        // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                        // SendEmail(user.Email, callbackUrl, "Confirm your account", "Please confirm your account by clicking this link");
-                        
-                        return RedirectToLocal(returnUrl);
+                        AddErrors(result);
                     }
                 }
-                AddErrors(result);
+
+                result = await UserManager.AddLoginAsync(user.Id, info.Login);
+                if (result.Succeeded)
+                {
+                    await SignInAsync(user, isPersistent: false);
+                        
+                    // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
+                    // Send an email with this link
+                    // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                    // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                    // SendEmail(user.Email, callbackUrl, "Confirm your account", "Please confirm your account by clicking this link");
+                        
+                    return RedirectToLocal(returnUrl);
+                }
             }
 
             ViewBag.ReturnUrl = returnUrl;

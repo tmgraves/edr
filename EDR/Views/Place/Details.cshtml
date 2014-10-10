@@ -12,17 +12,26 @@
 </h1>
 <p class="lead">@Model.Place.Address, @Model.Place.City, @Model.Place.State @Model.Place.Zip</p>
 <p>
-    <a href='@Model.Place.FacebookLink' target="_blank">@Model.Place.FacebookLink</a>
+    @Html.Label("Facebook:", htmlAttributes: new { @class = "control-label col-md-2" })<a href='@Model.Place.FacebookLink' target="_blank">@Model.Place.FacebookLink</a>
 </p>
 <p>
-    <a href='@Model.Place.Website' target="_blank">@Model.Place.Website</a>
+    @Html.Label("Website:", htmlAttributes: new { @class = "control-label col-md-2" })<a href='@Model.Place.Website' target="_blank">@Model.Place.Website</a>
+</p>
+<p>@Html.Label("Owners:", htmlAttributes: new { @class = "control-label col-md-2" })
+    @if (Model.Owners != null)
+    {
+        foreach (var t in Model.Owners)
+        {
+            @Html.ActionLink(t.ApplicationUser.FullName, "View", "Owner", new { username = t.ApplicationUser.UserName }, null)
+        }
+    }
 </p>
 @using (Html.BeginForm("Details", "Place", FormMethod.Get))
 {
     <p>
         @Html.Label("Choose a Dance Style:", htmlAttributes: new { @class = "control-label col-md-2" })@Html.DropDownList("DanceStyle", Model.DanceStyleList, "All", new { @class = "form-control" })
         @Html.Label("Choose a Teacher:", htmlAttributes: new { @class = "control-label col-md-2" })@Html.DropDownList("Teacher", Model.TeacherList, "All", new { @class = "form-control" })
-        @Html.Label("Choose Skill Level:", htmlAttributes: new { @class = "control-label col-md-2" })@Html.DropDownList("SkillLevel", Model.SkillLevelList, "All", new { @class = "form-control" })
+        @Html.Label("Choose Skill Level:", htmlAttributes: new { @class = "control-label col-md-2" })@Html.EnumDropDownListFor(x => x.SkillLevelList, "All", new { @class = "form-control" })
         <input type="submit" value="Search" class="btn btn-primary" />
     </p>
 }

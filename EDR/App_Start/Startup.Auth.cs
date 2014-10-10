@@ -51,6 +51,7 @@ namespace EDR
             var x = new FacebookAuthenticationOptions();
             x.Scope.Add("email");
             x.Scope.Add("user_photos");
+            x.Scope.Add("user_friends");
             //x.Scope.Add("first_name");
             //x.Scope.Add("last_name");
             //  x.Scope.Add("link");
