@@ -6,14 +6,14 @@ namespace EDR.Enums
     public enum SkillLevel
     {
         [Display(Name = "Beginner")]
-        Beginner,
+        Beginner=1,
         [Display(Name = "Beginner/Intermediate")]
-        BeginnerIntermediate,
+        BeginnerIntermediate=2,
         [Display(Name = "Intermediate")]
-        Intermediate,
+        Intermediate=3,
         [Display(Name = "Intermediate/Advanced")]
-        IntermediateAdvanced,
+        IntermediateAdvanced=4,
         [Display(Name = "Advanced")]
-        Advanced
+        Advanced=5
     }
 }
