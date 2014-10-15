@@ -1,0 +1,159 @@
+﻿@model IEnumerable<EDR.Models.Event>
+@using EDR.Utilities
+@using EDR.Models
+
+@if (Model.Count() != 0)
+{
+<table class="table table-striped table-bordered table-hover">
+    <thead>
+        <tr>
+            <th width="30%">
+                @if (Model.First() is Social)
+                {
+                    @:Social
+                }
+                else if (Model.First() is Concert)
+                {
+                    @:Concert
+                }
+                else if (Model.First() is Conference)
+                {
+                    @:Conference
+                }
+                else if (Model.First() is OpenHouse)
+                {
+                    @:Open House
+                }
+                else if (Model.First() is Party)
+                {
+                    @:Party
+                }
+                else if (Model.First() is Rehearsal)
+                {
+                    @:Rehearsal
+                }
+                else if (Model.First() is Workshop)
+                {
+                    @:Workshop
+                }
+                else if (Model.First() is Class)
+                {
+                    @:Class
+                }
+            </th>
+            <th width="20%">Where</th>
+            <th width="20%">When</th>
+            <th width="5%">Attendees</th>
+            <th width="5%">Price</th>
+            <th width="20%"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <strong>@item.Name</strong><br />
+                        @if (item.DanceStyles != null)
+                        {
+                            @:Dance Styles:
+                            foreach (var s in item.DanceStyles)
+                            {
+                                @Html.ActionLink(s.Name, "Details", "DanceStyle", new { id = s.Id }, htmlAttributes: new { @style = "padding: 5px" })
+                            }
+                        }
+                    @if (item is Class)
+                    {
+                        @:<br />Teachers:
+                        if (((Class)item).Teachers != null)
+                        {
+                            foreach (var t in ((Class)item).Teachers)
+                            {
+                                @Html.ActionLink(t.ApplicationUser.FullName, "View", "Teacher", new { username = t.ApplicationUser.UserName }, htmlAttributes: new { @style = "padding: 5px" })
+                            }
+                        }
+                    }
+                    else if (item is Workshop)
+                    {
+                        <ul class="list-inline">
+                            Teachers:
+                            @if (((Workshop)item).Teachers != null)
+                            {
+                                foreach (var t in ((Workshop)item).Teachers)
+                                {
+                                    <li>@Html.ActionLink(t.ApplicationUser.FullName, "View", "Teacher", new { username = t.ApplicationUser.UserName }, htmlAttributes: new { @style = "padding: 5px" })</li>
+                                }
+                            }
+                        </ul>
+                    }
+                </td>
+                <td>
+                    @Html.ActionLink(item.Place.Name, "Details", "Place", new { id = item.Place.Id }, null)<br />
+                    @item.Place.Address
+                    @item.Place.Address2<br />
+                    @item.Place.City,
+                    @item.Place.State
+                    @item.Place.Zip
+                </td>
+                <td>
+                    @if (item.Recurring)
+                    {
+                        @ApplicationUtility.GetNextDate(item.StartDate, item.Frequency, (int)item.Interval, item.Day).ToLongDateString()<br />
+                        @item.StartDate.ToString("%h:mm tt")@:~@item.StartDate.AddMinutes(item.Duration).ToString("%h:mm tt")<br />
+                        @:Every @item.Day (@(item.Interval == null ? "" : (item.Interval == 2 ? "Bi-" : (item.Interval == 3 ? "Tri-" : "")))@item.Frequency)
+                        @*@String.Format("{0:dddd, M/d/yy}", item.StartDate)<br />@String.Format("{0:h:mm tt}", item.StartDate)*@
+                    }
+                    else
+                    {
+                        @item.StartDate.ToLongDateString()<br />@item.StartDate.ToString("%h:mm tt")@:~@item.StartDate.AddMinutes(item.Duration).ToString("%h:mm tt")
+                                }
+                </td>
+                <td align="right">
+                    @Html.DisplayFor(modelItem => item.Users.Count)
+                </td>
+                <td align="right">
+                    @(item.Price.HasValue && item.Price > 0 ? String.Format("{0:c}", item.Price) : "Free")
+                </td>
+                <td>
+                    @if (item is Social)
+                    {
+                        @Html.ActionLink("View this Social", "Details", "Event", new { id = item.Id, eventType = "Social" }, htmlAttributes: new { @class = "btn btn-primary", @style = "margin: 5px" })
+                    }
+                    else if (item is Concert)
+                    {
+                        @Html.ActionLink("View this Concert", "Details", "Event", new { id = item.Id, eventType = "Concert" }, htmlAttributes: new { @class = "btn btn-primary", @style = "margin: 5px" })
+                    }
+                    else if (Model.First() is Conference)
+                    {
+                        @Html.ActionLink("View this Conference", "Details", "Event", new { id = item.Id, eventType = "Conference" }, htmlAttributes: new { @class = "btn btn-primary", @style = "margin: 5px" })
+                    }
+                    else if (Model.First() is OpenHouse)
+                    {
+                        @Html.ActionLink("View this Open House", "Details", "Event", new { id = item.Id, eventType = "OpenHouse" }, htmlAttributes: new { @class = "btn btn-primary", @style = "margin: 5px" })
+                    }
+                    else if (Model.First() is Party)
+                    {
+                        @Html.ActionLink("View this Party", "Details", "Event", new { id = item.Id, eventType = "Party" }, htmlAttributes: new { @class = "btn btn-primary", @style = "margin: 5px" })
+                    }
+                    else if (Model.First() is Rehearsal)
+                    {
+                        @Html.ActionLink("View this Rehearsal", "Details", "Event", new { id = item.Id, eventType = "Rehearsal" }, htmlAttributes: new { @class = "btn btn-primary", @style = "margin: 5px" })
+                    }
+                    else if (Model.First() is Workshop)
+                    {
+                        @Html.ActionLink("View this Workshop", "Details", "Event", new { id = item.Id, eventType = "Workshop" }, htmlAttributes: new { @class = "btn btn-primary", @style = "margin: 5px" })
+                    }
+                    else if (Model.First() is Class)
+                    {
+                        @Html.ActionLink("View this Class", "Details", "Event", new { id = item.Id, eventType = "Class" }, htmlAttributes: new { @class = "btn btn-primary", @style = "margin: 5px" })
+                    }
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        @Html.ActionLink("Add to Calendar", "Signup", "Event", new { id = item.Id }, htmlAttributes: new { @class = "btn btn-primary", @style = "margin: 5px" })
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+}

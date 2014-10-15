@@ -1,16 +1,23 @@
 ﻿@model EDR.Models.ViewModels.PromoterViewViewModel
+@using EDR.Utilities
 
 @{
     ViewBag.Title = "Promoter - " + Model.Promoter.ApplicationUser.FullName;
 }
 
+<h1 class="page-header">
 @if (Model.Promoter.ApplicationUser.FacebookUsername != null)
 {
-    <img src="http://graph.facebook.com/@Model.Promoter.ApplicationUser.FacebookUsername/picture?type=normal" />
+    <img class="img-thumbnail" src="http://graph.facebook.com/@Model.Promoter.ApplicationUser.FacebookUsername/picture?type=normal" />
 }
-<h1 class="page-header">@Model.Promoter.ApplicationUser.FullName</h1>
+@Model.Promoter.ApplicationUser.FullName (Promoter)
+@if (User.Identity != null && User.Identity.Name == Model.Promoter.ApplicationUser.UserName)
+{
+    <a style="font-size: medium;" href="@Url.Action("Edit", "Promoter")">Edit Profile</a>
+}
+</h1>
 
-<div>
+<div class="well">
     <dl class="dl-horizontal">
         <dt>
             Contact
@@ -44,32 +51,53 @@
             Location
         </dd>
 
-
-        <dt>
-            Events
-        </dt>
-
-        <dd>
-            <ul class="list-inline">
-                @foreach (var item in Model.Promoter.Events)
-                {
-                    <li>@Html.ActionLink(item.Name, "Details", "Event", new { id = item.Id }, null)</li>
-                }
-            </ul>
-        </dd>
     </dl>
-@if (User.Identity != null && User.Identity.Name == Model.Promoter.ApplicationUser.UserName)
-{
-    <p>
-        <a href="@Url.Action("Create", "Event", new { role = "Promoter", eventType = "Social" }, null)">Add a Social</a>
-        <a href="@Url.Action("Create", "Event", new { role = "Promoter", eventType = "Concert" }, null)">Add a Concert</a>
-        <a href="@Url.Action("Create", "Event", new { role = "Promoter", eventType = "Conference" }, null)">Add a Conference</a>
-    </p>
-}
-    @if (User.Identity != null && User.Identity.Name == Model.Promoter.ApplicationUser.UserName)
-    {
-        <a class="btn btn-primary" href="@Url.Action("Edit", "Promoter")">Edit Profile</a>
-    }
+    <div class="tabbable">
+        <ul class="nav nav-tabs nav-justified" role="tablist">
+            <li class="active"><a href="#socials" data-toggle="tab">Socials (@Model.Socials.Count())</a></li>
+            <li><a href="#concerts" data-toggle="tab">Concerts (@Model.Concerts.Count())</a></li>
+            <li><a href="#conferences" data-toggle="tab">Conferences (@Model.Conferences.Count())</a></li>
+            <li><a href="#openhouses" data-toggle="tab">Open Houses (@Model.OpenHouses.Count())</a></li>
+            <li><a href="#parties" data-toggle="tab">Parties (@Model.Parties.Count())</a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="socials" class="tab-pane active">
+                @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", Model.Socials)
+                @if (User.Identity != null && User.Identity.Name == Model.Promoter.ApplicationUser.UserName)
+                {
+                    <a class="btn btn-link" href="@Url.Action("Create", "Event", new { role = "Promoter", eventType = "Social" }, null)">Add a Social</a>
+                }
+            </div>
+            <div id="concerts" class="tab-pane">
+                @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", Model.Concerts)
+                @if (User.Identity != null && User.Identity.Name == Model.Promoter.ApplicationUser.UserName)
+                {
+                    <a class="btn btn-link" href="@Url.Action("Create", "Event", new { role = "Promoter", eventType = "Concert" }, null)">Add a Concert</a>
+                }
+            </div>
+            <div id="conferences" class="tab-pane">
+                @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", Model.Conferences)
+                @if (User.Identity != null && User.Identity.Name == Model.Promoter.ApplicationUser.UserName)
+                {
+                    <a class="btn btn-link" href="@Url.Action("Create", "Event", new { role = "Promoter", eventType = "Conference" }, null)">Add a Conference</a>
+                }
+            </div>
+            <div id="openhouses" class="tab-pane">
+                @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", Model.OpenHouses)
+                @if (User.Identity != null && User.Identity.Name == Model.Promoter.ApplicationUser.UserName)
+                {
+                    <a class="btn btn-link" href="@Url.Action("Create", "Event", new { role = "Promoter", eventType = "OpenHouse" }, null)">Add an Open House</a>
+                }
+            </div>
+            <div id="parties" class="tab-pane">
+                @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", Model.Parties)
+                @if (User.Identity != null && User.Identity.Name == Model.Promoter.ApplicationUser.UserName)
+                {
+                    <a class="btn btn-link" href="@Url.Action("Create", "Event", new { role = "Promoter", eventType = "Party" }, null)">Add a Party</a>
+                }
+            </div>
+        </div>
+    </div>
 </div>
 <p>
     @Html.ActionLink("Back to List", "List")

@@ -39,7 +39,12 @@ namespace EDR.Controllers
 
             // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE PromoterViewModel)
             var viewModel = new PromoterViewViewModel();
-            viewModel.Promoter = DataContext.Promoters.Where(x => x.ApplicationUser.UserName == username).Include("Events").FirstOrDefault();
+            viewModel.Promoter = DataContext.Promoters.Where(x => x.ApplicationUser.UserName == username).Include("Events").Include("Events.DanceStyles").FirstOrDefault();
+            viewModel.Socials = viewModel.Promoter.Events.OfType<Social>();
+            viewModel.Concerts = viewModel.Promoter.Events.OfType<Concert>();
+            viewModel.Conferences = viewModel.Promoter.Events.OfType<Conference>();
+            viewModel.OpenHouses = viewModel.Promoter.Events.OfType<OpenHouse>();
+            viewModel.Parties = viewModel.Promoter.Events.OfType<Party>();
 
             return View(viewModel);
         }

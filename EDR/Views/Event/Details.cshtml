@@ -1,17 +1,64 @@
-﻿@model EDR.Models.Event
+﻿@model EDR.Models.ViewModels.EventDetailViewModel
+@using EDR.Utilities
+@using EDR.Models
 
 @{
-    ViewBag.Title = Model.Name;
+    ViewBag.Title = Model.EventType.ToString() + " Details";
 }
 
-<h1 class="page-header">@Model.Name <small>at @Html.ActionLink(@Model.Place.Name, "Details", "Place", new { id = Model.Place.Id }, null)</small></h1>
+<h1 class="page-header">@Model.Event.Name <small>at @Html.ActionLink(@Model.Event.Place.Name, "Details", "Place", new { id = Model.Event.Place.Id }, null)</small></h1>
 
-<p class="lead">@Model.Description</p>
+<p class="lead">@Model.Event.Description</p>
 
-<h2>Dance Styles</h2>
-<ul>
-    @foreach (var item in Model.DanceStyles)
+<p>
+    @if (Model.Event.Recurring)
     {
-        <li>@Html.DisplayFor(modelItem => item.Name)</li>
+        <strong>Next @Model.EventType.ToString():</strong> @ApplicationUtility.GetNextDate(Model.Event.StartDate, Model.Event.Frequency, (int)Model.Event.Interval, Model.Event.Day).ToLongDateString()<br />
+        <strong>Time:</strong> @Model.Event.StartDate.ToString("%h:mm tt")@:~@Model.Event.StartDate.AddMinutes(Model.Event.Duration).ToString("%h:mm tt")<br />
+        <strong>Frequency:</strong> @Model.Event.Day @:(@(Model.Event.Interval == null ? "" : (Model.Event.Interval == 2 ? "Bi-" : (Model.Event.Interval == 3 ? "Tri-" : "")))@Model.Event.Frequency)
+    }
+    else
+    {
+        @:<strong>Date/Time:</strong> @Model.Event.StartDate.ToLongDateString() - @Model.Event.StartDate.ToShortTimeString() to @Model.Event.StartDate.AddMinutes(Model.Event.Duration).ToShortTimeString()
+    }
+</p>
+<p>
+    <a href='@Model.Event.FacebookLink' target="_blank">@Model.Event.FacebookLink</a>
+</p>
+<strong>Dance Styles</strong>
+<ul class="list-inline">
+    @foreach (var item in Model.Event.DanceStyles)
+    {
+        <li>@Html.ActionLink(item.Name, "Details", "DanceStyle", new { id = item.Id }, null)</li>
     }
 </ul>
+@if (Model.Event is Class || Model.Event is Workshop)
+{
+    <strong>Teacher(s):</strong>
+    <ul class="list-inline">
+        @foreach (var item in Model.Teachers)
+        {
+            <li>@Html.ActionLink(item.ApplicationUser.FullName, "View", "Teacher", new { username = item.ApplicationUser.UserName }, null)</li>
+        }
+    </ul>
+}
+@if (User.Identity.IsAuthenticated)
+{
+    <p>
+        @Html.ActionLink("Add to Your Calendar", "Signup", "Event", new { id = Model.Event.Id }, null)
+    </p>
+}
+<strong>Reviews</strong>
+<ul>
+    @foreach (var r in Model.Event.Reviews)
+    {
+        <li>@Html.DisplayFor(modelItem => r.ReviewDate) - @Html.DisplayFor(modelItem => r.ReviewText)<br />Rating: @Html.DisplayFor(modelItem => r.Rating)<br />Author: @Html.DisplayFor(modelItem => r.Author.FirstName)</li>
+    }
+</ul>
+@if (User.Identity.IsAuthenticated)
+{
+    @Html.ActionLink("Add a Review", "CreateReview", new { id = Model.Event.Id }, null)
+}
+<p>
+    @Html.ActionLink("Back to List", "Learn", "Home")
+</p>

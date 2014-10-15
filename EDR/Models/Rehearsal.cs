@@ -7,5 +7,6 @@ namespace EDR.Models
 {
     public class Rehearsal : Event
     {
+        public Teacher Teacher { get; set; }
     }
 }

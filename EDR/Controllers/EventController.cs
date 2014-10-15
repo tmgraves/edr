@@ -8,25 +8,36 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using EDR.Models;
 using System.Data.Entity.Validation;
+using EDR.Enums;
 
 namespace EDR.Controllers
 {
     public class EventController : BaseController
     {
-        public ActionResult Details(int id)
+        public ActionResult Details(int id, EventType eventType)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var model = DataContext.Events.Where(x => x.Id == id).FirstOrDefault();
-            if (model == null)
+            var model = new EventDetailViewModel();
+            model.Event = DataContext.Events.Include("DanceStyles").Include("Reviews").Where(x => x.Id == id).FirstOrDefault();
+            model.EventType = eventType;
+
+            if (model.Event == null)
             {
                 return HttpNotFound();
             }
 
-            DataContext.Entry(model).Collection(x => x.DanceStyles).Load();
+            if (model.Event is Class)
+            {
+                model.Teachers = DataContext.Teachers.Where(t => t.Classes.Any(c => c.Id == id)).ToList();
+            }
+            else if (model.Event is Workshop)
+            {
+                model.Teachers = DataContext.Teachers.Where(t => t.Workshops.Any(w => w.Id == id)).ToList();
+            }
 
             return View(model);
         }
@@ -178,12 +189,32 @@ namespace EDR.Controllers
                     }
                     DataContext.Events.Add(conference);
                 }
+                else if (model.EventType == "OpenHouse")
+                {
+                    var openHouse = ConvertToOpenHouse(event1);
+                    if (model.Role == "Promoter")
+                    {
+                        var promoter = DataContext.Promoters.Include("ApplicationUser").Where(x => x.ApplicationUser.Id == id).FirstOrDefault();
+                        openHouse.Promoters.Add(promoter);
+                    }
+                    DataContext.Events.Add(openHouse);
+                }
                 else if (model.EventType == "Party")
                 {
                     event1.Place = new OtherPlace { Name = model.Name, Address = model.Address, Address2 = model.Address2, City = model.City, State = model.State.ToString(), Zip = model.Zip };
                     var party = ConvertToParty(event1);
                     party.Dancer = DataContext.Users.Find(id);
                     DataContext.Events.Add(party);
+                }
+                else if (model.EventType == "Rehearsal")
+                {
+                    var rehearsal = ConvertToRehearsal(event1);
+                    if (model.Role == "Teacher")
+                    {
+                        var teacher = DataContext.Teachers.Include("ApplicationUser").Where(x => x.ApplicationUser.Id == id).FirstOrDefault();
+                        rehearsal.Teacher = teacher;
+                    }
+                    DataContext.Events.Add(rehearsal);
                 }
                 DataContext.SaveChanges();
                 //promoter.ContactEmail = model.Promoter.ContactEmail;
@@ -339,7 +370,8 @@ namespace EDR.Controllers
                 Day = event1.Day,
                 Duration = event1.Duration,
                 Place = event1.Place,
-                DanceStyles = event1.DanceStyles
+                DanceStyles = event1.DanceStyles,
+                Promoters = new List<Promoter>()
             };
 
             return openHouse;

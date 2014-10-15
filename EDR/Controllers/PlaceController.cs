@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using EDR.Models;
 using EDR.Models.ViewModels;
 using EDR.Enums;
+using Microsoft.AspNet.Identity;
 
 namespace EDR.Controllers
 {
@@ -68,6 +69,69 @@ namespace EDR.Controllers
             viewModel.OpenHouses = Events.OfType<OpenHouse>();
 
             return View(viewModel);
+        }
+
+        [Authorize(Roles="Owner")]
+        public ActionResult Create(PlaceType placeType)
+        {
+            var model = new PlaceCreateViewModel();
+            model.PlaceType = placeType;
+            return View(model);
+        }
+
+        [Authorize(Roles = "Owner")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(PlaceCreateViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var id = User.Identity.GetUserId();
+                var owner = DataContext.Owners.Where(x => x.ApplicationUser.Id == id).FirstOrDefault();
+
+                if (model.PlaceType == PlaceType.Studio)
+                {
+                    var place = new Studio() { Name = model.Name, Address = model.Address, Address2 = model.Address2, City = model.City, State = model.State.ToString(), Zip = model.Zip, Owners = new List<Owner> { owner } };
+                    DataContext.Places.Add(place);
+                }
+                else if (model.PlaceType == PlaceType.ConferenceCenter)
+                {
+                    var place = new ConferenceCenter() { Name = model.Name, Address = model.Address, Address2 = model.Address2, City = model.City, State = model.State.ToString(), Zip = model.Zip, Owners = new List<Owner> { owner } };
+                    DataContext.Places.Add(place);
+                }
+                else if (model.PlaceType == PlaceType.Hotel)
+                {
+                    var place = new Hotel() { Name = model.Name, Address = model.Address, Address2 = model.Address2, City = model.City, State = model.State.ToString(), Zip = model.Zip, Owners = new List<Owner> { owner } };
+                    DataContext.Places.Add(place);
+                }
+                else if (model.PlaceType == PlaceType.Nightclub)
+                {
+                    var place = new Nightclub() { Name = model.Name, Address = model.Address, Address2 = model.Address2, City = model.City, State = model.State.ToString(), Zip = model.Zip, Owners = new List<Owner> { owner } };
+                    DataContext.Places.Add(place);
+                }
+                else if (model.PlaceType == PlaceType.OtherPlace)
+                {
+                    var place = new OtherPlace() { Name = model.Name, Address = model.Address, Address2 = model.Address2, City = model.City, State = model.State.ToString(), Zip = model.Zip, Owners = new List<Owner> { owner } };
+                    DataContext.Places.Add(place);
+                }
+                else if (model.PlaceType == PlaceType.Restaurant)
+                {
+                    var place = new Restaurant() { Name = model.Name, Address = model.Address, Address2 = model.Address2, City = model.City, State = model.State.ToString(), Zip = model.Zip, Owners = new List<Owner> { owner } };
+                    DataContext.Places.Add(place);
+                }
+                else if (model.PlaceType == PlaceType.Theater)
+                {
+                    var place = new Theater() { Name = model.Name, Address = model.Address, Address2 = model.Address2, City = model.City, State = model.State.ToString(), Zip = model.Zip, Owners = new List<Owner> { owner } };
+                    DataContext.Places.Add(place);
+                }
+                DataContext.SaveChanges();
+                return RedirectToAction("Manage", "Account");
+            }
+            else
+            {
+                var allErrors = ModelState.Values.SelectMany(v => v.Errors);
+            }
+            return View(model);
         }
     }
 }

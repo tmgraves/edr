@@ -1,14 +1,21 @@
 ﻿@model EDR.Models.ViewModels.OwnerViewViewModel
+@using EDR.Models
 
 @{
     ViewBag.Title = "Owner - " + Model.Owner.ApplicationUser.FirstName;
 }
 
+<h1 class="page-header">
 @if (Model.Owner.ApplicationUser.FacebookUsername != null)
 {
-    <img src="http://graph.facebook.com/@Model.Owner.ApplicationUser.FacebookUsername/picture?type=normal" />
+    <img class="img-thumbnail" src="http://graph.facebook.com/@Model.Owner.ApplicationUser.FacebookUsername/picture?type=normal" />
 }
-<h1 class="page-header">@Model.Owner.ApplicationUser.FullName</h1>
+@Model.Owner.ApplicationUser.FullName (Owner)
+@if (User.Identity != null && User.Identity.Name == Model.Owner.ApplicationUser.UserName)
+{
+    <a style="font-size: medium;" href="@Url.Action("Edit", "Owner")">Edit Profile</a>
+}
+</h1>
 
 <div class="well">
     <dl class="dl-horizontal">
@@ -17,7 +24,7 @@
         </dt>
 
         <dd>
-            @Model.Owner.ContactEmail
+            <a href='mailto:@Model.Owner.ContactEmail' target="_blank">@Model.Owner.ContactEmail</a>
         </dd>
 
         <dt>
@@ -25,7 +32,7 @@
         </dt>
 
         <dd>
-            @Model.Owner.Website
+            <a href='@Model.Owner.Website' target="_blank">@Model.Owner.Website</a>
         </dd>
 
         <dt>
@@ -33,7 +40,7 @@
         </dt>
 
         <dd>
-            @Model.Owner.Facebook
+            <a href='@Model.Owner.Facebook' target="_blank">@Model.Owner.Facebook</a>
         </dd>
 
         <dt>
@@ -42,38 +49,261 @@
 
         <dd>
             Location
-        </dd>
-
-        <dt>
-            Places
-        </dt>
-
-        <dd>
-            <ul class="list-inline">
-                @foreach (var item in Model.Owner.Places)
-                {
-                    <li>@Html.ActionLink(item.Name, "Details", "Place", new { id = item.Id }, null)</li>
-                }
-            </ul>
         </dd>
 
     </dl>
-@if (User.Identity != null && User.Identity.Name == Model.Owner.ApplicationUser.UserName)
-{
-    <a href="@Url.Action("Create", "Event", new { role = "Owner", eventType = "Class" }, null)">Add a Class</a>
-    <a href="@Url.Action("Create", "Event", new { role = "Owner", eventType = "Workshop" }, null)">Add a Workshop</a>
-    <a href="@Url.Action("Create", "Event", new { role = "Owner", eventType = "Social" }, null)">Add a Social</a>
-    <a href="@Url.Action("Create", "Event", new { role = "Owner", eventType = "Concert" }, null)">Add a Concert</a>
-    <a href="@Url.Action("Create", "Event", new { role = "Owner", eventType = "Conference" }, null)">Add a Conference</a>
-    <a href="@Url.Action("Create", "Event", new { role = "Owner", eventType = "OpenHouse" }, null)">Add a Open House</a>
-}
-@if (User.Identity != null && User.Identity.Name == Model.Owner.ApplicationUser.UserName)
-{
-    <p>
-        <a class="btn btn-primary" href="@Url.Action("Edit", "Owner")">Edit Profile</a>
-    </p>
-}
+<div class="tabbable">
+    <ul class="nav nav-tabs nav-justified" role="tablist">
+        <li class="active"><a href="#studios" data-toggle="tab">Studios (@Model.Studios.Count())</a></li>
+        <li><a href="#conferencecenters" data-toggle="tab">Conference Ctrs (@Model.ConferenceCenters.Count())</a></li>
+        <li><a href="#hotels" data-toggle="tab">Hotels (@Model.Hotels.Count())</a></li>
+        <li><a href="#nightclubs" data-toggle="tab">Nightclubs (@Model.Nightclubs.Count())</a></li>
+        <li><a href="#otherplaces" data-toggle="tab">Other Places (@Model.OtherPlaces.Count())</a></li>
+        <li><a href="#restaurants" data-toggle="tab">Restaurants (@Model.Restaurants.Count())</a></li>
+        <li><a href="#theaters" data-toggle="tab">Theaters (@Model.Theaters.Count())</a></li>
+    </ul>
+    <div class="tab-content">
+        <div id="studios" class="tab-pane active">
+            <table class="table table-striped table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Studio</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Owner.Places.OfType<Studio>().ToList())
+                    {
+                        <tr>
+                            <td>
+                                <strong>@item.Name</strong><br />
+                                <a target="_blank" href='https://www.google.com/maps/place/@Url.Encode(item.Address + " " + item.Address2 + " " + item.City + " " + item.State + " " + item.Zip)'>
+                                @item.Address
+                                @item.Address2,
+                                @item.City,
+                                @item.State
+                                @item.Zip
+                                </a>
+                            </td>
+                            <td>
+                                @Html.ActionLink("View this Studio", "Details", "Place", new { id = item.Id, placeType = "Studio" }, htmlAttributes: new { @class = "btn btn-primary" })
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            @if (User.Identity != null && User.Identity.Name == Model.Owner.ApplicationUser.UserName)
+            {
+                <a class="btn btn-link" href="@Url.Action("Create", "Place", new { placeType = "Studio" }, null)">Add a Studio</a>
+            }
+        </div>
+        <div id="conferencecenters" class="tab-pane">
+            <table class="table table-striped table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Conference Center</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Owner.Places.OfType<ConferenceCenter>().ToList())
+                    {
+                        <tr>
+                            <td>
+                                <strong>@item.Name</strong><br />
+                                <a target="_blank" href='https://www.google.com/maps/place/@Url.Encode(item.Address + " " + item.Address2 + " " + item.City + " " + item.State + " " + item.Zip)'>
+                                    @item.Address
+                                    @item.Address2,
+                                    @item.City,
+                                    @item.State
+                                    @item.Zip
+                                </a>
+                            </td>
+                            <td>
+                                @Html.ActionLink("View this Conference Center", "Details", "Place", new { id = item.Id, placeType = "ConferenceCenter" }, htmlAttributes: new { @class = "btn btn-primary" })
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            @if (User.Identity != null && User.Identity.Name == Model.Owner.ApplicationUser.UserName)
+            {
+                <a class="btn btn-link" href="@Url.Action("Create", "Place", new { placeType = "ConferenceCenter" }, null)">Add a Conference Center</a>
+            }
+        </div>
+        <div id="hotels" class="tab-pane">
+            <table class="table table-striped table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Hotel</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Owner.Places.OfType<Hotel>().ToList())
+                    {
+                        <tr>
+                            <td>
+                                <strong>@item.Name</strong><br />
+                                <a target="_blank" href='https://www.google.com/maps/place/@Url.Encode(item.Address + " " + item.Address2 + " " + item.City + " " + item.State + " " + item.Zip)'>
+                                    @item.Address
+                                    @item.Address2,
+                                    @item.City,
+                                    @item.State
+                                    @item.Zip
+                                </a>
+                            </td>
+                            <td>
+                                @Html.ActionLink("View this Hotel", "Details", "Place", new { id = item.Id, placeType = "Hotel" }, htmlAttributes: new { @class = "btn btn-primary" })
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            @if (User.Identity != null && User.Identity.Name == Model.Owner.ApplicationUser.UserName)
+            {
+                <a class="btn btn-link" href="@Url.Action("Create", "Place", new { placeType = "Hotel" }, null)">Add a Hotel</a>
+            }
+        </div>
+        <div id="nightclubs" class="tab-pane">
+            <table class="table table-striped table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Nightclub</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Owner.Places.OfType<Nightclub>().ToList())
+                    {
+                        <tr>
+                            <td>
+                                <strong>@item.Name</strong><br />
+                                <a target="_blank" href='https://www.google.com/maps/place/@Url.Encode(item.Address + " " + item.Address2 + " " + item.City + " " + item.State + " " + item.Zip)'>
+                                    @item.Address
+                                    @item.Address2,
+                                    @item.City,
+                                    @item.State
+                                    @item.Zip
+                                </a>
+                            </td>
+                            <td>
+                                @Html.ActionLink("View this Nightclub", "Details", "Place", new { id = item.Id, placeType = "Nightclub" }, htmlAttributes: new { @class = "btn btn-primary" })
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            @if (User.Identity != null && User.Identity.Name == Model.Owner.ApplicationUser.UserName)
+            {
+                <a class="btn btn-link" href="@Url.Action("Create", "Place", new { placeType = "Nightclub" }, null)">Add a Nightclub</a>
+            }
+        </div>
+        <div id="otherplaces" class="tab-pane">
+            <table class="table table-striped table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Other Place</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Owner.Places.OfType<OtherPlace>().ToList())
+                    {
+                        <tr>
+                            <td>
+                                <strong>@item.Name</strong><br />
+                                <a target="_blank" href='https://www.google.com/maps/place/@Url.Encode(item.Address + " " + item.Address2 + " " + item.City + " " + item.State + " " + item.Zip)'>
+                                    @item.Address
+                                    @item.Address2,
+                                    @item.City,
+                                    @item.State
+                                    @item.Zip
+                                </a>
+                            </td>
+                            <td>
+                                @Html.ActionLink("View this Place", "Details", "Place", new { id = item.Id, placeType = "OtherPlace" }, htmlAttributes: new { @class = "btn btn-primary" })
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            @if (User.Identity != null && User.Identity.Name == Model.Owner.ApplicationUser.UserName)
+            {
+                <a class="btn btn-link" href="@Url.Action("Create", "Place", new { placeType = "OtherPlace" }, null)">Add an Other Place</a>
+            }
+        </div>
+        <div id="restaurants" class="tab-pane">
+            <table class="table table-striped table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Restaurant</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Owner.Places.OfType<Restaurant>().ToList())
+                    {
+                        <tr>
+                            <td>
+                                <strong>@item.Name</strong><br />
+                                <a target="_blank" href='https://www.google.com/maps/place/@Url.Encode(item.Address + " " + item.Address2 + " " + item.City + " " + item.State + " " + item.Zip)'>
+                                    @item.Address
+                                    @item.Address2,
+                                    @item.City,
+                                    @item.State
+                                    @item.Zip
+                                </a>
+                            </td>
+                            <td>
+                                @Html.ActionLink("View this Restaurant", "Details", "Place", new { id = item.Id, placeType = "Restaurant" }, htmlAttributes: new { @class = "btn btn-primary" })
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            @if (User.Identity != null && User.Identity.Name == Model.Owner.ApplicationUser.UserName)
+            {
+                <a class="btn btn-link" href="@Url.Action("Create", "Place", new { placeType = "Restaurant" }, null)">Add a Restaurant</a>
+            }
+        </div>
+        <div id="theaters" class="tab-pane">
+            <table class="table table-striped table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Theater</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Owner.Places.OfType<Theater>().ToList())
+                    {
+                        <tr>
+                            <td>
+                                <strong>@item.Name</strong><br />
+                                <a target="_blank" href='https://www.google.com/maps/place/@Url.Encode(item.Address + " " + item.Address2 + " " + item.City + " " + item.State + " " + item.Zip)'>
+                                    @item.Address
+                                    @item.Address2,
+                                    @item.City,
+                                    @item.State
+                                    @item.Zip
+                                </a>
+                            </td>
+                            <td>
+                                @Html.ActionLink("View this Theater", "Details", "Place", new { id = item.Id, placeType = "Theater" }, htmlAttributes: new { @class = "btn btn-primary" })
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            @if (User.Identity != null && User.Identity.Name == Model.Owner.ApplicationUser.UserName)
+            {
+                <a class="btn btn-link" href="@Url.Action("Create", "Place", new { placeType = "Theater" }, null)">Add a Theater</a>
+            }
+        </div>
+    </div><!-- /.tab-content -->
+</div><!-- /.tabbable -->
 </div>
 <p>
-    @Html.ActionLink("Back to List", "List")
+    @Html.ActionLink("View all Owners", "List")
 </p>

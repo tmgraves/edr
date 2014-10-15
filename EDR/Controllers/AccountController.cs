@@ -10,6 +10,8 @@ using System.Linq;
 using System.Data.Entity;
 using EDR.Utilities;
 using System.Security.Claims;
+using DayPilot.Web.Mvc;
+using DayPilot.Web.Mvc.Events.Calendar;
 
 namespace EDR.Controllers
 {
@@ -489,6 +491,7 @@ namespace EDR.Controllers
             return View(teacher);
         }
 
+
         #region Helpers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
@@ -579,4 +582,5 @@ namespace EDR.Controllers
         }
         #endregion
     }
+
 }

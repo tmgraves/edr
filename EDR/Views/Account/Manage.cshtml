@@ -1,5 +1,6 @@
 ﻿@using EDR.Models.ViewModels
 @using Microsoft.AspNet.Identity;
+
 @{
     ViewBag.Title = "My Account";
 }
@@ -37,8 +38,23 @@
         </ul>
     </div>
     <div class="col-md-9">
-        @*<p class="text-success">@ViewBag.StatusMessage</p>*@
-            <div id="password" class="tab-pane active">
+        <ul class="nav nav-tabs" role="tablist" id="accountTab">
+            <li><a href="#myinfo" role="tab" data-toggle="tab">My Info</a></li>
+            <li><a href="#linkedAccounts" role="tab" data-toggle="tab">Linked Accounts</a></li>
+            <li><a href="#passwordReset" role="tab" data-toggle="tab">Password Reset</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane fade" id="myinfo">
+
+            </div>
+            <div class="tab-pane fade" id="linkedAccounts">
+                <section id="externalLogins">
+                    @Html.Action("RemoveAccountList")
+                    @Html.Partial("_ExternalLoginsListPartial", new ExternalLoginListViewModel { Action = "LinkLogin", ReturnUrl = ViewBag.ReturnUrl })
+                </section>
+            </div>
+            <div class="tab-pane fade" id="passwordReset">
+                @*<p class="text-success">@ViewBag.StatusMessage</p>*@
                 @if (ViewBag.HasLocalPassword)
                 {
                     @Html.Partial("_ChangePasswordPartial")
@@ -48,14 +64,8 @@
                     @Html.Partial("_SetPasswordPartial")
                 }
             </div>
-            <div id="externallogin" class="tab-pane">
-                <section id="externalLogins">
-                    @Html.Action("RemoveAccountList")
-                    @Html.Partial("_ExternalLoginsListPartial", new ExternalLoginListViewModel { Action = "LinkLogin", ReturnUrl = ViewBag.ReturnUrl })
-                </section>
-            </div>
+        </div>
      </div>
-
 
 
 

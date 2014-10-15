@@ -40,6 +40,13 @@ namespace EDR.Controllers
             // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE PromoterViewModel)
             var viewModel = new OwnerViewViewModel();
             viewModel.Owner = DataContext.Owners.Where(x => x.ApplicationUser.UserName == username).Include("ApplicationUser").Include("Places").FirstOrDefault();
+            viewModel.ConferenceCenters = viewModel.Owner.Places.OfType<ConferenceCenter>().ToList();
+            viewModel.Hotels = viewModel.Owner.Places.OfType<Hotel>().ToList();
+            viewModel.Nightclubs = viewModel.Owner.Places.OfType<Nightclub>().ToList();
+            viewModel.OtherPlaces = viewModel.Owner.Places.OfType<OtherPlace>().ToList();
+            viewModel.Restaurants = viewModel.Owner.Places.OfType<Restaurant>().ToList();
+            viewModel.Studios = viewModel.Owner.Places.OfType<Studio>().ToList();
+            viewModel.Theaters = viewModel.Owner.Places.OfType<Theater>().ToList();
 
             return View(viewModel);
         }

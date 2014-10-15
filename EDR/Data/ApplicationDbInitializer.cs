@@ -159,7 +159,7 @@ namespace EDR.Data
             {
                 var id = tad.Id;
                 var tadteach = new Teacher() { ApplicationUser = tad, Experience = 5, Approved = true, ApproveDate = DateTime.Today, DanceStyles = latinstyles, Resume = "Cali-Style Salsa, also known as Colombian Salsa, is based on geographical location of the Colombian City of Cali. Cali is also known as the 'Capital de la Salsa' (World's Salsa Capital); due to salsa music being the main genre in parties, nightclubs and festivals in the 21st century.", Website = "http://www.tadteacher.com", FacebookLink = "http://www.facebook.com/tadteacher", Places = places.GetRange(6, 2) };
-                var tadowner = new Owner() { ApplicationUser = tad, Approved = true, ApproveDate = DateTime.Today, ContactEmail = "tadowner@gmail.com", Facebook = "http://www.facebook.com/tadowner", Website = "http://www.tadowner.com", Places = places.GetRange(1, 3) };
+                var tadowner = new Owner() { ApplicationUser = tad, Approved = true, ApproveDate = DateTime.Today, ContactEmail = "tadowner@gmail.com", Facebook = "http://www.facebook.com/tadowner", Website = "http://www.tadowner.com", Places = places };
                 var tadprom = new Promoter() { ApplicationUser = tad, Approved = true, ApproveDate = DateTime.Today, ContactEmail = "tadprom@gmail.com", Facebook = "http://www.facebook.com/tadprom", Website = "http://www.tadprom.com", Events = events.GetRange(7,2), Places = places.GetRange(0, 2) };
                 context.Teachers.AddRange(new List<Teacher> { tadteach });
                 context.SaveChanges();
