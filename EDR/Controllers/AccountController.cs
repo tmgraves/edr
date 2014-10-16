@@ -12,6 +12,7 @@ using EDR.Utilities;
 using System.Security.Claims;
 using DayPilot.Web.Mvc;
 using DayPilot.Web.Mvc.Events.Calendar;
+using EDR.Data;
 
 namespace EDR.Controllers
 {
@@ -491,6 +492,27 @@ namespace EDR.Controllers
             return View(teacher);
         }
 
+        //public ActionResult Backend()
+        //{
+        //    return new Dpm().CallBack(this);
+        //}
+
+        //class Dpm : DayPilotMonth
+        //{
+
+        //    protected override void OnInit(InitArgs e)
+        //    {
+        //        var db = new ApplicationDbContext();
+        //        Events = db.Events.ToList();
+
+        //        DataIdField = "id";
+        //        DataTextField = "text";
+        //        DataStartField = "eventstart";
+        //        DataEndField = "eventend";
+
+        //        Update();
+        //    }
+        //}
 
         #region Helpers
         // Used for XSRF protection when adding external logins

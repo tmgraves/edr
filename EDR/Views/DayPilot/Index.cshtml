@@ -1,0 +1,16 @@
+﻿@{
+    ViewBag.Title = "ASP.NET MVC 5 Monthly Event Calendar";
+}
+
+<h2>ASP.NET MVC 5 Event Calendar</h2>
+
+<script src="@Url.Content("~/Scripts/DayPilot/daypilot-all.min.js")" type="text/javascript"></script>
+
+@Html.DayPilotMonth("dpm", new DayPilotMonthConfig
+{
+    BackendUrl = Url.Content("~/DayPilot/Backend"),
+    EventMoveHandling = DayPilot.Web.Mvc.Events.Month.EventMoveHandlingType.CallBack,
+    EventResizeHandling = DayPilot.Web.Mvc.Events.Month.EventResizeHandlingType.CallBack,
+    TimeRangeSelectedHandling = DayPilot.Web.Mvc.Events.Month.TimeRangeSelectedHandlingType.JavaScript,
+    TimeRangeSelectedJavaScript = "dpm.timeRangeSelectedCallBack(start, end, { name: prompt('New Event Name:', 'New Event') });"
+})

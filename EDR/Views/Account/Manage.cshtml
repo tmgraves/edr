@@ -1,6 +1,8 @@
 ﻿@using EDR.Models.ViewModels
 @using Microsoft.AspNet.Identity;
+@using DayPilot.Web.Mvc;
 
+<script src="@Url.Content("~/Scripts/DayPilot/daypilot-all.min.js")" type="text/javascript"></script>
 @{
     ViewBag.Title = "My Account";
 }
@@ -45,7 +47,10 @@
         </ul>
         <div class="tab-content">
             <div class="tab-pane fade" id="myinfo">
-
+                @Html.DayPilotMonth("dp", new DayPilotMonthConfig
+                {
+                    BackendUrl = Url.Content("~/Account/Backend"),
+                })
             </div>
             <div class="tab-pane fade" id="linkedAccounts">
                 <section id="externalLogins">

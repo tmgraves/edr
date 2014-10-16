@@ -47,7 +47,7 @@
     </Reference>
     <Reference Include="DayPilot.Web.Mvc, Version=1.4.410.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\DayPilot.Web.Mvc.dll</HintPath>
+      <HintPath>Library\DayPilot.Web.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -198,6 +198,7 @@
     <Compile Include="Controllers\ClassController.cs" />
     <Compile Include="Controllers\ClassSeriesController.cs" />
     <Compile Include="Controllers\DanceStyleController.cs" />
+    <Compile Include="Controllers\DayPilotController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\OwnerController.cs" />
@@ -297,6 +298,7 @@
     <Content Include="Areas\Admin\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\Admin\Views\Roles\Approvals.cshtml" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
+    <Content Include="Library\DayPilot.Web.Mvc.dll" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\DayPilot\daypilot-all.min.js" />
@@ -377,9 +379,9 @@
     <Content Include="Views\Dancer\List.cshtml" />
     <Content Include="Views\Place\Create.cshtml" />
     <Content Include="Views\Shared\_EventListPartial.cshtml" />
+    <Content Include="Views\DayPilot\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Views\DayPilot\" />
     <Folder Include="Views\Series\" />
   </ItemGroup>
   <ItemGroup>
