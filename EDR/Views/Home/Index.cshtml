@@ -1,78 +1,32 @@
 ﻿@model EDR.Models.ViewModels.HomeIndexViewModel
 
 @{
-    ViewBag.Title = "Welcome";
+    ViewBag.Title = "Eat, Dance, Repeat";
 }
 
 @section jumbotron
 {
-<div class="jumbotron">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <h2>Learn to Dance</h2>
-                <p class="lead">Take your next step to learn to dance...</p>
-                <ul>
-                    <li>Find Classes & Workshops in your area</li>
-                    <li>Read Reviews/Comments from other people</li>
-                    <li>Find Concerts, Socials, Conferences, and other Events</li>
-                </ul>
-                <a href="@Url.Action("Explore", "Home")" class="btn btn-primary">Get Started</a>
-            </div>
-            <div class="col-md-6">
-                <h2>Explore Dance</h2>
-                <p class="lead">Explore the different dance styles that are available.</p>
-                <ul>
-                    <li>View Videos of different Dance Styles</li>
-                    <li>Listen to different styles of Dance Music</li>
-                    <li>Find out where you can dance different styles</li>
-                </ul>
-                <a href="@Url.Action("Explore", "Home")" class="btn btn-primary">Start Exploring</a>
+    <div class="jumbotron">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    Are you
+                    <select id="UrlList" onchange="doNavigate()">
+                        <option value=""></option>
+                        <option value="@Url.Action("View", "Visitor")">a New Visitor?</option>
+                        <option value="@Url.Action("View", "Dancer", new { username = User.Identity.Name })">a Dancer?</option>
+                        <option value="@Url.Action("View", "Teacher", new { username = User.Identity.Name })">a Teacher?</option>
+                        <option value="@Url.Action("View", "Promoter", new { username = User.Identity.Name })">a Promoter?</option>
+                        <option value="@Url.Action("View", "Owner", new { username = User.Identity.Name })">a Studio Owner?</option>
+                    </select>
+                </div>
             </div>
         </div>
     </div>
-</div>
 }
 
-<div class="row">
-    <div class="col-xs-12 col-sm-6 col-md-3">
-        <h3>Dancers</h3>
-        <ul>
-            <li><a href="@Url.Action("Edit", "Dancer")">Update your profile</a></li>
-            <li><a href="@Url.Action("Social", "Home")">Find Concerts, Socials, Conferences, and other Events</a></li>
-            <li>Pick your Dance Styles</li>
-            <li>Connect with other Dancers</li>
-            <li>Find a Team/View your Teams</li>
-            <li><a href="@Url.Action("Learn", "Home")">Find Classes</a>/View Current Classes/Track your Progress</li>
-            <li>Post Reviews and Comments</li>
-        </ul>
-     </div>
-    <div class="col-xs-12 col-sm-6 col-md-3">
-        <h3>Teachers</h3>
-        <ul>
-            <li><a href="@Url.Action("Edit", "Teacher")">Update your profile</a></li>
-            <li>Pick your Dance Styles</li>
-            <li>Update your Teaching Schedule</li>
-            <li>Update Appearances/Performances</li>
-            <li>View your Performance Teams/Set up new Teams</li>
-            <li>Post Comments</li>
-        </ul>
-    </div>
-    <div class="col-xs-12 col-sm-6 col-md-3">
-        <h3>Studio Owners</h3>
-        <ul>
-            <li><a href="@Url.Action("Edit", "Owner")">Update your Studio Profile</a></li>
-            <li>Post and Promote Classes and Workshops</li>
-            <li>Connect with Teachers</li>
-            <li>Post and Promote Socials, Open Houses and other Events</li>
-        </ul>
-    </div>
-    <div class="col-xs-12 col-sm-6 col-md-3">
-        <h3>Promoters</h3>
-        <ul>
-            <li><a href="@Url.Action("Edit", "Promoter")">Update your profile</a></li>
-            <li>Post Concerts, Socials, and other Events</li>
-            <li>View your events/Create guest lists/Post pictures and Videos</li>
-        </ul>
-    </div>
-</div>
+<script>
+    function doNavigate() {
+        window.location.href = document.getElementById("UrlList").value;
+    }
+</script>

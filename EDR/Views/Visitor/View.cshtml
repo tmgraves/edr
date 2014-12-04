@@ -1,0 +1,35 @@
+﻿@model EDR.Models.ViewModels.VisitorViewViewModel
+
+@{
+    ViewBag.Title = "Welcome Visitor";
+}
+
+@section jumbotron
+{
+    <div class="jumbotron">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h2>Learn to Dance</h2>
+                    <p class="lead">Take your next step to learn to dance...</p>
+                    <ul>
+                        <li>Find Classes & Workshops in your area</li>
+                        <li>Read Reviews/Comments from other people</li>
+                        <li>Find Concerts, Socials, Conferences, and other Events</li>
+                    </ul>
+                    <a href="@Url.Action("Explore", "Home")" class="btn btn-primary">Get Started</a>
+                </div>
+                <div class="col-md-6">
+                    <h2>Explore Dance</h2>
+                    <p class="lead">Explore the different dance styles that are available.</p>
+                    <ul>
+                        <li>View Videos of different Dance Styles</li>
+                        <li>Listen to different styles of Dance Music</li>
+                        <li>Find out where you can dance different styles</li>
+                    </ul>
+                    <a href="@Url.Action("Explore", "Home")" class="btn btn-primary">Start Exploring</a>
+                </div>
+            </div>
+        </div>
+    </div>
+}

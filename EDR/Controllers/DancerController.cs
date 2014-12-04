@@ -24,6 +24,7 @@ namespace EDR.Controllers
             return View(model);
         }
 
+        [Authorize]
         public async Task<ActionResult> View(string username)
         {
             if (String.IsNullOrWhiteSpace(username))

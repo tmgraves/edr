@@ -206,6 +206,7 @@
     <Compile Include="Controllers\DancerController.cs" />
     <Compile Include="Controllers\PromoterController.cs" />
     <Compile Include="Controllers\TeacherController.cs" />
+    <Compile Include="Controllers\VisitorController.cs" />
     <Compile Include="Data\ApplicationDbContext.cs" />
     <Compile Include="Data\ApplicationDbInitializer.cs" />
     <Compile Include="Models\OtherPlace.cs" />
@@ -214,6 +215,7 @@
     <Compile Include="Models\ViewModels\OwnerListViewModel.cs" />
     <Compile Include="Models\ViewModels\PlaceCreateViewModel.cs" />
     <Compile Include="Models\ViewModels\PromoterListViewModel.cs" />
+    <Compile Include="Models\ViewModels\VisitorViewViewModel.cs" />
     <Compile Include="Types\EventType.cs" />
     <Compile Include="Types\PlaceType.cs" />
     <Compile Include="Types\RoleName.cs" />
@@ -380,6 +382,7 @@
     <Content Include="Views\Place\Create.cshtml" />
     <Content Include="Views\Shared\_EventListPartial.cshtml" />
     <Content Include="Views\DayPilot\Index.cshtml" />
+    <Content Include="Views\Visitor\View.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Series\" />
