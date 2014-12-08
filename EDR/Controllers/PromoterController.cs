@@ -21,11 +21,19 @@ namespace EDR.Controllers
             return View(model);
         }
 
+        [Authorize]
         public ActionResult View(string username)
         {
             if (String.IsNullOrWhiteSpace(username))
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                if (User != null)
+                {
+                    username = User.Identity.Name;
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
             }
 
             var promoter = DataContext.Promoters
@@ -34,7 +42,14 @@ namespace EDR.Controllers
 
             if (promoter == null)
             {
-                return HttpNotFound();
+                if (username == User.Identity.Name && !User.IsInRole("Promoter"))
+                {
+                    return RedirectToAction("Apply", "Promoter");
+                }
+                else 
+                {
+                    return HttpNotFound();
+                }
             }
 
             // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE PromoterViewModel)

@@ -28,11 +28,19 @@ namespace EDR.Controllers
             return View(model);
         }
 
+        [Authorize]
         public ActionResult View(string username)
         {
             if (String.IsNullOrWhiteSpace(username))
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                if (User != null)
+                {
+                    username = User.Identity.GetUserName();
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
             }
 
             var teacher = DataContext.Teachers
@@ -41,7 +49,14 @@ namespace EDR.Controllers
 
             if (teacher == null)
             {
-                return HttpNotFound();
+                if (username == User.Identity.Name && !User.IsInRole("Teacher"))
+                {
+                    return RedirectToAction("Apply", "Teacher");
+                }
+                else
+                {
+                    return HttpNotFound();
+                }
             }
 
             // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE TeacherViewModel)

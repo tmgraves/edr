@@ -28,7 +28,7 @@ namespace DayPilotCalendarMvc.Controllers
             protected override void OnInit(InitArgs e)
             {
                 var db = new ApplicationDbContext();
-                Events = from ev in db.Events select ev;
+                Events = db.Events.Where(x => x.StartDate >= DateTime.Today && x.EndDate >= DateTime.Today).ToList();
 
                 DataIdField = "id";
                 DataTextField = "Name";

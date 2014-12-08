@@ -47,6 +47,11 @@
         </ul>
         <div class="tab-content">
             <div class="tab-pane fade" id="myinfo">
+                <div class="note">
+                    <a href="javascript:dp.commandCallBack('previous');">Previous</a> |
+                    <a href="javascript:dp.commandCallBack('today');">Today</a> |
+                    <a href="javascript:dp.commandCallBack('next');">Next</a>
+                </div>
                 @Html.DayPilotMonth("dp", new DayPilotMonthConfig
                 {
                     BackendUrl = Url.Content("~/Account/Backend"),

@@ -10,7 +10,6 @@ using EDR.Models;
 using Facebook;
 using Microsoft.AspNet.Facebook;
 using Microsoft.AspNet.Facebook.Client;
-using System.Threading.Tasks;
 
 namespace EDR.Controllers
 {
@@ -25,14 +24,21 @@ namespace EDR.Controllers
         }
 
         [Authorize]
-        public async Task<ActionResult> View(string username)
+        public ActionResult View(string username)
         {
             if (String.IsNullOrWhiteSpace(username))
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                if (User != null)
+                {
+                    username = User.Identity.GetUserName();
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
             }
 
-            var dancer = UserManager.FindByName(username);
+            var dancer = DataContext.Users.Where(x => x.UserName == username).Include("DanceStyles").FirstOrDefault();
             if(dancer == null)
             {
                 return HttpNotFound();
@@ -41,23 +47,24 @@ namespace EDR.Controllers
             var viewModel = new DancerViewViewModel();
             viewModel.Dancer = dancer;
 
-            var user = DataContext.Users.Where(x => x.UserName == username).FirstOrDefault();
-
-            var fb = new FacebookClient(user.FacebookToken);
-            dynamic myInfo = fb.Get("/me/friends?fields=id,name,email,link"); 
-            var friendsList = new List<FacebookFriendViewModel>();
-            foreach (dynamic friend in myInfo.data)
+            if (dancer.FacebookToken != null)
             {
-                friendsList.Add(new FacebookFriendViewModel()
-                   {
-                       Id = friend.id,
-                       Name = friend.name,
-                       Link = friend.link,
-                       ImageURL = @"https://graph.facebook.com/" + friend.id + "/picture?type=small",
-                       Email = friend.email
-                   });
+                var fb = new FacebookClient(dancer.FacebookToken);
+                dynamic myInfo = fb.Get("/me/friends?fields=id,name,email,link");
+                var friendsList = new List<FacebookFriendViewModel>();
+                foreach (dynamic friend in myInfo.data)
+                {
+                    friendsList.Add(new FacebookFriendViewModel()
+                    {
+                        Id = friend.id,
+                        Name = friend.name,
+                        Link = friend.link,
+                        ImageURL = @"https://graph.facebook.com/" + friend.id + "/picture?type=small",
+                        Email = friend.email
+                    });
+                }
+                viewModel.FriendList = friendsList;
             }
-            viewModel.FriendList = friendsList;
 
             return View(viewModel);
         }
@@ -120,6 +127,12 @@ namespace EDR.Controllers
                 DataContext.SaveChanges();
                 return RedirectToAction("Manage", "Account");
             }
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult AddStyle(DancerViewViewModel model)
+        {
             return View(model);
         }
     }

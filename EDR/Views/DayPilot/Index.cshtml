@@ -6,6 +6,12 @@
 
 <script src="@Url.Content("~/Scripts/DayPilot/daypilot-all.min.js")" type="text/javascript"></script>
 
+<div class="note">
+    <a href="javascript:dpm.commandCallBack('previous');">Previous</a> |
+    <a href="javascript:dpm.commandCallBack('today');">Today</a> |
+    <a href="javascript:dpm.commandCallBack('next');">Next</a>
+</div>
+
 @Html.DayPilotMonth("dpm", new DayPilotMonthConfig
 {
     BackendUrl = Url.Content("~/DayPilot/Backend"),

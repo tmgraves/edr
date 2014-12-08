@@ -21,11 +21,19 @@ namespace EDR.Controllers
             return View(model);
         }
 
+        [Authorize]
         public ActionResult View(string username)
         {
             if (String.IsNullOrWhiteSpace(username))
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                if (User != null)
+                {
+                    username = User.Identity.GetUserName();
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
             }
 
             var owner = DataContext.Owners
@@ -34,7 +42,14 @@ namespace EDR.Controllers
 
             if (owner == null)
             {
-                return HttpNotFound();
+                if (username == User.Identity.Name && !User.IsInRole("Owner"))
+                {
+                    return RedirectToAction("Apply", "Owner");
+                }
+                else
+                {
+                    return HttpNotFound();
+                }
             }
 
             // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE PromoterViewModel)

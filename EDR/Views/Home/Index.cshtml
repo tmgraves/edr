@@ -9,17 +9,21 @@
     <div class="jumbotron">
         <div class="container">
             <div class="row">
-                <div class="col-md-6">
-                    Are you
-                    <select id="UrlList" onchange="doNavigate()">
-                        <option value=""></option>
-                        <option value="@Url.Action("View", "Visitor")">a New Visitor?</option>
-                        <option value="@Url.Action("View", "Dancer", new { username = User.Identity.Name })">a Dancer?</option>
-                        <option value="@Url.Action("View", "Teacher", new { username = User.Identity.Name })">a Teacher?</option>
-                        <option value="@Url.Action("View", "Promoter", new { username = User.Identity.Name })">a Promoter?</option>
-                        <option value="@Url.Action("View", "Owner", new { username = User.Identity.Name })">a Studio Owner?</option>
-                    </select>
-                </div>
+                <form id="bootstrapSelectForm" method="post" class="form-horizontal">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-default btn-lg dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                            Are You 
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li role="presentation">@Html.ActionLink("a New Visitor?", "View", "Visitor", null, null)</li>
+                            <li role="presentation">@Html.ActionLink("a Dancer?", "View", "Dancer", new { username = User.Identity.Name }, null)</li>
+                            <li role="presentation">@Html.ActionLink("a Teacher?", "View", "Teacher", new { username = User.Identity.Name }, null)</li>
+                            <li role="presentation">@Html.ActionLink("a Promoter?", "View", "Promoter", new { username = User.Identity.Name }, null)</li>
+                            <li role="presentation">@Html.ActionLink("a Studio Owner?", "View", "Owner", new { username = User.Identity.Name }, null)</li>
+                        </ul>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

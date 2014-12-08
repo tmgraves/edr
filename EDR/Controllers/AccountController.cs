@@ -11,8 +11,10 @@ using System.Data.Entity;
 using EDR.Utilities;
 using System.Security.Claims;
 using DayPilot.Web.Mvc;
-using DayPilot.Web.Mvc.Events.Calendar;
+using DayPilot.Web.Mvc.Enums;
+using DayPilot.Web.Mvc.Events.Month;
 using EDR.Data;
+using System;
 
 namespace EDR.Controllers
 {
@@ -492,27 +494,27 @@ namespace EDR.Controllers
             return View(teacher);
         }
 
-        //public ActionResult Backend()
-        //{
-        //    return new Dpm().CallBack(this);
-        //}
+        public ActionResult Backend()
+        {
+            return new Dpm().CallBack(this);
+        }
 
-        //class Dpm : DayPilotMonth
-        //{
+        class Dpm : DayPilotMonth
+        {
 
-        //    protected override void OnInit(InitArgs e)
-        //    {
-        //        var db = new ApplicationDbContext();
-        //        Events = db.Events.ToList();
+            protected override void OnInit(InitArgs e)
+            {
+                var db = new ApplicationDbContext();
+                Events = db.Events.Where(x => x.StartDate > DateTime.Today && x.EndDate > DateTime.Today).ToList();
 
-        //        DataIdField = "id";
-        //        DataTextField = "text";
-        //        DataStartField = "eventstart";
-        //        DataEndField = "eventend";
+                DataIdField = "Id";
+                DataTextField = "Name";
+                DataStartField = "StartDate";
+                DataEndField = "EndDate";
 
-        //        Update();
-        //    }
-        //}
+                Update();
+            }
+        }
 
         #region Helpers
         // Used for XSRF protection when adding external logins

@@ -17,86 +17,83 @@
 </h1>
 
 <div class="row">
-<div class="col-xs-12 col-sm-6 col-md-3">
-    <h3>Dancers</h3>
-    <ul>
-        <li><a href="@Url.Action("Edit", "Dancer")">Update your profile</a></li>
-        <li><a href="@Url.Action("Social", "Home")">Find Concerts, Socials, Conferences, and other Events</a></li>
-        <li>Pick your Dance Styles</li>
-        <li>Connect with other Dancers</li>
-        <li>Find a Team/View your Teams</li>
-        <li><a href="@Url.Action("Learn", "Home")">Find Classes</a>/View Current Classes/Track your Progress</li>
-        <li>Post Reviews and Comments</li>
-    </ul>
-</div>
-</div>
-
-<div class="well">
-    <dl class="dl-horizontal">
-        <dt>
-            Experience
-        </dt>
-
-        <dd>
-            @Model.Dancer.Experience Year(s)
-        </dd>
-
-        <dt>
-            Location
-        </dt>
-
-        <dd>
-            Location
-        </dd>
-
-        <dt>
-            Dance Styles
-        </dt>
-
-        <dd>
-            <ul class="list-inline">
-                @foreach (var item in Model.Dancer.DanceStyles.OrderBy(x => x.Name))
-                {
-                    <li>@Html.ActionLink(item.Name, "Details", "DanceStyle", new { id = item.Id }, null)</li>
-                }
+    <div class="tabbable">
+        <div class="col-xs-8 col-sm-4 col-md-2">
+            <ul class="nav nav-pills nav-stacked" role="tablist">
+                <li class="active"><a href="#myinfo" data-toggle="tab">My Info</a></li>
+                <li><a href="#friends" data-toggle="tab">Friends</a></li>
+                <li><a href="#dancestyles" data-toggle="tab">Dance Styles</a></li>
+                <li><a href="#events" data-toggle="tab">Events</a></li>
             </ul>
-        </dd>
-
-        <dt>
-            Facebook Friends
-        </dt>
-
-        <dd>
-                @if (Model.FriendList != null && Model.FriendList.Count() > 0)
-                {
-                    foreach (var myFriend in @Model.FriendList)
+        </div>
+        <div class="tab-content col-xs-16 col-sm-8 col-md-4">
+            <div id="myinfo" class="tab-pane active">
+                <div class="well">
+                    <dl class="dl-horizontal">
+                        <dt>
+                            Experience
+                        </dt>
+                        <dd>
+                            @Model.Dancer.Experience Year(s)
+                        </dd>
+                        <dt>
+                            Location
+                        </dt>
+                        <dd>
+                            Location
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+            <div id="friends" class="tab-pane">
+                <div class="well">
+                    @if (Model.FriendList != null && Model.FriendList.Count() > 0)
                     {
-                        <a href="@myFriend.Link" target="_blank">
-                            <div class="photoTile">
-                                @if (myFriend.ImageURL != null)
-                                {
+                        foreach (var myFriend in @Model.FriendList)
+                        {
+                    <a href="@myFriend.Link" target="_blank">
+                        <div class="photoTile">
+                            @if (myFriend.ImageURL != null)
+                                    {
                                     <img src="@myFriend.ImageURL" />
-                                }
-                                <label>@myFriend.Name</label>
-                            </div>
-                        </a>
-                }
-                }
-                else
-                {
+                                    }
+                            <label>@myFriend.Name</label>
+                        </div>
+                    </a>
+                        }
+                    }
+                    else
+                    {
                     @:No friends found.
-                }
-        </dd>
-    </dl>
-    <h4>
-        Parties
-        @if (User.Identity != null && User.Identity.Name == Model.Dancer.UserName)
-        {
-            <a style="font-size: small; vertical-align: bottom;" href="@Url.Action("Create", "Event", new { role = "Dancer", eventType = "Party" }, null)">Add a Party</a>
-        }
-        @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", Model.Dancer.Parties)
-    </h4>
+                    }
+                </div>
+            </div>
+            <div id="dancestyles" class="tab-pane">
+                <div class="well">
+                    <ul class="list-inline">
+                        @foreach (var item in Model.Dancer.DanceStyles)
+                        {
+                            <li>@Html.ActionLink(item.Name, "Details", "DanceStyle", new { id = item.Id }, null)</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+            <div id="events" class="tab-pane">
+                <div class="well row">
+                    <h4>
+                        Parties
+                        @if (User.Identity != null && User.Identity.Name == Model.Dancer.UserName)
+                        {
+                            <a style="font-size: small; vertical-align: bottom;" href="@Url.Action("Create", "Event", new { role = "Dancer", eventType = "Party" }, null)">Add a Party</a>
+                        }
+                    </h4>
+                    @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", Model.Dancer.Parties)
+                </div>
+            </div>
+        </div><!-- /.tab-content -->
+    </div><!-- /.tabbable -->
 </div>
+
 <p>
     @Html.ActionLink("Back to List", "List")
 </p>

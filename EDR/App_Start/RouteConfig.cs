@@ -36,6 +36,11 @@ namespace EDR
                 defaults: new { controller = "Dancer", action = "List" }
             );
             routes.MapRoute(
+                name: "DancerDefault",
+                url: "Dancer/View",
+                defaults: new { controller = "Dancer", action = "View" }
+            );
+            routes.MapRoute(
                 name: "Dancer",
                 url: "Dancer/{username}",
                 defaults: new { controller = "Dancer", action = "View" }
@@ -55,6 +60,11 @@ namespace EDR
                 name: "TeacherList",
                 url: "Teacher/List",
                 defaults: new { controller = "Teacher", action = "List" }
+            );
+            routes.MapRoute(
+                name: "TeacherDefault",
+                url: "Teacher/View",
+                defaults: new { controller = "Teacher", action = "View" }
             );
             routes.MapRoute(
                 name: "Teacher",
@@ -78,6 +88,11 @@ namespace EDR
                 defaults: new { controller = "Promoter", action = "List" }
             );
             routes.MapRoute(
+                name: "PromoterDefault",
+                url: "Promoter/View",
+                defaults: new { controller = "Promoter", action = "View" }
+            );
+            routes.MapRoute(
                 name: "Promoter",
                 url: "Promoter/{username}",
                 defaults: new { controller = "Promoter", action = "View" }
@@ -97,6 +112,11 @@ namespace EDR
                 name: "OwnerList",
                 url: "Owner/List",
                 defaults: new { controller = "Owner", action = "List" }
+            );
+            routes.MapRoute(
+                name: "OwnerDefault",
+                url: "Owner/View",
+                defaults: new { controller = "Owner", action = "View" }
             );
             routes.MapRoute(
                 name: "Owner",
