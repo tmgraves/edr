@@ -12,7 +12,7 @@
     @Model.Dancer.FirstName
     @if (User.Identity != null && User.Identity.Name == Model.Dancer.UserName)
     {
-        <a style="font-size: medium;" href="@Url.Action("Edit", "Owner")">Edit Profile</a>
+        <a style="font-size: medium;" href="@Url.Action("Edit", "Dancer")">Edit Profile</a>
     }
 </h1>
 
@@ -24,9 +24,10 @@
                 <li><a href="#friends" data-toggle="tab">Friends</a></li>
                 <li><a href="#dancestyles" data-toggle="tab">Dance Styles</a></li>
                 <li><a href="#events" data-toggle="tab">Events</a></li>
+                <li><a href="#videos" data-toggle="tab">YouTube Videos</a></li>
             </ul>
         </div>
-        <div class="tab-content col-xs-16 col-sm-8 col-md-4">
+        <div class="tab-content col-xs-32 col-sm-16 col-md-8">
             <div id="myinfo" class="tab-pane active">
                 <div class="well">
                     <dl class="dl-horizontal">
@@ -41,6 +42,12 @@
                         </dt>
                         <dd>
                             Location
+                        </dd>
+                        <dt>
+                            YouTube Username
+                        </dt>
+                        <dd>
+                            @Model.Dancer.YouTubeUsername
                         </dd>
                     </dl>
                 </div>
@@ -88,6 +95,23 @@
                         }
                     </h4>
                     @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", Model.Dancer.Parties)
+                </div>
+            </div>
+            <div id="videos" class="tab-pane">
+                <div class="well row">
+                    <ul class="list-inline">
+                        @foreach (var v in Model.YouTubeVideos)
+                        {
+                            <li style="padding: 10px; margin: 10px;">
+                                <div id="youTubeContainer">
+                                    <a target="_blank" href="https://www.youtube.com/watch?v=@v.Id&feature=player_embedded">
+                                        <img id="youTubeImage" src="https://img.youtube.com/vi/@Html.DisplayFor(s => v.Id)/mqdefault.jpg" />
+                                        <div id="youTubePlay"></div>
+                                    </a>
+                                </div>
+                            </li>
+                        }
+                    </ul>
                 </div>
             </div>
         </div><!-- /.tab-content -->
