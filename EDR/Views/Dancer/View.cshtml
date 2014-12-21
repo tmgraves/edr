@@ -22,7 +22,6 @@
             <ul class="nav nav-pills nav-stacked" role="tablist">
                 <li class="active"><a href="#myinfo" data-toggle="tab">My Info</a></li>
                 <li><a href="#friends" data-toggle="tab">Friends</a></li>
-                <li><a href="#pictures" data-toggle="tab">Pictures</a></li>
                 <li><a href="#dancestyles" data-toggle="tab">Dance Styles</a></li>
                 <li><a href="#events" data-toggle="tab">Events</a></li>
                 <li><a href="#videos" data-toggle="tab">YouTube Videos</a></li>
@@ -73,32 +72,6 @@
                     else
                     {
                     @:No friends found.
-                    }
-                </div>
-            </div>
-            <div id="pictures" class="tab-pane">
-                <div class="well">
-                    @if (Model.FacebookPictures != null && Model.FacebookPictures.Count() > 0)
-                    {
-                        <ul class="list-inline">
-                            @foreach (var photo in @Model.FacebookPictures.OrderByDescending(photo => photo.PhotoDate))
-                            {
-                            <li>
-                                <a href="@photo.Link" target="_blank">
-                                    <div class="photoTile">
-                                        @if (photo.Source != null)
-                                        {
-                                            <img src="@photo.Source" />
-                                        }
-                                    </div>
-                                </a>
-                            </li>
-                            }
-                        </ul>
-                    }
-                    else
-                    {
-                    @:No pictures found.
                     }
                 </div>
             </div>

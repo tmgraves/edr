@@ -11,7 +11,6 @@ using Facebook;
 using Microsoft.AspNet.Facebook;
 using Microsoft.AspNet.Facebook.Client;
 using System.Xml.Linq;
-using EDR.Utilities;
 
 namespace EDR.Controllers
 {
@@ -59,8 +58,21 @@ namespace EDR.Controllers
 
             if (dancer.FacebookToken != null)
             {
-                viewModel.FriendList = FacebookHelper.GetFriends(dancer.FacebookToken);
-                viewModel.FacebookPictures = FacebookHelper.GetPhotos(dancer.FacebookToken);
+                var fb = new FacebookClient(dancer.FacebookToken);
+                dynamic myInfo = fb.Get("/me/friends?fields=id,name,email,link");
+                var friendsList = new List<FacebookFriendViewModel>();
+                foreach (dynamic friend in myInfo.data)
+                {
+                    friendsList.Add(new FacebookFriendViewModel()
+                    {
+                        Id = friend.id,
+                        Name = friend.name,
+                        Link = friend.link,
+                        ImageURL = @"https://graph.facebook.com/" + friend.id + "/picture?type=small",
+                        Email = friend.email
+                    });
+                }
+                viewModel.FriendList = friendsList;
             }
 
             return View(viewModel);
@@ -111,7 +123,6 @@ namespace EDR.Controllers
             {
                 var dancer = DataContext.Users.Where(x => x.Id == model.Dancer.Id).Include("DanceStyles").Include("Parties").FirstOrDefault();
                 dancer.Experience = model.Dancer.Experience;
-                dancer.FacebookUsername = model.Dancer.FacebookUsername;
                 dancer.YouTubeUsername = model.Dancer.YouTubeUsername;
                 var styles = DataContext.DanceStyles.Where(x => model.PostedStyles.DanceStyleIds.Contains(x.Id.ToString())).ToList();
 
