@@ -12,5 +12,6 @@ namespace EDR.Models.ViewModels
 
         public ApplicationUser Dancer { get; set; }
         public IEnumerable<FacebookFriendViewModel> FriendList { get; set; }
+        public List<YouTubeVideo> YouTubeVideos { get; set; }
     }
 }
