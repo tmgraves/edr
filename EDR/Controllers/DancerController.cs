@@ -10,7 +10,6 @@ using EDR.Models;
 using Facebook;
 using Microsoft.AspNet.Facebook;
 using Microsoft.AspNet.Facebook.Client;
-using System.Xml.Linq;
 
 namespace EDR.Controllers
 {
@@ -47,14 +46,6 @@ namespace EDR.Controllers
 
             var viewModel = new DancerViewViewModel();
             viewModel.Dancer = dancer;
-            if (dancer.YouTubeUsername != null)
-            {
-                viewModel.YouTubeVideos = GetVideos(dancer.YouTubeUsername);
-            }
-            else
-            {
-                viewModel.YouTubeVideos = new List<YouTubeVideo>();
-            }
 
             if (dancer.FacebookToken != null)
             {
@@ -123,7 +114,6 @@ namespace EDR.Controllers
             {
                 var dancer = DataContext.Users.Where(x => x.Id == model.Dancer.Id).Include("DanceStyles").Include("Parties").FirstOrDefault();
                 dancer.Experience = model.Dancer.Experience;
-                dancer.YouTubeUsername = model.Dancer.YouTubeUsername;
                 var styles = DataContext.DanceStyles.Where(x => model.PostedStyles.DanceStyleIds.Contains(x.Id.ToString())).ToList();
 
                 dancer.DanceStyles.Clear();
@@ -135,7 +125,7 @@ namespace EDR.Controllers
 
                 DataContext.Entry(dancer).State = EntityState.Modified;
                 DataContext.SaveChanges();
-                return RedirectToAction("View", "Dancer", new { username = dancer.UserName });
+                return RedirectToAction("Manage", "Account");
             }
             return View(model);
         }
@@ -144,30 +134,6 @@ namespace EDR.Controllers
         public ActionResult AddStyle(DancerViewViewModel model)
         {
             return View(model);
-        }
-
-        private List<YouTubeVideo> GetVideos(string youTubeUsername)
-        {
-            try
-            {
-                List<YouTubeVideo> vidList = new List<YouTubeVideo>();
-                string url = "http://gdata.youtube.com/feeds/api/users/" + youTubeUsername + "/uploads?orderby=published";
-
-                XDocument ytDoc = XDocument.Load(url);
-
-                var movies = ytDoc.Descendants().Where(p => p.Name.LocalName == "entry").ToList();
-
-                foreach (var movie in movies)
-                {
-                    vidList.Add(new YouTubeVideo() { Id = movie.Descendants().Where(p => p.Name.LocalName == "id").FirstOrDefault().Value.Replace("http://gdata.youtube.com/feeds/api/videos/", ""), Title = movie.Descendants().Where(p => p.Name.LocalName == "title").FirstOrDefault().Value });
-                }
-
-                return vidList;
-            }
-            catch
-            {
-                return new List<YouTubeVideo>();
-            }
         }
     }
 }

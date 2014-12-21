@@ -15,39 +15,3 @@ select,
 textarea {
     max-width: 280px;
 }
-
-#youTubeContainer {
-    position: relative;
-    display: inline-block;
-}
-#youTubeContainer * {
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-}
-#youTubeImage {
-    z-index: 9;
-    text-align: center;
-}
-#youTubePlay {
-    background: url('images/Play1Normal.png') center center no-repeat;
-    margin: -160px 10px 0 0;
-    height: 140px;
-    position: relative;
-    z-index: 10;
-    cursor: pointer;
-}
-#youTubePlay:hover {
-    background: url('images/Play1Hot.png') center center no-repeat;
-    margin: -160px 10px 0 0;
-    height: 140px;
-    position: relative;
-    z-index: 10;
-}
-#youTubePlay:active {
-    background: url('images/Play1Pressed.png') center center no-repeat;
-    margin: -160px 10px 0 0;
-    height: 140px;
-    position: relative;
-    z-index: 10;
-}
