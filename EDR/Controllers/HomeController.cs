@@ -15,11 +15,6 @@ namespace EDR.Controllers
             return View();
         }
 
-        public ActionResult Index2()
-        {
-            return View();
-        }
-
         public ActionResult Explore()
         {
             var viewModel = new HomeExploreViewModel();
