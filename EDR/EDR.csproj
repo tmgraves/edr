@@ -262,6 +262,7 @@
     <Compile Include="Controllers\PromoterController.cs" />
     <Compile Include="Controllers\TeacherController.cs" />
     <Compile Include="Controllers\VisitorController.cs" />
+    <Compile Include="Controllers\YouTubeController.cs" />
     <Compile Include="Data\ApplicationDbContext.cs" />
     <Compile Include="Data\ApplicationDbInitializer.cs" />
     <Compile Include="Models\OtherPlace.cs" />
@@ -442,6 +443,7 @@
     <Content Include="Views\Shared\_EventListPartial.cshtml" />
     <Content Include="Views\DayPilot\Index.cshtml" />
     <Content Include="Views\Visitor\View.cshtml" />
+    <Content Include="Views\YouTube\List.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Series\" />
