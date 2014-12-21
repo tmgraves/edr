@@ -1,5 +1,5 @@
 /*!
- * jQuery Validation Plugin v1.13.1
+ * jQuery Validation Plugin v1.13.0
  *
  * http://jqueryvalidation.org/
  *
@@ -62,7 +62,7 @@ $.extend($.fn, {
 					event.preventDefault();
 				}
 				function handle() {
-					var hidden, result;
+					var hidden;
 					if ( validator.settings.submitHandler ) {
 						if ( validator.submitButton ) {
 							// insert a hidden input as a replacement for the missing submit button
@@ -71,13 +71,10 @@ $.extend($.fn, {
 								.val( $( validator.submitButton ).val() )
 								.appendTo( validator.currentForm );
 						}
-						result = validator.settings.submitHandler.call( validator, validator.currentForm, event );
+						validator.settings.submitHandler.call( validator, validator.currentForm, event );
 						if ( validator.submitButton ) {
 							// and clean up afterwards; thanks to no-block-scope, hidden can be referenced
 							hidden.remove();
-						}
-						if ( result !== undefined ) {
-							return result;
 						}
 						return false;
 					}
@@ -248,7 +245,6 @@ $.extend( $.validator, {
 		errorClass: "error",
 		validClass: "valid",
 		errorElement: "label",
-		focusCleanup: false,
 		focusInvalid: true,
 		errorContainer: $( [] ),
 		errorLabelContainer: $( [] ),
@@ -258,8 +254,8 @@ $.extend( $.validator, {
 		onfocusin: function( element ) {
 			this.lastActive = element;
 
-			// Hide error label and remove error class on focus if enabled
-			if ( this.settings.focusCleanup ) {
+			// hide error label and remove error class on focus if enabled
+			if ( this.settings.focusCleanup && !this.blockFocusCleanup ) {
 				if ( this.settings.unhighlight ) {
 					this.settings.unhighlight.call( this, element, this.settings.errorClass, this.settings.validClass );
 				}
@@ -536,7 +532,7 @@ $.extend( $.validator, {
 			// select all valid inputs inside the form (no submit or reset buttons)
 			return $( this.currentForm )
 			.find( "input, select, textarea" )
-			.not( ":submit, :reset, :image, [disabled], [readonly]" )
+			.not( ":submit, :reset, :image, [disabled]" )
 			.not( this.settings.ignore )
 			.filter( function() {
 				if ( !this.name && validator.settings.debug && window.console ) {
@@ -786,11 +782,11 @@ $.extend( $.validator, {
 					// If the element is not a child of an associated label, then it's necessary
 					// to explicitly apply aria-describedby
 
-					errorID = error.attr( "id" ).replace( /(:|\.|\[|\])/g, "\\$1");
+					errorID = error.attr( "id" );
 					// Respect existing non-error aria-describedby
 					if ( !describedBy ) {
 						describedBy = errorID;
-					} else if ( !describedBy.match( new RegExp( "\\b" + errorID + "\\b" ) ) ) {
+					} else if ( !describedBy.match( new RegExp( "\b" + errorID + "\b" ) ) ) {
 						// Add to end of list if not already present
 						describedBy += " " + errorID;
 					}
@@ -823,7 +819,6 @@ $.extend( $.validator, {
 			var name = this.idOrName( element ),
 				describer = $( element ).attr( "aria-describedby" ),
 				selector = "label[for='" + name + "'], label[for='" + name + "'] *";
-
 			// aria-describedby should directly reference the error element
 			if ( describer ) {
 				selector = selector + ", #" + describer.replace( /\s+/g, ", #" );
@@ -838,14 +833,11 @@ $.extend( $.validator, {
 		},
 
 		validationTargetFor: function( element ) {
-
-			// If radio/checkbox, validate first element in group instead
+			// if radio/checkbox, validate first element in group instead
 			if ( this.checkable( element ) ) {
-				element = this.findByName( element.name );
+				element = this.findByName( element.name ).not( this.settings.ignore )[ 0 ];
 			}
-
-			// Always apply ignore filter
-			return $( element ).not( this.settings.ignore )[ 0 ];
+			return element;
 		},
 
 		checkable: function( element ) {
@@ -1073,12 +1065,12 @@ $.extend( $.validator, {
 
 		if ( $.validator.autoCreateRanges ) {
 			// auto-create ranges
-			if ( rules.min != null && rules.max != null ) {
+			if ( rules.min && rules.max ) {
 				rules.range = [ rules.min, rules.max ];
 				delete rules.min;
 				delete rules.max;
 			}
-			if ( rules.minlength != null && rules.maxlength != null ) {
+			if ( rules.minlength && rules.maxlength ) {
 				rules.rangelength = [ rules.minlength, rules.maxlength ];
 				delete rules.minlength;
 				delete rules.maxlength;
@@ -1203,19 +1195,19 @@ $.extend( $.validator, {
 
 		// http://jqueryvalidation.org/minlength-method/
 		minlength: function( value, element, param ) {
-			var length = $.isArray( value ) ? value.length : this.getLength( value, element );
+			var length = $.isArray( value ) ? value.length : this.getLength( $.trim( value ), element );
 			return this.optional( element ) || length >= param;
 		},
 
 		// http://jqueryvalidation.org/maxlength-method/
 		maxlength: function( value, element, param ) {
-			var length = $.isArray( value ) ? value.length : this.getLength( value, element );
+			var length = $.isArray( value ) ? value.length : this.getLength( $.trim( value ), element );
 			return this.optional( element ) || length <= param;
 		},
 
 		// http://jqueryvalidation.org/rangelength-method/
 		rangelength: function( value, element, param ) {
-			var length = $.isArray( value ) ? value.length : this.getLength( value, element );
+			var length = $.isArray( value ) ? value.length : this.getLength( $.trim( value ), element );
 			return this.optional( element ) || ( length >= param[ 0 ] && length <= param[ 1 ] );
 		},
 
