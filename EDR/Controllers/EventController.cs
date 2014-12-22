@@ -44,24 +44,25 @@ namespace EDR.Controllers
 
         public ActionResult Signup(int id)
         {
-            var viewModel = new EventSignupViewModel();
-            viewModel.EventId = id;
-            viewModel.Event = DataContext.Events.Find(id);
-            viewModel.UserId = DataContext.Users.Find(User.Identity.GetUserId()).Id;
-
-            return View(viewModel);
-        }
-
-        [HttpPost]
-        public ActionResult Signup(EventSignupViewModel model)
-        {
-            var user = DataContext.Users.Where(x => x.Id == model.UserId).FirstOrDefault();
-            var userevent = DataContext.Events.Include("Users").Where(x => x.Id == model.EventId).FirstOrDefault();
+            var userId = User.Identity.GetUserId();
+            var user = DataContext.Users.Where(x => x.Id == userId).FirstOrDefault();
+            var userevent = DataContext.Events.Include("Users").Where(x => x.Id == id).FirstOrDefault();
             if (!userevent.Users.Contains(user))
             {
                 userevent.Users.Add(user);
-                DataContext.SaveChanges();
             }
+            if (userevent is Class)
+            {
+                var teachers = DataContext.Teachers.Where(t => t.Classes.Any(c => c.Id == id)).ToList();
+                foreach (Teacher t in teachers)
+                {
+                    if (DataContext.Students.Where(x => x.DancerId == user.Id && x.TeacherId == t.Id).ToList().Count == 0)
+                    {
+                        DataContext.Students.Add(new Student() { Teacher = t, Dancer = user });
+                    }
+                }
+            }
+            DataContext.SaveChanges();
             return RedirectToAction("Learn", "Home");
         }
 
@@ -201,7 +202,7 @@ namespace EDR.Controllers
                 }
                 else if (model.EventType == "Party")
                 {
-                    event1.Place = new OtherPlace { Name = model.Name, Address = model.Address, Address2 = model.Address2, City = model.City, State = model.State.ToString(), Zip = model.Zip };
+                    event1.Place = new OtherPlace { Name = model.Name, Address = model.Address, Address2 = model.Address2, City = model.City, State = model.State, Zip = model.Zip };
                     var party = ConvertToParty(event1);
                     party.Dancer = DataContext.Users.Find(id);
                     DataContext.Events.Add(party);

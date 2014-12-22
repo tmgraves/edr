@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EDR.Utilities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -37,6 +38,22 @@ namespace EDR.Models
         public int? Interval { get; set; }
         public DayOfWeek Day { get; set; }
         public int Duration { get; set; }
+
+        [Display(Name = "Next Date")]
+        public DateTime NextDate
+        {
+            get
+            {
+                if (Recurring)
+                {
+                    return ApplicationUtility.GetNextDate(StartDate, Frequency, (int)Interval, Day);
+                }
+                else
+                {
+                    return StartDate;
+                }
+            }
+        }
 
         public virtual Place Place { get; set; }
 

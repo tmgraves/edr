@@ -44,5 +44,11 @@ namespace EDR.Utilities
         {
             return ((days * 24 * 60) + (hours * 60) + minutes);
         }
+
+        public static UserPicture GetNoProfilePicture()
+        {
+            var picture = new UserPicture() { Filename = "~/Content/images/NoProfilePic.gif", Title = "No Profile Picture", ThumbnailFilename = "~/Content/images/NoPicThumb.gif" };
+            return picture;
+        }
     }
 }

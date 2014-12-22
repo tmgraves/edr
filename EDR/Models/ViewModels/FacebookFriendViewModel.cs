@@ -1,14 +1,12 @@
-﻿using Microsoft.AspNet.Facebook;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
-namespace EDR.Models.ViewModels
+namespace EDR.Models
 {
-    public class FacebookFriendViewModel
+    public class FacebookFriend
     {
         [Required]
         [Display(Name = "Friend's name")]
@@ -17,5 +15,6 @@ namespace EDR.Models.ViewModels
         public string Link { get; set; }
         public string ImageURL { get; set; }
         public string Email { get; set; }
+        public ApplicationUser User { get; set; }
     }
 }

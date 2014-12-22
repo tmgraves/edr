@@ -149,7 +149,21 @@
                     }
                     @if (User.Identity.IsAuthenticated)
                     {
-                        @Html.ActionLink("Add to Calendar", "Signup", "Event", new { id = item.Id }, htmlAttributes: new { @class = "btn btn-primary", @style = "margin: 5px" })
+                        if (item.Users == null)
+                        {
+                            @Html.ActionLink("Add to Calendar", "Signup", "Event", new { id = item.Id }, htmlAttributes: new { @class = "btn btn-primary", @style = "margin: 5px" })
+                        }
+                        else
+                        {
+                            if (item.Users.Where(x => x.UserName == User.Identity.Name).ToList().Count == 0 || item.Users.Count == 0)
+                            {
+                                @Html.ActionLink("Add to Calendar", "Signup", "Event", new { id = item.Id }, htmlAttributes: new { @class = "btn btn-primary", @style = "margin: 5px" })
+                            }
+                            else
+                            {
+                                <h3><span class="label label-default">Signed Up</span></h3>
+                            }
+                        }
                     }
                 </td>
             </tr>

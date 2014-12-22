@@ -1,102 +1,470 @@
 ﻿@model EDR.Models.ViewModels.DancerViewViewModel
+@using EDR.Models
+@using EDR.Utilities
 
 @{
     ViewBag.Title = "Dancer - " + Model.Dancer.FirstName;
 }
 
-<h1 class="page-header">
-    @if (Model.Dancer.FacebookUsername != null)
-    {
-        <img class="img-thumbnail" src="http://graph.facebook.com/@Model.Dancer.FacebookUsername/picture?type=normal" />
+<style>
+    #map-canvas {
+        width: 300px;
+        height: 100px;
     }
-    @Model.Dancer.FirstName
-    @if (User.Identity != null && User.Identity.Name == Model.Dancer.UserName)
-    {
-        <a style="font-size: medium;" href="@Url.Action("Edit", "Dancer")">Edit Profile</a>
+    #classMap-canvas {
+        width: 275px;
+        height: 400px;
     }
-</h1>
+</style>
+<script src="https://maps.googleapis.com/maps/api/js"></script>
+<script>
+    function initialize() {
+        var mapOptions = {
+            zoom: 8,
+            draggable: false,
+            navigationControl: false,
+            scaleControl: false,
+            scrollwheel: false,
+            zoomControl: false,
+            keyboardShortcuts: false,
+            mapTypeControl: false,
+            panControl: false,
+            rotateControl: false,
+            streetViewControl: false,
+
+            disableDoubleClickZoom: true,
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            center: new google.maps.LatLng('@Model.Address.Latitude', '@Model.Address.Longitude')
+        };
+
+        var map = new google.maps.Map(document.getElementById('map-canvas'),
+            mapOptions);
+
+        var marker = new google.maps.Marker({
+            position: new google.maps.LatLng('@Model.Address.Latitude', '@Model.Address.Longitude'),
+            map: map,
+            title: '@Model.Address.City' + ', ' + '@Model.Address.State',
+            icon: "http://maps.google.com/mapfiles/kml/pal3/icon48.png"
+        });
+
+        marker.setTitle((1).toString());
+        attachSecretMessage(marker, 1);
+
+        var classMapOptions = {
+            zoom: 8,
+            center: new google.maps.LatLng('@Model.Address.Latitude', '@Model.Address.Longitude')
+        };
+
+        var classmap = new google.maps.Map(document.getElementById('classMap-canvas'),
+            classMapOptions);
+
+        @{
+            int idx = 1;
+            
+            foreach(var c in Model.Classes)
+            {
+                <text>
+                    var marker = new google.maps.Marker({
+                        position: new google.maps.LatLng('@c.Place.Latitude', '@c.Place.Longitude'),
+                        map: classmap,
+                        title: '@c.Name' + '@@' + '@c.Place.Name',
+                        icon: "http://maps.google.com/mapfiles/kml/paddle/" + @idx + "-lv.png"
+                    });
+
+                    marker.setTitle(('@c.Name' + '@@' + '@c.Place.Name').toString());
+                    attachSecretMessage(marker, '@c.Id');
+                </text>
+                idx += 1;
+            }
+        }
+    }
+
+    // The five markers show a secret message when clicked
+    // but that message is not within the marker's instance data
+    function attachSecretMessage(marker, num) {
+        var message = marker.title;
+        var infowindow = new google.maps.InfoWindow({
+            content: marker.title
+        });
+
+        google.maps.event.addListener(marker, 'click', function () {
+            infowindow.open(marker.get('map'), marker);
+        });
+    }
+
+    google.maps.event.addDomListener(window, 'load', initialize);
+</script>
+
+<div class="container" style="padding: 10px;">
+    <div class="row">
+        <h1 class="page-header">
+            @Model.Dancer.FirstName
+            @if (User.Identity != null && User.Identity.Name == Model.Dancer.UserName)
+            {
+                @*<a style="font-size: medium;" href="@Url.Action("Edit", "Dancer")">Edit Profile</a>*@
+                <a title="Edit Profile" href="@Url.Action("Edit", "Dancer")">
+                    <i class="glyphicon glyphicon glyphicon-pencil btn-sm btn-info"></i>
+                    <span class="sr-only">Edit Profile</span>
+                </a>
+            }
+        </h1>
+    </div>
+    <div class="row">
+        <div class="col-md-2" style="text-align: center;">
+            @if (Model.Dancer.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault() != null)
+            {
+                <img class="img-thumbnail" src="@Url.Content(Model.Dancer.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault().ThumbnailFilename)" />
+            }
+            else
+            {
+                <img class="img-thumbnail" src="~/Content/images/NoProfilePic.gif" />
+            }
+            @if (User.Identity != null && User.Identity.Name == Model.Dancer.UserName)
+            {
+                <p>
+                    <a style="font-size: small;" href="@Url.Action("ChangePicture", "Dancer")">Change Picture</a>
+                    @*<a title="Change Picture" href="@Url.Action("ChangePicture", "Dancer")">
+                            <i class="glyphicon glyphicon glyphicon-edit btn btn-primary"></i>
+                            <span class="sr-only">Change Picture</span>
+                        </a>*@
+                </p>
+            }
+        </div>
+        <div class="tabbable">
+            <div class="col-md-6">
+                <ul class="nav nav-pills" role="tablist">
+                    <li class="active"><a href="#myinfo" role="tab" data-toggle="tab">My Info</a></li>
+                    <li><a href="#mystyles" role="tab" data-toggle="tab">Dance Styles</a></li>
+                    <li><a href="#friends" role="tab" data-toggle="tab">Friends</a></li>
+                    <li><a href="#myteachers" role="tab" data-toggle="tab">Teachers</a></li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <div class="panel tab-pane active panel-default" style="height: 200px; padding: 10px;" id="myinfo">
+                        <div class="row">
+                            <div class="col-md-12 col-lg-12 col-sm-8 col-xs-8">
+                                <label class="control-label col-md-3 col-sm-3 col-lg-3 col-xs-3">
+                                    Experience:
+                                </label>
+                                @Model.Dancer.Experience Year(s)
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 col-lg-12 col-sm-8 col-xs-8">
+                                <label class="control-label col-md-3 col-sm-3 col-lg-3 col-xs-3">
+                                    Location:
+                                </label>
+                                @Model.Address.City, @Model.Address.State
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 col-lg-12 col-sm-8 col-xs-8">
+                                <label class="control-label col-md-3 col-sm-3 col-lg-3 col-xs-3">
+                                </label>
+                            </div>
+                            <div class="container" id="map-canvas"></div>
+                        </div>
+                    </div>
+                    <div class="panel tab-pane panel-default" style="height: 200px; padding: 10px;" id="mystyles">
+                        <div class="row">
+                            <div class="col-md-12 col-lg-12 col-sm-8 col-xs-8">
+                                <ul class="list-inline">
+                                    @foreach (var item in Model.Dancer.DanceStyles)
+                                {
+                                <li>@Html.ActionLink(item.Name, "Details", "DanceStyle", new { id = item.Id }, null)</li>
+                                }
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel tab-pane panel-default" style="height: 200px;" id="friends">
+                        <div class="row">
+                            <div class="col-md-12 col-lg-12 col-sm-8 col-xs-8" style="height: 150px; overflow-x: auto;">
+                                @if (Model.FriendList != null && Model.FriendList.Count() > 0)
+                            {
+                                foreach (var myFriend in @Model.FriendList)
+                                {
+                            <div style="margin: 5px;">
+                                @if (myFriend.User != null)
+                                        {
+                                        <a href="@Url.Action("View", "Dancer", new { username = myFriend.User.UserName })">
+                                            <div class="img-thumbnail">
+                                                <img src="@Url.Content(myFriend.User.UserPictures.First().ThumbnailFilename)" />
+                                                @myFriend.User.FirstName
+                                            </div>
+                                        </a>
+                                        }
+                                        else
+                                        {
+                                        <a href="@myFriend.Link" target="_blank">
+                                            <div class="img-thumbnail">
+                                                @if (myFriend.ImageURL != null)
+                                                {
+                                                    <img src="@Url.Content(myFriend.ImageURL)" />
+                                                }
+                                                @myFriend.Name
+                                            </div>
+                                        </a>
+                                        }
+                            </div>
+                                }
+                            }
+                            else
+                            {
+                            @:No friends found.
+                            }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel tab-pane panel-default" style="height: 200px; padding: 10px;" id="myteachers">
+                        <div class="row">
+                            <div class="col-md-12 col-lg-12 col-sm-8 col-xs-8">
+                                <ul class="list-inline">
+                                    @foreach (var teacher in Model.Teachers.OrderBy(x => x.ApplicationUser.FirstName))
+                                {
+                                <li>
+                                    <a href="@Url.Action("View", "Teacher", new { username = teacher.ApplicationUser.UserName })">
+                                        <div class="img-thumbnail">
+                                            @if (teacher.ApplicationUser.UserPictures != null && teacher.ApplicationUser.UserPictures.Count > 0)
+                                                {
+                                                <img src="@Url.Content(teacher.ApplicationUser.UserPictures.First().ThumbnailFilename)" />
+                                                }
+                                                else
+                                                {
+                                                <img src="@Url.Content(ApplicationUtility.GetNoProfilePicture().ThumbnailFilename)" />
+                                                }
+                                            @teacher.ApplicationUser.FullName
+                                        </div>
+                                    </a>
+                                </li>
+                                }
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="tabbable navbar-header col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <div class="row">
+        <div role="presentation" class="active col-xs-4 col-sm-4 col-md-4 col-lg-4"><a role="tab" href="#learn" data-toggle="tab"><h2 class="page-header">Where I Learn</h2></a></div>
+        <div role="presentation" class="col-xs-4 col-sm-4 col-md-4 col-lg-4"><a role="tab" href="#dance" data-toggle="tab"><h2 class="page-header">Where I Dance</h2></a></div>
+        <div role="presentation" class="col-xs-4 col-sm-4 col-md-4 col-lg-4"><a role="tab" href="#perform" data-toggle="tab"><h2 class="page-header">Where I Perform</h2></a></div>
+    </div>
+    <div class="tab-content">
+        <div id="learn" class="tab-pane active">
+            <div class="row">
+                <div class="col-sm-8 col-md-8 col-lg-8 col-xs-8">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h1 class="panel-title">
+                                My Classes
+                                @if (User.Identity != null && User.Identity.Name == Model.Dancer.UserName)
+                                {
+                                    <a title="Find More Classes" class="pull-right" href="@Url.Action("Learn", "Home")">
+                                        <i class="glyphicon glyphicon-search"></i>
+                                        <span class="sr-only">Find More Classes</span>
+                                    </a>
+                                }
+                            </h1>
+                        </div>
+                        <div class="panel-body">
+                            <div class="col-sm-5 col-md-5 col-lg-5 col-xs-5">
+                                <div class="container" id="classMap-canvas"></div>
+                            </div>
+                            <div class="col-sm-7 col-md-7 col-lg-7 col-xs-7" style="height: 400px; overflow-x: auto;">
+                                @if (Model.Dancer.Events.OfType<Class>().Count() > 0)
+                                {
+                                    @Html.Partial("~/Views/Shared/_CompactEventListPartial.cshtml", Model.Classes.OrderBy(x => x.NextDate))
+                                }
+                                else
+                                {
+                                    @:You have no Classes
+                            }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="dance" class="tab-pane">
+            <div class="row">
+                <div class="col-sm-4 col-md-4 col-lg-4 col-xs-4">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h1 class="panel-title">
+                                My Socials
+                                @if (User.Identity != null && User.Identity.Name == Model.Dancer.UserName)
+                                {
+                                    <a title="Find More Socials" class="pull-right" href="@Url.Action("Explore", "Home")">
+                                        <i class="glyphicon glyphicon-search"></i>
+                                        <span class="sr-only">Find Socials</span>
+                                    </a>
+                                }
+                            </h1>
+                        </div>
+                        <div class="panel-body" style="height: 200px; overflow-x: auto;">
+                            @if (Model.Dancer.Events.OfType<Social>().Count() > 0)
+                            {
+                                @Html.Partial("~/Views/Shared/_CompactEventListPartial.cshtml", Model.Socials)
+                            }
+                            else
+                            {
+                                @:You have no Socials
+            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-4 col-md-4 col-lg-4 col-xs-4">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h1 class="panel-title">
+                                My Concerts
+                                @if (User.Identity != null && User.Identity.Name == Model.Dancer.UserName)
+                                {
+                                    <a title="Find More Concerts" class="pull-right" href="@Url.Action("Explore", "Home")">
+                                        <i class="glyphicon glyphicon-search"></i>
+                                        <span class="sr-only">Find Concerts</span>
+                                    </a>
+                                }
+                            </h1>
+                        </div>
+                        <div class="panel-body" style="height: 200px; overflow-x: auto;">
+                            @if (Model.Dancer.Events.OfType<Concert>().Count() > 0)
+                            {
+                                @Html.Partial("~/Views/Shared/_CompactEventListPartial.cshtml", Model.Concerts)
+                            }
+                            else
+                            {
+                                @:You have no Concerts
+            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-4 col-md-4 col-lg-4 col-xs-4">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h1 class="panel-title">
+                                My Conferences
+                                @if (User.Identity != null && User.Identity.Name == Model.Dancer.UserName)
+                                {
+                                    <a title="Find More Conferences" class="pull-right" href="@Url.Action("Explore", "Home")">
+                                        <i class="glyphicon glyphicon-search"></i>
+                                        <span class="sr-only">Find Conferences</span>
+                                    </a>
+                                }
+                            </h1>
+                        </div>
+                        <div class="panel-body" style="height: 200px; overflow-x: auto;">
+                            @if (Model.Dancer.Events.OfType<Conference>().Count() > 0)
+                            {
+                                @Html.Partial("~/Views/Shared/_CompactEventListPartial.cshtml", Model.Conferences)
+                            }
+                            else
+                            {
+                                @:You have no Conferences
+            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-4 col-md-4 col-lg-4 col-xs-4">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h1 class="panel-title">
+                                My Open Houses
+                                @if (User.Identity != null && User.Identity.Name == Model.Dancer.UserName)
+                                {
+                                    <a title="Find More Open Houses" class="pull-right" href="@Url.Action("Explore", "Home")">
+                                        <i class="glyphicon glyphicon-search"></i>
+                                        <span class="sr-only">Find Open Houses</span>
+                                    </a>
+                                }
+                            </h1>
+                        </div>
+                        <div class="panel-body" style="height: 200px; overflow-x: auto;">
+                            @if (Model.Dancer.Events.OfType<OpenHouse>().Count() > 0)
+                            {
+                                @Html.Partial("~/Views/Shared/_CompactEventListPartial.cshtml", Model.OpenHouses)
+                            }
+                            else
+                            {
+                                @:You have no Open Houses
+            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-4 col-md-4 col-lg-4 col-xs-4">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h1 class="panel-title">
+                                My Parties
+                                @if (User.Identity != null && User.Identity.Name == Model.Dancer.UserName)
+                                {
+                                    <a title="Find More Parties" class="pull-right" href="@Url.Action("Explore", "Home")">
+                                        <i class="glyphicon glyphicon-search"></i>
+                                        <span class="sr-only">Find Parties</span>
+                                    </a>
+                                }
+                            </h1>
+                        </div>
+                        <div class="panel-body" style="height: 200px; overflow-x: auto;">
+                            @if (Model.Dancer.Events.OfType<Party>().Count() > 0)
+                            {
+                                @Html.Partial("~/Views/Shared/_CompactEventListPartial.cshtml", Model.Parties)
+                            }
+                            else
+                            {
+                                @:You have no Parties
+            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="perform" class="tab-pane">
+            <div class="col-sm-12 col-md-12 col-lg-12 col-xs-12">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h1 class="panel-title">
+                            My Performances
+                        </h1>
+                    </div>
+                    <div class="panel-body" style="height: 400px; overflow-x: auto;">
+                    </div>
+                </div>
+
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h1 class="panel-title">Teams</h1>
+                    </div>
+                    <div class="panel-body">
+                        Panel content
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- /.tab-content -->
+</div><!-- /.tabbable -->
+
+<div class="col-sm-4 col-md-4 col-lg-4 col-xs-4">
+</div>
 
 <div class="row">
     <div class="tabbable">
         <div class="col-xs-8 col-sm-4 col-md-2">
             <ul class="nav nav-pills nav-stacked" role="tablist">
-                <li class="active"><a href="#myinfo" data-toggle="tab">My Info</a></li>
-                <li><a href="#friends" data-toggle="tab">Friends</a></li>
-                <li><a href="#dancestyles" data-toggle="tab">Dance Styles</a></li>
-                <li><a href="#events" data-toggle="tab">Events</a></li>
                 <li><a href="#videos" data-toggle="tab">YouTube Videos</a></li>
             </ul>
         </div>
         <div class="tab-content col-xs-32 col-sm-16 col-md-8">
-            <div id="myinfo" class="tab-pane active">
-                <div class="well">
-                    <dl class="dl-horizontal">
-                        <dt>
-                            Experience
-                        </dt>
-                        <dd>
-                            @Model.Dancer.Experience Year(s)
-                        </dd>
-                        <dt>
-                            Location
-                        </dt>
-                        <dd>
-                            Location
-                        </dd>
-                        <dt>
-                            YouTube Username
-                        </dt>
-                        <dd>
-                            @Model.Dancer.YouTubeUsername
-                        </dd>
-                    </dl>
-                </div>
-            </div>
-            <div id="friends" class="tab-pane">
-                <div class="well">
-                    @if (Model.FriendList != null && Model.FriendList.Count() > 0)
-                    {
-                        foreach (var myFriend in @Model.FriendList)
-                        {
-                    <a href="@myFriend.Link" target="_blank">
-                        <div class="photoTile">
-                            @if (myFriend.ImageURL != null)
-                                    {
-                                    <img src="@myFriend.ImageURL" />
-                                    }
-                            <label>@myFriend.Name</label>
-                        </div>
-                    </a>
-                        }
-                    }
-                    else
-                    {
-                    @:No friends found.
-                    }
-                </div>
-            </div>
-            <div id="dancestyles" class="tab-pane">
-                <div class="well">
-                    <ul class="list-inline">
-                        @foreach (var item in Model.Dancer.DanceStyles)
-                        {
-                            <li>@Html.ActionLink(item.Name, "Details", "DanceStyle", new { id = item.Id }, null)</li>
-                        }
-                    </ul>
-                </div>
-            </div>
-            <div id="events" class="tab-pane">
-                <div class="well row">
-                    <h4>
-                        Parties
-                        @if (User.Identity != null && User.Identity.Name == Model.Dancer.UserName)
-                        {
-                            <a style="font-size: small; vertical-align: bottom;" href="@Url.Action("Create", "Event", new { role = "Dancer", eventType = "Party" }, null)">Add a Party</a>
-                        }
-                    </h4>
-                    @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", Model.Dancer.Parties)
-                </div>
-            </div>
             <div id="videos" class="tab-pane">
                 <div class="well row">
                     <ul class="list-inline">

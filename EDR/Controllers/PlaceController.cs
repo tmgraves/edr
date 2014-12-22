@@ -8,6 +8,8 @@ using EDR.Models;
 using EDR.Models.ViewModels;
 using EDR.Enums;
 using Microsoft.AspNet.Identity;
+using EDR.Utilities;
+using System.Data.Entity;
 
 namespace EDR.Controllers
 {
@@ -91,37 +93,37 @@ namespace EDR.Controllers
 
                 if (model.PlaceType == PlaceType.Studio)
                 {
-                    var place = new Studio() { Name = model.Name, Address = model.Address, Address2 = model.Address2, City = model.City, State = model.State.ToString(), Zip = model.Zip, Owners = new List<Owner> { owner } };
+                    var place = new Studio() { Name = model.Name, Address = model.Address, Address2 = model.Address2, City = model.City, State = model.State, Zip = model.Zip, Owners = new List<Owner> { owner } };
                     DataContext.Places.Add(place);
                 }
                 else if (model.PlaceType == PlaceType.ConferenceCenter)
                 {
-                    var place = new ConferenceCenter() { Name = model.Name, Address = model.Address, Address2 = model.Address2, City = model.City, State = model.State.ToString(), Zip = model.Zip, Owners = new List<Owner> { owner } };
+                    var place = new ConferenceCenter() { Name = model.Name, Address = model.Address, Address2 = model.Address2, City = model.City, State = model.State, Zip = model.Zip, Owners = new List<Owner> { owner } };
                     DataContext.Places.Add(place);
                 }
                 else if (model.PlaceType == PlaceType.Hotel)
                 {
-                    var place = new Hotel() { Name = model.Name, Address = model.Address, Address2 = model.Address2, City = model.City, State = model.State.ToString(), Zip = model.Zip, Owners = new List<Owner> { owner } };
+                    var place = new Hotel() { Name = model.Name, Address = model.Address, Address2 = model.Address2, City = model.City, State = model.State, Zip = model.Zip, Owners = new List<Owner> { owner } };
                     DataContext.Places.Add(place);
                 }
                 else if (model.PlaceType == PlaceType.Nightclub)
                 {
-                    var place = new Nightclub() { Name = model.Name, Address = model.Address, Address2 = model.Address2, City = model.City, State = model.State.ToString(), Zip = model.Zip, Owners = new List<Owner> { owner } };
+                    var place = new Nightclub() { Name = model.Name, Address = model.Address, Address2 = model.Address2, City = model.City, State = model.State, Zip = model.Zip, Owners = new List<Owner> { owner } };
                     DataContext.Places.Add(place);
                 }
                 else if (model.PlaceType == PlaceType.OtherPlace)
                 {
-                    var place = new OtherPlace() { Name = model.Name, Address = model.Address, Address2 = model.Address2, City = model.City, State = model.State.ToString(), Zip = model.Zip, Owners = new List<Owner> { owner } };
+                    var place = new OtherPlace() { Name = model.Name, Address = model.Address, Address2 = model.Address2, City = model.City, State = model.State, Zip = model.Zip, Owners = new List<Owner> { owner } };
                     DataContext.Places.Add(place);
                 }
                 else if (model.PlaceType == PlaceType.Restaurant)
                 {
-                    var place = new Restaurant() { Name = model.Name, Address = model.Address, Address2 = model.Address2, City = model.City, State = model.State.ToString(), Zip = model.Zip, Owners = new List<Owner> { owner } };
+                    var place = new Restaurant() { Name = model.Name, Address = model.Address, Address2 = model.Address2, City = model.City, State = model.State, Zip = model.Zip, Owners = new List<Owner> { owner } };
                     DataContext.Places.Add(place);
                 }
                 else if (model.PlaceType == PlaceType.Theater)
                 {
-                    var place = new Theater() { Name = model.Name, Address = model.Address, Address2 = model.Address2, City = model.City, State = model.State.ToString(), Zip = model.Zip, Owners = new List<Owner> { owner } };
+                    var place = new Theater() { Name = model.Name, Address = model.Address, Address2 = model.Address2, City = model.City, State = model.State, Zip = model.Zip, Owners = new List<Owner> { owner } };
                     DataContext.Places.Add(place);
                 }
                 DataContext.SaveChanges();
@@ -132,6 +134,39 @@ namespace EDR.Controllers
                 var allErrors = ModelState.Values.SelectMany(v => v.Errors);
             }
             return View(model);
+        }
+
+        [Authorize(Roles="Owner")]
+        public ActionResult Edit(int placeId)
+        {
+            var model = new PlaceEditViewModel();
+            model.Place = DataContext.Places.Include("Owners").Include("Owners.ApplicationUser").Where(x => x.Id == placeId).FirstOrDefault();
+            return View(model);
+        }
+
+        [Authorize(Roles = "Owner")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(PlaceEditViewModel model)
+        {
+            var place = DataContext.Places.Find(model.Place.Id);
+            var address = Geolocation.ParseAddress(Url.Encode(model.Place.Address + " " + model.Place.Address2 + " " + model.Place.City + ", " + model.Place.State + " " + model.Place.Zip));
+            place.Address = model.Place.Address;
+            place.Address2 = model.Place.Address2;
+            place.City = model.Place.City;
+            place.State = model.Place.State;
+            place.Zip = model.Place.Zip;
+            place.Country = address.Country;
+            place.Latitude = address.Latitude;
+            place.Longitude = address.Longitude;
+            place.Name = model.Place.Name;
+            place.FacebookLink = model.Place.FacebookLink;
+            place.Website = model.Place.Website;
+
+            DataContext.Entry(place).State = EntityState.Modified;
+            DataContext.SaveChanges();
+
+            return RedirectToAction("Details", "Place", new { id = model.Place.Id });
         }
     }
 }

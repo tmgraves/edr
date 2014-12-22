@@ -11,6 +11,13 @@ using Facebook;
 using Microsoft.AspNet.Facebook;
 using Microsoft.AspNet.Facebook.Client;
 using System.Xml.Linq;
+using EDR.Utilities;
+using System.Web;
+using System.IO;
+using System.Web.Helpers;
+using Google.Apis.Auth.OAuth2;
+using System.Threading;
+using Google.Apis.Services;
 
 namespace EDR.Controllers
 {
@@ -27,6 +34,10 @@ namespace EDR.Controllers
         [Authorize]
         public ActionResult View(string username)
         {
+            if (User.Identity.IsAuthenticated && username == "View")
+            {
+                username = User.Identity.Name;
+            }
             if (String.IsNullOrWhiteSpace(username))
             {
                 if (User != null)
@@ -39,7 +50,7 @@ namespace EDR.Controllers
                 }
             }
 
-            var dancer = DataContext.Users.Where(x => x.UserName == username).Include("DanceStyles").FirstOrDefault();
+            var dancer = DataContext.Users.Where(x => x.UserName == username).Include("DanceStyles").Include("UserPictures").FirstOrDefault();
             if(dancer == null)
             {
                 return HttpNotFound();
@@ -47,6 +58,29 @@ namespace EDR.Controllers
 
             var viewModel = new DancerViewViewModel();
             viewModel.Dancer = dancer;
+            viewModel.Teachers = new List<Teacher>();
+            viewModel.Teachers = DataContext.Teachers.Where(x => x.Students.Any(s => s.DancerId == dancer.Id)).Include("ApplicationUser").Include("ApplicationUser.UserPictures").ToList();
+            viewModel.Classes = new List<Class>();
+            viewModel.Classes = DataContext.Events.OfType<Class>().Where(x => x.Users.Any(u => u.UserName == username)).ToList();
+            viewModel.Socials = new List<Social>();
+            viewModel.Socials = DataContext.Events.OfType<Social>().Where(x => x.Users.Any(u => u.UserName == username)).ToList();
+            viewModel.Concerts = new List<Concert>();
+            viewModel.Concerts = DataContext.Events.OfType<Concert>().Where(x => x.Users.Any(u => u.UserName == username)).ToList();
+            viewModel.Conferences = new List<Conference>();
+            viewModel.Conferences = DataContext.Events.OfType<Conference>().Where(x => x.Users.Any(u => u.UserName == username)).ToList();
+            viewModel.OpenHouses = new List<OpenHouse>();
+            viewModel.OpenHouses = DataContext.Events.OfType<OpenHouse>().Where(x => x.Users.Any(u => u.UserName == username)).ToList();
+            viewModel.Parties = new List<Party>();
+            viewModel.Parties = DataContext.Events.OfType<Party>().Where(x => x.Users.Any(u => u.UserName == username)).ToList();
+
+            if (dancer.ZipCode != null)
+            {
+                viewModel.Address = Geolocation.ParseAddress(dancer.ZipCode);
+            }
+            else
+            {
+                viewModel.Address = Geolocation.ParseAddress("90065");
+            }
             if (dancer.YouTubeUsername != null)
             {
                 viewModel.YouTubeVideos = GetVideos(dancer.YouTubeUsername);
@@ -56,23 +90,22 @@ namespace EDR.Controllers
                 viewModel.YouTubeVideos = new List<YouTubeVideo>();
             }
 
+            var teachers = dancer.Students;
+
             if (dancer.FacebookToken != null)
             {
-                var fb = new FacebookClient(dancer.FacebookToken);
-                dynamic myInfo = fb.Get("/me/friends?fields=id,name,email,link");
-                var friendsList = new List<FacebookFriendViewModel>();
-                foreach (dynamic friend in myInfo.data)
+                viewModel.FriendList = FacebookHelper.GetFriends(dancer.FacebookToken);
+
+                foreach (FacebookFriend f in viewModel.FriendList)
                 {
-                    friendsList.Add(new FacebookFriendViewModel()
+                    var user = DataContext.Users.Where(x => x.FacebookUsername == f.Id).FirstOrDefault();
+                    if (user != null)
                     {
-                        Id = friend.id,
-                        Name = friend.name,
-                        Link = friend.link,
-                        ImageURL = @"https://graph.facebook.com/" + friend.id + "/picture?type=small",
-                        Email = friend.email
-                    });
+                        user.UserPictures = DataContext.Pictures.OfType<UserPicture>().Where(x => x.User.Id == user.Id).ToList();
+                        user.UserPictures.Add(ApplicationUtility.GetNoProfilePicture());
+                        f.User = user;
+                    }
                 }
-                viewModel.FriendList = friendsList;
             }
 
             return View(viewModel);
@@ -117,6 +150,7 @@ namespace EDR.Controllers
         
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public ActionResult Edit(DancerEditViewModel model)
         {
             if (ModelState.IsValid)
@@ -124,13 +158,19 @@ namespace EDR.Controllers
                 var dancer = DataContext.Users.Where(x => x.Id == model.Dancer.Id).Include("DanceStyles").Include("Parties").FirstOrDefault();
                 dancer.Experience = model.Dancer.Experience;
                 dancer.YouTubeUsername = model.Dancer.YouTubeUsername;
-                var styles = DataContext.DanceStyles.Where(x => model.PostedStyles.DanceStyleIds.Contains(x.Id.ToString())).ToList();
+                dancer.ZipCode = model.Dancer.ZipCode;
 
-                dancer.DanceStyles.Clear();
-                
-                foreach(DanceStyle s in styles)
+                if (model.PostedStyles != null)
                 {
-                    dancer.DanceStyles.Add(s);
+                    var styles = DataContext.DanceStyles.Where(x => model.PostedStyles.DanceStyleIds.Contains(x.Id.ToString())).ToList();
+
+                    dancer.DanceStyles.Clear();
+
+                    foreach (DanceStyle s in styles)
+                    {
+                        dancer.DanceStyles.Add(s);
+                    }
+
                 }
 
                 DataContext.Entry(dancer).State = EntityState.Modified;
@@ -141,11 +181,13 @@ namespace EDR.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public ActionResult AddStyle(DancerViewViewModel model)
         {
             return View(model);
         }
 
+        [Authorize]
         private List<YouTubeVideo> GetVideos(string youTubeUsername)
         {
             try
@@ -167,6 +209,196 @@ namespace EDR.Controllers
             catch
             {
                 return new List<YouTubeVideo>();
+            }
+        }
+
+        [Authorize]
+        public ActionResult UploadPicture()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult UploadPicture(HttpPostedFileBase file)
+        {
+            if (file != null && file.ContentLength > 0)
+                try
+                {
+                    string title = Path.GetRandomFileName();
+                    string filename = title + Path.GetExtension(file.FileName);
+                    string filenameSmall = title + "_small" + Path.GetExtension(file.FileName);
+                    string contentType = file.ContentType;
+
+                    file.SaveAs(Path.Combine(Server.MapPath("~/MyUploads"), filename));
+
+                    WebImage img = new WebImage(file.InputStream);
+                    img.Resize(130, 130, true, true);
+                    img.Save(Path.Combine(Server.MapPath("~/MyUploads"), filenameSmall));
+                    ViewBag.Message = "File uploaded successfully";
+
+                    var dancer = DataContext.Users.Where(x => x.UserName == User.Identity.Name).Include("UserPictures").FirstOrDefault();
+                    dancer.UserPictures.Add(new UserPicture() { Title = title, Filename = "~/MyUploads/" + filename, ThumbnailFilename = "~/MyUploads/" + filenameSmall });
+                    DataContext.Entry(dancer).State = EntityState.Modified;
+                    DataContext.SaveChanges();
+
+                    //UserCredential credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+                    //                new ClientSecrets
+                    //                {
+                    //                    ClientId = "59661408772-n0t3kh0jkb477a1n1hetfd5pfd63o9v6.apps.googleusercontent.com",
+                    //                    ClientSecret = "wh1tKtV_AE841jTride7G6Rq",
+                    //                },
+                    //                new[] { DriveService.Scope.Drive },
+                    //                "user",
+                    //                CancellationToken.None).Result;
+
+                    //// Create the service.
+                    //var service = new DriveService(new BaseClientService.Initializer()
+                    //{
+                    //    HttpClientInitializer = credential,
+                    //    ApplicationName = "eatdancerepeat",
+                    //});
+
+                    //Google.Apis.Drive.v2.Data.File body = new Google.Apis.Drive.v2.Data.File();
+                    //body.Title = "Profile Image";
+                    //body.Description = "Profile Image";
+                    //body.MimeType = file.ContentType;
+
+                    ////byte[] byteArray = System.IO.File.ReadAllBytes("document.txt");
+                    ////System.IO.MemoryStream stream = new System.IO.MemoryStream(byteArray);
+
+                    //WebImage i2 = img;
+
+                    //FilesResource.InsertMediaUpload request = service.Files.Insert(body, new MemoryStream(img.GetBytes()), contentType);
+                    //request.Upload();
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Message = "ERROR:" + ex.Message.ToString();
+                }
+            else
+            {
+                ViewBag.Message = "You have not specified a file.";
+            }
+            return RedirectToAction("ChangePicture", "Dancer", new { username = User.Identity.Name });
+        }
+
+        [HttpPost]
+        public ActionResult DeletePicture(string fileName)
+        {
+            int sessionFileCount = 0;
+
+            try
+            {
+                if (Session["fileUploader"] != null)
+                {
+                    ((List<UploadFile>)Session["fileUploader"]).RemoveAll(x => x.FileName == fileName);
+                    sessionFileCount = ((List<UploadFile>)Session["fileUploader"]).Count;
+                    if (fileName != null || fileName != string.Empty)
+                    {
+                        FileInfo file = new FileInfo(Server.MapPath("~/MyUploads/" + fileName));
+                        if (file.Exists)
+                        {
+                            file.Delete();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return Json(sessionFileCount, JsonRequestBehavior.AllowGet);
+        }
+
+        public FileResult OpenPicture(string fileName)
+        {
+            try
+            {
+                return File(new FileStream(Server.MapPath("~/MyFiles/" + fileName), FileMode.Open), "application/octetstream", fileName);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        [Authorize]
+        public ActionResult ChangePicture()
+        {
+            var model = new ChangePictureViewModel();
+
+            var id = User.Identity.GetUserId();
+            model.Dancer = DataContext.Users.Where(x => x.Id == id).Include("UserPictures").FirstOrDefault();
+
+            if (model.Dancer == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (model.Dancer.FacebookToken != null)
+            {
+                model.FacebookPictures = FacebookHelper.GetPhotos(model.Dancer.FacebookToken);
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public ActionResult ChangePicture(ChangePictureViewModel model)
+        {
+            return View(model);
+        }
+
+        [Authorize]
+        public ActionResult ProfilePicture(int id)
+        {
+            try
+            {
+                string userId = User.Identity.GetUserId();
+
+                var dancer = DataContext.Users.Where(x => x.Id == userId).Include("UserPictures").FirstOrDefault();
+
+                foreach (UserPicture p in dancer.UserPictures)
+                {
+                    if (p.Id == id)
+                    {
+                        p.ProfilePicture = true;
+                    }
+                    else
+                    {
+                        p.ProfilePicture = false;
+                    }
+                }
+
+                DataContext.Entry(dancer).State = EntityState.Modified;
+                DataContext.SaveChanges();
+                return RedirectToAction("ChangePicture", "Dancer", new { username = User.Identity.Name });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ChangePicture", "Dancer", new { username = User.Identity.Name });
+            }
+        }
+
+        [Authorize]
+        public ActionResult AddFacebookPicture(string id, string album, string name, string largeSource, string link, DateTime photodate, string source)
+        {
+            try
+            {
+                string userId = User.Identity.GetUserId();
+                var dancer = DataContext.Users.Where(x => x.Id == userId).Include("UserPictures").FirstOrDefault();
+                dancer.UserPictures.Add(new UserPicture() { Title = name, ThumbnailFilename = source, Filename = largeSource });
+                DataContext.Entry(dancer).State = EntityState.Modified;
+                DataContext.SaveChanges();
+                return RedirectToAction("ChangePicture", "Dancer", new { username = User.Identity.Name });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ChangePicture", "Dancer", new { username = User.Identity.Name });
             }
         }
     }

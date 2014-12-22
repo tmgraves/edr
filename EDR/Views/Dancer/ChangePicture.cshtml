@@ -1,0 +1,123 @@
+﻿@model EDR.Models.ViewModels.ChangePictureViewModel
+
+@{
+    ViewBag.Title = "ChangePicture";
+}
+
+<h2>Change Picture</h2>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-2">
+            @if (Model.Dancer.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault()  != null)
+            {
+                <img class="img-thumbnail" src="@Url.Content(Model.Dancer.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault().ThumbnailFilename)" />
+            }
+            else
+            {
+                <img class="img-thumbnail" src="~/Content/images/NoProfilePic.gif" />
+            }
+        </div>
+        <div class="col-md-10">
+            <h3>Upload a New Picture</h3>
+            @using (Html.BeginForm("UploadPicture",
+                                    "Dancer",
+                                    FormMethod.Post,
+                                    new { enctype = "multipart/form-data" }))
+            {
+                <div class="form-group form-inline">
+                    <input type="file" name="file" id="file" class="form-control" />
+                    <input id="submit" type="submit" class="btn btn-default" value="Submit" />
+                </div>
+                <p>
+                    @ViewBag.Message
+                </p>
+
+                <script type="text/javascript">
+                $('#submit').click(function () {
+                        //check whether browser fully supports all File API
+                        if (window.File && window.FileReader && window.FileList && window.Blob) {
+                            //get the file size and file type from file input field
+                            var fsize = $('#file')[0].files[0].size;
+
+                            if (fsize > 1048576) //do something if file size more than 1 mb (1048576)
+                            {
+                                alert("File is too big.  Please try another.");
+                                return false;
+                            } else {
+                                return true;
+                            }
+                        } else {
+                            alert("Please upgrade your browser, because your current browser lacks some new features we need!");
+                        }
+                    });
+                </script>
+            }
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 ">
+            <h4>Available Pictures</h4>
+            <ul class="list-inline">
+                @if (Model.Dancer.UserPictures != null && Model.Dancer.UserPictures.Count > 0)
+                {
+                    foreach (var photo in Model.Dancer.UserPictures)
+                    {
+                        <li style="vertical-align: top;">
+                            <div class="photoTile">
+                                <img class="thumbnail" src="@Url.Content(photo.ThumbnailFilename)" />
+                            </div>
+                            @if (!photo.ProfilePicture)
+                            {
+                                <a title="Make Profile Picture" href="@Url.Action("ProfilePicture", "Dancer", new { id = photo.Id })">
+                                    <i class="glyphicon glyphicon-user btn btn-primary"></i>
+                                    <span class="sr-only">Edit</span>
+                                </a>
+                                <a title="Delete Picture" href="@Url.Action("DeletePicture", "Dancer", new { id = photo.Id })">
+                                    <i class="glyphicon glyphicon glyphicon-remove btn btn-danger"></i>
+                                    <span class="sr-only">Delete</span>
+                                </a>
+                                @*@Html.ActionLink("Profile Pic", "ProfilePicture", "Dancer", htmlAttributes: new { @class = "btn btn-primary" })*@
+
+                            }
+                        </li>
+                    }
+                }
+                else
+                {
+                    @:You have no pictures.
+                }
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <h4>Facebook Pictures</h4>
+        <div class="col-md-12" style="height: 400px; overflow-y: auto;">
+            @if (Model.FacebookPictures != null && Model.FacebookPictures.Count() > 0)
+            {
+                <ul class="list-inline">
+                    @foreach (var photo in Model.FacebookPictures.OrderByDescending(photo => photo.PhotoDate))
+                    {
+                        <li>
+                            <a href="@photo.Link" target="_blank">
+                                <div class="photoTile">
+                                    @if (photo.Source != null)
+                                    {
+                                        <img class="thumbnail" src="@photo.Source" />
+                                    }
+                                </div>
+                            </a>
+                            @Html.ActionLink("Add to Locker", "AddFacebookPicture", "Dancer", new { id = photo.Id, album = photo.Album, name = photo.Name, largeSource = photo.LargeSource, link = photo.Link, photodate = photo.PhotoDate, source = photo.Source }, htmlAttributes: new { @class = "btn btn-primary" })
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                @:No Facebook pictures found.
+            }
+        </div>
+    </div>
+</div>
+

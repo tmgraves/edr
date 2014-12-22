@@ -2,8 +2,12 @@
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
+using System.Data.Entity.ModelConfiguration;
+using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Linq;
+using System.Reflection;
 using System.Web;
 
 namespace EDR.Data
@@ -25,6 +29,8 @@ namespace EDR.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Conventions.Remove<OneToManyCascadeDeleteConvention>();
+
             // Identity
             modelBuilder.Entity<IdentityUser>().ToTable("Users");
             modelBuilder.Entity<ApplicationUser>().ToTable("Users");
@@ -32,6 +38,7 @@ namespace EDR.Data
             modelBuilder.Entity<IdentityUserClaim>().ToTable("UserClaims");
             modelBuilder.Entity<IdentityUserLogin>().ToTable("UserLogins");
             modelBuilder.Entity<IdentityUserRole>().ToTable("UserRoles");
+
 
             // Places
             modelBuilder.Entity<Theater>().ToTable("Theaters");
@@ -61,6 +68,13 @@ namespace EDR.Data
 
             // Reviews
             modelBuilder.Entity<Review>().ToTable("Reviews");
+
+            //Photos
+            modelBuilder.Entity<Picture>().ToTable("Pictures");
+            modelBuilder.Entity<UserPicture>().ToTable("UserPictures");
+
+            //Students
+            modelBuilder.Entity<Student>().ToTable("Students");
         }
 
         public DbSet<Place> Places { get; set; }
@@ -74,6 +88,9 @@ namespace EDR.Data
         public DbSet<Promoter> Promoters { get; set; }
         public DbSet<Owner> Owners { get; set; }
         public DbSet<IdentityUser> IdentityUsers { get; set; }
+
+        public DbSet<Picture> Pictures { get; set; }
+        public DbSet<Student> Students { get; set; }
 
         //// TODO: REMOVE THESE DBSETS
         //public DbSet<Class> Classes { get; set; }

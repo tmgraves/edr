@@ -15,6 +15,8 @@ using DayPilot.Web.Mvc.Enums;
 using DayPilot.Web.Mvc.Events.Month;
 using EDR.Data;
 using System;
+using System.Web.Security;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace EDR.Controllers
 {
@@ -41,6 +43,7 @@ namespace EDR.Controllers
             {
                 //  var user = await UserManager.FindAsync(model.Email, model.Password);
                 var user = await UserManager.FindByNameOrEmailAsync(model.Email, model.Password);
+
                 if (user != null)
                 {
                     await SignInAsync(user, model.RememberMe);
