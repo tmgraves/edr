@@ -222,94 +222,31 @@ namespace EDR.Controllers
         [Authorize]
         public ActionResult UploadPicture(HttpPostedFileBase file)
         {
-            if (file != null && file.ContentLength > 0)
-                try
-                {
-                    string title = Path.GetRandomFileName();
-                    string filename = title + Path.GetExtension(file.FileName);
-                    string filenameSmall = title + "_small" + Path.GetExtension(file.FileName);
-                    string contentType = file.ContentType;
+            UploadFile newFile = ApplicationUtility.LoadPicture(file);
 
-                    file.SaveAs(Path.Combine(Server.MapPath("~/MyUploads"), filename));
-
-                    WebImage img = new WebImage(file.InputStream);
-                    img.Resize(130, 130, true, true);
-                    img.Save(Path.Combine(Server.MapPath("~/MyUploads"), filenameSmall));
-                    ViewBag.Message = "File uploaded successfully";
-
-                    var dancer = DataContext.Users.Where(x => x.UserName == User.Identity.Name).Include("UserPictures").FirstOrDefault();
-                    dancer.UserPictures.Add(new UserPicture() { Title = title, Filename = "~/MyUploads/" + filename, ThumbnailFilename = "~/MyUploads/" + filenameSmall });
-                    DataContext.Entry(dancer).State = EntityState.Modified;
-                    DataContext.SaveChanges();
-
-                    //UserCredential credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    //                new ClientSecrets
-                    //                {
-                    //                    ClientId = "59661408772-n0t3kh0jkb477a1n1hetfd5pfd63o9v6.apps.googleusercontent.com",
-                    //                    ClientSecret = "wh1tKtV_AE841jTride7G6Rq",
-                    //                },
-                    //                new[] { DriveService.Scope.Drive },
-                    //                "user",
-                    //                CancellationToken.None).Result;
-
-                    //// Create the service.
-                    //var service = new DriveService(new BaseClientService.Initializer()
-                    //{
-                    //    HttpClientInitializer = credential,
-                    //    ApplicationName = "eatdancerepeat",
-                    //});
-
-                    //Google.Apis.Drive.v2.Data.File body = new Google.Apis.Drive.v2.Data.File();
-                    //body.Title = "Profile Image";
-                    //body.Description = "Profile Image";
-                    //body.MimeType = file.ContentType;
-
-                    ////byte[] byteArray = System.IO.File.ReadAllBytes("document.txt");
-                    ////System.IO.MemoryStream stream = new System.IO.MemoryStream(byteArray);
-
-                    //WebImage i2 = img;
-
-                    //FilesResource.InsertMediaUpload request = service.Files.Insert(body, new MemoryStream(img.GetBytes()), contentType);
-                    //request.Upload();
-                }
-                catch (Exception ex)
-                {
-                    ViewBag.Message = "ERROR:" + ex.Message.ToString();
-                }
+            if (newFile.UploadStatus == "Success")
+            {
+                var dancer = DataContext.Users.Where(x => x.UserName == User.Identity.Name).Include("UserPictures").FirstOrDefault();
+                dancer.UserPictures.Add(new UserPicture() { Title = newFile.FileName, Filename = newFile.FilePath, ThumbnailFilename = newFile.ThumbnailFilePath });
+                DataContext.Entry(dancer).State = EntityState.Modified;
+                DataContext.SaveChanges();
+            }
             else
             {
-                ViewBag.Message = "You have not specified a file.";
+                ViewBag.Message = newFile.UploadStatus;
             }
             return RedirectToAction("ChangePicture", "Dancer", new { username = User.Identity.Name });
         }
 
-        [HttpPost]
-        public ActionResult DeletePicture(string fileName)
+        public ActionResult DeletePicture(int pictureId)
         {
-            int sessionFileCount = 0;
-
-            try
-            {
-                if (Session["fileUploader"] != null)
-                {
-                    ((List<UploadFile>)Session["fileUploader"]).RemoveAll(x => x.FileName == fileName);
-                    sessionFileCount = ((List<UploadFile>)Session["fileUploader"]).Count;
-                    if (fileName != null || fileName != string.Empty)
-                    {
-                        FileInfo file = new FileInfo(Server.MapPath("~/MyUploads/" + fileName));
-                        if (file.Exists)
-                        {
-                            file.Delete();
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-
-            return Json(sessionFileCount, JsonRequestBehavior.AllowGet);
+            var picture = DataContext.Pictures.Find(pictureId);
+            var userpic = DataContext.Users.Where(x => x.UserName == User.Identity.Name).Include("UserPictures").FirstOrDefault().UserPictures.Where(x => x.Id == pictureId).FirstOrDefault();
+            DataContext.Pictures.Remove(userpic);
+            DataContext.Entry(userpic).State = EntityState.Deleted;
+            DataContext.SaveChanges();
+            ViewBag.Message = ApplicationUtility.DeletePicture(picture);
+            return RedirectToAction("ChangePicture", "Dancer", new { username = User.Identity.Name });
         }
 
         public FileResult OpenPicture(string fileName)

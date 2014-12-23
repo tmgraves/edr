@@ -2,8 +2,10 @@
 using Facebook;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
+using System.Web.Helpers;
 
 namespace EDR.Utilities
 {
@@ -49,6 +51,75 @@ namespace EDR.Utilities
         {
             var picture = new UserPicture() { Filename = "~/Content/images/NoProfilePic.gif", Title = "No Profile Picture", ThumbnailFilename = "~/Content/images/NoPicThumb.gif" };
             return picture;
+        }
+
+        public static UploadFile LoadPicture(HttpPostedFileBase file)
+        {
+            UploadFile newFile = new UploadFile();
+
+            if (file != null && file.ContentLength > 0)
+                try
+                {
+                    string title = Path.GetRandomFileName();
+                    string filename = title + Path.GetExtension(file.FileName);
+                    string filenameSmall = title + "_small" + Path.GetExtension(file.FileName);
+                    string contentType = file.ContentType;
+                    int size = file.ContentLength;
+                    WebImage img = new WebImage(file.InputStream);
+
+                    if (!Directory.Exists(HttpContext.Current.Server.MapPath("~/MyUploads")))
+                    {
+                        Directory.CreateDirectory(HttpContext.Current.Server.MapPath("~/MyUploads"));
+                    }
+                    img.Save(Path.Combine(HttpContext.Current.Server.MapPath("~/MyUploads"), filename));
+
+                    img.Resize(130, 130, true, true);
+                    img.Save(Path.Combine(HttpContext.Current.Server.MapPath("~/MyUploads"), filenameSmall));
+
+                    newFile.FileName = title;
+                    newFile.FilePath = "~/MyUploads/" + filename;
+                    newFile.ThumbnailFilePath = "~/MyUploads/" + filenameSmall;
+                    newFile.ContentType = contentType;
+                    newFile.Size = size;
+                    newFile.UploadStatus = "Success";
+                }
+                catch (Exception ex)
+                {
+                    newFile.UploadStatus = "ERROR:" + ex.Message.ToString();
+                }
+            else
+            {
+                newFile.UploadStatus = "You have not specified a file.";
+            }
+            return newFile;
+        }
+
+        public static string DeletePicture(Picture picture)
+        {
+            string result = "";
+            try
+            {
+                if (picture != null || picture.Filename != string.Empty)
+                {
+                    FileInfo file = new FileInfo(HttpContext.Current.Server.MapPath(picture.Filename));
+                    if (file.Exists)
+                    {
+                        file.Delete();
+                    }
+                    FileInfo thumb = new FileInfo(HttpContext.Current.Server.MapPath(picture.ThumbnailFilename));
+                    if (thumb.Exists)
+                    {
+                        thumb.Delete();
+                    }
+                    result = "Success";
+                }
+            }
+            catch (Exception ex)
+            {
+                result = "Failed!";
+            }
+
+            return result;
         }
     }
 }

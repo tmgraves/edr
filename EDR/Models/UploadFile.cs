@@ -9,6 +9,9 @@ namespace EDR.Models
     {
         public string FileName { get; set; }
         public string FilePath { get; set; }
-        public string Size { get; set; }
+        public string ThumbnailFilePath { get; set; }
+        public int Size { get; set; }
+        public string ContentType { get; set; }
+        public string UploadStatus { get; set; }
     }
 }

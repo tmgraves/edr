@@ -51,6 +51,11 @@ namespace EDR
                 defaults: new { controller = "Dancer", action = "UploadPicture" }
             );
             routes.MapRoute(
+                name: "DancerDeletePic",
+                url: "Dancer/DeletePicture",
+                defaults: new { controller = "Dancer", action = "DeletePicture" }
+            );
+            routes.MapRoute(
                 name: "Dancer",
                 url: "Dancer/{username}",
                 defaults: new { controller = "Dancer", action = "View" }

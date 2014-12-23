@@ -74,7 +74,7 @@
                                     <i class="glyphicon glyphicon-user btn btn-primary"></i>
                                     <span class="sr-only">Edit</span>
                                 </a>
-                                <a title="Delete Picture" href="@Url.Action("DeletePicture", "Dancer", new { id = photo.Id })">
+                                <a title="Delete Picture" href="@Url.Action("DeletePicture", "Dancer", new { pictureId = photo.Id })" onclick="return confirm('Are you sure you want to DELETE this picture?')">
                                     <i class="glyphicon glyphicon glyphicon-remove btn btn-danger"></i>
                                     <span class="sr-only">Delete</span>
                                 </a>
