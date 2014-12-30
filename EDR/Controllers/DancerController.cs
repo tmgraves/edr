@@ -19,6 +19,10 @@ using Google.Apis.Auth.OAuth2;
 using System.Threading;
 using Google.Apis.Services;
 using System.Data.Entity.Spatial;
+using DayPilot.Web.Mvc;
+using DayPilot.Web.Mvc.Enums;
+using DayPilot.Web.Mvc.Events.Calendar;
+using EDR.Data;
 
 namespace EDR.Controllers
 {
@@ -122,6 +126,49 @@ namespace EDR.Controllers
                         f.User = user;
                     }
                 }
+            }
+
+            return View(viewModel);
+        }
+
+        [Authorize]
+        public ActionResult Home(string username)
+        {
+            if (User.Identity.IsAuthenticated && username == "View")
+            {
+                username = User.Identity.Name;
+            }
+            if (String.IsNullOrWhiteSpace(username))
+            {
+                if (User != null)
+                {
+                    username = User.Identity.GetUserName();
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+            }
+
+            var dancer = DataContext.Users.Where(x => x.UserName == username).Include("DanceStyles").Include("UserPictures").FirstOrDefault();
+            if (dancer == null)
+            {
+                return HttpNotFound();
+            }
+
+            var today = DateTime.Today;
+
+            var viewModel = new DancerViewViewModel();
+            viewModel.Dancer = dancer;
+            var location = Geolocation.ParseAddress(dancer.ZipCode);
+
+            if (dancer.ZipCode != null)
+            {
+                viewModel.Address = Geolocation.ParseAddress(dancer.ZipCode);
+            }
+            else
+            {
+                viewModel.Address = Geolocation.ParseAddress("90065");
             }
 
             return View(viewModel);
@@ -352,6 +399,122 @@ namespace EDR.Controllers
             catch (Exception ex)
             {
                 return RedirectToAction("ChangePicture", "Dancer", new { username = User.Identity.Name });
+            }
+        }
+
+        public ActionResult Backend()
+        {
+            return new Dpc().CallBack(this);
+        }
+
+        public class Dpc : DayPilotCalendar
+        {
+            protected override void OnTimeRangeSelected(TimeRangeSelectedArgs e)
+            {
+                string name = (string)e.Data["name"];
+                if (String.IsNullOrEmpty(name))
+                {
+                    name = "(default)";
+                }
+                //  new EventManager(Controller).EventCreate(e.Start, e.End, name);
+                Update();
+            }
+
+            protected override void OnEventMove(DayPilot.Web.Mvc.Events.Calendar.EventMoveArgs e)
+            {
+                //if (new EventManager(Controller).Get(e.Id) != null)
+                //{
+                //    new EventManager(Controller).EventMove(e.Id, e.NewStart, e.NewEnd);
+                //}
+
+                Update();
+            }
+
+            protected override void OnEventClick(EventClickArgs e)
+            {
+                
+            }
+
+            protected override void OnEventResize(DayPilot.Web.Mvc.Events.Calendar.EventResizeArgs e)
+            {
+                //  new EventManager(Controller).EventMove(e.Id, e.NewStart, e.NewEnd);
+                Update();
+            }
+
+            protected override void OnCommand(CommandArgs e)
+            {
+                switch (e.Command)
+                {
+                    case "navigate":
+                        StartDate = (DateTime) e.Data["start"];
+                        Update(CallBackUpdateType.Full);
+                        break;
+
+                    case "refresh":
+                        Update();
+                        break;
+
+                    case "previous":
+                        StartDate = StartDate.AddDays(-7);
+                        Update(CallBackUpdateType.Full);
+                        break;
+
+                    case "next":
+                        StartDate = StartDate.AddDays(7);
+                        Update(CallBackUpdateType.Full);
+                        break;
+
+                    case "today":
+                        StartDate = DateTime.Today;
+                        Update(CallBackUpdateType.Full);
+                        break;
+
+                }
+            }
+
+            protected override void OnInit(InitArgs initArgs)
+            {
+                Update(CallBackUpdateType.Full);
+            }
+
+            protected override void OnFinish()
+            {
+                // only load the data if an update was requested by an Update() call
+                if (UpdateType == CallBackUpdateType.None)
+                {
+                    return;
+                }
+
+                // this select is a really bad example, no where clause
+                var DataContext = new ApplicationDbContext();
+                var user = System.Web.HttpContext.Current.User.Identity;
+                var today = DateTime.Today;
+                var classes = DataContext.Events.OfType<Class>().Where(x => x.Users.Any(u => u.UserName == user.Name)).ToList();
+                var events = new List<Event>();
+
+                //foreach(var c in classes)
+                //{
+                //    events.Add(new Event() { Id = c.Id, StartDate = c.NextDate, EndDate = c.EndDateTime, Name = c.Name });
+
+                //    if (c.Recurring)
+                //    {
+                //        var nextDate = ApplicationUtility.GetNextDate(c.NextDate, c.Frequency, (int)c.Interval, c.Day);
+
+                //        while (nextDate <= DateTime.Today.AddYears(2))
+                //        {
+                //            events.Add(new Class() { Name = c.Name, StartDate = nextDate, EndDate = nextDate.AddMinutes(c.Duration), Id = c.Id } );
+                //            nextDate = nextDate.AddDays(1);
+                //            nextDate = ApplicationUtility.GetNextDate(nextDate, c.Frequency, (int)c.Interval, c.Day);
+                //        }
+                //    }
+                //}
+
+                Events = classes.Where(e => e.NextDate >= today).ToList();
+
+                DataIdField = "Id";
+                DataTextField = "Name";
+                DataStartField = "StartDate";
+                DataEndField = "EndDate";
             }
         }
     }

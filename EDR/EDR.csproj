@@ -468,6 +468,7 @@
     <Content Include="Views\Place\Edit.cshtml" />
     <Content Include="Views\Shared\_CompactEventListPartial.cshtml" />
     <Content Include="Views\Shared\_DancerLayout.cshtml" />
+    <Content Include="Views\Dancer\Home.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Series\" />

@@ -56,6 +56,15 @@ namespace EDR.Models
             }
         }
 
+        [Display(Name = "End Date/Time")]
+        public DateTime EndDateTime
+        {
+            get
+            {
+                return NextDate.AddMinutes(Duration);
+            }
+        }
+
         public virtual Place Place { get; set; }
 
         public ICollection<DanceStyle> DanceStyles { get; set; }

@@ -1,3 +1,81 @@
-﻿@{
+﻿@model EDR.Models.ViewModels.DancerViewViewModel
+
+@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<div class="container" style="padding: 10px;">
+    <div class="row">
+        <h1 class="page-header">
+            @Model.Dancer.FirstName
+            @if (User.Identity != null && User.Identity.Name == Model.Dancer.UserName)
+            {
+                @*<a style="font-size: medium;" href="@Url.Action("Edit", "Dancer")">Edit Profile</a>*@
+                <a title="Edit Profile" href="@Url.Action("Edit", "Dancer")">
+                    <i class="glyphicon glyphicon glyphicon-pencil btn-sm btn-info"></i>
+                    <span class="sr-only">Edit Profile</span>
+                </a>
+            }
+        </h1>
+    </div>
+    <div class="row">
+        <div class="col-md-3 col-lg-2 col-sm-3 col-xs-4" style="text-align: center;">
+            <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12 img-thumbnail">
+                @if (Model.Dancer.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault() != null)
+                {
+                    <img src="@Url.Content(Model.Dancer.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault().ThumbnailFilename)" />
+                }
+                else
+                {
+                    <img src="~/Content/images/NoProfilePic.gif" />
+                }
+            </div>
+            @if (User.Identity != null && User.Identity.Name == Model.Dancer.UserName)
+            {
+                <p>
+                    <a style="font-size: small;" href="@Url.Action("ChangePicture", "Dancer")">Change Picture</a>
+                    @*<a title="Change Picture" href="@Url.Action("ChangePicture", "Dancer")">
+                            <i class="glyphicon glyphicon glyphicon-edit btn btn-primary"></i>
+                            <span class="sr-only">Change Picture</span>
+                        </a>*@
+                </p>
+            }
+            <div class="row" style="text-align: left;">
+                <div class="col-md-12 col-lg-12 col-sm-8 col-xs-8">
+                    @Model.Dancer.Experience Year(s)
+                </div>
+            </div>
+            <div class="row" style="text-align: left;">
+                <div class="col-md-12 col-lg-12 col-sm-8 col-xs-8">
+                    @Model.Address.City, @Model.Address.State
+                </div>
+            </div>
+            <div class="row col-md-12 col-lg-12 col-sm-12 col-xs-12" style="text-align: left;">
+                <ul class="nav nav-pills nav-stacked" role="tablist">
+                    <li class="active"><a href="@Url.Action("Home", "Dancer", new { username = Model.Dancer.UserName })" role="tab" data-toggle="tab">Where I Learn</a></li>
+                    <li><a href="#mydance" role="tab" data-toggle="tab">Where I Dance</a></li>
+                    <li><a href="#friends" role="tab" data-toggle="tab">Friends</a></li>
+                    <li><a href="#myperformance" role="tab" data-toggle="tab">Where I Perform</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="tabbable">
+            <div class="col-md-10 col-lg-10 col-sm-10 col-xs-10">
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <div class="panel panel-info tab-pane panel-default active" id="mylearn">
+                        <div class="panel-heading">
+                            <h4 class="panel-title" style="font-size: 18pt;"><span class="">Where I Learn...</span></h4>
+                        </div>
+                        <div class="panel-body">
+                            @RenderBody()
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<p>
+    @Html.ActionLink("Back to List", "List")
+</p>
