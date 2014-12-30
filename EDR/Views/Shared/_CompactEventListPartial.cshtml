@@ -9,7 +9,7 @@
     {
         <a class="btn btn-default" style="width: 100%; text-align: left;" href="@Url.Action("Details", "Event", new { id = item.Id, eventType = "Class" } )">
             <div style="width: 100%;">
-                <strong>@(rowNo+=1). @item.Name @@@item.Place.Name</strong>
+                <strong>@(rowNo+=1). @item.Name <br />@@@item.Place.Name</strong>
                 <br />
                 @if (item.Recurring)
                 {

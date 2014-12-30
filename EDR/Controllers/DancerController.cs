@@ -18,6 +18,7 @@ using System.Web.Helpers;
 using Google.Apis.Auth.OAuth2;
 using System.Threading;
 using Google.Apis.Services;
+using System.Data.Entity.Spatial;
 
 namespace EDR.Controllers
 {
@@ -56,12 +57,16 @@ namespace EDR.Controllers
                 return HttpNotFound();
             }
 
+            var today = DateTime.Today;
+
             var viewModel = new DancerViewViewModel();
             viewModel.Dancer = dancer;
+            var location = Geolocation.ParseAddress(dancer.ZipCode);
             viewModel.Teachers = new List<Teacher>();
             viewModel.Teachers = DataContext.Teachers.Where(x => x.Students.Any(s => s.DancerId == dancer.Id)).Include("ApplicationUser").Include("ApplicationUser.UserPictures").ToList();
             viewModel.Classes = new List<Class>();
-            viewModel.Classes = DataContext.Events.OfType<Class>().Where(x => x.Users.Any(u => u.UserName == username)).ToList();
+            var classes = DataContext.Events.OfType<Class>().Where(x => x.Users.Any(u => u.UserName == username)).ToList();
+            viewModel.Classes = classes.Where(e => e.NextDate >= today);
             viewModel.Socials = new List<Social>();
             viewModel.Socials = DataContext.Events.OfType<Social>().Where(x => x.Users.Any(u => u.UserName == username)).ToList();
             viewModel.Concerts = new List<Concert>();
@@ -72,7 +77,18 @@ namespace EDR.Controllers
             viewModel.OpenHouses = DataContext.Events.OfType<OpenHouse>().Where(x => x.Users.Any(u => u.UserName == username)).ToList();
             viewModel.Parties = new List<Party>();
             viewModel.Parties = DataContext.Events.OfType<Party>().Where(x => x.Users.Any(u => u.UserName == username)).ToList();
+            viewModel.SuggestedEvents = new List<Event>();
+            //  y.DanceStyles.Any(x => dancer.DanceStyles.Contains(x)) && y.NextDate >= today && 
+            var myLocation = DbGeography.FromText("POINT(" + location.Longitude.ToString() + " " + location.Latitude.ToString() + ")");
+            //  viewModel.SuggestedEvents = DataContext.Events.Where(y => y.DanceStyles.Any(x => dancer.DanceStyles.Contains(x)) && DbGeography.FromText("POINT(" + y.Place.Longitude.ToString() + " " + y.Place.Latitude.ToString() + ")").Distance(myLocation) * .00062 < 50).ToList(); // In Miles
 
+            var arrStyles = dancer.DanceStyles.Select(s => s.Id).ToArray();
+            var suggestedEvents = DataContext.Events.Where(y => y.DanceStyles.Any(d => arrStyles.Contains(d.Id)) && DbGeography.FromText("POINT(" + y.Place.Longitude.ToString() + " " + y.Place.Latitude.ToString() + ")").Distance(myLocation) * .00062 < 50 && !y.Users.Any(u => u.Id == dancer.Id)).ToList();
+            viewModel.SuggestedEvents = suggestedEvents.Where(e => e.NextDate >= today);
+
+            //  viewModel.SuggestedEvents = DataContext.Events.Where(y => y.DanceStyles.Any(x => styles.Any(z => z.Id == x.Id))).ToList(); // In Miles
+            //  viewModel.SuggestedEvents = DataContext.Events.Where(y => Geolocation.Distance(new Geolocation.Position() { Latitude = y.Place.Latitude, Longitude = y.Place.Longitude }, new Geolocation.Position() { Latitude = location.Latitude, Longitude = location.Longitude }, Geolocation.DistanceType.Miles) < 50).ToList();
+            
             if (dancer.ZipCode != null)
             {
                 viewModel.Address = Geolocation.ParseAddress(dancer.ZipCode);

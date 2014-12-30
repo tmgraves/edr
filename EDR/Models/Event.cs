@@ -1,4 +1,5 @@
 ﻿using EDR.Utilities;
+using Microsoft.Linq.Translations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

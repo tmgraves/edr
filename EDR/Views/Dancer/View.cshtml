@@ -128,59 +128,70 @@
                             <h4 class="panel-title" style="font-size: 18pt;"><span class="">Where I Learn...</span></h4>
                         </div>
                         <div class="panel-body">
-                            <div class="col-sm-4 col-md-4 col-lg-4 col-xs-4">
-                                <div class="container" id="classMap-canvas"></div>
-                            </div>
-                            @if (User.Identity != null && User.Identity.Name == Model.Dancer.UserName)
-                            {
-                                <a title="Find More Classes" class="pull-right" href="@Url.Action("Learn", "Home")">
-                                    <i class="glyphicon glyphicon-search"></i>
-                                    <span class="sr-only">Find More Classes</span>
-                                </a>
-                            }
-
-
-                            <div class="col-sm-7 col-md-7 col-lg-7 col-xs-7" style="height: 400px; overflow-x: auto;">
-                                @if (Model.Dancer.Events.OfType<Class>().Count() > 0)
-                                {
-                                    @Html.Partial("~/Views/Shared/_CompactEventListPartial.cshtml", Model.Classes.OrderBy(x => x.NextDate))
-                                }
-                                else
-                                {
-                                    @:You have no Classes
-                                    }
-                            </div>
-
-                            <div class="col-sm-4 col-md-4 col-lg-4 col-xs-4">
-                                <div class="panel panel-primary">
-                                    <div class="panel-heading">
-                                        <h1 class="panel-title">
-                                            My Teachers
-                                        </h1>
-                                    </div>
-                                    <div class="panel-body" style="height: 400px; overflow-x: auto;">
-                                        <ul class="list-inline">
-                                            @foreach (var teacher in Model.Teachers.OrderBy(x => x.ApplicationUser.FirstName))
-                                            {
-                                                <li>
-                                                    <a href="@Url.Action("View", "Teacher", new { username = teacher.ApplicationUser.UserName })">
-                                                        <div class="img-thumbnail">
-                                                            @if (teacher.ApplicationUser.UserPictures != null && teacher.ApplicationUser.UserPictures.Count > 0)
-                                                            {
-                                                                <img src="@Url.Content(teacher.ApplicationUser.UserPictures.First().ThumbnailFilename)" />
-                                                            }
-                                                            else
-                                                            {
-                                                                <img src="@Url.Content(ApplicationUtility.GetNoProfilePicture().ThumbnailFilename)" />
-                                                            }
-                                                            @teacher.ApplicationUser.FullName
-                                                        </div>
-                                                    </a>
-                                                </li>
-                                            }
-                                        </ul>
-                                    </div>
+                            <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
+                                <h4 class="page-header">My Classes/Workshops</h4>
+                                <div class="col-sm-6 col-md-6 col-lg-6 col-xs-6">
+                                    <div class="container" id="classMap-canvas"></div>
                                 </div>
+                                <div class="col-sm-6 col-md-6 col-lg-6 col-xs-6" style="height: 400px; overflow-x: auto;">
+                                    @if (Model.Classes.Count() > 0)
+                                    {
+                                        @Html.Partial("~/Views/Shared/_CompactEventListPartial.cshtml", Model.Classes.OrderBy(x => x.NextDate))
+                                    }
+                                    else
+                                    {
+                                        @:You have no Classes
+                                }
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                                <h4 class="page-header">Suggested Classes</h4>
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xs-12" style="height: 400px; overflow-x: auto;">
+                                    @if (Model.SuggestedEvents.Count() > 0)
+                                    {
+                                        @Html.Partial("~/Views/Shared/_CompactEventListPartial.cshtml", Model.SuggestedEvents.OrderBy(x => x.NextDate))
+                                    }
+                                    else
+                                    {
+                                        @:No Suggested Classes/Workshops
+                                }
+                                </div>
+                            </div>
+
+                            <div class="col-sm-3 col-md-3 col-lg-3 col-xs-3">
+                                <h4 class="page-header">
+                                    My Teachers
+                                </h4>
+                                <div style="height: 400px; overflow-x: auto;">
+                                    <ul class="list-inline col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                        @foreach (var teacher in Model.Teachers.OrderBy(x => x.ApplicationUser.FirstName))
+                                        {
+                                            <li class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                                <a class="btn btn-default col-lg-12 col-md-12 col-sm-12 col-xs-12" href="@Url.Action("View", "Teacher", new { username = teacher.ApplicationUser.UserName }) " style="text-align: left;">
+                                                    @*@if (teacher.ApplicationUser.UserPictures != null && teacher.ApplicationUser.UserPictures.Count > 0)
+            {
+                <img src="@Url.Content(teacher.ApplicationUser.UserPictures.First().ThumbnailFilename)" />
+            }
+            else
+            {
+                <img src="@Url.Content(ApplicationUtility.GetNoProfilePicture().ThumbnailFilename)" />
+            }*@
+                                                    @teacher.ApplicationUser.FullName
+                                                </a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                @if (User.Identity != null && User.Identity.Name == Model.Dancer.UserName)
+                                {
+                                    <a title="Find More Classes" class="pull-right" href="@Url.Action("Learn", "Home")">
+                                        <i class="glyphicon glyphicon-search"></i>
+                                        <span class="sr-only">Find More Classes</span>
+                                    </a>
+                                }
                             </div>
                         </div>
                     </div>

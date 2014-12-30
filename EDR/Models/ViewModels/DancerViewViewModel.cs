@@ -21,5 +21,6 @@ namespace EDR.Models.ViewModels
         public IEnumerable<OpenHouse> OpenHouses { get; set; }
         public IEnumerable<Party> Parties { get; set; }
         public IEnumerable<Teacher> Teachers { get; set; }
+        public IEnumerable<Event> SuggestedEvents { get; set; }
     }
 }
