@@ -38,14 +38,16 @@
     }
 </script>
 
+<h4 class="page-header">My Dance Schedule</h4>
 <div class="note">
     <a href="javascript:dpc.commandCallBack('previous');">Previous</a> |
     <a href="javascript:dpc.commandCallBack('today');">Today</a> |
     <a href="javascript:dpc.commandCallBack('next');">Next</a>
 </div>
 
-<div>
-    @(Html.DayPilotCalendar("dpc", new DayPilotCalendarConfig
+<div class="row">
+    <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
+        @(Html.DayPilotCalendar("dpc", new DayPilotCalendarConfig
     {
         BackendUrl = Url.Content("~/Dancer/Backend"),
         ViewType = DayPilot.Web.Mvc.Enums.Calendar.ViewType.Week,
@@ -59,4 +61,5 @@
         LoadingLabelText = "<img src='" + Url.Content("~/Media/linked/ajax-loader-round.gif") + "' />",
         LoadingLabelBackColor = "",
     }))
+    </div>
 </div>

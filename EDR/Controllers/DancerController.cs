@@ -492,24 +492,29 @@ namespace EDR.Controllers
                 var classes = DataContext.Events.OfType<Class>().Where(x => x.Users.Any(u => u.UserName == user.Name)).ToList();
                 var events = new List<Event>();
 
-                //foreach(var c in classes)
-                //{
-                //    events.Add(new Event() { Id = c.Id, StartDate = c.NextDate, EndDate = c.EndDateTime, Name = c.Name });
+                foreach (var c in classes)
+                {
+                    today = DateTime.Today;
 
-                //    if (c.Recurring)
-                //    {
-                //        var nextDate = ApplicationUtility.GetNextDate(c.NextDate, c.Frequency, (int)c.Interval, c.Day);
+                    if (c.Recurring)
+                    {
+                        var nextDate = ApplicationUtility.GetNextDate(c.StartDate, c.Frequency, (int)c.Interval, c.Day, today);
 
-                //        while (nextDate <= DateTime.Today.AddYears(2))
-                //        {
-                //            events.Add(new Class() { Name = c.Name, StartDate = nextDate, EndDate = nextDate.AddMinutes(c.Duration), Id = c.Id } );
-                //            nextDate = nextDate.AddDays(1);
-                //            nextDate = ApplicationUtility.GetNextDate(nextDate, c.Frequency, (int)c.Interval, c.Day);
-                //        }
-                //    }
-                //}
+                        while (nextDate <= DateTime.Today.AddYears(2) && nextDate <= (c.EndDate != null ? c.EndDate : DateTime.Today.AddYears(2)))
+                        {
+                            events.Add(new Class() { Name = c.Name, StartDate = nextDate, EndDate = nextDate.AddMinutes(c.Duration), Id = c.Id });
+                            today = nextDate.AddDays(1);
+                            nextDate = ApplicationUtility.GetNextDate(nextDate, c.Frequency, (int)c.Interval, c.Day, today);
+                        }
+                    }
+                    else
+                    {
+                        events.Add(new Event() { Id = c.Id, StartDate = c.NextDate, EndDate = c.EndDateTime, Name = c.Name });
+                    }
+                }
 
-                Events = classes.Where(e => e.NextDate >= today).ToList();
+                today = DateTime.Today;
+                Events = events.Where(e => e.NextDate >= today).ToList();
 
                 DataIdField = "Id";
                 DataTextField = "Name";

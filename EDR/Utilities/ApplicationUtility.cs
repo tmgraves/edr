@@ -11,24 +11,31 @@ namespace EDR.Utilities
 {
     public static class ApplicationUtility
     {
-        public static DateTime GetNextDate(DateTime start, Frequency frequency, int interval, DayOfWeek day)
+        public static DateTime GetNextDate(DateTime start, Frequency frequency, int interval, DayOfWeek day, DateTime? today = null)
         {
             DateTime date = start;
-            if (start < DateTime.Today)
+            DateTime begin = (DateTime)(today == null ? DateTime.Today : today);
+
+            if (start < begin)
             {
+                TimeSpan diff = Convert.ToDateTime(begin.ToShortDateString()) - Convert.ToDateTime(start.ToShortDateString());
                 switch (frequency)
                 {
                     case Frequency.Daily:
-                        date = DateTime.Today.AddDays(1);
+                        date = start.AddDays(Convert.ToInt32(diff.TotalDays));
                         break;
                     case Frequency.Weekly:
-                        TimeSpan diff = DateTime.Today - start;
-                        int totalIntervals = Convert.ToInt32(diff.TotalDays / 7 * interval) + 1;
+                        var weekdiff = Convert.ToInt32(diff.TotalDays / 7 * interval);
+                        if ((diff.TotalDays % (7 * interval)) > 0)
+                        {
+                            weekdiff += 1;
+                        }
+                        int totalIntervals = Convert.ToInt32(weekdiff);
                         date = start.AddDays(7 * interval * totalIntervals);
                         break;
                     case Frequency.Monthly:
                         var nth = Convert.ToInt32(start.Day / 7);
-                        DateTime month = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+                        DateTime month = new DateTime(begin.Year, begin.Month, 1);
                         date = month.AddDays((((int)day - (int)month.DayOfWeek + 7) % 7)).AddDays(nth * 7);
                         break;
                     case Frequency.Yearly:
