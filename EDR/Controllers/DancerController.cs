@@ -21,7 +21,7 @@ using Google.Apis.Services;
 using System.Data.Entity.Spatial;
 using DayPilot.Web.Mvc;
 using DayPilot.Web.Mvc.Enums;
-using DayPilot.Web.Mvc.Events.Calendar;
+using DayPilot.Web.Mvc.Events.Month;
 using EDR.Data;
 
 namespace EDR.Controllers
@@ -132,7 +132,52 @@ namespace EDR.Controllers
         }
 
         [Authorize]
-        public ActionResult Home(string username)
+        public ActionResult Learn(string username)
+        {
+            if (User.Identity.IsAuthenticated && username == "View")
+            {
+                username = User.Identity.Name;
+            }
+            if (String.IsNullOrWhiteSpace(username))
+            {
+                if (User != null)
+                {
+                    username = User.Identity.GetUserName();
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+            }
+
+            var dancer = DataContext.Users.Where(x => x.UserName == username).Include("DanceStyles").Include("UserPictures").FirstOrDefault();
+            if (dancer == null)
+            {
+                return HttpNotFound();
+            }
+
+            var today = DateTime.Today;
+
+            var viewModel = new DancerViewViewModel();
+            viewModel.Dancer = dancer;
+            viewModel.Teachers = new List<Teacher>();
+            viewModel.Teachers = DataContext.Teachers.Where(x => x.Students.Any(s => s.DancerId == dancer.Id)).Include("ApplicationUser").Include("ApplicationUser.UserPictures").ToList();
+            var location = Geolocation.ParseAddress(dancer.ZipCode);
+
+            if (dancer.ZipCode != null)
+            {
+                viewModel.Address = Geolocation.ParseAddress(dancer.ZipCode);
+            }
+            else
+            {
+                viewModel.Address = Geolocation.ParseAddress("90065");
+            }
+
+            return View(viewModel);
+        }
+
+        [Authorize]
+        public ActionResult Dance(string username)
         {
             if (User.Identity.IsAuthenticated && username == "View")
             {
@@ -404,13 +449,13 @@ namespace EDR.Controllers
 
         public ActionResult Backend()
         {
-            return new Dpc().CallBack(this);
+            return new Dpm().CallBack(this);
         }
 
-        public class Dpc : DayPilotCalendar
+        public class Dpm : DayPilotMonth
         {
             protected override void OnTimeRangeSelected(TimeRangeSelectedArgs e)
-            {
+            {   
                 string name = (string)e.Data["name"];
                 if (String.IsNullOrEmpty(name))
                 {
@@ -420,7 +465,7 @@ namespace EDR.Controllers
                 Update();
             }
 
-            protected override void OnEventMove(DayPilot.Web.Mvc.Events.Calendar.EventMoveArgs e)
+            protected override void OnEventMove(EventMoveArgs e)
             {
                 //if (new EventManager(Controller).Get(e.Id) != null)
                 //{
@@ -430,14 +475,9 @@ namespace EDR.Controllers
                 Update();
             }
 
-            protected override void OnEventClick(EventClickArgs e)
+            protected override void OnEventResize(EventResizeArgs e)
             {
-                
-            }
-
-            protected override void OnEventResize(DayPilot.Web.Mvc.Events.Calendar.EventResizeArgs e)
-            {
-                //  new EventManager(Controller).EventMove(e.Id, e.NewStart, e.NewEnd);
+                //new EventManager(Controller).EventMove(e.Id, e.NewStart, e.NewEnd);
                 Update();
             }
 
@@ -446,21 +486,17 @@ namespace EDR.Controllers
                 switch (e.Command)
                 {
                     case "navigate":
-                        StartDate = (DateTime) e.Data["start"];
+                        StartDate = (DateTime)e.Data["start"];
                         Update(CallBackUpdateType.Full);
                         break;
 
-                    case "refresh":
-                        Update();
-                        break;
-
                     case "previous":
-                        StartDate = StartDate.AddDays(-7);
+                        StartDate = StartDate.AddMonths(-1);
                         Update(CallBackUpdateType.Full);
                         break;
 
                     case "next":
-                        StartDate = StartDate.AddDays(7);
+                        StartDate = StartDate.AddMonths(1);
                         Update(CallBackUpdateType.Full);
                         break;
 
@@ -469,6 +505,9 @@ namespace EDR.Controllers
                         Update(CallBackUpdateType.Full);
                         break;
 
+                    case "refresh":
+                        Update();
+                        break;
                 }
             }
 

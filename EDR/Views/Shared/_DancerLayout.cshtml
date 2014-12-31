@@ -3,6 +3,9 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
+@{string ctrName = ViewContext.RouteData.Values["action"].ToString();}
+
 <div class="container" style="padding: 10px;">
     <div class="row">
         <h1 class="page-header">
@@ -51,8 +54,8 @@
             </div>
             <div class="row col-md-12 col-lg-12 col-sm-12 col-xs-12" style="text-align: left;">
                 <ul class="nav nav-pills nav-stacked" role="tablist">
-                    <li class="active"><a href="@Url.Action("Home", "Dancer", new { username = Model.Dancer.UserName })" role="tab" data-toggle="tab">Where I Learn</a></li>
-                    <li><a href="#mydance" role="tab" data-toggle="tab">Where I Dance</a></li>
+                    <li @if (ctrName == "Dance") { <text> class="active" </text> }><a href="@Url.Action("Dance", "Dancer", new { username = Model.Dancer.UserName })">Where I Dance</a></li>
+                    <li @if (ctrName == "Learn") { <text> class="active" </text>  }><a href="@Url.Action("Learn", "Dancer", new { username = Model.Dancer.UserName })">Where I Learn</a></li>
                     <li><a href="#friends" role="tab" data-toggle="tab">Friends</a></li>
                     <li><a href="#myperformance" role="tab" data-toggle="tab">Where I Perform</a></li>
                 </ul>
@@ -64,7 +67,7 @@
                 <div class="tab-content">
                     <div class="panel panel-info tab-pane panel-default active" id="mylearn">
                         <div class="panel-heading">
-                            <h4 class="panel-title" style="font-size: 18pt;"><span class="">Where I Learn...</span></h4>
+                            <h4 class="panel-title" style="font-size: 18pt;"><span class="">@RenderSection("section")</span></h4>
                         </div>
                         <div class="panel-body">
                             @RenderBody()

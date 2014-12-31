@@ -56,9 +56,14 @@ namespace EDR
                 defaults: new { controller = "Dancer", action = "DeletePicture" }
             );
             routes.MapRoute(
-                name: "DancerHome",
-                url: "Dancer/Home",
-                defaults: new { controller = "Dancer", action = "Home" }
+                name: "DancerLearn",
+                url: "Dancer/Learn",
+                defaults: new { controller = "Dancer", action = "Learn" }
+            );
+            routes.MapRoute(
+                name: "DancerDance",
+                url: "Dancer/Dance",
+                defaults: new { controller = "Dancer", action = "Dance" }
             );
             routes.MapRoute(
                 name: "DancerBackend",

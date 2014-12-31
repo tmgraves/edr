@@ -481,7 +481,8 @@
     <Content Include="Views\Place\Edit.cshtml" />
     <Content Include="Views\Shared\_CompactEventListPartial.cshtml" />
     <Content Include="Views\Shared\_DancerLayout.cshtml" />
-    <Content Include="Views\Dancer\Home.cshtml" />
+    <Content Include="Views\Dancer\Learn.cshtml" />
+    <Content Include="Views\Dancer\Dance.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Series\" />
