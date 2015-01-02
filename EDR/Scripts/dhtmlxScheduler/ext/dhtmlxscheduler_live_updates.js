@@ -1,0 +1,12 @@
+/*
+ dhtmlxScheduler.Net v.3.2.0 Professional Evaluation
+
+This software is covered by DHTMLX Evaluation License. Contact sales@dhtmlx.com to get Commercial or Enterprise license. Usage without proper license is prohibited.
+
+(c) Dinamenta, UAB.
+*/
+Scheduler.plugin(function(t){if("undefined"!=typeof dataProcessor){var e=dataProcessor.prototype.init;dataProcessor.prototype.init=function(){e.apply(this,arguments);var t=this;this.attachEvent("onAfterUpdate",function(e,i,n){var d;d=t.obj.exists(n)?t.obj.item(n):{},"undefined"!=typeof d.$selected&&delete d.$selected,"undefined"!=typeof d.$template&&delete d.$template,t.callEvent("onLocalUpdate",[{sid:e,tid:n,status:i,data:d}])})},dataProcessor.prototype.applyChanges=function(t){var e=this,i=t.sid,n=t.tid,d=t.status,o=t.data;
+switch(e.obj.isSelected(i)&&(o.$selected=!0),d){case"updated":case"update":case"inserted":case"insert":e.obj.exists(i)?(e.obj.isLUEdit(o)===i&&e.obj.stopEditBefore(),e.ignore(function(){e.obj.update(i,o),i!==n&&e.obj.changeId(i,n)})):(o.id=n,e.ignore(function(){e.obj.add(o)}));break;case"deleted":case"delete":e.ignore(function(){e.obj.exists(i)&&(e.obj.setUserData(i,"!nativeeditor_status","true_deleted"),e.obj.stopEditBefore(),e.obj.remove(i),e.obj.isLUEdit(o)===i&&(e.obj.preventLUCollision(o),e.obj.callEvent("onLiveUpdateCollision",[i,n,d,o])===!1&&e.obj.stopEditAfter()))
+})}}}"undefined"!=typeof t&&(t.item=function(e){var i=this.getEvent(e);if(!i)return{};var n={};for(var d in i)n[d]=i[d];return n.start_date=t.date.date_to_str(t.config.api_date)(i.start_date),n.end_date=t.date.date_to_str(t.config.api_date)(i.end_date),n},t.update=function(e,i){var n=this.getEvent(e);for(var d in i)"start_date"!=d&&"end_date"!=d&&(n[d]=i[d]);var o=t.date.str_to_date(t.config.api_date);t.setEventStartDate(e,o(i.start_date)),t.setEventEndDate(e,o(i.end_date)),this.updateEvent(e)},t.remove=function(t){this.exists(t)&&this.deleteEvent(t,!0)
+},t.exists=function(t){var e=this.getEvent(t);return e?!0:!1},t.add=function(t){var e=this.addEvent(t.start_date,t.end_date,t.text,t.id,t);return this._is_modified_occurence(t)&&this.setCurrentView(),e},t.changeId=function(t,e){return this.changeEventId(t,e)},t.stopEditBefore=function(){},t.stopEditAfter=function(){this.endLightbox(!1,this._lightbox)},t.preventLUCollision=function(t){this._new_event=this._lightbox_id,t.id=this._lightbox_id,this._events[this._lightbox_id]=t},t.isLUEdit=function(){return this._lightbox_id?this._lightbox_id:null
+},t.isSelected=function(){return!1})});

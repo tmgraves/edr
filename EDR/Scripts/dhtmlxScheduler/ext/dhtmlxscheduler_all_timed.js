@@ -1,0 +1,11 @@
+/*
+ dhtmlxScheduler.Net v.3.2.0 Professional Evaluation
+
+This software is covered by DHTMLX Evaluation License. Contact sales@dhtmlx.com to get Commercial or Enterprise license. Usage without proper license is prohibited.
+
+(c) Dinamenta, UAB.
+*/
+Scheduler.plugin(function(e){!function(){e.config.all_timed="short";var t=function(e){return!((e.end_date-e.start_date)/36e5>=24)};e._safe_copy=function(t){var i=null,s=null;return t.event_pid&&(i=e.getEvent(t.event_pid)),i&&i.isPrototypeOf(t)?(s=e._copy_event(t),delete s.event_length,delete s.event_pid,delete s.rec_pattern,delete s.rec_type):s=e._lame_clone(t),s};var i=e._pre_render_events_line;e._pre_render_events_line=function(s,n){function a(e){var t=r(e.start_date);return+e.end_date>+t}function r(t){var i=e.date.add(t,1,"day");
+return i=e.date.date_part(i)}function d(t,i){var s=e.date.date_part(new Date(t));return s.setHours(i),s}if(!this.config.all_timed)return i.call(this,s,n);for(var o=0;o<s.length;o++){var l=s[o];if(!l._timed)if("short"!=this.config.all_timed||t(l)){var h=this._safe_copy(l);h.start_date=new Date(h.start_date),a(l)?(h.end_date=r(h.start_date),24!=this.config.last_hour&&(h.end_date=d(h.start_date,this.config.last_hour))):h.end_date=new Date(l.end_date);var _=!1;h.start_date<this._max_date&&h.end_date>this._min_date&&h.start_date<h.end_date&&(s[o]=h,_=!0);
+var c=this._safe_copy(l);if(c.end_date=new Date(c.end_date),c.start_date=c.start_date<this._min_date?d(this._min_date,this.config.first_hour):d(r(l.start_date),this.config.first_hour),c.start_date<this._max_date&&c.start_date<c.end_date){if(!_){s[o--]=c;continue}s.splice(o+1,0,c)}}else s.splice(o--,1)}var u="move"==this._drag_mode?!1:n;return i.call(this,s,u)};var s=e.get_visible_events;e.get_visible_events=function(e){return this.config.all_timed&&this.config.multi_day?s.call(this,!1):s.call(this,e)
+},e.attachEvent("onBeforeViewChange",function(t,i,s){return e._allow_dnd="day"==s||"week"==s,!0}),e._is_main_area_event=function(e){return!!(e._timed||this.config.all_timed===!0||"short"==this.config.all_timed&&t(e))};var n=e.updateEvent;e.updateEvent=function(t){var i,s=e.config.all_timed&&!(e.isOneDayEvent(e._events[t])||e.getState().drag_id);s&&(i=e.config.update_render,e.config.update_render=!0),n.apply(e,arguments),s&&(e.config.update_render=i)}}()});
