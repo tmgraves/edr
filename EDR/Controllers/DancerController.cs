@@ -23,6 +23,9 @@ using DayPilot.Web.Mvc;
 using DayPilot.Web.Mvc.Enums;
 using DayPilot.Web.Mvc.Events.Month;
 using EDR.Data;
+using DHTMLX.Scheduler;
+using DHTMLX.Scheduler.Controls;
+using DHTMLX.Scheduler.Data;
 
 namespace EDR.Controllers
 {
@@ -173,7 +176,35 @@ namespace EDR.Controllers
                 viewModel.Address = Geolocation.ParseAddress("90065");
             }
 
+            var scheduler = new DHXScheduler(this) { Skin = DHXScheduler.Skins.Terrace };
+            scheduler.Templates.map_time = "{start_date.toLocaleString()}"; //   "{start_date.toLocaleTimeString()}";    // "{start_date:date(%d.%m.%Y)}";
+            scheduler.Views.Clear();
+            scheduler.Views.Add(new MonthView());
+            scheduler.Views.Add(new MapView());
+            scheduler.InitialView = (new MonthView()).Name;
+            scheduler.LoadData = true;
+            scheduler.DataAction = "MapEvents";
+
+            viewModel.Scheduler = scheduler;
+
             return View(viewModel);
+        }
+
+        public ContentResult MapEvents()
+        {
+            var today = DateTime.Today;
+
+            var events = DataContext.Events.ToList();
+            var lstEvents = new List<object>();
+
+            foreach (Event e in events)
+            {
+                lstEvents.Add(new { id = e.Id, text = e.Name + " @" + e.Place.Name + "<br/>" + e.Description, start_date = e.NextDate, end_date = e.EndDateTime, lat = e.Place.Latitude, lng = e.Place.Longitude, event_location = e.Place.Address + ", " + e.Place.City + ", " + e.Place.State + " " + e.Place.Zip });
+            }
+
+            var data = new SchedulerAjaxData(lstEvents);
+
+            return data;
         }
 
         [Authorize]

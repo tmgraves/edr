@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DHTMLX.Scheduler;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -22,5 +23,6 @@ namespace EDR.Models.ViewModels
         public IEnumerable<Party> Parties { get; set; }
         public IEnumerable<Teacher> Teachers { get; set; }
         public IEnumerable<Event> SuggestedEvents { get; set; }
+        public DHXScheduler Scheduler { get; set; }
     }
 }
