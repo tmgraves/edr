@@ -1,0 +1,128 @@
+﻿@model EDR.Models.ViewModels.DancerViewViewModel
+@using EDR.Models
+@using EDR.Utilities
+
+@{
+    ViewBag.Title = Model.Dancer.FirstName + "'s Social Dancing";
+    Layout = "~/Views/Shared/_DancerLayout.cshtml";
+}
+
+@section section
+{
+    Where I Dance...
+}
+
+<style>
+    #map-canvas {
+        width: 100%;
+        height: 400px;
+    }
+</style>
+<script src="https://maps.googleapis.com/maps/api/js"></script>
+<script>
+    var map;
+    var markers = [];
+
+    function initialize() {
+        var mapOptions = {
+            zoom: 14,
+            zoomControl: false,
+            center: new google.maps.LatLng('@Model.Address.Latitude', '@Model.Address.Longitude')
+        };
+
+        map = new google.maps.Map(document.getElementById('map-canvas'),
+            mapOptions);
+
+        @{
+            int idx = 1;
+
+            foreach(var c in Model.Socials.OrderBy(x => x.NextDate))
+            {
+                <text>
+                    var marker = new google.maps.Marker({
+                        position: new google.maps.LatLng('@c.Place.Latitude', '@c.Place.Longitude'),
+                        map: map,
+                        title: '@c.Name',
+                        icon: "http://maps.google.com/mapfiles/kml/paddle/" + @idx + "-lv.png"
+                    });
+
+                    attachSecretMessage(marker, '@c.Id', '@c.Place.Name', '@c.Place.Address <br/> @c.Place.City , @c.Place.State  @c.Place.Zip', '<a href="@Url.Action("Details", "Event", new { id = c.Id, eventType = "Class" } )">' + marker.title + '</a>', '@(c.Users != null ? c.Users.Count : 0)', 4, 5);
+                    markers.push(marker);
+
+        </text>
+                idx += 1;
+            }
+        }
+
+        clearMarkers();
+    }
+
+    function clearMarkers() {
+        setAllMap(null);
+    }
+
+    function setAllMap(map) {
+        for (var i = 0; i < markers.length; i++) {
+            markers[i].setMap(map);
+        }
+    }
+
+    // The five markers show a secret message when clicked
+    // but that message is not within the marker's instance data
+    function attachSecretMessage(marker, num, placeName, address, link, dancers, videos, pictures) {
+        var message = marker.title;
+        var infowindow = new google.maps.InfoWindow({
+            disableAutoPan: true,
+            content: '<div id="content" style="width: 250px;">' +
+            '<div id="siteNotice">'+
+            '</div>'+
+            '<h4 id="firstHeading" class="firstHeading">' + link + '</h4>'+
+            '<div id="bodyContent">'+
+            '<p>' +
+            '<b>@@' + placeName + '</b><br/>' +
+            address + '<br/>' +
+            '</p>' +
+            '<label title="Dancers"><span class="badge">' + dancers + '</span> Dancers</label>' +
+            ' <label title="Videos"><span class="badge">4</span> Videos</label>' +
+            ' <label title="Pictures"><span class="badge">3</span> Pictures</label>' +
+            '</div>' +
+            '</div>'
+            });
+
+        infowindow.open(map, marker);
+
+        google.maps.event.addListener(marker, 'click', function () {
+            infowindow.open(map, marker);
+        });
+    }
+
+    function openEvent(id, lati, long) {
+        var latLng = new google.maps.LatLng(lati, long); //Makes a latlng
+        map.panTo(latLng); //Make map global
+        map.setZoom(14);
+        clearMarkers();
+        markers[id].setMap(map);
+        return false;
+    }
+
+    google.maps.event.addDomListener(window, 'load', initialize);
+</script>
+
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <h3 class="page-header">My Social Dancing</h3>
+        <div class="col-sm-6 col-md-6 col-lg-6 col-xs-6" style="height: 400px; overflow-x: auto;">
+            @if (Model.Socials.Count() > 0)
+            {
+                @Html.Partial("~/Views/Shared/_CompactEventListPartial.cshtml", Model.Socials.OrderBy(x => x.NextDate))
+            }
+            else
+            {
+                @:You have no Socials
+            }
+        </div>
+        <div class="col-sm-6 col-md-6 col-lg-6 col-xs-6">
+            <div class="container" id="map-canvas"></div>
+        </div>
+    </div>
+</div>
