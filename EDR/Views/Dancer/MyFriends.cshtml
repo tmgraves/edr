@@ -1,0 +1,46 @@
+﻿
+@{
+    ViewBag.Title = "MyFriends";
+    Layout = "~/Views/Shared/_DancerLayout.cshtml";
+}
+@section section
+{
+    My Friends
+}
+
+
+@if (Model.FriendList != null && Model.FriendList.Count() > 0)
+{
+    foreach (var myFriend in @Model.FriendList)
+    {
+        <div style="margin: 5px;">
+            @if (myFriend.User != null)
+            {
+                <a href="@Url.Action("View", "Dancer", new { username = myFriend.User.UserName })">
+                    <div class="img-thumbnail">
+                        <img src="@Url.Content(myFriend.User.UserPictures.First().ThumbnailFilename)" />
+                        @myFriend.User.FirstName
+                    </div>
+                </a>
+            }
+            else
+            {
+                <a href="@myFriend.Link" target="_blank">
+                    <div class="img-thumbnail">
+                        @if (myFriend.ImageURL != null)
+                        {
+                            <img src="@Url.Content(myFriend.ImageURL)" />
+                        }
+                        @myFriend.Name
+                    </div>
+                </a>
+            }
+        </div>
+    }
+}
+else
+{
+    @:No friends found.
+                            }
+
+

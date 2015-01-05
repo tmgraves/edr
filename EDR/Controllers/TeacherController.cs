@@ -10,6 +10,7 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using EDR.Models;
 using System.Text.RegularExpressions;
+using EDR.Utilities;
 
 namespace EDR.Controllers
 {
@@ -28,8 +29,70 @@ namespace EDR.Controllers
             return View(model);
         }
 
+        private TeacherViewViewModel LoadTeacher(string username)
+        {
+            // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE TeacherViewModel)
+            var viewModel = new TeacherViewViewModel();
+            viewModel.Teacher = DataContext.Teachers
+                                    .Include("Classes")
+                                    .Include("Workshops")
+                                    .Include("DanceStyles")
+                                    .Include("ApplicationUser")
+                                    .Include("ApplicationUser.UserPictures")
+                                    .Include("Students.Dancer")
+                                    .Include("Students.Dancer.UserPictures")
+                                    .Include("Places")
+                                    .Where(x => x.ApplicationUser.UserName == username).FirstOrDefault();
+
+            if (viewModel.Teacher.ApplicationUser.ZipCode != null)
+            {
+                viewModel.Address = Geolocation.ParseAddress(viewModel.Teacher.ApplicationUser.ZipCode);
+            }
+            else
+            {
+                viewModel.Address = Geolocation.ParseAddress("90065");
+            }
+            return viewModel;
+        }
+
         [Authorize]
         public ActionResult View(string username)
+        {
+            if (String.IsNullOrWhiteSpace(username))
+            {
+                if (User != null)
+                {
+                    username = User.Identity.GetUserName();
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+            }
+
+            var teacher = DataContext.Teachers.Include("Classes")
+                .Where(x => x.ApplicationUser.UserName == username)
+                .FirstOrDefault();
+
+            if (teacher == null)
+            {
+                if (username == User.Identity.Name && !User.IsInRole("Teacher"))
+                {
+                    return RedirectToAction("Apply", "Teacher");
+                }
+                else
+                {
+                    return HttpNotFound();
+                }
+            }
+
+            var viewModel = LoadTeacher(username);
+
+            return View(viewModel);
+        }
+
+        [Authorize]
+        public ActionResult MyTeach(string username)
         {
             if (String.IsNullOrWhiteSpace(username))
             {
@@ -59,9 +122,43 @@ namespace EDR.Controllers
                 }
             }
 
-            // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE TeacherViewModel)
-            var viewModel = new TeacherViewViewModel();
-            viewModel.Teacher = DataContext.Teachers.Include("Classes").Include("Workshops").Include("DanceStyles").Include("ApplicationUser").Where(x => x.ApplicationUser.UserName == username).FirstOrDefault();
+            var viewModel = LoadTeacher(username);
+
+            return View(viewModel);
+        }
+
+        [Authorize]
+        public ActionResult Resume(string username)
+        {
+            if (String.IsNullOrWhiteSpace(username))
+            {
+                if (User != null)
+                {
+                    username = User.Identity.GetUserName();
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+            }
+
+            var teacher = DataContext.Teachers
+                .Where(x => x.ApplicationUser.UserName == username)
+                .FirstOrDefault();
+
+            if (teacher == null)
+            {
+                if (username == User.Identity.Name && !User.IsInRole("Teacher"))
+                {
+                    return RedirectToAction("Apply", "Teacher");
+                }
+                else
+                {
+                    return HttpNotFound();
+                }
+            }
+
+            var viewModel = LoadTeacher(username);
 
             return View(viewModel);
         }

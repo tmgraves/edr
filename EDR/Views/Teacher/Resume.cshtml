@@ -1,0 +1,14 @@
+﻿@model EDR.Models.ViewModels.TeacherViewViewModel
+@using EDR.Models
+@using EDR.Utilities
+
+@{
+    ViewBag.Title = "Resume";
+    Layout = "~/Views/Shared/_TeacherLayout.cshtml";
+}
+
+@section section
+{
+    My Resume...
+}
+@Model.Teacher.Resume

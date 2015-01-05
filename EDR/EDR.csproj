@@ -364,6 +364,8 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\images\NoImage.png" />
+    <Content Include="Content\images\NoImageSmall.png" />
     <Content Include="Content\images\NoPicThumb.gif" />
     <Content Include="Content\images\NoPicTiny.png" />
     <Content Include="Content\images\NoProfilePic.gif" />
@@ -664,9 +666,19 @@
     <Content Include="Views\Place\Edit.cshtml" />
     <Content Include="Views\Shared\_CompactEventListPartial.cshtml" />
     <Content Include="Views\Shared\_DancerLayout.cshtml" />
-    <Content Include="Views\Dancer\Learn.cshtml" />
+    <Content Include="Views\Dancer\Learn-old.cshtml" />
     <Content Include="Views\Dancer\Dance.cshtml" />
     <Content Include="Views\Scheduler\GoogleMap.cshtml" />
+    <Content Include="Views\Home\MapTest.cshtml" />
+    <Content Include="Views\Shared\_TeacherListPartial.cshtml" />
+    <Content Include="Views\Dancer\MyLearn.cshtml" />
+    <Content Include="Views\Dancer\MyFriends.cshtml" />
+    <Content Include="Views\Dancer\MyDance.cshtml" />
+    <Content Include="Views\Shared\_TeacherLayout.cshtml" />
+    <Content Include="Views\Teacher\MyTeach.cshtml" />
+    <Content Include="Views\Teacher\Resume.cshtml" />
+    <Content Include="Views\Shared\_StudentListPartial.cshtml" />
+    <Content Include="Views\Shared\_PlaceListPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Series\" />

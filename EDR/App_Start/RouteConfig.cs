@@ -26,6 +26,16 @@ namespace EDR
             );
 
             routes.MapRoute(
+                name: "Home",
+                url: "Home/{action}",
+                defaults: new { controller = "Home", action = UrlParameter.Optional }
+            );
+            routes.MapRoute(
+                name: "Account",
+                url: "Account/{action}",
+                defaults: new { controller = "Account", action = UrlParameter.Optional }
+            );
+            routes.MapRoute(
                 name: "DancerEdit",
                 url: "Dancer/Edit",
                 defaults: new { controller = "Dancer", action = "Edit" }
@@ -56,14 +66,9 @@ namespace EDR
                 defaults: new { controller = "Dancer", action = "DeletePicture" }
             );
             routes.MapRoute(
-                name: "DancerLearn",
-                url: "Dancer/Learn",
-                defaults: new { controller = "Dancer", action = "Learn" }
-            );
-            routes.MapRoute(
-                name: "DancerDance",
-                url: "Dancer/Dance",
-                defaults: new { controller = "Dancer", action = "Dance" }
+                name: "DancerDetail",
+                url: "{username}/{action}",
+                defaults: new { controller = "Dancer", action = UrlParameter.Optional }
             );
             routes.MapRoute(
                 name: "DancerMapEvents",
@@ -74,11 +79,6 @@ namespace EDR
                 name: "DancerBackend",
                 url: "Dancer/Backend",
                 defaults: new { controller = "Dancer", action = "Backend" }
-            );
-            routes.MapRoute(
-                name: "Dancer",
-                url: "Dancer/{username}",
-                defaults: new { controller = "Dancer", action = "View" }
             );
 
             routes.MapRoute(
@@ -96,10 +96,11 @@ namespace EDR
                 url: "Teacher/List",
                 defaults: new { controller = "Teacher", action = "List" }
             );
+
             routes.MapRoute(
-                name: "Teacher",
-                url: "Teacher/{username}",
-                defaults: new { controller = "Teacher", action = "View" }
+                name: "TeacherDetail",
+                url: "Teacher/{username}/{action}",
+                defaults: new { controller = "Teacher", action = UrlParameter.Optional }
             );
 
             routes.MapRoute(

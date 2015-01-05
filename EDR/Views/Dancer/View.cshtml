@@ -8,57 +8,99 @@
 
 <style>
     #map-canvas {
-        width: 300px;
+        width: 100%;
         height: 100px;
     }
     #classMap-canvas {
-        width: 275px;
+        width: 100%;
         height: 400px;
     }
 </style>
 <script src="https://maps.googleapis.com/maps/api/js"></script>
 <script>
+    var classmap;
+    var markers = [];
+
     function initialize() {
         var classMapOptions = {
-            zoom: 8,
+            zoom: 14,
+            zoomControl: false,
             center: new google.maps.LatLng('@Model.Address.Latitude', '@Model.Address.Longitude')
         };
 
-        var classmap = new google.maps.Map(document.getElementById('classMap-canvas'),
+        classmap = new google.maps.Map(document.getElementById('classMap-canvas'),
             classMapOptions);
 
         @{
             int idx = 1;
-            
-            foreach(var c in Model.Classes)
+
+            foreach(var c in Model.Classes.OrderBy(x => x.NextDate))
             {
                 <text>
                     var marker = new google.maps.Marker({
                         position: new google.maps.LatLng('@c.Place.Latitude', '@c.Place.Longitude'),
                         map: classmap,
-                        title: '@c.Name' + '@@' + '@c.Place.Name',
+                        title: '@c.Name',
                         icon: "http://maps.google.com/mapfiles/kml/paddle/" + @idx + "-lv.png"
                     });
 
-                    marker.setTitle(('@c.Name' + '@@' + '@c.Place.Name').toString());
-                    attachSecretMessage(marker, '@c.Id');
-                </text>
+                    attachSecretMessage(marker, '@c.Id', '@c.Place.Name', '@c.Place.Address <br/> @c.Place.City , @c.Place.State  @c.Place.Zip', '<a href="@Url.Action("Details", "Event", new { id = c.Id, eventType = "Class" } )">' + marker.title + '</a>', '@(c.Users != null ? c.Users.Count : 0)', 4, 5);
+                    markers.push(marker);
+
+        </text>
                 idx += 1;
             }
+        }
+
+        clearMarkers();
+    }
+
+    function clearMarkers() {
+        setAllMap(null);
+    }
+
+    function setAllMap(map) {
+        for (var i = 0; i < markers.length; i++) {
+            markers[i].setMap(map);
         }
     }
 
     // The five markers show a secret message when clicked
     // but that message is not within the marker's instance data
-    function attachSecretMessage(marker, num) {
+    function attachSecretMessage(marker, num, placeName, address, link, students, videos, pictures) {
         var message = marker.title;
         var infowindow = new google.maps.InfoWindow({
-            content: marker.title
-        });
+            disableAutoPan: true,
+            content: '<div id="content" style="width: 250px;">' +
+            '<div id="siteNotice">'+
+            '</div>'+
+            '<h4 id="firstHeading" class="firstHeading">' + link + '</h4>'+
+            '<div id="bodyContent">'+
+            '<p>' +
+            '<b>@@' + placeName + '</b><br/>' +
+            address + '<br/>' +
+            '</p>' +
+            '<label title="Students"><span class="badge">' + students + '</span> Students</label>' +
+            ' <label title="Videos"><span class="badge">4</span> Videos</label>' +
+            ' <label title="Pictures"><span class="badge">3</span> Pictures</label>' +
+            '</div>' +
+            '</div>'
+            });
+
+        infowindow.open(classmap, marker);
 
         google.maps.event.addListener(marker, 'click', function () {
-            infowindow.open(marker.get('map'), marker);
+            infowindow.open(classmap, marker);
         });
+    }
+
+    function openEvent(id, lati, long) {
+        var latLng = new google.maps.LatLng(lati, long); //Makes a latlng
+        classmap.panTo(latLng); //Make map global
+        classmap.setZoom(14);
+        clearMarkers();
+        markers[id].setMap(classmap);
+        return false;
     }
 
     google.maps.event.addDomListener(window, 'load', initialize);
@@ -128,20 +170,32 @@
                             <h4 class="panel-title" style="font-size: 18pt;"><span class="">Where I Learn...</span></h4>
                         </div>
                         <div class="panel-body">
-                            <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
-                                <h4 class="page-header">My Classes/Workshops</h4>
-                                <div class="col-sm-6 col-md-6 col-lg-6 col-xs-6">
-                                    <div class="container" id="classMap-canvas"></div>
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                    <h4 class="page-header">My Classes/Workshops</h4>
+                                    <div class="col-sm-6 col-md-6 col-lg-6 col-xs-6" style="height: 400px; overflow-x: auto;">
+                                        @if (Model.Classes.Count() > 0)
+                                        {
+                                            @Html.Partial("~/Views/Shared/_CompactEventListPartial.cshtml", Model.Classes.OrderBy(x => x.NextDate))
+                                        }
+                                        else
+                                        {
+                                            @:You have no Classes
+                                        }
+                                    </div>
+                                    <div class="col-sm-6 col-md-6 col-lg-6 col-xs-6">
+                                        <div class="container" id="classMap-canvas"></div>
+                                    </div>
                                 </div>
-                                <div class="col-sm-6 col-md-6 col-lg-6 col-xs-6" style="height: 400px; overflow-x: auto;">
-                                    @if (Model.Classes.Count() > 0)
-                                    {
-                                        @Html.Partial("~/Views/Shared/_CompactEventListPartial.cshtml", Model.Classes.OrderBy(x => x.NextDate))
-                                    }
-                                    else
-                                    {
-                                        @:You have no Classes
-                                }
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12 col-md-12 col-lg-12 col-xs-12">
+                                    <h4 class="page-header">
+                                        My Teachers
+                                    </h4>
+                                    <div style="height: 400px; overflow-x: auto;">
+                                        @Html.Partial("~/Views/Shared/_TeacherListPartial.cshtml", Model.Teachers)
+                                    </div>
                                 </div>
                             </div>
 
@@ -155,33 +209,7 @@
                                     else
                                     {
                                         @:No Suggested Classes/Workshops
-                                }
-                                </div>
-                            </div>
-
-                            <div class="col-sm-3 col-md-3 col-lg-3 col-xs-3">
-                                <h4 class="page-header">
-                                    My Teachers
-                                </h4>
-                                <div style="height: 400px; overflow-x: auto;">
-                                    <ul class="list-inline col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                        @foreach (var teacher in Model.Teachers.OrderBy(x => x.ApplicationUser.FirstName))
-                                        {
-                                            <li class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                                <a class="btn btn-default col-lg-12 col-md-12 col-sm-12 col-xs-12" href="@Url.Action("View", "Teacher", new { username = teacher.ApplicationUser.UserName }) " style="text-align: left;">
-                                                    @*@if (teacher.ApplicationUser.UserPictures != null && teacher.ApplicationUser.UserPictures.Count > 0)
-            {
-                <img src="@Url.Content(teacher.ApplicationUser.UserPictures.First().ThumbnailFilename)" />
-            }
-            else
-            {
-                <img src="@Url.Content(ApplicationUtility.GetNoProfilePicture().ThumbnailFilename)" />
-            }*@
-                                                    @teacher.ApplicationUser.FullName
-                                                </a>
-                                            </li>
-                                        }
-                                    </ul>
+                            }
                                 </div>
                             </div>
                             <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12">

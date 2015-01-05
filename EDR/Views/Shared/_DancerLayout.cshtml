@@ -54,9 +54,9 @@
             </div>
             <div class="row col-md-12 col-lg-12 col-sm-12 col-xs-12" style="text-align: left;">
                 <ul class="nav nav-pills nav-stacked" role="tablist">
-                    <li @if (ctrName == "Dance") { <text> class="active" </text> }><a href="@Url.Action("Dance", "Dancer", new { username = Model.Dancer.UserName })">Where I Dance</a></li>
-                    <li @if (ctrName == "Learn") { <text> class="active" </text>  }><a href="@Url.Action("Learn", "Dancer", new { username = Model.Dancer.UserName })">Where I Learn</a></li>
-                    <li><a href="#friends" role="tab" data-toggle="tab">Friends</a></li>
+                    <li @if (ctrName == "MyDance") { <text> class="active" </text> }><a href="@Url.Action("MyDance", "Dancer", new { username = Model.Dancer.UserName })">Where I Dance</a></li>
+                    <li @if (ctrName == "MyLearn") { <text> class="active" </text>  }><a href="@Url.Action("MyLearn", "Dancer", new { username = Model.Dancer.UserName })">Where I Learn</a></li>
+                    <li @if (ctrName == "MyFriends") { <text> class="active" </text>   }><a href="@Url.Action("MyFriends", "Dancer", new { username = Model.Dancer.UserName })">My Friends</a></li>
                     <li><a href="#myperformance" role="tab" data-toggle="tab">Where I Perform</a></li>
                 </ul>
             </div>

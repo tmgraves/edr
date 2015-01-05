@@ -1,0 +1,40 @@
+﻿@model IEnumerable<EDR.Models.Teacher>
+@using EDR.Utilities;
+
+@foreach (var t in Model.OrderBy(x => x.ApplicationUser.FullName))
+{
+    <a class="btn btn-default col-lg-4 col-md-12 col-sm-12 col-xs-12 top" href="@Url.Action("MyTeach", "Teacher", new { username = t.ApplicationUser.UserName }) " style="text-align: left; vertical-align: top;">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            @if (t.ApplicationUser.UserPictures != null && t.ApplicationUser.UserPictures.Count > 0)
+            {
+                <img src="@Url.Content(t.ApplicationUser.UserPictures.First().ThumbnailFilename)" />
+            }
+            else
+            {
+                <img src="@Url.Content(ApplicationUtility.GetNoProfilePicture().ThumbnailFilename)" />
+            }
+            <span class="text-primary" style="vertical-align: top;">@t.ApplicationUser.FullName</span>
+        </div>
+    </a>
+    @*@Html.ActionLink(t.ApplicationUser.FullName, "View", "Teacher", new { username = t.ApplicationUser.UserName }, htmlAttributes: new { @style = "padding: 5px" })*@
+}
+@*<ul class="list-inline col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        @foreach (var teacher in Model.OrderBy(x => x.ApplicationUser.FullName))
+        {
+            <li class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <a class="btn btn-default col-lg-12 col-md-12 col-sm-12 col-xs-12" href="@Url.Action("View", "Teacher", new { username = teacher.ApplicationUser.UserName }) " style="text-align: left;">
+                    @if (teacher.ApplicationUser.UserPictures != null && teacher.ApplicationUser.UserPictures.Count > 0)
+                        {
+                            <img src="@Url.Content(teacher.ApplicationUser.UserPictures.First().ThumbnailFilename)" />
+                        }
+                        else
+                        {
+                            <img src="@Url.Content(ApplicationUtility.GetNoProfilePicture().ThumbnailFilename)" />
+                        }
+                    @teacher.ApplicationUser.FullName
+                </a>
+            </li>
+        }
+    </ul>*@
+
+

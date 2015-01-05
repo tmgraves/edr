@@ -20,6 +20,11 @@ namespace EDR.Controllers
             return View();
         }
 
+        public ActionResult MapTest()
+        {
+            return View();
+        }
+
         public ActionResult Explore()
         {
             var viewModel = new HomeExploreViewModel();

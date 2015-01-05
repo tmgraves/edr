@@ -15,6 +15,8 @@ namespace EDR.Models
         public double Longitude { get; set; }
         public string FacebookLink { get; set; }
         public string Website { get; set; }
+        public string Filename { get; set; }
+        public string ThumbnailFilename { get; set; }
 
         public virtual ICollection<Event> Events { get; set; }
         public virtual ICollection<Review> Reviews { get; set; }
