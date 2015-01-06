@@ -8,6 +8,7 @@ using Microsoft.AspNet.Identity;
 using System.Net;
 using EDR.Models;
 using System.Data.Entity;
+using EDR.Utilities;
 
 namespace EDR.Controllers
 {
@@ -19,6 +20,37 @@ namespace EDR.Controllers
             model.Promoters = DataContext.Promoters.Include("ApplicationUser");
 
             return View(model);
+        }
+
+        private PromoterViewViewModel LoadPromoter(string username)
+        {
+            // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE TeacherViewModel)
+            var viewModel = new PromoterViewViewModel();
+            viewModel.Promoter = DataContext.Promoters
+                                    .Where(x => x.ApplicationUser.UserName == username)
+                                    .Include("Events")
+                                    .Include("Places")
+                                    .Include("Events.DanceStyles")
+                                    .FirstOrDefault();
+
+            if (viewModel.Promoter.ApplicationUser.ZipCode != null)
+            {
+                viewModel.Address = Geolocation.ParseAddress(viewModel.Promoter.ApplicationUser.ZipCode);
+            }
+            else
+            {
+                viewModel.Address = Geolocation.ParseAddress("90065");
+            }
+
+            // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE PromoterViewModel)
+            viewModel.Socials = viewModel.Promoter.Events.OfType<Social>();
+            viewModel.Concerts = new List<Concert>();
+            viewModel.Conferences = new List<Conference>();
+            viewModel.OpenHouses = new List<OpenHouse>();
+            viewModel.Parties = new List<Party>();
+            viewModel.Socials = new List<Social>();
+
+            return viewModel;
         }
 
         [Authorize]
@@ -52,14 +84,43 @@ namespace EDR.Controllers
                 }
             }
 
-            // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE PromoterViewModel)
-            var viewModel = new PromoterViewViewModel();
-            viewModel.Promoter = DataContext.Promoters.Where(x => x.ApplicationUser.UserName == username).Include("Events").Include("Events.DanceStyles").FirstOrDefault();
-            viewModel.Socials = viewModel.Promoter.Events.OfType<Social>();
-            viewModel.Concerts = viewModel.Promoter.Events.OfType<Concert>();
-            viewModel.Conferences = viewModel.Promoter.Events.OfType<Conference>();
-            viewModel.OpenHouses = viewModel.Promoter.Events.OfType<OpenHouse>();
-            viewModel.Parties = viewModel.Promoter.Events.OfType<Party>();
+            var viewModel = LoadPromoter(username);
+
+            return View(viewModel);
+        }
+
+        [Authorize]
+        public ActionResult MySocials(string username)
+        {
+            if (String.IsNullOrWhiteSpace(username))
+            {
+                if (User != null)
+                {
+                    username = User.Identity.Name;
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+            }
+
+            var promoter = DataContext.Promoters
+                .Where(x => x.ApplicationUser.UserName == username)
+                .FirstOrDefault();
+
+            if (promoter == null)
+            {
+                if (username == User.Identity.Name && !User.IsInRole("Promoter"))
+                {
+                    return RedirectToAction("Apply", "Promoter");
+                }
+                else
+                {
+                    return HttpNotFound();
+                }
+            }
+
+            var viewModel = LoadPromoter(username);
 
             return View(viewModel);
         }

@@ -1,0 +1,93 @@
+﻿@model EDR.Models.ViewModels.PromoterViewViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{string ctrName = ViewContext.RouteData.Values["action"].ToString();}
+
+<div class="container" style="padding: 10px;">
+    <div class="row">
+        <h1 class="page-header">
+            @Model.Promoter.ApplicationUser.FullName
+            @if (User.Identity != null && User.Identity.Name == Model.Promoter.ApplicationUser.UserName)
+            {
+                <a title="Edit Profile" href="@Url.Action("Edit", "Promoter", new { username = Model.Promoter.ApplicationUser.UserName })">
+                    <i class="glyphicon glyphicon glyphicon-pencil btn-sm btn-info"></i>
+                    <span class="sr-only">Edit Profile</span>
+                </a>
+            }
+        </h1>
+    </div>
+    <div class="col-md-2 col-lg-2 col-sm-2 col-xs-2">
+        <div class="row well well-sm" style="text-align: center;">
+            <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12 col-lg-offset-0 col-md-offset-0 col-sm-offset-0 col-xs-offset-0">
+                <div class="img-thumbnail">
+                    @if (Model.Promoter.ApplicationUser.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault() != null)
+                    {
+                        <img src="@Url.Content(Model.Promoter.ApplicationUser.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault().ThumbnailFilename)" />
+                    }
+                    else
+                    {
+                        <img src="~/Content/images/NoPic.png" />
+                    }
+                </div>
+                @if (User.Identity != null && User.Identity.Name == Model.Promoter.ApplicationUser.UserName)
+                {
+                    <p>
+                        <a style="font-size: small;" href="@Url.Action("ChangePicture", "Dancer")">Change Picture</a>
+                        @*<a title="Change Picture" href="@Url.Action("ChangePicture", "Dancer")">
+                        <i class="glyphicon glyphicon glyphicon-edit btn btn-primary"></i>
+                        <span class="sr-only">Change Picture</span>
+                    </a>*@
+                    </p>
+                }
+            </div>
+            <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12 col-lg-offset-0 col-md-offset-0 col-sm-offset-0 col-xs-offset-0" style="text-align: center;">
+                <p>
+                    @Model.Address.City, @Model.Address.State
+                </p>
+                <p>
+                    @if (Model.Promoter.Facebook != null)
+                    {
+                        <a class="img-thumbnail" href='@Model.Promoter.Facebook' target="_blank" title="Visit Me On Facebook"><img src="@Url.Content("~/Content/images/facebookSmall.png")" /></a>
+                    }
+                    @if (Model.Promoter.Website != null)
+                    {
+                        <a class="img-thumbnail" href='@Model.Promoter.Website' target="_blank" title="Visit Me On the Web"><img src="@Url.Content("~/Content/images/web.png")" /></a>
+                    }
+                    @if (Model.Promoter.ContactEmail != null)
+                    {
+                        <a class="img-thumbnail" href='mailto:@Model.Promoter.ContactEmail' title="Email Me"><img src="@Url.Content("~/Content/images/email.png")" /></a>
+                    }
+                </p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="row col-md-12 col-lg-12 col-sm-12 col-xs-12" style="text-align: left;">
+                <ul class="nav nav-pills nav-stacked" role="tablist">
+                    <li @if (ctrName == "MySocials") { <text> class="active" </text>       }><a href="@Url.Action("MySocials", "Promoter", new { username = Model.Promoter.ApplicationUser.UserName })">My Events</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="tabbable">
+        <div class="col-md-9 col-lg-9 col-sm-9 col-xs-9">
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <div class="panel panel-info tab-pane panel-default active" id="mylearn">
+                    <div class="panel-heading">
+                        <h4 class="panel-title" style="font-size: 18pt;"><span class="">@RenderSection("section")</span></h4>
+                    </div>
+                    <div class="panel-body">
+                        @RenderBody()
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<p>
+    @Html.ActionLink("Back to List", "List")
+</p>

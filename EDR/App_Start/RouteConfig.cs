@@ -36,6 +36,39 @@ namespace EDR
                 defaults: new { controller = "Account", action = UrlParameter.Optional }
             );
             routes.MapRoute(
+                name: "TeacherApply",
+                url: "Teacher/Apply",
+                defaults: new { controller = "Teacher", action = "Apply" }
+            );
+            routes.MapRoute(
+                name: "TeacherList",
+                url: "Teacher/List",
+                defaults: new { controller = "Teacher", action = "List" }
+            );
+
+            routes.MapRoute(
+                name: "TeacherDetail",
+                url: "Teacher/{username}/{action}",
+                defaults: new { controller = "Teacher", action = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
+                name: "PromoterApply",
+                url: "Promoter/Apply",
+                defaults: new { controller = "Promoter", action = "Apply" }
+            );
+            routes.MapRoute(
+                name: "PromoterList",
+                url: "Promoter/List",
+                defaults: new { controller = "Promoter", action = "List" }
+            );
+            routes.MapRoute(
+                name: "Promoter",
+                url: "Promoter/{username}/{action}",
+                defaults: new { controller = "Promoter", action = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
                 name: "DancerEdit",
                 url: "Dancer/Edit",
                 defaults: new { controller = "Dancer", action = "Edit" }
@@ -79,49 +112,6 @@ namespace EDR
                 name: "DancerBackend",
                 url: "Dancer/Backend",
                 defaults: new { controller = "Dancer", action = "Backend" }
-            );
-
-            routes.MapRoute(
-                name: "TeacherEdit",
-                url: "Teacher/Edit",
-                defaults: new { controller = "Teacher", action = "Edit" }
-            );
-            routes.MapRoute(
-                name: "TeacherApply",
-                url: "Teacher/Apply",
-                defaults: new { controller = "Teacher", action = "Apply" }
-            );
-            routes.MapRoute(
-                name: "TeacherList",
-                url: "Teacher/List",
-                defaults: new { controller = "Teacher", action = "List" }
-            );
-
-            routes.MapRoute(
-                name: "TeacherDetail",
-                url: "Teacher/{username}/{action}",
-                defaults: new { controller = "Teacher", action = UrlParameter.Optional }
-            );
-
-            routes.MapRoute(
-                name: "PromoterEdit",
-                url: "Promoter/Edit",
-                defaults: new { controller = "Promoter", action = "Edit" }
-            );
-            routes.MapRoute(
-                name: "PromoterApply",
-                url: "Promoter/Apply",
-                defaults: new { controller = "Promoter", action = "Apply" }
-            );
-            routes.MapRoute(
-                name: "PromoterList",
-                url: "Promoter/List",
-                defaults: new { controller = "Promoter", action = "List" }
-            );
-            routes.MapRoute(
-                name: "Promoter",
-                url: "Promoter/{username}",
-                defaults: new { controller = "Promoter", action = "View" }
             );
 
             routes.MapRoute(

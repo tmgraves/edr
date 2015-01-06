@@ -21,7 +21,7 @@
                             <li role="presentation">@Html.ActionLink("a New Visitor?", "View", "Visitor", null, null)</li>
                             <li role="presentation">@Html.ActionLink("a Dancer?", "MyDance", "Dancer", new { username = User.Identity.IsAuthenticated ? User.Identity.Name : "NotLoggedIn" }, null)</li>
                             <li role="presentation">@Html.ActionLink("a Teacher?", "MyTeach", "Teacher", new { username = User.Identity.IsAuthenticated ? User.Identity.Name : "NotLoggedIn" }, null)</li>
-                            <li role="presentation">@Html.ActionLink("a Promoter?", "View", "Promoter", new { username = User.Identity.IsAuthenticated ? User.Identity.Name : "NotLoggedIn" }, null)</li>
+                            <li role="presentation">@Html.ActionLink("a Promoter?", "MySocials", "Promoter", new { username = User.Identity.IsAuthenticated ? User.Identity.Name : "NotLoggedIn" }, null)</li>
                             <li role="presentation">@Html.ActionLink("a Studio Owner?", "View", "Owner", new { username = User.Identity.IsAuthenticated ? User.Identity.Name : "NotLoggedIn" }, null)</li>
                         </ul>
                     </div>

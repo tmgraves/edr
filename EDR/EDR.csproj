@@ -364,6 +364,10 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\images\email.png" />
+    <Content Include="Content\images\facebookSmall.png" />
+    <Content Include="Content\images\MissingImage.jpg" />
+    <Content Include="Content\images\MissingImageThumbnail.jpg" />
     <Content Include="Content\images\NoImage.png" />
     <Content Include="Content\images\NoImageSmall.png" />
     <Content Include="Content\images\NoPicThumb.gif" />
@@ -373,6 +377,8 @@
     <Content Include="Content\images\Play1Normal.png" />
     <Content Include="Content\images\Play1Pressed.png" />
     <Content Include="Content\images\NoPic.png" />
+    <Content Include="Content\images\web.png" />
+    <Content Include="Content\images\www.png" />
     <Content Include="favicon.ico" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -683,6 +689,8 @@
     <Content Include="Views\Teacher\Resume.cshtml" />
     <Content Include="Views\Shared\_StudentListPartial.cshtml" />
     <Content Include="Views\Shared\_PlaceListPartial.cshtml" />
+    <Content Include="Views\Shared\_PromoterLayout.cshtml" />
+    <Content Include="Views\Promoter\MySocials.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Series\" />

@@ -12,7 +12,7 @@
             @Model.Teacher.ApplicationUser.FullName
             @if (User.Identity != null && User.Identity.Name == Model.Teacher.ApplicationUser.UserName)
             {
-                <a title="Edit Profile" href="@Url.Action("Edit", "Teacher")">
+                <a title="Edit Profile" href="@Url.Action("Edit", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })">
                     <i class="glyphicon glyphicon glyphicon-pencil btn-sm btn-info"></i>
                     <span class="sr-only">Edit Profile</span>
                 </a>
@@ -44,54 +44,33 @@
                 }
             </div>
             <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
-                <dl class="dl-horizontal">
-                    <dt>
-                        Location
-                    </dt>
-                    <dd>
-                        @Model.Address.City, @Model.Address.State
-                    </dd>
-                    <dt>
-                        @Html.DisplayNameFor(model => model.Teacher.Experience)
-                    </dt>
-                    <dd>
-                        @Html.DisplayFor(model => model.Teacher.Experience) Year(s)
-                    </dd>
-
-                    <dt>
-                        @Html.DisplayNameFor(model => model.Teacher.FacebookLink)
-                    </dt>
-                    <dd>
-                        <a href='@Model.Teacher.FacebookLink' target="_blank">@Model.Teacher.FacebookLink</a>
-                    </dd>
-
-                    <dt>
-                        @Html.DisplayNameFor(model => model.Teacher.Website)
-                    </dt>
-                    <dd>
-                        <a href='@Model.Teacher.Website' target="_blank">@Model.Teacher.Website</a>
-                    </dd>
-
-                    <dt>
-                        @Html.DisplayNameFor(model => model.Teacher.ContactEmail)
-                    </dt>
-                    <dd>
-                        <a href='mailto:@Model.Teacher.ContactEmail' target="_blank">@Model.Teacher.ContactEmail</a>
-                    </dd>
-
-                    <dt>
-                        Dance Styles
-                    </dt>
-
-                    <dd>
+                <div class="row">
+                    <label class="control-label col-lg-2 col-md-2 col-sm-2 col-xs-2">Location: </label>@Model.Address.City, @Model.Address.State
+                </div>
+                <div class="row">
+                    <label class="control-label col-lg-2 col-md-2 col-sm-2 col-xs-2">Experience: </label>@Model.Teacher.Experience Year(s)
+                </div>
+                <div class="row">
+                    <label class="control-label col-lg-2 col-md-2 col-sm-2 col-xs-2">Dance Styles: </label>
                         <ul class="list-inline">
                             @foreach (var item in Model.Teacher.DanceStyles)
                             {
                                 <li>@Html.ActionLink(item.Name, "Details", "DanceStyle", new { id = item.Id }, null)</li>
                             }
                         </ul>
-                    </dd>
-                </dl>
+                </div>
+                @if (Model.Teacher.FacebookLink != null)
+                {
+                    <a class="img-thumbnail" href='@Model.Teacher.FacebookLink' target="_blank" title="Visit Me On Facebook"><img src="@Url.Content("~/Content/images/facebookSmall.png")" /></a>
+                }
+                @if (Model.Teacher.Website != null)
+                {
+                    <a class="img-thumbnail" href='@Model.Teacher.Website' target="_blank" title="Visit Me On the Web"><img src="@Url.Content("~/Content/images/web.png")" /></a>
+                }
+                @if (Model.Teacher.ContactEmail != null)
+                {
+                    <a class="img-thumbnail" href='mailto:@Model.Teacher.ContactEmail' title="Email Me"><img src="@Url.Content("~/Content/images/email.png")" /></a>
+                }
             </div>
         </div>
     </div>

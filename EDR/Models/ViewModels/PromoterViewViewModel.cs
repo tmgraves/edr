@@ -10,6 +10,7 @@ namespace EDR.Models.ViewModels
         // TODO: FILL IN PROPERTIES NEEDED FOR VIEW
 
         public Promoter Promoter { get; set; }
+        public Address Address { get; set; }
 
         public IEnumerable<Social> Socials { get; set; }
         public IEnumerable<Concert> Concerts { get; set; }
