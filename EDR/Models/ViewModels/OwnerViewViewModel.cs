@@ -10,6 +10,7 @@ namespace EDR.Models.ViewModels
         // TODO: FILL IN PROPERTIES NEEDED FOR VIEW
 
         public Owner Owner { get; set; }
+        public Address Address { get; set; }
         public List<Studio> Studios { get; set; }
         public List<ConferenceCenter> ConferenceCenters { get; set; }
         public List<Hotel> Hotels { get; set; }

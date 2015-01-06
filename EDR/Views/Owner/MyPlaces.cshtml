@@ -1,52 +1,52 @@
-﻿@model EDR.Models.ViewModels.PromoterViewViewModel
+﻿@model EDR.Models.ViewModels.OwnerViewViewModel
 @using EDR.Models
 @using EDR.Utilities
 
 @{
-    ViewBag.Title = "MySocials";
-    Layout = "~/Views/Shared/_PromoterLayout.cshtml";
+    ViewBag.Title = "My Places";
+    Layout = "~/Views/Shared/_OwnerLayout.cshtml";
 }
 
 @section section
 {
-    Events I Promote...
+    My Places...
 }
 
 <style>
-    #classMap-canvas {
+    #map-canvas {
         width: 100%;
         height: 400px;
     }
 </style>
 <script src="https://maps.googleapis.com/maps/api/js"></script>
 <script>
-    var classmap;
+    var map;
     var markers = [];
 
     function initialize() {
-        var classMapOptions = {
+        var mapOptions = {
             zoom: 14,
             zoomControl: false,
             center: new google.maps.LatLng('@Model.Address.Latitude', '@Model.Address.Longitude')
         };
 
-        classmap = new google.maps.Map(document.getElementById('classMap-canvas'),
-            classMapOptions);
+        map = new google.maps.Map(document.getElementById('map-canvas'),
+            mapOptions);
 
         @{
             int idx = 1;
             var today = DateTime.Today;
-            foreach(var ev in Model.Socials.Where(c => c.NextDate >= today).OrderBy(x => x.NextDate))
+            foreach(var pl in Model.Owner.Places)
             {
                 <text>
                     var marker = new google.maps.Marker({
-                        position: new google.maps.LatLng('@ev.Place.Latitude', '@ev.Place.Longitude'),
-                        map: classmap,
-                        title: '@ev.Name',
+                        position: new google.maps.LatLng('@pl.Latitude', '@pl.Longitude'),
+                        map: map,
+                        title: '@pl.Name',
                         icon: "http://maps.google.com/mapfiles/kml/paddle/" + @idx + "-lv.png"
                     });
 
-                    attachSecretMessage(marker, '@ev.Id', '@ev.Place.Name', '@ev.Place.Address <br/> @ev.Place.City , @ev.Place.State  @ev.Place.Zip', '<a href="@Url.Action("Details", "Event", new { id = ev.Id, eventType = "Class" } )">' + marker.title + '</a>', '@(ev.Users != null ? ev.Users.Count : 0)', 4, 5);
+                    attachSecretMessage(marker, '@pl.Id', '@pl.Name', '@pl.Address <br/> @pl.City , @pl.State  @pl.Zip', '<a href="@Url.Action("Details", "Place", new { id = pl.Id })">' + marker.title + '</a>', 5, 5);
                     markers.push(marker);
 
         </text>
@@ -69,7 +69,7 @@
 
     // The five markers show a secret message when clicked
     // but that message is not within the marker's instance data
-    function attachSecretMessage(marker, num, placeName, address, link, students, videos, pictures) {
+    function attachSecretMessage(marker, num, placeName, address, link, students, classes) {
         var message = marker.title;
         var infowindow = new google.maps.InfoWindow({
             disableAutoPan: true,
@@ -83,25 +83,24 @@
             address + '<br/>' +
             '</p>' +
             '<label title="Students"><span class="badge">' + students + '</span> Students</label>' +
-            ' <label title="Videos"><span class="badge">4</span> Videos</label>' +
-            ' <label title="Pictures"><span class="badge">3</span> Pictures</label>' +
+            ' <label title="Classes"><span class="badge">' + classes + '</span> Classes</label>' +
             '</div>' +
             '</div>'
             });
 
-        infowindow.open(classmap, marker);
+        infowindow.open(map, marker);
 
         google.maps.event.addListener(marker, 'click', function () {
-            infowindow.open(classmap, marker);
+            infowindow.open(map, marker);
         });
     }
 
-    function openEvent(id, lati, long) {
+    function openPlace(id, lati, long) {
         var latLng = new google.maps.LatLng(lati, long); //Makes a latlng
-        classmap.panTo(latLng); //Make map global
-        classmap.setZoom(14);
+        map.panTo(latLng); //Make map global
+        map.setZoom(14);
         clearMarkers();
-        markers[id].setMap(classmap);
+        markers[id].setMap(map);
         return false;
     }
 
@@ -110,29 +109,19 @@
 
 <div class="row">
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <h4 class="page-header">My Events</h4>
+        <h4 class="page-header">My Places</h4>
         <div class="col-sm-6 col-md-6 col-lg-6 col-xs-6" style="height: 400px; overflow-x: auto;">
-            @if (Model.Socials.Count() > 0)
+            @if (Model.Owner.Places.Count() > 0)
             {
-                @Html.Partial("~/Views/Shared/_CompactEventListPartial.cshtml", Model.Socials.OrderBy(x => x.NextDate))
+                @Html.Partial("~/Views/Shared/_CompactPlaceListPartial.cshtml", Model.Owner.Places)
             }
             else
             {
-                @:No Events
+                @:No Places
             }
         </div>
         <div class="col-sm-6 col-md-6 col-lg-6 col-xs-6">
-            <div class="container" id="classMap-canvas"></div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12 col-md-12 col-lg-12 col-xs-12">
-        <h4 class="page-header">
-            My Places
-        </h4>
-        <div>
-            @Html.Partial("~/Views/Shared/_PlaceListPartial.cshtml", Model.Promoter.Places)
+            <div class="container" id="map-canvas"></div>
         </div>
     </div>
 </div>

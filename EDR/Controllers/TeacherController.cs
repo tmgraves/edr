@@ -221,7 +221,7 @@ namespace EDR.Controllers
 
                 DataContext.Entry(teacher).State = EntityState.Modified;
                 DataContext.SaveChanges();
-                return RedirectToAction("Manage", "Account");
+                return RedirectToAction("MyTeach", "Teacher", new { username = teacher.ApplicationUser.UserName });
             }
             LoadStyles(model);
             return View(model);

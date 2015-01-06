@@ -12,7 +12,7 @@
     @Model.Place.Name
     @if (User.Identity != null && Model.Place.Owners.Where(x => x.ApplicationUser.UserName == User.Identity.Name).FirstOrDefault() != null)
     {
-        <a style="font-size: medium;" href="@Url.Action("Edit", "Place", new { placeId = Model.Place.Id })">Edit @Model.Place.Name</a>
+        <a style="font-size: medium;" href="@Url.Action("Edit", "Place", new { id = Model.Place.Id })">Edit @Model.Place.Name</a>
     }
     <a style="font-size: medium;" href="@Url.Action("List", "Place")">View all Places</a>
 </h1>

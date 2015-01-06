@@ -691,6 +691,9 @@
     <Content Include="Views\Shared\_PlaceListPartial.cshtml" />
     <Content Include="Views\Shared\_PromoterLayout.cshtml" />
     <Content Include="Views\Promoter\MySocials.cshtml" />
+    <Content Include="Views\Shared\_OwnerLayout.cshtml" />
+    <Content Include="Views\Owner\MyPlaces.cshtml" />
+    <Content Include="Views\Shared\_CompactPlaceListPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Series\" />

@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using EDR.Models;
 using System.Data.Entity;
+using EDR.Utilities;
 
 namespace EDR.Controllers
 {
@@ -19,6 +20,36 @@ namespace EDR.Controllers
             model.Owners = DataContext.Owners.Include("ApplicationUser");
 
             return View(model);
+        }
+
+        private OwnerViewViewModel LoadOwner(string username)
+        {
+            // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE TeacherViewModel)
+            var viewModel = new OwnerViewViewModel();
+            viewModel.Owner = DataContext.Owners
+                                .Where(x => x.ApplicationUser.UserName == username)
+                                .Include("ApplicationUser")
+                                .Include("Places").FirstOrDefault();
+
+            if (viewModel.Owner.ApplicationUser.ZipCode != null)
+            {
+                viewModel.Address = Geolocation.ParseAddress(viewModel.Owner.ApplicationUser.ZipCode);
+            }
+            else
+            {
+                viewModel.Address = Geolocation.ParseAddress("90065");
+            }
+
+            // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE PromoterViewModel)
+            viewModel.ConferenceCenters = viewModel.Owner.Places.OfType<ConferenceCenter>().ToList();
+            viewModel.Hotels = viewModel.Owner.Places.OfType<Hotel>().ToList();
+            viewModel.Nightclubs = viewModel.Owner.Places.OfType<Nightclub>().ToList();
+            viewModel.OtherPlaces = viewModel.Owner.Places.OfType<OtherPlace>().ToList();
+            viewModel.Restaurants = viewModel.Owner.Places.OfType<Restaurant>().ToList();
+            viewModel.Studios = viewModel.Owner.Places.OfType<Studio>().ToList();
+            viewModel.Theaters = viewModel.Owner.Places.OfType<Theater>().ToList();
+
+            return viewModel;
         }
 
         [Authorize]
@@ -52,16 +83,43 @@ namespace EDR.Controllers
                 }
             }
 
-            // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE PromoterViewModel)
-            var viewModel = new OwnerViewViewModel();
-            viewModel.Owner = DataContext.Owners.Where(x => x.ApplicationUser.UserName == username).Include("ApplicationUser").Include("Places").FirstOrDefault();
-            viewModel.ConferenceCenters = viewModel.Owner.Places.OfType<ConferenceCenter>().ToList();
-            viewModel.Hotels = viewModel.Owner.Places.OfType<Hotel>().ToList();
-            viewModel.Nightclubs = viewModel.Owner.Places.OfType<Nightclub>().ToList();
-            viewModel.OtherPlaces = viewModel.Owner.Places.OfType<OtherPlace>().ToList();
-            viewModel.Restaurants = viewModel.Owner.Places.OfType<Restaurant>().ToList();
-            viewModel.Studios = viewModel.Owner.Places.OfType<Studio>().ToList();
-            viewModel.Theaters = viewModel.Owner.Places.OfType<Theater>().ToList();
+            var viewModel = LoadOwner(username);
+
+            return View(viewModel);
+        }
+
+        [Authorize]
+        public ActionResult MyPlaces(string username)
+        {
+            if (String.IsNullOrWhiteSpace(username))
+            {
+                if (User != null)
+                {
+                    username = User.Identity.GetUserName();
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+            }
+
+            var owner = DataContext.Owners
+                .Where(x => x.ApplicationUser.UserName == username)
+                .FirstOrDefault();
+
+            if (owner == null)
+            {
+                if (username == User.Identity.Name && !User.IsInRole("Owner"))
+                {
+                    return RedirectToAction("Apply", "Owner");
+                }
+                else
+                {
+                    return HttpNotFound();
+                }
+            }
+
+            var viewModel = LoadOwner(username);
 
             return View(viewModel);
         }
@@ -99,7 +157,7 @@ namespace EDR.Controllers
 
                 DataContext.Entry(owner).State = EntityState.Modified;
                 DataContext.SaveChanges();
-                return RedirectToAction("Manage", "Account");
+                return RedirectToAction("MyPlaces", "Owner", new { username = owner.ApplicationUser.UserName } );
             }
             return View(model);
         }

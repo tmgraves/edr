@@ -393,7 +393,7 @@ namespace EDR.Controllers
 
                 DataContext.Entry(dancer).State = EntityState.Modified;
                 DataContext.SaveChanges();
-                return RedirectToAction("View", "Dancer", new { username = dancer.UserName });
+                return RedirectToAction("MyDance", "Dancer", new { username = dancer.UserName });
             }
             return View(model);
         }

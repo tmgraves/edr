@@ -13,7 +13,7 @@
             @if (User.Identity != null && User.Identity.Name == Model.Teacher.ApplicationUser.UserName)
             {
                 <a title="Edit Profile" href="@Url.Action("Edit", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })">
-                    <i class="glyphicon glyphicon glyphicon-pencil btn-sm btn-info"></i>
+                    <i class="glyphicon glyphicon glyphicon-pencil btn-sm btn-info" style="vertical-align: middle;"></i>
                     <span class="sr-only">Edit Profile</span>
                 </a>
             }

@@ -20,6 +20,12 @@ namespace EDR
             );
 
             routes.MapRoute(
+                name: "PlaceAction",
+                url: "Place/{id}/{action}",
+                defaults: new { controller = "Place", id = UrlParameter.Optional, action = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
                 name: "EventCreate",
                 url: "{role}/{eventType}/Create",
                 defaults: new { controller = "Event", action = "Create", role = UrlParameter.Optional, eventType = UrlParameter.Optional }
@@ -49,7 +55,7 @@ namespace EDR
             routes.MapRoute(
                 name: "TeacherDetail",
                 url: "Teacher/{username}/{action}",
-                defaults: new { controller = "Teacher", action = UrlParameter.Optional }
+                defaults: new { controller = "Teacher", username = UrlParameter.Optional, action = UrlParameter.Optional }
             );
 
             routes.MapRoute(
@@ -66,6 +72,22 @@ namespace EDR
                 name: "Promoter",
                 url: "Promoter/{username}/{action}",
                 defaults: new { controller = "Promoter", action = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
+                name: "OwnerApply",
+                url: "Owner/Apply",
+                defaults: new { controller = "Owner", action = "Apply" }
+            );
+            routes.MapRoute(
+                name: "OwnerList",
+                url: "Owner/List",
+                defaults: new { controller = "Owner", action = "List" }
+            );
+            routes.MapRoute(
+                name: "Owner",
+                url: "Owner/{username}/{action}",
+                defaults: new { controller = "Owner", action = UrlParameter.Optional }
             );
 
             routes.MapRoute(
@@ -114,26 +136,6 @@ namespace EDR
                 defaults: new { controller = "Dancer", action = "Backend" }
             );
 
-            routes.MapRoute(
-                name: "OwnerEdit",
-                url: "Owner/Edit",
-                defaults: new { controller = "Owner", action = "Edit" }
-            );
-            routes.MapRoute(
-                name: "OwnerApply",
-                url: "Owner/Apply",
-                defaults: new { controller = "Owner", action = "Apply" }
-            );
-            routes.MapRoute(
-                name: "OwnerList",
-                url: "Owner/List",
-                defaults: new { controller = "Owner", action = "List" }
-            );
-            routes.MapRoute(
-                name: "Owner",
-                url: "Owner/{username}",
-                defaults: new { controller = "Owner", action = "View" }
-            );
             routes.MapRoute(
                 name: "ClassDetail",
                 url: "Class/Details/{id}",

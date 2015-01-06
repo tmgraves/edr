@@ -43,12 +43,12 @@ namespace EDR.Controllers
             }
 
             // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE PromoterViewModel)
+            viewModel.Socials = new List<Social>();
             viewModel.Socials = viewModel.Promoter.Events.OfType<Social>();
             viewModel.Concerts = new List<Concert>();
             viewModel.Conferences = new List<Conference>();
             viewModel.OpenHouses = new List<OpenHouse>();
             viewModel.Parties = new List<Party>();
-            viewModel.Socials = new List<Social>();
 
             return viewModel;
         }
@@ -157,7 +157,7 @@ namespace EDR.Controllers
 
                 DataContext.Entry(promoter).State = EntityState.Modified;
                 DataContext.SaveChanges();
-                return RedirectToAction("Manage", "Account");
+                return RedirectToAction("MySocials", "Promoter", new { username = promoter.ApplicationUser.UserName });
             }
             return View(model);
         }

@@ -137,10 +137,10 @@ namespace EDR.Controllers
         }
 
         [Authorize(Roles="Owner")]
-        public ActionResult Edit(int placeId)
+        public ActionResult Edit(int id)
         {
             var model = new PlaceEditViewModel();
-            model.Place = DataContext.Places.Include("Owners").Include("Owners.ApplicationUser").Where(x => x.Id == placeId).FirstOrDefault();
+            model.Place = DataContext.Places.Include("Owners").Include("Owners.ApplicationUser").Where(x => x.Id == id).FirstOrDefault();
             return View(model);
         }
 
