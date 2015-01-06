@@ -290,13 +290,7 @@
     <Compile Include="Models\ViewModels\PromoterListViewModel.cs" />
     <Compile Include="Models\ViewModels\VisitorViewViewModel.cs" />
     <Compile Include="Models\YouTubeVideo.cs" />
-    <Compile Include="Types\ClassType.cs" />
-    <Compile Include="Types\EventType.cs" />
-    <Compile Include="Types\PlaceType.cs" />
-    <Compile Include="Types\RoleName.cs" />
-    <Compile Include="Types\SkillLevel.cs" />
-    <Compile Include="Types\SocialType.cs" />
-    <Compile Include="Types\State.cs" />
+    <Compile Include="Types\Enums.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

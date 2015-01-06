@@ -42,7 +42,7 @@ namespace EDR.Controllers
             return View(model);
         }
 
-        public ActionResult Signup(int id)
+        public ActionResult Signup(int id, string returnUrl)
         {
             var userId = User.Identity.GetUserId();
             var user = DataContext.Users.Where(x => x.Id == userId).FirstOrDefault();
@@ -63,7 +63,7 @@ namespace EDR.Controllers
                 }
             }
             DataContext.SaveChanges();
-            return RedirectToAction("Learn", "Home");
+            return Redirect(returnUrl);
         }
 
         [Authorize]

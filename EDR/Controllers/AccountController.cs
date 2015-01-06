@@ -47,7 +47,8 @@ namespace EDR.Controllers
                 if (user != null)
                 {
                     await SignInAsync(user, model.RememberMe);
-                    return RedirectToLocal(returnUrl.Replace("NotLoggedIn", user.UserName));
+                    returnUrl = returnUrl != null ? returnUrl.Replace("NotLoggedIn", user.UserName) : null;
+                    return RedirectToLocal(returnUrl);
                 }
                 else
                 {

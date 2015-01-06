@@ -157,7 +157,7 @@
                         {
                             if (item.Users.Where(x => x.UserName == User.Identity.Name).ToList().Count == 0 || item.Users.Count == 0)
                             {
-                                @Html.ActionLink("Add to Calendar", "Signup", "Event", new { id = item.Id }, htmlAttributes: new { @class = "btn btn-primary", @style = "margin: 5px" })
+                                @Html.ActionLink("Add to Calendar", "Signup", "Event", new { id = item.Id, returnUrl = Url.Action(ViewContext.RouteData.Values["action"].ToString(), ViewContext.RouteData.Values["controller"].ToString()) }, htmlAttributes: new { @class = "btn btn-primary", @style = "margin: 5px" })
                             }
                             else
                             {
