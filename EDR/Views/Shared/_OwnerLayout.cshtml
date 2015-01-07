@@ -1,6 +1,7 @@
 ﻿@model EDR.Models.ViewModels.OwnerViewViewModel
 
 @{
+    ViewBag.Title = "Owner Page for " + Model.Owner.ApplicationUser.FullName;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -19,10 +20,9 @@
             }
         </h1>
     </div>
-
-    <div class="col-md-2 col-lg-2 col-sm-2 col-xs-2">
-        <div class="row well well-sm" style="text-align: center;">
-            <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12 col-lg-offset-0 col-md-offset-0 col-sm-offset-0 col-xs-offset-0">
+    <div class="well col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="row">
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2" style="text-align: center;">
                 <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12 img-thumbnail">
                     @if (Model.Owner.ApplicationUser.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault() != null)
                     {
@@ -38,15 +38,15 @@
                     <p>
                         <a style="font-size: small;" href="@Url.Action("ChangePicture", "Dancer")">Change Picture</a>
                         @*<a title="Change Picture" href="@Url.Action("ChangePicture", "Dancer")">
-                    <i class="glyphicon glyphicon glyphicon-edit btn btn-primary"></i>
-                    <span class="sr-only">Change Picture</span>
-                </a>*@
+                                <i class="glyphicon glyphicon glyphicon-edit btn btn-primary"></i>
+                                <span class="sr-only">Change Picture</span>
+                            </a>*@
                     </p>
                 }
             </div>
-            <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12 col-lg-offset-0 col-md-offset-0 col-sm-offset-0 col-xs-offset-0" style="text-align: center;">
+            <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
                 <div class="row">
-                    @Model.Address.City, @Model.Address.State
+                    <label class="control-label col-lg-2 col-md-2 col-sm-2 col-xs-2">Location: </label>@Model.Address.City, @Model.Address.State
                 </div>
                 @if (Model.Owner.Facebook != null)
                 {
@@ -62,6 +62,8 @@
                 }
             </div>
         </div>
+    </div>
+    <div class="col-md-2 col-lg-2 col-sm-2 col-xs-2">
         <div class="row">
             <div class="row col-md-12 col-lg-12 col-sm-12 col-xs-12" style="text-align: left;">
                 <ul class="nav nav-pills nav-stacked" role="tablist">

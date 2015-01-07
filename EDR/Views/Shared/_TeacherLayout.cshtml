@@ -1,6 +1,7 @@
 ﻿@model EDR.Models.ViewModels.TeacherViewViewModel
 
 @{
+    ViewBag.Title = "Teacher Page for " + Model.Teacher.ApplicationUser.FullName;
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
