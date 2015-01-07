@@ -72,7 +72,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.Owner.Places.OfType<Studio>().ToList())
+                    @foreach (var item in Model.Owner.Places.Where(x => x.PlaceType == EDR.Enums.PlaceType.Studio).ToList())
                     {
                         <tr>
                             <td>
@@ -106,7 +106,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.Owner.Places.OfType<ConferenceCenter>().ToList())
+                    @foreach (var item in Model.Owner.Places.Where(x => x.PlaceType == EDR.Enums.PlaceType.ConferenceCenter).ToList())
                     {
                         <tr>
                             <td>
@@ -140,7 +140,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.Owner.Places.OfType<Hotel>().ToList())
+                    @foreach (var item in Model.Owner.Places.Where(x => x.PlaceType == EDR.Enums.PlaceType.Hotel).ToList())
                     {
                         <tr>
                             <td>
@@ -174,7 +174,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.Owner.Places.OfType<Nightclub>().ToList())
+                    @foreach (var item in Model.Owner.Places.Where(x => x.PlaceType == EDR.Enums.PlaceType.Nightclub).ToList())
                     {
                         <tr>
                             <td>
@@ -208,7 +208,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.Owner.Places.OfType<OtherPlace>().ToList())
+                    @foreach (var item in Model.Owner.Places.Where(x => x.PlaceType == EDR.Enums.PlaceType.OtherPlace).ToList())
                     {
                         <tr>
                             <td>
@@ -242,7 +242,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.Owner.Places.OfType<Restaurant>().ToList())
+                    @foreach (var item in Model.Owner.Places.Where(x => x.PlaceType == EDR.Enums.PlaceType.Restaurant).ToList())
                     {
                         <tr>
                             <td>
@@ -276,7 +276,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.Owner.Places.OfType<Theater>().ToList())
+                    @foreach (var item in Model.Owner.Places.Where(x => x.PlaceType == EDR.Enums.PlaceType.Theater).ToList())
                     {
                         <tr>
                             <td>

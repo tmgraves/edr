@@ -18,12 +18,7 @@ namespace EDR.Controllers
         public ActionResult List()
         {
             var model = new PlaceListViewModel();
-            model.ConferenceCenters = DataContext.Places.OfType<ConferenceCenter>().ToList();
-            model.Hotels = DataContext.Places.OfType<Hotel>().ToList();
-            model.Nightclubs = DataContext.Places.OfType<Nightclub>().ToList();
-            model.Restaurants = DataContext.Places.OfType<Restaurant>().ToList();
-            model.Studios = DataContext.Places.OfType<Studio>().ToList();
-            model.Theaters = DataContext.Places.OfType<Theater>().ToList();
+            model.Places = DataContext.Places.ToList();
 
             return View(model);
         }

@@ -36,7 +36,7 @@
     {
         foreach (var t in Model.Owners)
         {
-            @Html.ActionLink(t.ApplicationUser.FullName, "View", "Owner", new { username = t.ApplicationUser.UserName }, null)
+            @Html.ActionLink(t.ApplicationUser.FullName, "MyPlaces", "Owner", new { username = t.ApplicationUser.UserName }, null)
         }
     }<br />
 </p>

@@ -9,12 +9,12 @@
 
 <div class="tabbable">
     <ul class="nav nav-tabs nav-justified" role="tablist">
-        <li class="active"><a href="#studios" data-toggle="tab">Studios (@Model.Studios.Count().ToString())</a></li>
-        <li><a href="#restaurants" data-toggle="tab">Restaurants (@Model.Restaurants.Count().ToString())</a></li>
-        <li><a href="#hotels" data-toggle="tab">Hotels (@Model.Hotels.Count().ToString())</a></li>
-        <li><a href="#nightclubs" data-toggle="tab">Nightclubs (@Model.Nightclubs.Count().ToString())</a></li>
-        <li><a href="#conferencecenters" data-toggle="tab">Conference Centers (@Model.ConferenceCenters.Count().ToString())</a></li>
-        <li><a href="#theaters" data-toggle="tab">Theaters (@Model.Theaters.Count().ToString())</a></li>
+        <li class="active"><a href="#studios" data-toggle="tab">Studios (@Model.Places.Where(x => x.PlaceType == EDR.Enums.PlaceType.Studio).Count().ToString())</a></li>
+        <li><a href="#restaurants" data-toggle="tab">Restaurants (@Model.Places.Where(x => x.PlaceType == EDR.Enums.PlaceType.Restaurant).Count().ToString())</a></li>
+        <li><a href="#hotels" data-toggle="tab">Hotels (@Model.Places.Where(x => x.PlaceType == EDR.Enums.PlaceType.Hotel).Count().ToString())</a></li>
+        <li><a href="#nightclubs" data-toggle="tab">Nightclubs (@Model.Places.Where(x => x.PlaceType == EDR.Enums.PlaceType.Nightclub).Count().ToString())</a></li>
+        <li><a href="#conferencecenters" data-toggle="tab">Conference Centers (@Model.Places.Where(x => x.PlaceType == EDR.Enums.PlaceType.ConferenceCenter).Count().ToString())</a></li>
+        <li><a href="#theaters" data-toggle="tab">Theaters (@Model.Places.Where(x => x.PlaceType == EDR.Enums.PlaceType.Theater).Count().ToString())</a></li>
     </ul>
     <div class="tab-content">
         <div id="studios" class="tab-pane active">
@@ -28,7 +28,7 @@
                     </th>
                 </tr>
 
-                @foreach (var item in Model.Studios)
+                @foreach (var item in Model.Places.Where(x => x.PlaceType == EDR.Enums.PlaceType.Studio))
                 {
                     <tr>
                         <td>
@@ -57,7 +57,7 @@
                     </th>
                 </tr>
 
-                @foreach (var item in Model.Theaters)
+                @foreach (var item in Model.Places.Where(x => x.PlaceType == EDR.Enums.PlaceType.Theater))
                 {
                     <tr>
                         <td>
@@ -86,7 +86,7 @@
                     </th>
                 </tr>
 
-                @foreach (var item in Model.Restaurants)
+                @foreach (var item in Model.Places.Where(x => x.PlaceType == EDR.Enums.PlaceType.Restaurant))
                 {
                     <tr>
                         <td>
@@ -115,7 +115,7 @@
                     </th>
                 </tr>
 
-                @foreach (var item in Model.Nightclubs)
+                @foreach (var item in Model.Places.Where(x => x.PlaceType == EDR.Enums.PlaceType.Nightclub))
                 {
                     <tr>
                         <td>
@@ -144,7 +144,7 @@
                     </th>
                 </tr>
 
-                @foreach (var item in Model.Hotels)
+                @foreach (var item in Model.Places.Where(x => x.PlaceType == EDR.Enums.PlaceType.Hotel))
                 {
                     <tr>
                         <td>
@@ -173,7 +173,7 @@
                     </th>
                 </tr>
 
-                @foreach (var item in Model.ConferenceCenters)
+                @foreach (var item in Model.Places.Where(x => x.PlaceType == EDR.Enums.PlaceType.ConferenceCenter))
                 {
                     <tr>
                         <td>

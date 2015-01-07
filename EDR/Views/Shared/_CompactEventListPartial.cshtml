@@ -5,100 +5,109 @@
 @if (Model.Count() != 0)
 {
     int rowNo = 0;
-    <div class="tabbable">
+    <div class="tabbable with-nav-tabs panel panel-default">
         <ul class="nav nav-tabs nav-justified" role="tablist">
             <li class="active"><a href="#current" data-toggle="tab">Current Events</a></li>
             <li><a href="#past" data-toggle="tab">Past Events</a></li>
         </ul>
         <div class="tab-content">
             <div id="current" class="tab-pane active">
-                @foreach (var item in Model.Where(x => x.EndDate >= DateTime.Today || x.EndDate == null))
+                @if (Model.Where(x => x.EndDate >= DateTime.Today || x.EndDate == null).Count() != 0)
                 {
-                <a class="btn btn-default" style="width: 100%; text-align: left;" onclick="openEvent(@rowNo, @item.Place.Latitude, @item.Place.Longitude); return false;" href="#" @*href="@Url.Action("Details", "Event", new { id = item.Id, eventType = "Class" } )"*@>
-                    <div style="width: 100%;">
-                        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 thumbnail text-center">
-                            <span class="text-primary">@item.NextDate.ToString("ddd").ToUpper()</span><br /><span class="text-success">@item.NextDate.ToString("MMM").ToUpper() @item.NextDate.Day.ToString()</span><br /><span class="text-success">@item.NextDate.Year.ToString()</span>
-                        </div>
-                        <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
-                            <strong>@(rowNo += 1). @item.Name<br />@@@item.Place.Name</strong><br />
-                            @item.StartDate.ToString("%h:mm tt")~@item.StartDate.AddMinutes(item.Duration).ToString("%h:mm tt")
-                            @if (item.Recurring)
-                            {
-                                string freq = "";
-                                switch (item.Frequency)
-                                {
-                                    case Frequency.Daily:
-                                        if (item.Interval > 1)
-                                        {
-                                            freq = "Days";
-                                        }
-                                        else
-                                        {
-                                            freq = "Day";
-                                        }
-                                        break;
-                                    case Frequency.Weekly:
-                                        if (item.Interval > 1)
-                                        {
-                                            freq = "Weeks";
-                                        }
-                                        else
-                                        {
-                                            freq = "Week";
-                                        }
-                                        break;
-                                    case Frequency.Monthly:
-                                        if (item.Interval > 1)
-                                        {
-                                            freq = "Months";
-                                        }
-                                        else
-                                        {
-                                            freq = "Month";
-                                        }
-                                        break;
-                                    case Frequency.Yearly:
-                                        if (item.Interval > 1)
-                                        {
-                                            freq = "Years";
-                                        }
-                                        else
-                                        {
-                                            freq = "Year";
-                                        }
-                                        break;
-                                }
-                                <text>
-                                    <span class="text-warning">
-                                        (*Repeats Every
-                                        @(item.Interval > 1 ? item.Interval.ToString() : "") @freq)
-                                    </span>
-                                </text>
-                            }
-                            @if (item is Class)
-                            {
-                                if (((Class)item).Teachers != null && ((Class)item).Teachers.Count > 0)
-                                {
-                                    var teachers = "";
-                                    foreach (Teacher t in ((Class)item).Teachers)
+                    foreach (var item in Model.Where(x => x.EndDate >= DateTime.Today || x.EndDate == null))
+                    {
+                        <a class="btn btn-default" style="width: 100%; text-align: left;" onclick="openEvent(@rowNo, @item.Place.Latitude, @item.Place.Longitude); return false;" href="#" @*href="@Url.Action("Details", "Event", new { id = item.Id, eventType = "Class" } )"*@>
+                            <div style="width: 100%;">
+                                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 thumbnail text-center">
+                                    <span class="text-primary">@item.NextDate.ToString("ddd").ToUpper()</span><br /><span class="text-success">@item.NextDate.ToString("MMM").ToUpper() @item.NextDate.Day.ToString()</span><br /><span class="text-success">@item.NextDate.Year.ToString()</span>
+                                </div>
+                                <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
+                                    <strong>@(rowNo += 1). @item.Name<br />@@@item.Place.Name</strong><br />
+                                    @item.StartDate.ToString("%h:mm tt")~@item.StartDate.AddMinutes(item.Duration).ToString("%h:mm tt")
+                                    @if (item.Recurring)
                                     {
-                                        teachers += (teachers == "" ? "" : ", ") + t.ApplicationUser.FullName;
+                                        string freq = "";
+                                        switch (item.Frequency)
+                                        {
+                                            case Frequency.Daily:
+                                                if (item.Interval > 1)
+                                                {
+                                                    freq = "Days";
+                                                }
+                                                else
+                                                {
+                                                    freq = "Day";
+                                                }
+                                                break;
+                                            case Frequency.Weekly:
+                                                if (item.Interval > 1)
+                                                {
+                                                    freq = "Weeks";
+                                                }
+                                                else
+                                                {
+                                                    freq = "Week";
+                                                }
+                                                break;
+                                            case Frequency.Monthly:
+                                                if (item.Interval > 1)
+                                                {
+                                                    freq = "Months";
+                                                }
+                                                else
+                                                {
+                                                    freq = "Month";
+                                                }
+                                                break;
+                                            case Frequency.Yearly:
+                                                if (item.Interval > 1)
+                                                {
+                                                    freq = "Years";
+                                                }
+                                                else
+                                                {
+                                                    freq = "Year";
+                                                }
+                                                break;
+                                        }
+                                        <text>
+                                            <span class="text-warning">
+                                                (*Repeats Every
+                                                @(item.Interval > 1 ? item.Interval.ToString() : "") @freq)
+                                            </span>
+                                        </text>
                                     }
-                                    <br /><span class="text-primary">with @teachers</span>
-                                }
-                            }
-                            @if (item.DanceStyles != null && item.DanceStyles.Count > 0)
-                            {
-                                var styles = "";
-                                foreach (DanceStyle s in item.DanceStyles)
-                                {
-                                    styles += (styles == "" ? "" : ", ") + s.Name;
-                                }
-                                <br /><span class="text-warning" style="white-space: normal;">@styles</span>
-                            }
-                        </div>
-                    </div>
-                </a>
+                                    @if (item is Class)
+                                    {
+                                        if (((Class)item).Teachers != null && ((Class)item).Teachers.Count > 0)
+                                        {
+                                            var teachers = "";
+                                            foreach (Teacher t in ((Class)item).Teachers)
+                                            {
+                                                teachers += (teachers == "" ? "" : ", ") + t.ApplicationUser.FullName;
+                                            }
+                                            <br /><span class="text-primary">with @teachers</span>
+                                        }
+                                    }
+                                    @if (item.DanceStyles != null && item.DanceStyles.Count > 0)
+                                    {
+                                        var styles = "";
+                                        foreach (DanceStyle s in item.DanceStyles)
+                                        {
+                                            styles += (styles == "" ? "" : ", ") + s.Name;
+                                        }
+                                        <br /><span class="text-warning" style="white-space: normal;">@styles</span>
+                                    }
+                                </div>
+                            </div>
+                        </a>
+                    }
+                }
+                else
+                {
+                    <p style="margin: 10px;">
+                        No Events
+                    </p>
                 }
             </div>
             <div id="past" class="tab-pane">

@@ -40,15 +40,6 @@ namespace EDR.Controllers
                 viewModel.Address = Geolocation.ParseAddress("90065");
             }
 
-            // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE PromoterViewModel)
-            viewModel.ConferenceCenters = viewModel.Owner.Places.OfType<ConferenceCenter>().ToList();
-            viewModel.Hotels = viewModel.Owner.Places.OfType<Hotel>().ToList();
-            viewModel.Nightclubs = viewModel.Owner.Places.OfType<Nightclub>().ToList();
-            viewModel.OtherPlaces = viewModel.Owner.Places.OfType<OtherPlace>().ToList();
-            viewModel.Restaurants = viewModel.Owner.Places.OfType<Restaurant>().ToList();
-            viewModel.Studios = viewModel.Owner.Places.OfType<Studio>().ToList();
-            viewModel.Theaters = viewModel.Owner.Places.OfType<Theater>().ToList();
-
             return viewModel;
         }
 
