@@ -8,6 +8,19 @@ using EDR.Enums;
 
 namespace EDR.Models.ViewModels
 {
+    public class EventReviewViewModel
+    {
+        public int EventId { get; set; }
+        public Review Review { get; set; }
+    }
+
+    public class EventDetailViewModel
+    {
+        public Event Event { get; set; }
+        public EventType EventType { get; set; }
+        public IEnumerable<Teacher> Teachers { get; set; }
+    }
+
     public class EventCreateViewModel
     {
         public Event Event { get; set; }
@@ -32,5 +45,16 @@ namespace EDR.Models.ViewModels
         public IEnumerable<DanceStyleListItem> AvailableStyles { get; set; }
         public IEnumerable<DanceStyleListItem> SelectedStyles { get; set; }
         public PostedStyles PostedStyles { get; set; }
+    }
+
+    public class EventNewViewModel
+    {
+        public IEnumerable<DanceStyleListItem> AvailableStyles { get; set; }
+        public IEnumerable<FacebookEvent> FacebookEvents { get; set; }
+    }
+
+    public class ClassNewViewModel : EventNewViewModel
+    {
+
     }
 }

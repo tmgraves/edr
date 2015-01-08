@@ -80,6 +80,7 @@
             <ul class="nav nav-pills nav-stacked" role="tablist">
                 <li @if (ctrName == "MyTeach") { <text> class="active" </text>  }><a href="@Url.Action("MyTeach", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })">Where I Teach</a></li>
                 <li @if (ctrName == "Resume") { <text> class="active" </text>   }><a href="@Url.Action("Resume", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })">My Resume</a></li>
+                <li @if (ctrName == "AddClass") { <text> class="active" </text>    }><a title="Add a New Class or Workshop" href="@Url.Action("AddClass", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })">Add Class</a></li>
             </ul>
         </div>
     </div>

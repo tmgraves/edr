@@ -63,5 +63,43 @@ namespace EDR.Utilities
             }
             return(friendsList);
         }
+
+        public static List<FacebookEvent> GetEvents(string token)
+        {
+            var fb = new FacebookClient(token);
+            dynamic myInfo = fb.Get("/me/events?fields=id,cover,description,end_time,is_date_only,location,name,owner,privacy,start_time,ticket_uri,timezone,updated_time");
+            var eventsList = new List<FacebookEvent>();
+            foreach (dynamic ev in myInfo.data)
+            {
+                if (DateTime.Parse(ev.start_time) >= DateTime.Today)
+                {
+                    FacebookPhoto coverPic = new FacebookPhoto();
+                    if (ev.cover != null)
+                    {
+                        coverPic.Id = ev.cover.id;
+                        coverPic.LargeSource = ev.cover.source;
+                    }
+
+                    eventsList.Add(new FacebookEvent()
+                    {
+                        Id = ev.id,
+                        Description = ev.description,
+                        EndTime = ev.end_time != null ? DateTime.Parse(ev.end_time) : null,
+                        IsDateOnly = ev.is_date_only,
+                        Location = ev.location,
+                        Name = ev.name,
+                        //  Owner = ev.owner,
+                        Privacy = ev.privacy,
+                        StartTime = DateTime.Parse(ev.start_time),
+                        TicketUri = ev.ticket_uri,
+                        Timezone = ev.timezone,
+                        Updated = DateTime.Parse(ev.updated_time),
+                        EventLink = @"https://www.facebook.com/events/" + ev.id,
+                        CoverPhoto = coverPic
+                    });
+                }
+            }
+            return (eventsList);
+        }
     }
 }

@@ -1,0 +1,15 @@
+﻿@model EDR.Models.ViewModels.TeacherViewViewModel
+@using EDR.Models
+@using EDR.Utilities
+
+@{
+    ViewBag.Title = "AddClass";
+    Layout = "~/Views/Shared/_TeacherLayout.cshtml";
+}
+
+@section section
+{
+    Add Class
+}
+
+@Html.Partial("~/Views/Shared/Events/_AddClassPartial.cshtml", Model.NewClassModel)

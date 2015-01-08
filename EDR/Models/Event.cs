@@ -16,6 +16,7 @@ namespace EDR.Models
         [Display(Name = "Facebook Page")]
         [RegularExpression("http[s]?://(www.facebook.com)/?[a-zA-Z0-9/\\-\\.]*", ErrorMessage = "Please enter a valid facebook page.")]
         public string FacebookLink { get; set; }
+        public string FacebookId { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
@@ -39,6 +40,8 @@ namespace EDR.Models
         public int? Interval { get; set; }
         public DayOfWeek Day { get; set; }
         public int Duration { get; set; }
+
+        public string PhotoUrl { get; set; }
 
         [Display(Name = "Next Date")]
         public DateTime NextDate

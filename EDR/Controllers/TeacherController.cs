@@ -11,6 +11,7 @@ using Microsoft.AspNet.Identity;
 using EDR.Models;
 using System.Text.RegularExpressions;
 using EDR.Utilities;
+using System.Data.Entity.Validation;
 
 namespace EDR.Controllers
 {
@@ -161,6 +162,82 @@ namespace EDR.Controllers
             var viewModel = LoadTeacher(username);
 
             return View(viewModel);
+        }
+
+        [Authorize]
+        public ActionResult AddClass(string username)
+        {
+            if (String.IsNullOrWhiteSpace(username))
+            {
+                if (User != null)
+                {
+                    username = User.Identity.GetUserName();
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+            }
+
+            var teacher = DataContext.Teachers
+                .Where(x => x.ApplicationUser.UserName == username)
+                .FirstOrDefault();
+
+            if (teacher == null)
+            {
+                if (username == User.Identity.Name && !User.IsInRole("Teacher"))
+                {
+                    return RedirectToAction("Apply", "Teacher");
+                }
+                else
+                {
+                    return HttpNotFound();
+                }
+            }
+
+            var viewModel = LoadTeacher(username);
+            viewModel.NewClassModel = new ClassNewViewModel();
+            if (viewModel.Teacher.ApplicationUser.FacebookToken != null)
+            {
+                viewModel.NewClassModel.FacebookEvents = FacebookHelper.GetEvents(viewModel.Teacher.ApplicationUser.FacebookToken);
+            }
+
+            return View(viewModel);
+        }
+
+        [Authorize]
+        public ActionResult AddFacebookClass(string id, string name, string photoSource, string description, DateTime start, DateTime? end, string location, string ticketUri, string privacy, string timezone, string link, string returnUrl)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var userid = User.Identity.GetUserId();
+                    var teacher = DataContext.Teachers.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").FirstOrDefault();
+
+                    Address ad = Utilities.Geolocation.ParseAddress(teacher.ApplicationUser.ZipCode != null ? teacher.ApplicationUser.ZipCode : "90065");
+                    Place pl = new Place() { Name = location, PlaceType = Enums.PlaceType.OtherPlace, Zip = teacher.ApplicationUser.ZipCode != null ? teacher.ApplicationUser.ZipCode : "90065", Address = ad.StreetNumber + " " + ad.StreetName, City = ad.City, State = (Enums.State)System.Enum.Parse(typeof(Enums.State), ad.State), Latitude = ad.Latitude, Longitude = ad.Longitude };
+
+                    teacher.Classes.Add(new Class() { Name = name, ClassType = Enums.ClassType.Class, Description = description, EndDate = end, FacebookId = id, StartDate = start, PhotoUrl = photoSource, Place = pl });
+                    DataContext.Entry(teacher).State = EntityState.Modified;
+                    DataContext.SaveChanges();
+                    return Redirect(returnUrl);
+                }
+                catch (DbEntityValidationException e)
+                {
+                    var msg = "";
+                    foreach (var eve in e.EntityValidationErrors)
+                    {
+                        msg = eve.Entry.Entity.GetType().Name + " " + eve.Entry.State;
+                        foreach (var ve in eve.ValidationErrors)
+                        {
+                            msg = ve.PropertyName + " " + ve.ErrorMessage;
+                        }
+                    } 
+                    return View();
+                }
+            }
+            return View();
         }
 
         [Authorize]
