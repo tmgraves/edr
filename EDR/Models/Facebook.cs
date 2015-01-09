@@ -45,5 +45,11 @@ namespace EDR.Models
         public string Timezone;
         public DateTime Updated;
         public string EventLink;
+        public FacebookAddress Address;
+    }
+
+    public class FacebookAddress : Address
+    {
+        public string FacebookId;
     }
 }

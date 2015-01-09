@@ -199,14 +199,15 @@ namespace EDR.Controllers
             viewModel.NewClassModel = new ClassNewViewModel();
             if (viewModel.Teacher.ApplicationUser.FacebookToken != null)
             {
-                viewModel.NewClassModel.FacebookEvents = FacebookHelper.GetEvents(viewModel.Teacher.ApplicationUser.FacebookToken);
+                viewModel.NewClassModel.FacebookEvents = FacebookHelper.GetEvents(viewModel.Teacher.ApplicationUser.FacebookToken).Where(x => !teacher.Classes.Any(y => y.FacebookId == x.Id)).ToList();
+                Session["FacebookEvents"] = viewModel.NewClassModel.FacebookEvents.ToList();
             }
 
             return View(viewModel);
         }
 
         [Authorize]
-        public ActionResult AddFacebookClass(string id, string name, string photoSource, string description, DateTime start, DateTime? end, string location, string ticketUri, string privacy, string timezone, string link, string returnUrl)
+        public ActionResult AddFacebookClass(string id, string returnUrl)
         {
             if (ModelState.IsValid)
             {
@@ -215,10 +216,21 @@ namespace EDR.Controllers
                     var userid = User.Identity.GetUserId();
                     var teacher = DataContext.Teachers.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").FirstOrDefault();
 
-                    Address ad = Utilities.Geolocation.ParseAddress(teacher.ApplicationUser.ZipCode != null ? teacher.ApplicationUser.ZipCode : "90065");
-                    Place pl = new Place() { Name = location, PlaceType = Enums.PlaceType.OtherPlace, Zip = teacher.ApplicationUser.ZipCode != null ? teacher.ApplicationUser.ZipCode : "90065", Address = ad.StreetNumber + " " + ad.StreetName, City = ad.City, State = (Enums.State)System.Enum.Parse(typeof(Enums.State), ad.State), Latitude = ad.Latitude, Longitude = ad.Longitude };
+                    var fbevent = ((List<FacebookEvent>)Session["FacebookEvents"]).Where(x => x.Id == id).FirstOrDefault();
 
-                    teacher.Classes.Add(new Class() { Name = name, ClassType = Enums.ClassType.Class, Description = description, EndDate = end, FacebookId = id, StartDate = start, PhotoUrl = photoSource, Place = pl });
+                    Address ad = new Address();
+                    Place pl = new Place();
+                    if (fbevent.Address.FacebookId != null)
+                    {
+                        pl = new Place() { FacebookId = fbevent.Address.FacebookId, Name = fbevent.Location, PlaceType = Enums.PlaceType.OtherPlace, Zip = fbevent.Address.ZipCode, Address = fbevent.Address.Street, City = fbevent.Address.City, State = (Enums.State)System.Enum.Parse(typeof(Enums.State), fbevent.Address.State), Latitude = fbevent.Address.Latitude, Longitude = fbevent.Address.Longitude };
+                    }
+                    else
+                    {
+                        ad = Utilities.Geolocation.ParseAddress(teacher.ApplicationUser.ZipCode != null ? teacher.ApplicationUser.ZipCode : "90065");
+                        pl = new Place() { Name = "TBD", PlaceType = Enums.PlaceType.OtherPlace, Zip = teacher.ApplicationUser.ZipCode != null ? teacher.ApplicationUser.ZipCode : "90065", Address = ad.StreetNumber + " " + ad.StreetName, City = ad.City, State = (Enums.State)System.Enum.Parse(typeof(Enums.State), ad.State), Latitude = ad.Latitude, Longitude = ad.Longitude };
+                    }
+
+                    teacher.Classes.Add(new Class() { Name = fbevent.Name, ClassType = Enums.ClassType.Class, Description = fbevent.Description, EndDate = fbevent.EndTime, FacebookId = id, StartDate = fbevent.StartTime, PhotoUrl = fbevent.CoverPhoto.LargeSource, Place = pl });
                     DataContext.Entry(teacher).State = EntityState.Modified;
                     DataContext.SaveChanges();
                     return Redirect(returnUrl);
@@ -233,7 +245,7 @@ namespace EDR.Controllers
                         {
                             msg = ve.PropertyName + " " + ve.ErrorMessage;
                         }
-                    } 
+                    }
                     return View();
                 }
             }

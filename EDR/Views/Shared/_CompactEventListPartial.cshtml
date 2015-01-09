@@ -16,7 +16,7 @@
                 {
                     foreach (var item in Model.Where(x => x.EndDate >= DateTime.Today || x.EndDate == null))
                     {
-                        <a class="btn btn-default" style="width: 100%; text-align: left;" onclick="openEvent(@rowNo, @item.Place.Latitude, @item.Place.Longitude); return false;" href="#" @*href="@Url.Action("Details", "Event", new { id = item.Id, eventType = "Class" } )"*@>
+                        <a class="btn btn-default" style="width: 100%; text-align: left; white-space: normal;" onclick="openEvent(@rowNo, @item.Place.Latitude, @item.Place.Longitude); return false;" href="#" @*href="@Url.Action("Details", "Event", new { id = item.Id, eventType = "Class" } )"*@>
                             <div style="width: 100%;">
                                 <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 thumbnail text-center">
                                     <span class="text-primary">@item.NextDate.ToString("ddd").ToUpper()</span><br /><span class="text-success">@item.NextDate.ToString("MMM").ToUpper() @item.NextDate.Day.ToString()</span><br /><span class="text-success">@item.NextDate.Year.ToString()</span>

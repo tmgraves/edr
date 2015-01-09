@@ -67,7 +67,7 @@ namespace EDR.Utilities
         public static List<FacebookEvent> GetEvents(string token)
         {
             var fb = new FacebookClient(token);
-            dynamic myInfo = fb.Get("/me/events?fields=id,cover,description,end_time,is_date_only,location,name,owner,privacy,start_time,ticket_uri,timezone,updated_time");
+            dynamic myInfo = fb.Get("/me/events?fields=id,cover,description,end_time,is_date_only,location,name,owner,privacy,start_time,ticket_uri,timezone,updated_time,venue,parent_group");
             var eventsList = new List<FacebookEvent>();
             foreach (dynamic ev in myInfo.data)
             {
@@ -78,6 +78,19 @@ namespace EDR.Utilities
                     {
                         coverPic.Id = ev.cover.id;
                         coverPic.LargeSource = ev.cover.source;
+                    }
+
+                    var add = new FacebookAddress();
+                    if (ev.venue != null)
+                    {
+                        add.City = ev.venue.city;
+                        add.Country = ev.venue.country;
+                        add.Latitude = ev.venue.latitude;
+                        add.Longitude = ev.venue.longitude;
+                        add.State = ev.venue.state;
+                        add.Street = ev.venue.street;
+                        add.ZipCode = ev.venue.zip;
+                        add.FacebookId = ev.venue.id;
                     }
 
                     eventsList.Add(new FacebookEvent()
@@ -95,7 +108,8 @@ namespace EDR.Utilities
                         Timezone = ev.timezone,
                         Updated = DateTime.Parse(ev.updated_time),
                         EventLink = @"https://www.facebook.com/events/" + ev.id,
-                        CoverPhoto = coverPic
+                        CoverPhoto = coverPic,
+                        Address = add
                     });
                 }
             }

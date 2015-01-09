@@ -18,6 +18,7 @@ namespace EDR.Models
         public string Filename { get; set; }
         public string ThumbnailFilename { get; set; }
         public PlaceType PlaceType { get; set; }
+        public string FacebookId { get; set; }
 
         public virtual ICollection<Event> Events { get; set; }
         public virtual ICollection<Review> Reviews { get; set; }

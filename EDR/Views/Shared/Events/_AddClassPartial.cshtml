@@ -17,7 +17,7 @@
                         <span class="text-primary">@ev.StartTime.ToString("ddd").ToUpper()</span><br /><span class="text-success">@ev.StartTime.ToString("MMM").ToUpper() @ev.StartTime.Day.ToString()</span><br /><span class="text-success">@ev.StartTime.Year.ToString()</span>
                         <img src="@ev.CoverPhoto.LargeSource" />
                     </div>
-                    <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                         <strong>
                             @ev.Name<br />@@@ev.Location
                         </strong><br />
@@ -29,8 +29,9 @@
                             }
                         </span>
                     </div>
-                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 text-center">
-                        @Html.ActionLink("Add Class", "AddFacebookClass", "Teacher", new { id = ev.Id, name = ev.Name, photoSource = ev.CoverPhoto.LargeSource, description = ev.Description, start = ev.StartTime, end = ev.EndTime, location = ev.Location, ticketUri = ev.TicketUri, privacy = ev.Privacy, timezone = ev.Timezone, returnUrl = Url.Action(ViewContext.RouteData.Values["action"].ToString(), ViewContext.RouteData.Values["controller"].ToString()) }, htmlAttributes: new { @class = "btn btn-primary", @style = "margin: 5px" })
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 text-center">
+                        <a class="btn btn-warning" href='https://www.facebook.com/events/@ev.Id' target="_blank" title="Visit Me On Facebook">Open Event</a>
+                        @Html.ActionLink("Add Class", "AddFacebookClass", "Teacher", new { id = ev.Id, returnUrl = Url.Action(ViewContext.RouteData.Values["action"].ToString(), ViewContext.RouteData.Values["controller"].ToString()) }, htmlAttributes: new { @class = "btn btn-primary", @style = "margin: 5px" })
                     </div>
                 </div>
             </div>
