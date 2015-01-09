@@ -434,7 +434,8 @@ namespace EDR.Controllers
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                     // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     // SendEmail(user.Email, callbackUrl, "Confirm your account", "Please confirm your account by clicking this link");
-                        
+
+                    returnUrl = returnUrl != null ? returnUrl.Replace("NotLoggedIn", user.UserName) : null;
                     return RedirectToLocal(returnUrl);
                 }
             }
