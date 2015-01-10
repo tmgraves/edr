@@ -57,4 +57,11 @@ namespace EDR.Models.ViewModels
     {
 
     }
+
+    public class EventViewModel
+    {
+        public Event Event { get; set; }
+        public Class Class { get; set; }
+        public Social Social { get; set; }
+    }
 }

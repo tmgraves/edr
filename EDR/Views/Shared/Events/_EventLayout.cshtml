@@ -1,0 +1,68 @@
+﻿@model EDR.Models.ViewModels.EventViewModel
+@using EDR.Utilities
+@using EDR.Models
+@using EDR.Enums
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var eventType = Model.Class != null ? EventType.Class : EventType.Social;
+    if (Model.Class != null)
+    {
+        ViewBag.Title = "Class Details";
+    }
+    else if (Model.Social != null)
+    {
+        ViewBag.Title = "Social Details";
+    }
+}
+
+<h1 class="page-header">@Model.Event.Name <small>at @Html.ActionLink(@Model.Event.Place.Name, "Details", "Place", new { id = Model.Event.Place.Id }, null)</small></h1>
+
+<p class="lead">@Model.Event.Description</p>
+
+<p>
+    @if (Model.Event.Recurring)
+    {
+        <strong>Next @eventType.ToString():</strong> @ApplicationUtility.GetNextDate(Model.Event.StartDate, Model.Event.Frequency, (int)Model.Event.Interval, Model.Event.Day).ToLongDateString()<br />
+        <strong>Time:</strong> @Model.Event.StartDate.ToString("%h:mm tt")@:~@Model.Event.StartDate.AddMinutes(Model.Event.Duration).ToString("%h:mm tt")<br />
+        <strong>Frequency:</strong> @Model.Event.Day @:(@(Model.Event.Interval == null ? "" : (Model.Event.Interval == 2 ? "Bi-" : (Model.Event.Interval == 3 ? "Tri-" : "")))@Model.Event.Frequency)
+    }
+    else
+    {
+        @:<strong>Date/Time:</strong> @Model.Event.StartDate.ToLongDateString() - @Model.Event.StartDate.ToShortTimeString() to @Model.Event.StartDate.AddMinutes(Model.Event.Duration).ToShortTimeString()
+    }
+</p>
+<p>
+    <a href='@Model.Event.FacebookLink' target="_blank">@Model.Event.FacebookLink</a>
+</p>
+<strong>Dance Styles</strong>
+<ul class="list-inline">
+    @foreach (var item in Model.Event.DanceStyles)
+    {
+        <li>@Html.ActionLink(item.Name, "Details", "DanceStyle", new { id = item.Id }, null)</li>
+    }
+</ul>
+@if (User.Identity.IsAuthenticated)
+{
+    <p>
+        @Html.ActionLink("Add to Your Calendar", "Signup", "Event", new { id = Model.Event.Id }, null)
+    </p>
+}
+<strong>Reviews</strong>
+<ul>
+    @foreach (var r in Model.Event.Reviews)
+    {
+        <li>@Html.DisplayFor(modelItem => r.ReviewDate) - @Html.DisplayFor(modelItem => r.ReviewText)<br />Rating: @Html.DisplayFor(modelItem => r.Rating)<br />Author: @Html.DisplayFor(modelItem => r.Author.FirstName)</li>
+    }
+</ul>
+@if (User.Identity.IsAuthenticated)
+{
+    @Html.ActionLink("Add a Review", "CreateReview", new { id = Model.Event.Id }, null)
+}
+<p>
+    @Html.ActionLink("Back to List", "Learn", "Home")
+</p>
+<div>
+    @RenderBody()
+</div>
+

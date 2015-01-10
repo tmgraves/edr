@@ -690,6 +690,9 @@
     <Content Include="Views\Shared\_CompactPlaceListPartial.cshtml" />
     <Content Include="Views\Teacher\AddClass.cshtml" />
     <Content Include="Views\Shared\Events\_AddClassPartial.cshtml" />
+    <Content Include="Views\Event\Class.cshtml" />
+    <Content Include="Views\Event\Social.cshtml" />
+    <Content Include="Views\Shared\Events\_EventLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Series\" />

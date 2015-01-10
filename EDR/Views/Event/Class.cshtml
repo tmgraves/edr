@@ -1,0 +1,16 @@
+﻿@model EDR.Models.ViewModels.EventViewModel
+@using EDR.Models
+@using EDR.Utilities
+
+@{
+    ViewBag.Title = "Class Details";
+    Layout = "~/Views/Shared/Events/_EventLayout.cshtml";
+}
+
+<strong>Teacher(s):</strong>
+<ul class="list-inline">
+    @foreach (var item in Model.Class.Teachers)
+    {
+        <li>@Html.ActionLink(item.ApplicationUser.FullName, "View", "Teacher", new { username = item.ApplicationUser.UserName }, null)</li>
+    }
+</ul>

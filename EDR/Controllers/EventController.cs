@@ -10,6 +10,8 @@ using EDR.Models;
 using System.Data.Entity.Validation;
 using EDR.Enums;
 
+using System.Data.Entity;
+
 namespace EDR.Controllers
 {
     public class EventController : BaseController
@@ -37,6 +39,48 @@ namespace EDR.Controllers
             else if (model.Event is Workshop)
             {
                 model.Teachers = DataContext.Teachers.Where(t => t.Workshops.Any(w => w.Id == id)).ToList();
+            }
+
+            return View(model);
+        }
+
+        public ActionResult Class(int id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var model = LoadEvent(id);
+            model.Class = DataContext.Events.OfType<Class>().Where(x => x.Id == id).Include("Teachers").Include("Teachers.ApplicationUser").FirstOrDefault();
+
+            if (model.Class == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View(model);
+        }
+
+        private EventViewModel LoadEvent(int id)
+        {
+            var model = new EventViewModel();
+            model.Event = DataContext.Events.Where(x => x.Id == id).Include("Place").Include("DanceStyles").Include("Reviews").Include("Users").FirstOrDefault();
+            return model;
+        }
+        public ActionResult Social(int id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var model = LoadEvent(id);
+            model.Social = DataContext.Events.OfType<Social>().Where(x => x.Id == id).Include("Promoters").Include("Promoters.ApplicationUser").FirstOrDefault();
+
+            if (model.Social == null)
+            {
+                return HttpNotFound();
             }
 
             return View(model);
