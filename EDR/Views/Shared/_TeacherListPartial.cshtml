@@ -3,7 +3,7 @@
 
 @foreach (var t in Model.OrderBy(x => x.ApplicationUser.FullName))
 {
-    <a class="btn btn-default col-lg-4 col-md-12 col-sm-12 col-xs-12 top" href="@Url.Action("MyTeach", "Teacher", new { username = t.ApplicationUser.UserName }) " style="text-align: left; vertical-align: top;">
+    <a class="btn btn-default col-lg-12 col-md-12 col-sm-12 col-xs-12 top" href="@Url.Action("MyTeach", "Teacher", new { username = t.ApplicationUser.UserName }) " style="text-align: left; vertical-align: top;">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             @if (t.ApplicationUser.UserPictures != null && t.ApplicationUser.UserPictures.Count > 0)
             {

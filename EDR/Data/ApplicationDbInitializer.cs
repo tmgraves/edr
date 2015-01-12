@@ -142,14 +142,14 @@ namespace EDR.Data
             //  Seed Reviews
             var reviews = new List<Review>()
             {
-                new Review() { Author=user, ReviewText="This class is great.  I got a lot out of it.", Rating=4, ReviewDate=DateTime.Now, Event = salsaclasses[0] },
-                new Review() { Author=prom, ReviewText="Friendly teacher, challenging class, good students.  BYOP.", Rating=3, ReviewDate=DateTime.Now.AddDays(-8), Event = salsaclasses[0] },
-                new Review() { Author=user, ReviewText="This class was average.  I didn't learn much.", Rating=2, ReviewDate=DateTime.Now.AddDays(-2), Event = salsaclasses[1] },
-                new Review() { Author=prom, ReviewText="Definitely BYOP.  The students aren't that advanced yet.", Rating=3, ReviewDate=DateTime.Now.AddDays(-5), Event = salsaclasses[1] },
-                new Review() { Author=user, ReviewText="I'm a beginner dancer and this class was really hard", Rating=4, ReviewDate=DateTime.Now.AddDays(-3), Event = salsaclasses[2] },
-                new Review() { Author=prom, ReviewText="Class was too hard for me.", Rating=2, ReviewDate=DateTime.Now.AddDays(-9), Event = salsaclasses[2] },
-                new Review() { Author=user, ReviewText="This class was really hard.  #BYOP.", Rating=3, ReviewDate=DateTime.Now.AddDays(-11), Event = salsaclasses[3] },
-                new Review() { Author=prom, ReviewText="Definitely BYOP.  Usually a small class.", Rating=4, ReviewDate=DateTime.Now.AddDays(-13), Event = salsaclasses[3] }
+                new Review() { Author=user, ReviewText="This class is great.  I got a lot out of it.", Like=true, ReviewDate=DateTime.Now, Event = salsaclasses[0] },
+                new Review() { Author=prom, ReviewText="Friendly teacher, challenging class, good students.  BYOP.", Like=false, ReviewDate=DateTime.Now.AddDays(-8), Event = salsaclasses[0] },
+                new Review() { Author=user, ReviewText="This class was average.  I didn't learn much.", Like=true, ReviewDate=DateTime.Now.AddDays(-2), Event = salsaclasses[1] },
+                new Review() { Author=prom, ReviewText="Definitely BYOP.  The students aren't that advanced yet.", Like=true, ReviewDate=DateTime.Now.AddDays(-5), Event = salsaclasses[1] },
+                new Review() { Author=user, ReviewText="I'm a beginner dancer and this class was really hard", Like=false, ReviewDate=DateTime.Now.AddDays(-3), Event = salsaclasses[2] },
+                new Review() { Author=prom, ReviewText="Class was too hard for me.", Like=true, ReviewDate=DateTime.Now.AddDays(-9), Event = salsaclasses[2] },
+                new Review() { Author=user, ReviewText="This class was really hard.  #BYOP.", Like=false, ReviewDate=DateTime.Now.AddDays(-11), Event = salsaclasses[3] },
+                new Review() { Author=prom, ReviewText="Definitely BYOP.  Usually a small class.", Like=true, ReviewDate=DateTime.Now.AddDays(-13), Event = salsaclasses[3] }
             };
             context.Reviews.AddRange(reviews);
 

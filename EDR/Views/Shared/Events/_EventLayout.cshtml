@@ -16,45 +16,228 @@
     }
 }
 
-<h1 class="page-header">@Model.Event.Name <small>at @Html.ActionLink(@Model.Event.Place.Name, "Details", "Place", new { id = Model.Event.Place.Id }, null)</small></h1>
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.2.6.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
 
-<p class="lead">@Model.Event.Description</p>
+<script type="text/javascript">
+    function done() {
+        $('form').clearForm();
+        alert("fired success");
+    }
 
-<p>
-    @if (Model.Event.Recurring)
-    {
-        <strong>Next @eventType.ToString():</strong> @ApplicationUtility.GetNextDate(Model.Event.StartDate, Model.Event.Frequency, (int)Model.Event.Interval, Model.Event.Day).ToLongDateString()<br />
-        <strong>Time:</strong> @Model.Event.StartDate.ToString("%h:mm tt")@:~@Model.Event.StartDate.AddMinutes(Model.Event.Duration).ToString("%h:mm tt")<br />
-        <strong>Frequency:</strong> @Model.Event.Day @:(@(Model.Event.Interval == null ? "" : (Model.Event.Interval == 2 ? "Bi-" : (Model.Event.Interval == 3 ? "Tri-" : "")))@Model.Event.Frequency)
+    function OnSuccess(response) {
+        alert(response);
+        var y = document.getElementById("Review_ReviewText");
+        alert(y.innerHTML)
+        document.getElementByName('Review_ReviewText').value = '';
     }
-    else
-    {
-        @:<strong>Date/Time:</strong> @Model.Event.StartDate.ToLongDateString() - @Model.Event.StartDate.ToShortTimeString() to @Model.Event.StartDate.AddMinutes(Model.Event.Duration).ToShortTimeString()
+
+    function OnFailure(response) {
+        alert("Whoops! That didn't go so well did it?");
     }
-</p>
-<p>
-    <a href='@Model.Event.FacebookLink' target="_blank">@Model.Event.FacebookLink</a>
-</p>
-<strong>Dance Styles</strong>
-<ul class="list-inline">
-    @foreach (var item in Model.Event.DanceStyles)
-    {
-        <li>@Html.ActionLink(item.Name, "Details", "DanceStyle", new { id = item.Id }, null)</li>
-    }
-</ul>
+
+</script><style type="text/css">
+/*
+  Hide radio button (the round disc)
+  we will use just the label to create pushbutton effect
+*/
+input[type=radio] {
+    display:none; 
+    margin:10px;
+}
+ 
+/*
+  Change the look'n'feel of labels (which are adjacent to radiobuttons).
+  Add some margin, padding to label
+*/
+input[type=radio] + label {
+    display:inline-block;
+    margin:-2px;
+    padding: 4px 12px;
+    background-color: #fff;
+    border-color: #ddd;
+}
+/*
+ Change background color for label next to checked radio button
+ to make it look like highlighted button
+*/
+input[type=radio]:checked + label { 
+   background-image: none;
+    background-color:#d0d0d0;
+}
+</style>
+
+<div class="row">
+    <h1 class="page-header">@Model.Event.Name <small>at @Html.ActionLink(@Model.Event.Place.Name, "Details", "Place", new { id = Model.Event.Place.Id }, null)</small></h1>
+</div>
+<div class="row">
+    <div class="well col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="row">
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 thumbnail text-center">
+                    @if (Model.Event.PhotoUrl != null)
+                {
+                        <img src="@Url.Content(Model.Event.PhotoUrl)" />
+                }
+                else
+                {
+                        <img src="~/Content/images/MissingImage.jpg" />
+                }
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                    <div class="row">
+                        <label class="control-label col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                            Date:
+                        </label>
+                        <div>
+                            @if (Model.Event.Recurring)
+                        {
+                                @Model.Event.NextDate.ToLongDateString() @:(@(Model.Event.Interval == null ? "" : (Model.Event.Interval == 2 ? "Bi-" : (Model.Event.Interval == 3 ? "Tri-" : "")))@Model.Event.Frequency)
+                    }
+                        else
+                        {
+                                @Model.Event.StartDate.ToLongDateString()
+                        }
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="control-label col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                            Time:
+                        </label>
+                        <div>
+                            @if (Model.Event.Recurring)
+                        {
+                                @Model.Event.StartDate.ToString("%h:mm tt")@:~@Model.Event.StartDate.AddMinutes(Model.Event.Duration).ToString("%h:mm tt")
+                    }
+                        else
+                        {
+                                @Model.Event.StartDate.ToString("%h:mm tt")@:~@Model.Event.StartDate.AddMinutes(Model.Event.Duration).ToString("%h:mm tt")
+                    }
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="control-label col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                            Location:
+                        </label>
+                        <div>
+                            @Model.Event.Place.Address
+                            @Model.Event.Place.Address2<br />
+                            @Model.Event.Place.City,
+                            @Model.Event.Place.State
+                            @Model.Event.Place.Zip
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="control-label col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                            Dance Styles:
+                        </label>
+                        <ul class="list-inline">
+                            @foreach (var item in Model.Event.DanceStyles)
+                        {
+                                <li>@Html.ActionLink(item.Name, "Details", "DanceStyle", new { id = item.Id }, null)</li>
+                        }
+                        </ul>
+                    </div>
+                    @if (Model.Event.FacebookLink != null)
+                {
+                        <a class="img-thumbnail" href='@Model.Event.FacebookLink' target="_blank" title="Visit Me On Facebook"><img src="@Url.Content("~/Content/images/facebookSmall.png")" /></a>
+                }
+                    <p>@Model.Event.Description</p>
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                    <a target="_blank" href="https://maps.google.com/?q=@Model.Event.Place.Latitude,@Model.Event.Place.Longitude">
+                        <img class="img-thumbnail" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Event.Place.Latitude,@Model.Event.Place.Longitude&zoom=10&size=250x250&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Event.Place.Latitude, @Model.Event.Place.Longitude">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+        <div id="reviews">
+            @Html.Partial("~/Views/Shared/Events/_ReviewsPartial.cshtml", Model.Event.Reviews)
+        </div>
+        <div class="panel panel-default col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 5px;">
+            <div class="panel-body">
+                @using (Ajax.BeginForm("PostReview",
+                            "Event",
+                            new AjaxOptions()
+                            {
+                                UpdateTargetId = "reviews",
+                                OnSuccess = "done"
+                            }
+                            ))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(x => x.Event.Name)
+
+                    <div class="form-horizontal">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.Event.Id)
+
+                        <div class="form-group">
+                            @Html.RadioButtonFor(m => m.Review.Like, "true", new { id = "radio1", @checked = "checked" })
+                            <label class="thumbnail" for="radio1">
+                                <img src="~/Content/images/thumbupsm.png" />
+                            </label>
+                            @Html.RadioButtonFor(m => m.Review.Like, "false", new { id = "radio2" })
+                            <label class="thumbnail" for="radio2">
+                                <img src="~/Content/images/thumbdownsm.png" />
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <div>
+                                @Html.TextAreaFor(model => model.Review.ReviewText, 4, 100, new { @style = "max-width: 400px;", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Review.ReviewText, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-offset-8 col-md-12">
+                                <input type="submit" value="PostReview" class="btn btn-default" />
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+        <div class="row">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>Teachers</h4>
+                </div>
+                <div class="panel-body">
+                    @Html.Partial("~/Views/Shared/_TeacherListPartial.cshtml", Model.Class.Teachers)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    @RenderBody()
+</div>
+
+
 @if (User.Identity.IsAuthenticated)
 {
     <p>
-        @Html.ActionLink("Add to Your Calendar", "Signup", "Event", new { id = Model.Event.Id }, null)
+        @Html.ActionLink("Add to Your Calendar", "Signup", "Event", new { id = Model.Event.Id }, htmlAttributes: new { @class = "btn btn-primary", @style = "margin: 5px" })
     </p>
 }
+
+
+<p>
+    <a href='@Model.Event.FacebookLink' target="_blank">@Model.Event.FacebookLink</a>
+</p>
 <strong>Reviews</strong>
-<ul>
-    @foreach (var r in Model.Event.Reviews)
-    {
-        <li>@Html.DisplayFor(modelItem => r.ReviewDate) - @Html.DisplayFor(modelItem => r.ReviewText)<br />Rating: @Html.DisplayFor(modelItem => r.Rating)<br />Author: @Html.DisplayFor(modelItem => r.Author.FirstName)</li>
-    }
-</ul>
 @if (User.Identity.IsAuthenticated)
 {
     @Html.ActionLink("Add a Review", "CreateReview", new { id = Model.Event.Id }, null)
@@ -62,7 +245,4 @@
 <p>
     @Html.ActionLink("Back to List", "Learn", "Home")
 </p>
-<div>
-    @RenderBody()
-</div>
 

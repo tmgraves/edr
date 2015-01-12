@@ -14,6 +14,17 @@ namespace EDR
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
+                name: "StyleIndex",
+                url: "DanceStyle/Index",
+                defaults: new { controller = "DanceStyle", action = "Index" }
+            );
+            routes.MapRoute(
+                name: "StyleIndexAdd",
+                url: "DanceStyle/Index_AddItem",
+                defaults: new { controller = "DanceStyle", action = "Index_AddItem" }
+            );
+
+            routes.MapRoute(
                 name: "VisitorView",
                 url: "Visitor/View",
                 defaults: new { controller = "Visitor", action = "View" }
@@ -23,6 +34,36 @@ namespace EDR
                 name: "PlaceAction",
                 url: "Place/{id}/{action}",
                 defaults: new { controller = "Place", id = UrlParameter.Optional, action = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
+                name: "EventAddReview",
+                url: "Event/Reviews_Insert",
+                defaults: new { controller = "Event", action = "Reviews_Insert" }
+            );
+
+            routes.MapRoute(
+                name: "EventReview",
+                url: "Event/{id}/PostReview",
+                defaults: new { controller = "Event", action = "PostReview" }
+            );
+
+            routes.MapRoute(
+                name: "EventReviews",
+                url: "Event/{id}/Reviews",
+                defaults: new { controller = "Event", action = "Reviews" }
+            );
+
+            routes.MapRoute(
+                name: "ClassView",
+                url: "Class/{id}",
+                defaults: new { controller = "Event", action = "Class" }
+            );
+
+            routes.MapRoute(
+                name: "SocialView",
+                url: "Social/{id}",
+                defaults: new { controller = "Event", action = "Social" }
             );
 
             routes.MapRoute(

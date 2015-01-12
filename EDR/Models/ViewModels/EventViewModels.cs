@@ -63,5 +63,13 @@ namespace EDR.Models.ViewModels
         public Event Event { get; set; }
         public Class Class { get; set; }
         public Social Social { get; set; }
+        public Review Review { get; set; }
+    }
+
+    public class EventReviewsViewModel
+    {
+        public int EventId { get; set; }
+        public IEnumerable<Review> EventReviews { get; set; }
+        public Review NewReview { get; set; }
     }
 }

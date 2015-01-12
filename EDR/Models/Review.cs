@@ -8,13 +8,12 @@ namespace EDR.Models
 {
     public class Review : Entity
     {
-        [Required]
         public virtual ApplicationUser Author { get; set; }
 
         [Required]
         public string ReviewText { get; set; }
 
-        public int Rating { get; set; }
+        public bool Like { get; set; }
 
         public DateTime ReviewDate { get; set; }
 

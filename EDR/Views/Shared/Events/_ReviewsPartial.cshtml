@@ -1,0 +1,44 @@
+﻿@model IEnumerable<EDR.Models.Review>
+@using EDR.Utilities
+
+<h4 class="page-header">
+    Reviews
+    <span class="pull-right small">
+        @Model.Where(x => x.Like).Count()
+        <img src="~/Content/images/thumbupsm.png" />
+        @Model.Where(x => !x.Like).Count()
+        <img src="~/Content/images/thumbdownsm.png" />
+    </span>
+</h4>
+<div style="max-height:400px; overflow: auto;">
+    @foreach (var r in Model.OrderByDescending(x => x.ReviewDate))
+    {
+        <div class="btn btn-default col-lg-12 col-md-12 col-sm-12 col-xs-12" style="white-space: normal;">
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 thumbnail text-center">
+                @if (r.Author.UserPictures != null && r.Author.UserPictures.Count > 0)
+                {
+                    <img src="@Url.Content(r.Author.UserPictures.First().ThumbnailFilename)" />
+                }
+                else
+                {
+                    <img src="@Url.Content(ApplicationUtility.GetNoProfilePicture().ThumbnailFilename)" />
+                }
+                @Html.DisplayFor(modelItem => r.Author.FirstName)
+            </div>
+            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10 text-left">
+                @if (r.Like)
+                {
+                    <img src="~/Content/images/thumbupsm.png" />
+                }
+                else
+                {
+                    <img src="~/Content/images/thumbdownsm.png" />
+                }
+                - <span class="text-success"><strong>@r.ReviewDate.ToString("MMMM dd, yyyy")</strong></span>
+                <div>
+                    @r.ReviewText
+                </div>
+            </div>
+        </div>
+    }
+</div>

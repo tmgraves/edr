@@ -16,6 +16,31 @@ namespace EDR.Controllers
 {
     public class EventController : BaseController
     {
+        public ActionResult Reviews(int id)
+        {
+            var model = new EventReviewsViewModel();
+            model.EventReviews = DataContext.Reviews.Where(x => x.Event.Id == id);
+            model.EventId = id;
+            model.NewReview = new Review();
+
+            return View(model);
+        }
+
+        public ActionResult Reviews_Insert(EventReviewsViewModel model)
+        {
+            var er = ModelState.IsValid;
+            var userid = User.Identity.GetUserId();
+            model.NewReview.Author = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+            model.NewReview.Event = DataContext.Events.Where(e => e.Id == model.EventId).FirstOrDefault();
+            var today = DateTime.Today;
+            model.NewReview.ReviewDate = today;
+            DataContext.Reviews.Add(model.NewReview);
+            DataContext.SaveChanges();
+
+            var reviews = DataContext.Reviews.Where(x => x.Event.Id == model.NewReview.Event.Id);
+            return PartialView("~/Views/Shared/Events/_Reviews.cshtml", reviews);
+        }
+
         public ActionResult Details(int id, EventType eventType)
         {
             if (id == null)
@@ -66,6 +91,10 @@ namespace EDR.Controllers
         {
             var model = new EventViewModel();
             model.Event = DataContext.Events.Where(x => x.Id == id).Include("Place").Include("DanceStyles").Include("Reviews").Include("Users").FirstOrDefault();
+            model.Review = new Review();
+            model.Review.Like = true;
+            var userid = User.Identity.GetUserId();
+            model.Review.Author = DataContext.Users.Where(x => x.Id == userid).FirstOrDefault();
             return model;
         }
         public ActionResult Social(int id)
@@ -276,6 +305,36 @@ namespace EDR.Controllers
             }
             LoadModel(model);
             return View(model);
+        }
+
+        [Authorize]
+        public PartialViewResult PostReview(EventViewModel model)
+        {
+            var userid = User.Identity.GetUserId();
+            if (DataContext.Reviews.Where(r => r.Event.Id == model.Event.Id && r.Author.Id == userid).Count() == 0)
+            {
+                var auth = DataContext.Users.Where(x => x.Id == userid).FirstOrDefault();
+                var ev = DataContext.Events.Where(e => e.Id == model.Event.Id).Include("Reviews").FirstOrDefault();
+                ev.Reviews.Add(new Review() { ReviewText = model.Review.ReviewText, ReviewDate = DateTime.Now, Like = model.Review.Like, Author = auth });
+                DataContext.SaveChanges();
+
+                var reviews = DataContext.Reviews.Where(x => x.Event.Id == model.Event.Id);
+                return PartialView("~/Views/Shared/Events/_ReviewsPartial.cshtml", reviews);
+            }
+            else
+            {
+                return PartialView();
+            }
+            
+            //if (ModelState.IsValid)
+            //{
+            //    return RedirectToAction("Class", "Event", new { id = model.Event.Id});
+            //}
+            //else
+            //{
+            //    var allErrors = ModelState.Values.SelectMany(v => v.Errors);
+            //}
+            //return View(model);
         }
 
         public Class ConvertToClass(Event event1)

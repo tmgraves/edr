@@ -115,5 +115,24 @@ namespace EDR.Controllers
             }
             base.Dispose(disposing);
         }
+
+        public ActionResult Index()
+        {
+            NewStyleViewModel viewModel = new NewStyleViewModel
+            {
+                NewDanceStyle = new DanceStyle(),
+                DanceStyles = DataContext.DanceStyles
+            };
+            return View(viewModel);
+        }
+
+        public ActionResult Index_AddItem(NewStyleViewModel viewModel)
+        {
+            var x = ModelState.IsValid;
+            DataContext.DanceStyles.Add(viewModel.NewDanceStyle);
+            DataContext.SaveChanges();
+
+            return PartialView("_DanceStyleListPartial", DataContext.DanceStyles);
+        }
     }
 }

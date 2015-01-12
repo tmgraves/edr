@@ -284,6 +284,7 @@
     <Compile Include="Models\UserPicture.cs" />
     <Compile Include="Models\ViewModels\ChangePictureViewModel.cs" />
     <Compile Include="Models\ViewModels\DancerListViewModel.cs" />
+    <Compile Include="Models\ViewModels\DanceStyleViewModels.cs" />
     <Compile Include="Models\ViewModels\EventViewModels.cs" />
     <Compile Include="Models\ViewModels\OwnerListViewModel.cs" />
     <Compile Include="Models\ViewModels\PlaceCreateViewModel.cs" />
@@ -369,6 +370,10 @@
     <Content Include="Content\images\Play1Normal.png" />
     <Content Include="Content\images\Play1Pressed.png" />
     <Content Include="Content\images\NoPic.png" />
+    <Content Include="Content\images\thumbdown.png" />
+    <Content Include="Content\images\thumbdownsm.png" />
+    <Content Include="Content\images\thumbup.png" />
+    <Content Include="Content\images\thumbupsm.png" />
     <Content Include="Content\images\web.png" />
     <Content Include="Content\images\www.png" />
     <Content Include="favicon.ico" />
@@ -693,6 +698,11 @@
     <Content Include="Views\Event\Class.cshtml" />
     <Content Include="Views\Event\Social.cshtml" />
     <Content Include="Views\Shared\Events\_EventLayout.cshtml" />
+    <Content Include="Views\Shared\Events\_ReviewsPartial.cshtml" />
+    <Content Include="Views\Shared\_DanceStyleListPartial.cshtml" />
+    <Content Include="Views\DanceStyle\Index.cshtml" />
+    <Content Include="Views\Event\Reviews.cshtml" />
+    <Content Include="Views\Shared\Events\_Reviews.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Series\" />

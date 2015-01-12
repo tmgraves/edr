@@ -10,6 +10,7 @@ namespace EDR.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = true;
+            AutomaticMigrationDataLossAllowed = true;
             ContextKey = "EDR.Data.ApplicationDbContext";
         }
 

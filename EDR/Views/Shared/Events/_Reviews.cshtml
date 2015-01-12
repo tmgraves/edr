@@ -1,0 +1,16 @@
+﻿@model IEnumerable<EDR.Models.Review>
+<table>
+    <!-- Render the table headers. -->
+    <tr>
+        <th>Like</th>
+        <th>ReviewText</th>
+    </tr>
+    <!-- Render the name and price of each product. -->
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@Html.DisplayFor(model => item.Like)</td>
+            <td>@Html.DisplayFor(model => item.ReviewText)</td>
+        </tr>
+    }
+</table>
