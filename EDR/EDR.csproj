@@ -586,6 +586,7 @@
     <Content Include="Scripts\jquery-2.1.1.min.js" />
     <Content Include="Scripts\jquery-2.1.1.min.map" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.form.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
@@ -703,6 +704,8 @@
     <Content Include="Views\DanceStyle\Index.cshtml" />
     <Content Include="Views\Event\Reviews.cshtml" />
     <Content Include="Views\Shared\Events\_Reviews.cshtml" />
+    <Content Include="Views\Shared\Events\_UserListPartial.cshtml" />
+    <Content Include="Views\Event\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Series\" />

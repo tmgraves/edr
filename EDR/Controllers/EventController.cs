@@ -140,6 +140,42 @@ namespace EDR.Controllers
         }
 
         [Authorize]
+        public ActionResult Edit(int id)
+        {
+            var model = LoadEditModel(id);
+            return View(model);
+        }
+
+        private EventEditViewModel LoadEditModel(int id)
+        {
+            var model = new EventEditViewModel();
+            var ev = DataContext.Events.Where(e => e.Id == id).FirstOrDefault();
+
+            var userid = User.Identity.GetUserId();
+
+            var selectedStyles = new List<DanceStyleListItem>();
+            model.SelectedStyles = selectedStyles;
+
+            var styles = new List<DanceStyleListItem>();
+            foreach (DanceStyle s in DataContext.DanceStyles)
+            {
+                styles.Add(new DanceStyleListItem { Id = s.Id, Name = s.Name });
+            }
+            model.AvailableStyles = styles.OrderBy(x => x.Name);
+
+            if (ev is Class)
+            {
+                model.Places = DataContext.Places.Where(x => x.Teachers.Any(t => t.ApplicationUser.Id == userid) || x.Owners.Any(p => p.ApplicationUser.Id == userid)).Select(p => new SelectListItem() { Text = p.Name, Value = p.Id.ToString() }).ToList();
+            }
+            else if (ev is Social)
+            {
+                model.Places = DataContext.Places.Where(x => x.Owners.Any(t => t.ApplicationUser.Id == userid) || x.Promoters.Any(p => p.ApplicationUser.Id == userid)).Select(p => new SelectListItem() { Text = p.Name, Value = p.Id.ToString() }).ToList();
+            }
+
+            return model;
+        }
+
+        [Authorize]
         public ActionResult Create(string role, string eventType, int? placeId)
         {
             var model = GetInitialClassCreateViewModel(role, eventType);

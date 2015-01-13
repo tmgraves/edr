@@ -47,6 +47,15 @@ namespace EDR.Models.ViewModels
         public PostedStyles PostedStyles { get; set; }
     }
 
+    public class EventEditViewModel
+    {
+        public Event Event { get; set; }
+        public List<SelectListItem> Places { get; set; }
+        public IEnumerable<DanceStyleListItem> AvailableStyles { get; set; }
+        public IEnumerable<DanceStyleListItem> SelectedStyles { get; set; }
+        public PostedStyles PostedStyles { get; set; }
+    }
+
     public class EventNewViewModel
     {
         public IEnumerable<DanceStyleListItem> AvailableStyles { get; set; }

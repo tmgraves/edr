@@ -55,6 +55,12 @@ namespace EDR
             );
 
             routes.MapRoute(
+                name: "EventEdit",
+                url: "Event/{id}/Edit",
+                defaults: new { controller = "Event", action = "Edit" }
+            );
+
+            routes.MapRoute(
                 name: "ClassView",
                 url: "Class/{id}",
                 defaults: new { controller = "Event", action = "Class" }
