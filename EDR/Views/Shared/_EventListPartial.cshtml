@@ -141,11 +141,11 @@
                     }
                     else if (Model.First() is Workshop)
                     {
-                        @Html.ActionLink("View this Workshop", "Class", "Event", new { id = item.Id }, htmlAttributes: new { @class = "btn btn-primary", @style = "margin: 5px" })
+                        @Html.ActionLink("View this Workshop", "View", "Event", new { id = item.Id }, htmlAttributes: new { @class = "btn btn-primary", @style = "margin: 5px" })
                     }
                     else if (Model.First() is Class)
                     {
-                        @Html.ActionLink("View this Class", "Class", "Event", new { id = item.Id }, htmlAttributes: new { @class = "btn btn-primary", @style = "margin: 5px" })
+                        @Html.ActionLink("View this Class", "View", "Event", new { id = item.Id }, htmlAttributes: new { @class = "btn btn-primary", @style = "margin: 5px" })
                     }
                     @if (User.Identity.IsAuthenticated)
                     {

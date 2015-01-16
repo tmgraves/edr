@@ -64,9 +64,9 @@
                 {
                     foreach (var photo in Model.Dancer.UserPictures)
                     {
-                        <li style="vertical-align: top;">
+                        <li style="vertical-align: top; width: 150px;">
                             <div class="photoTile">
-                                <img class="thumbnail" src="@Url.Content(photo.ThumbnailFilename)" />
+                                <img class="img-thumbnail" src="@Url.Content(photo.ThumbnailFilename)" />
                             </div>
                             @if (!photo.ProfilePicture)
                             {

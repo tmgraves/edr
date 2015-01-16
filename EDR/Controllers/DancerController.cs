@@ -445,7 +445,8 @@ namespace EDR.Controllers
             if (newFile.UploadStatus == "Success")
             {
                 var dancer = DataContext.Users.Where(x => x.UserName == User.Identity.Name).Include("UserPictures").FirstOrDefault();
-                dancer.UserPictures.Add(new UserPicture() { Title = newFile.FileName, Filename = newFile.FilePath, ThumbnailFilename = newFile.ThumbnailFilePath });
+                var today = DateTime.Now;
+                dancer.UserPictures.Add(new UserPicture() { Title = newFile.FileName, Filename = newFile.FilePath, ThumbnailFilename = newFile.ThumbnailFilePath, PhotoDate = today });
                 DataContext.Entry(dancer).State = EntityState.Modified;
                 DataContext.SaveChanges();
             }

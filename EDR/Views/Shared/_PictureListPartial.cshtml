@@ -1,0 +1,29 @@
+﻿@model IEnumerable<EDR.Models.EventPicture>
+
+<ul class="list-inline">
+    @foreach (var item in Model)
+    {
+        <li>
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-12 col-xs-12">
+                    <div class="thumbnail">
+                        <a href="#">
+                            <img src="@Url.Content(item.Filename)" />
+                        </a>
+                        <div class="caption">
+                            <p>Posted By:
+                            <a href="@Url.Action("Home", "Dancer", new { username = item.PostedBy.UserName })" style="text-decoration: none;">
+                            <span class="text-primary" style="vertical-align: top;">
+                                <b>@item.PostedBy.FirstName</b>
+                            </span>
+                            </a>
+                                on <span class="text-danger" style="vertical-align: top;">@item.PhotoDate.ToShortDateString()</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+    }
+</ul>
+

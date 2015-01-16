@@ -23,14 +23,14 @@
     <div class="well col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="row">
             <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2" style="text-align: center;">
-                <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12 img-thumbnail">
+                <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
                     @if (Model.Promoter.ApplicationUser.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault() != null)
                     {
-                        <img src="@Url.Content(Model.Promoter.ApplicationUser.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault().ThumbnailFilename)" />
+                        <img class=" img-thumbnail" src="@Url.Content(Model.Promoter.ApplicationUser.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault().ThumbnailFilename)" />
                     }
                     else
                     {
-                        <img src="~/Content/images/NoPic.png" />
+                        <img class=" img-thumbnail" src="~/Content/images/NoPic.png" />
                     }
                 </div>
                 @if (User.Identity != null && User.Identity.Name == Model.Promoter.ApplicationUser.UserName)

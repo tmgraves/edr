@@ -17,6 +17,7 @@ using EDR.Data;
 using System;
 using System.Web.Security;
 using Microsoft.AspNet.Identity.EntityFramework;
+using Facebook;
 
 namespace EDR.Controllers
 {
@@ -422,6 +423,15 @@ namespace EDR.Controllers
                     {
                         AddErrors(result);
                     }
+                }
+
+                var picture = FacebookHelper.GetPhotos(token).Where(x => x.Album == "Profile Pictures").FirstOrDefault();
+
+                if (picture != null)
+                {
+                    user.UserPictures = new List<UserPicture>();
+                    user.UserPictures.Add(new UserPicture() { Filename = picture.LargeSource, ProfilePicture = true, Title = "Profile Picture", ThumbnailFilename = picture.LargeSource });
+                    DataContext.SaveChanges();
                 }
 
                 result = await UserManager.AddLoginAsync(user.Id, info.Login);

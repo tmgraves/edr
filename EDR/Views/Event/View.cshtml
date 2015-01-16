@@ -39,62 +39,71 @@
         alert("Whoops! That didn't go so well did it?");
     }
 
-</script><style type="text/css">
-/*
-  Hide radio button (the round disc)
-  we will use just the label to create pushbutton effect
-*/
-input[type=radio] {
-    display:none; 
-    margin:10px;
-}
- 
-/*
-  Change the look'n'feel of labels (which are adjacent to radiobuttons).
-  Add some margin, padding to label
-*/
-input[type=radio] + label {
-    display:inline-block;
-    margin:-2px;
-    padding: 4px 12px;
-    background-color: #fff;
-    border-color: #ddd;
-}
-/*
- Change background color for label next to checked radio button
- to make it look like highlighted button
-*/
-input[type=radio]:checked + label { 
-   background-image: none;
-    background-color:#d0d0d0;
-}
+</script>
+<style type="text/css">
+        /*
+      Hide radio button (the round disc)
+      we will use just the label to create pushbutton effect
+    */
+        input[type=radio] {
+            display: none;
+            margin: 10px;
+        }
+
+            /*
+      Change the look'n'feel of labels (which are adjacent to radiobuttons).
+      Add some margin, padding to label
+    */
+            input[type=radio] + label {
+                display: inline-block;
+                margin: -2px;
+                padding: 4px 12px;
+                background-color: #fff;
+                border-color: #ddd;
+            }
+            /*
+     Change background color for label next to checked radio button
+     to make it look like highlighted button
+    */
+            input[type=radio]:checked + label {
+                background-image: none;
+                background-color: #d0d0d0;
+            }
 </style>
 
 <div class="row">
-    <h1 class="page-header">@Model.Event.Name 
+    <h1 class="page-header">
+        @Model.Event.Name
     @if (User.Identity != null && ((Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)) || (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
     {
         @*<a style="font-size: medium;" href="@Url.Action("Edit", "Dancer")">Edit Profile</a>*@
-        <a title="Edit" href="@Url.Action("Edit", "Event", new { id = Model.Event.Id })">
-            <i class="glyphicon glyphicon-pencil btn-sm btn-info" style="vertical-align: middle;"></i>
-            <span class="sr-only">Edit</span>
-        </a>
+    <a class="btn btn-info" title="Edit" href="@Url.Action("Edit", "Event", new { id = Model.Event.Id })">
+        <i class="glyphicon glyphicon-pencil" style="vertical-align: middle;"></i>
+        <span class="sr-only">Edit</span>
+    </a>
     }
-    <small>at @Html.ActionLink(@Model.Event.Place.Name, "Details", "Place", new { id = Model.Event.Place.Id }, null)</small></h1>
+    <small>at @Html.ActionLink(@Model.Event.Place.Name, "Details", "Place", new { id = Model.Event.Place.Id }, null)</small>
+</h1>
 </div>
 <div class="row">
     <div class="well col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <div class="row">
-                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 thumbnail text-center">
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 text-center">
                     @if (Model.Event.PhotoUrl != null)
-                {
-                        <img src="@Url.Content(Model.Event.PhotoUrl)" />
-                }
-                else
-                {
-                        <img src="~/Content/images/MissingImage.jpg" />
-                }
+                    {
+                        <img class="img-thumbnail" src="@Url.Content(Model.Event.PhotoUrl)" />
+                    }
+                    else
+                    {
+                        <img class="img-thumbnail" src="~/Content/images/MissingImage.jpg" />
+                    }
+                    @if (User.Identity != null && ((Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)) || (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
+                    {
+                        <p>
+                            <a style="font-size: small;" href="@Url.Action("ChangePicture", "Event", new { id = Model.Event.Id })">Change Picture</a>
+                        </p>
+                    }
                 </div>
                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                     <div class="row">
@@ -103,13 +112,13 @@ input[type=radio]:checked + label {
                         </label>
                         <div class="text-success">
                             @if (Model.Event.Recurring)
-                        {
+                            {
                                 @Model.Event.NextDate.ToLongDateString() @:(@(Model.Event.Interval == null ? "" : (Model.Event.Interval == 2 ? "Bi-" : (Model.Event.Interval == 3 ? "Tri-" : "")))@Model.Event.Frequency)
                     }
-                        else
-                        {
+                            else
+                            {
                                 @Model.Event.StartDate.ToLongDateString()
-                        }
+                            }
                         </div>
                     </div>
                     <div class="row">
@@ -118,11 +127,11 @@ input[type=radio]:checked + label {
                         </label>
                         <div>
                             @if (Model.Event.Recurring)
-                        {
+                            {
                                 @Model.Event.StartDate.ToString("%h:mm tt")@:~@Model.Event.StartDate.AddMinutes(Model.Event.Duration).ToString("%h:mm tt")
                     }
-                        else
-                        {
+                            else
+                            {
                                 @Model.Event.StartDate.ToString("%h:mm tt")@:~@Model.Event.StartDate.AddMinutes(Model.Event.Duration).ToString("%h:mm tt")
                     }
                         </div>
@@ -154,15 +163,15 @@ input[type=radio]:checked + label {
                         </label>
                         <ul class="list-inline">
                             @foreach (var item in Model.Event.DanceStyles)
-                        {
+                            {
                                 <li>@Html.ActionLink(item.Name, "Details", "DanceStyle", new { id = item.Id }, null)</li>
-                        }
+                            }
                         </ul>
                     </div>
                     @if (Model.Event.FacebookLink != null)
-                {
+                    {
                         <a class="img-thumbnail" href='@Model.Event.FacebookLink' target="_blank" title="Visit Me On Facebook"><img src="@Url.Content("~/Content/images/facebookSmall.png")" /></a>
-                }
+                    }
                     <p>@Model.Event.Description</p>
                 </div>
                 <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
@@ -198,19 +207,19 @@ input[type=radio]:checked + label {
         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
             <h4>
                 Pictures
-                <button type="button" class="btn btn-warning pull-right top-right" title="Add New Picture" aria-label="Left Align">
+                <a class="btn btn-warning pull-right top-right" title="Add New Picture" href="@Url.Action("PostPicture", "Event", new { id = Model.Event.Id })">
                     <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
-                </button>
+                </a>
             </h4>
             <hr />
-            @Html.Partial("~/Views/Shared/_PictureListPartial.cshtml", Model.Event.Pictures)
+            @Html.Partial("~/Views/Shared/_PictureListPartial.cshtml", Model.Event.Pictures.OrderByDescending(p => p.PhotoDate))
         </div>
         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
             <h4>
                 Videos
-                <button type="button" class="btn btn-warning pull-right top-right" title="Add New Video" aria-label="Left Align">
+                <a class="btn btn-warning pull-right top-right" title="Add New Video" href="@Url.Action("PostVideo", "Event", new { id = Model.Event.Id })">
                     <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
-                </button>
+                </a>
             </h4>
             <hr />
         </div>
@@ -272,9 +281,6 @@ input[type=radio]:checked + label {
             }
         }
     </div>
-</div>
-<div>
-    @RenderBody()
 </div>
 
 

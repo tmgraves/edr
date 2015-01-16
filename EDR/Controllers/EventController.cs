@@ -11,6 +11,8 @@ using System.Data.Entity.Validation;
 using EDR.Enums;
 
 using System.Data.Entity;
+using EDR.Utilities;
+using System.IO;
 
 namespace EDR.Controllers
 {
@@ -69,7 +71,7 @@ namespace EDR.Controllers
             return View(model);
         }
 
-        public ActionResult Class(int id)
+        public ActionResult View(int id)
         {
             if (id == null)
             {
@@ -77,9 +79,17 @@ namespace EDR.Controllers
             }
 
             var model = LoadEvent(id);
-            model.Class = DataContext.Events.OfType<Class>().Where(x => x.Id == id).Include("Teachers").Include("Teachers.ApplicationUser").FirstOrDefault();
 
-            if (model.Class == null)
+            if (model.Event is Class)
+            {
+                model.Class = DataContext.Events.OfType<Class>().Where(x => x.Id == id).Include("Teachers").Include("Teachers.ApplicationUser").FirstOrDefault();
+            }
+            else if (model.Event is Social)
+            {
+                model.Social = DataContext.Events.OfType<Social>().Where(x => x.Id == id).Include("Promoters").Include("Promoters.ApplicationUser").FirstOrDefault();
+            }
+
+            if (model.Event == null)
             {
                 return HttpNotFound();
             }
@@ -90,31 +100,174 @@ namespace EDR.Controllers
         private EventViewModel LoadEvent(int id)
         {
             var model = new EventViewModel();
-            model.Event = DataContext.Events.Where(x => x.Id == id).Include("Place").Include("DanceStyles").Include("Reviews").Include("Users").FirstOrDefault();
+            model.Event = DataContext.Events.Where(x => x.Id == id).Include("Place").Include("DanceStyles").Include("Reviews").Include("Users").Include("Pictures").Include("Pictures.PostedBy").Include("Pictures.PostedBy.UserPictures").FirstOrDefault();
             model.Review = new Review();
             model.Review.Like = true;
             var userid = User.Identity.GetUserId();
             model.Review.Author = DataContext.Users.Where(x => x.Id == userid).FirstOrDefault();
             return model;
         }
-        public ActionResult Social(int id)
+
+#region pictures
+        [Authorize]
+        public ActionResult ChangePicture(int id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var model = LoadEvent(id);
-            model.Social = DataContext.Events.OfType<Social>().Where(x => x.Id == id).Include("Promoters").Include("Promoters.ApplicationUser").FirstOrDefault();
-
-            if (model.Social == null)
+            var model = new EventChangePictureViewModel();
+            model.Event = DataContext.Events.Where(x => x.Id == id).Include("Place").Include("Pictures").FirstOrDefault();
+            var userid = User.Identity.GetUserId();
+            var token = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault().FacebookToken;
+            if (token != null)
             {
-                return HttpNotFound();
+                model.FacebookPictures = FacebookHelper.GetPhotos(token);
+            }
+
+            return View(model);
+        }
+        [Authorize]
+        public ActionResult UploadPicture()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult UploadPicture(HttpPostedFileBase file, EventChangePictureViewModel model, string returnUrl)
+        {
+            UploadFile newFile = ApplicationUtility.LoadPicture(file);
+
+            if (newFile.UploadStatus == "Success")
+            {
+                var ev = DataContext.Events.Where(x => x.Id == model.Event.Id).Include("Pictures").FirstOrDefault();
+                var today = DateTime.Now;
+                var userid = User.Identity.GetUserId();
+                var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+                ev.Pictures.Add(new EventPicture() { Title = newFile.FileName, Filename = newFile.FilePath, ThumbnailFilename = newFile.ThumbnailFilePath, PhotoDate = today, PostedBy = user });
+                DataContext.Entry(ev).State = EntityState.Modified;
+                DataContext.SaveChanges();
+            }
+            else
+            {
+                ViewBag.Message = newFile.UploadStatus;
+            }
+            return Redirect(returnUrl);
+        }
+
+        public ActionResult DeletePicture(int pictureId, int eventId, string returnUrl)
+        {
+            var picture = DataContext.Pictures.Find(pictureId);
+            DataContext.Pictures.Remove(picture);
+            DataContext.Entry(picture).State = EntityState.Deleted;
+            DataContext.SaveChanges();
+            ViewBag.Message = ApplicationUtility.DeletePicture(picture);
+            return Redirect(returnUrl);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public ActionResult ChangePicture(ChangePictureViewModel model)
+        {
+            return View(model);
+        }
+
+        [Authorize]
+        public ActionResult MainPicture(int id, int eventId)
+        {
+            try
+            {
+                var picture = DataContext.Pictures.Where(p => p.Id == id).FirstOrDefault();
+                var ev = DataContext.Events.Where(x => x.Id == eventId).Include("Pictures").Include("Pictures.PostedBy").FirstOrDefault();
+
+                foreach(EventPicture ep in ev.Pictures)
+                {
+                    if (ep.Id == id)
+                    {
+                        ep.MainPicture = true;
+                        ev.PhotoUrl = ep.Filename;
+                    }
+                    else
+                    {
+                        ep.MainPicture = false;
+                    }
+                }
+                
+                DataContext.Entry(ev).State = EntityState.Modified;
+                DataContext.SaveChanges();
+                return RedirectToAction("ChangePicture", "Event", new { id = eventId });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ChangePicture", "Event", new { id = eventId });
+            }
+        }
+
+        [Authorize]
+        public ActionResult AddFacebookPicture(string id, string album, string name, string largeSource, string link, DateTime photodate, string source)
+        {
+            try
+            {
+                string userId = User.Identity.GetUserId();
+                var dancer = DataContext.Users.Where(x => x.Id == userId).Include("UserPictures").FirstOrDefault();
+                dancer.UserPictures.Add(new UserPicture() { Title = name, ThumbnailFilename = source, Filename = largeSource });
+                DataContext.Entry(dancer).State = EntityState.Modified;
+                DataContext.SaveChanges();
+                return RedirectToAction("ChangePicture", "Dancer", new { username = User.Identity.Name });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("ChangePicture", "Dancer", new { username = User.Identity.Name });
+            }
+        }
+
+        [Authorize]
+        public ActionResult PostPicture(int id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var model = new EventPostPictureViewModel();
+            model.Event = DataContext.Events.Where(x => x.Id == id).Include("Place").Include("Pictures").FirstOrDefault();
+            var userid = User.Identity.GetUserId();
+            var token = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault().FacebookToken;
+            if (token != null)
+            {
+                model.FacebookPictures = FacebookHelper.GetPhotos(token);
             }
 
             return View(model);
         }
 
+#endregion
+
+        #region videos
+        [Authorize]
+        public ActionResult PostVideo(int id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var model = new EventPostVideoViewModel();
+            model.Event = DataContext.Events.Where(x => x.Id == id).Include("Place").Include("Videos").FirstOrDefault();
+            var userid = User.Identity.GetUserId();
+            var youtubeUsername = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault().YouTubeUsername;
+            if (youtubeUsername != null)
+            {
+                model.YoutubeVideos = YouTubeHelper.GetVideos(youtubeUsername);
+            }
+
+            return View(model);
+        }
+        #endregion
+        
         public ActionResult Signup(int id, string returnUrl)
         {
             var userId = User.Identity.GetUserId();

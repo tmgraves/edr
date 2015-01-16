@@ -67,9 +67,13 @@ namespace EDR.Models.ViewModels
 
     }
 
-    public class EventViewModel
+    public class EventBaseViewModel
     {
         public Event Event { get; set; }
+    }
+
+    public class EventViewModel : EventBaseViewModel
+    {
         public Class Class { get; set; }
         public Social Social { get; set; }
         public Review Review { get; set; }
@@ -80,5 +84,20 @@ namespace EDR.Models.ViewModels
         public int EventId { get; set; }
         public IEnumerable<Review> EventReviews { get; set; }
         public Review NewReview { get; set; }
+    }
+
+    public class EventChangePictureViewModel : EventBaseViewModel
+    {
+        public IEnumerable<FacebookPhoto> FacebookPictures { get; set; }
+    }
+
+    public class EventPostPictureViewModel : EventBaseViewModel
+    {
+        public IEnumerable<FacebookPhoto> FacebookPictures { get; set; }
+    }
+
+    public class EventPostVideoViewModel : EventBaseViewModel
+    {
+        public IEnumerable<YouTubeVideo> YoutubeVideos { get; set; }
     }
 }

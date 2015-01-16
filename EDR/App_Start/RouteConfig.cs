@@ -55,6 +55,18 @@ namespace EDR
             );
 
             routes.MapRoute(
+                name: "EventUploadPic",
+                url: "Event/UploadPicture",
+                defaults: new { controller = "Event", action = "UploadPicture" }
+            );
+
+            routes.MapRoute(
+                name: "EventDeletePic",
+                url: "Event/DeletePicture",
+                defaults: new { controller = "Event", action = "DeletePicture" }
+            );
+
+            routes.MapRoute(
                 name: "EventEdit",
                 url: "Event/{id}/Edit",
                 defaults: new { controller = "Event", action = "Edit" }
@@ -63,13 +75,19 @@ namespace EDR
             routes.MapRoute(
                 name: "ClassView",
                 url: "Class/{id}",
-                defaults: new { controller = "Event", action = "Class" }
+                defaults: new { controller = "Event", action = "View" }
             );
 
             routes.MapRoute(
                 name: "SocialView",
                 url: "Social/{id}",
-                defaults: new { controller = "Event", action = "Social" }
+                defaults: new { controller = "Event", action = "View" }
+            );
+
+            routes.MapRoute(
+                name: "TeacherHome",
+                url: "Teacher/{username}/Home",
+                defaults: new { controller = "Teacher", action = "MyTeach", username = UrlParameter.Optional }
             );
 
             routes.MapRoute(

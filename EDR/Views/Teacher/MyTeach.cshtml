@@ -46,7 +46,7 @@
                         icon: "http://maps.google.com/mapfiles/kml/paddle/" + @idx + "-lv.png"
                     });
 
-                    attachSecretMessage(marker, '@c.Id', '@c.Place.Name', '@c.Place.Address <br/> @c.Place.City , @c.Place.State  @c.Place.Zip', '<a href="@Url.Action("Class", "Event", new { id = c.Id } )">' + marker.title + '</a>', '@(c.Users != null ? c.Users.Count : 0)', 4, 5);
+                    attachSecretMessage(marker, '@c.Id', '@c.Place.Name', '@c.Place.Address <br/> @c.Place.City , @c.Place.State  @c.Place.Zip', '<a href="@Url.Action("View", "Event", new { id = c.Id } )">' + marker.title + '</a>', '@(c.Users != null ? c.Users.Count : 0)', 4, 5);
                     markers.push(marker);
 
         </text>

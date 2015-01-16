@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<EDR.Models.Review>
 @using EDR.Utilities
 
-<h4 class="page-header">
+<h4>
     Reviews
     <span class="pull-right small">
         @Model.Where(x => x.Like).Count()
@@ -10,6 +10,7 @@
         <img src="~/Content/images/thumbdownsm.png" />
     </span>
 </h4>
+<hr />
 <div style="max-height:400px; overflow: auto;">
     @foreach (var r in Model.OrderByDescending(x => x.ReviewDate))
     {
@@ -21,7 +22,7 @@
                 }
                 else
                 {
-                    <img src="@Url.Content(ApplicationUtility.GetNoProfilePicture().ThumbnailFilename)" />
+                    <img src="@Url.Content("~/Content/images/NoPic.png")" />
                 }
                 @Html.DisplayFor(modelItem => r.Author.FirstName)
             </div>

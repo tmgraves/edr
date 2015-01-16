@@ -1,0 +1,130 @@
+﻿@model EDR.Models.ViewModels.EventChangePictureViewModel
+
+@{
+    ViewBag.Title = "ChangePicture";
+}
+
+<h1 class="page-header">
+    Change Picture for @Model.Event.Name
+    <small>at @Model.Event.Place.Name</small>
+</h1>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-2">
+            @if (Model.Event.PhotoUrl != null)
+            {
+                <img class="img-thumbnail" src="@Url.Content(Model.Event.PhotoUrl)" />
+            }
+            else
+            {
+                <img class="img-thumbnail" src="~/Content/images/MissingImage.jpg" />
+            }
+        </div>
+        <div class="col-md-10">
+            <h3>Upload a New Picture</h3>
+            @using (Html.BeginForm("UploadPicture",
+                                    "Event",
+                                    new { returnUrl = @Url.Action("ChangePicture", new { id = @Model.Event.Id }) },
+                                    FormMethod.Post,
+                                    new { enctype = "multipart/form-data" }))
+            {
+                @Html.HiddenFor(x => x.Event.Id)
+                <div class="form-group form-inline">
+                    <input type="file" name="file" id="file" class="form-control" />
+                    <input id="submit" type="submit" class="btn btn-default" value="Submit" />
+                </div>
+                <p>
+                    @ViewBag.Message
+                </p>
+
+                <script type="text/javascript">
+                $('#submit').click(function () {
+                        //check whether browser fully supports all File API
+                        if (window.File && window.FileReader && window.FileList && window.Blob) {
+                            //get the file size and file type from file input field
+                            var fsize = $('#file')[0].files[0].size;
+
+                            if (fsize > 1048576) //do something if file size more than 1 mb (1048576)
+                            {
+                                alert("File is too big.  Please try another.");
+                                return false;
+                            } else {
+                                return true;
+                            }
+                        } else {
+                            alert("Please upgrade your browser, because your current browser lacks some new features we need!");
+                        }
+                    });
+                </script>
+            }
+        </div>
+    </div>
+    <div class="tabbable">
+        <ul class="nav nav-tabs nav-justified" role="tablist">
+            <li class="active"><a href="#eventpics" data-toggle="tab">Choose an Event Pictures</a></li>
+            <li><a href="#facebookpics" data-toggle="tab">Choose One of Your Facebook Pictures</a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="eventpics" class="tab-pane active">
+                <ul class="list-inline">
+                    @if (Model.Event.Pictures != null && Model.Event.Pictures.Count > 0)
+                    {
+                        foreach (var photo in Model.Event.Pictures)
+                        {
+                            <li style="vertical-align: top; width: 150px;">
+                                <div class="photoTile">
+                                    <img class="img-thumbnail" src="@Url.Content(photo.ThumbnailFilename)" />
+                                </div>
+                                @if (!photo.MainPicture)
+                                {
+                                    <a title="Make Profile Picture" href="@Url.Action("MainPicture", "Event", new { id = photo.Id, eventId = Model.Event.Id })">
+                                        <i class="glyphicon glyphicon-user btn btn-primary"></i>
+                                        <span class="sr-only">Edit</span>
+                                    </a>
+                                    <a title="Delete Picture" href="@Url.Action("DeletePicture", "Event", new { pictureId = photo.Id, eventId = Model.Event.Id, returnUrl = @Url.Action("ChangePicture", new { id = @Model.Event.Id }) })" onclick="return confirm('Are you sure you want to DELETE this picture?')">
+                                        <i class="glyphicon glyphicon glyphicon-remove btn btn-danger"></i>
+                                        <span class="sr-only">Delete</span>
+                                    </a>
+                                    @*@Html.ActionLink("Profile Pic", "ProfilePicture", "Dancer", htmlAttributes: new { @class = "btn btn-primary" })*@
+
+                                }
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        @:There are no pictures for this event.
+                }
+                </ul>
+            </div>
+            <div id="facebookpics" class="tab-pane">
+                @if (Model.FacebookPictures != null && Model.FacebookPictures.Count() > 0)
+                {
+                    <ul class="list-inline">
+                        @foreach (var photo in Model.FacebookPictures.OrderByDescending(photo => photo.PhotoDate))
+                        {
+                            <li>
+                                <a href="@photo.Link" target="_blank">
+                                    <div class="photoTile">
+                                        @if (photo.Source != null)
+                                        {
+                                            <img class="thumbnail" src="@photo.Source" />
+                                        }
+                                    </div>
+                                </a>
+                                @Html.ActionLink("Add to Locker", "AddFacebookPicture", "Event", new { id = photo.Id, album = photo.Album, name = photo.Name, largeSource = photo.LargeSource, link = photo.Link, photodate = photo.PhotoDate, source = photo.Source }, htmlAttributes: new { @class = "btn btn-primary" })
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    @:No Facebook pictures found.
+            }
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.ActionLink("Back to Event", "View", "Event", new { id = Model.Event.Id }, htmlAttributes: new { @class = "btn btn-primary" })

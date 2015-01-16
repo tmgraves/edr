@@ -79,5 +79,7 @@ namespace EDR.Models
         public ICollection<ApplicationUser> Users { get; set; }
 
         public ICollection<Promoter> Promoters { get; set; }
+        public ICollection<EventPicture> Pictures { get; set; }
+        public ICollection<EventVideo> Videos { get; set; }
     }
 }

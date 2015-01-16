@@ -1,0 +1,24 @@
+﻿@model IEnumerable<EDR.Models.Teacher>
+
+<ul class="list-inline">
+    @foreach (var item in Model)
+    {
+        <li>
+            <a class="btn btn-default" href="@Url.Action("Home", "Teacher", new { username = item.ApplicationUser.UserName }) " style="text-decoration: none;">
+                <div style="display: inline-block;">
+                    @if (item.ApplicationUser.UserPictures != null && item.ApplicationUser.UserPictures.Count > 0)
+                    {
+                        <img class="pull-left" style="width: 40px;" src="@Url.Content(item.ApplicationUser.UserPictures.First().ThumbnailFilename)" />
+                    }
+                    else
+                    {
+                        <img class="pull-left" style="width: 40px;" src="@Url.Content("~/Content/images/NoPic.png")" />
+                    }
+                </div>
+                <div style="display: inline-block; vertical-align: top;">
+                    <span class="text-primary" style="vertical-align: top;">@item.ApplicationUser.FullName</span>
+                </div>
+            </a>
+        </li>
+    }
+</ul>

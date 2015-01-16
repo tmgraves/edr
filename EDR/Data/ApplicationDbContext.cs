@@ -72,6 +72,11 @@ namespace EDR.Data
             //Photos
             modelBuilder.Entity<Picture>().ToTable("Pictures");
             modelBuilder.Entity<UserPicture>().ToTable("UserPictures");
+            modelBuilder.Entity<EventPicture>().ToTable("EventPictures");
+
+            //Videos
+            modelBuilder.Entity<Video>().ToTable("Videos");
+            modelBuilder.Entity<EventVideo>().ToTable("EventVideos");
 
             //Students
             modelBuilder.Entity<Student>().ToTable("Students");
