@@ -1,0 +1,38 @@
+﻿@model IEnumerable<EDR.Models.EventVideo>
+
+<ul class="list-inline">
+    @foreach (var video in Model)
+    {
+        <li>
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-12 col-xs-12">
+                    <div class="thumbnail">
+                        <a target="_blank" href="https://www.youtube.com/watch?v=@video.YoutubeId&feature=player_embedded">
+                            <div id="videocontainer" style="width: 240px; height: 150px;">
+                                <div id="videoimage">
+                                    <img src="https://img.youtube.com/vi/@Html.DisplayFor(s => video.YoutubeId)/mqdefault.jpg" />
+                                </div>
+                                <div id="videoplaybutton">
+                                    <div id="playbutton">
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                        <div class="caption">
+                            <h4 style="white-space: normal;">@video.Title</h4>
+                            <p>
+                                Posted By:
+                                <a href="@Url.Action("Home", "Dancer", new { username = video.Author.UserName })" style="text-decoration: none;">
+                                    <span class="text-primary" style="vertical-align: top;">
+                                        <b>@video.Author.FirstName</b>
+                                    </span>
+                                </a>
+                                on <span class="text-danger" style="vertical-align: top;">@video.PublishDate.ToShortDateString()</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+    }
+</ul>

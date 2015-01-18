@@ -33,5 +33,6 @@ namespace EDR.Models
         public virtual ICollection<Rehearsal> Rehearsals { get; set; }
         public virtual ICollection<Place> Places { get; set; }
         public virtual ICollection<Student> Students { get; set; }
+        public ICollection<ClassTeacherInvitation> ClassTeacherInvitations { get; set; }
     }
 }

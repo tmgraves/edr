@@ -9,9 +9,10 @@ namespace EDR.Models
     {
         public string Title { get; set; }
         public DateTime PublishDate { get; set; }
-        public string YoutubeLink { get; set; }
+        public string YoutubeId { get; set; }
         public string YoutubeUrl { get; set; }
         public string YoutubeThumbnail { get; set; }
+        public ApplicationUser Author { get; set; }
     }
 
     public class EventVideo : Video

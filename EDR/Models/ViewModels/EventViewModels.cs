@@ -77,6 +77,7 @@ namespace EDR.Models.ViewModels
         public Class Class { get; set; }
         public Social Social { get; set; }
         public Review Review { get; set; }
+        public IEnumerable<ClassTeacherInvitation> ClassTeacherInvitations { get; set; }
     }
 
     public class EventReviewsViewModel

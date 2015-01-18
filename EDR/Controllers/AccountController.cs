@@ -430,7 +430,7 @@ namespace EDR.Controllers
                 if (picture != null)
                 {
                     user.UserPictures = new List<UserPicture>();
-                    user.UserPictures.Add(new UserPicture() { Filename = picture.LargeSource, ProfilePicture = true, Title = "Profile Picture", ThumbnailFilename = picture.LargeSource });
+                    user.UserPictures.Add(new UserPicture() { Filename = picture.LargeSource, ProfilePicture = true, Title = "Profile Picture", ThumbnailFilename = picture.LargeSource, PhotoDate = picture.PhotoDate });
                     DataContext.SaveChanges();
                 }
 

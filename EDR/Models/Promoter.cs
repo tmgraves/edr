@@ -25,5 +25,6 @@ namespace EDR.Models
 
         public virtual ICollection<Event> Events { get; set; }
         public virtual ICollection<Place> Places { get; set; }
+        public ICollection<SocialPromoterInvitation> SocialPromoterInvitations { get; set; }
     }
 }

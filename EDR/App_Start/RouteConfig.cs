@@ -55,6 +55,12 @@ namespace EDR
             );
 
             routes.MapRoute(
+                name: "EventImportVideo",
+                url: "Event/ImportVideo",
+                defaults: new { controller = "Event", action = "ImportVideo" }
+            );
+
+            routes.MapRoute(
                 name: "EventUploadPic",
                 url: "Event/UploadPicture",
                 defaults: new { controller = "Event", action = "UploadPicture" }
@@ -64,6 +70,18 @@ namespace EDR
                 name: "EventDeletePic",
                 url: "Event/DeletePicture",
                 defaults: new { controller = "Event", action = "DeletePicture" }
+            );
+
+            routes.MapRoute(
+                name: "EventTeacherJoin",
+                url: "Event/JoinTeachers",
+                defaults: new { controller = "Event", action = "JoinTeachers" }
+            );
+
+            routes.MapRoute(
+                name: "EventApproveTeacher",
+                url: "Event/ApproveTeacher",
+                defaults: new { controller = "Event", action = "ApproveTeacher" }
             );
 
             routes.MapRoute(

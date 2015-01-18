@@ -104,6 +104,9 @@
                             <a style="font-size: small;" href="@Url.Action("ChangePicture", "Event", new { id = Model.Event.Id })">Change Picture</a>
                         </p>
                     }
+                    <a target="_blank" href="https://maps.google.com/?q=@Model.Event.Place.Latitude,@Model.Event.Place.Longitude">
+                        <img class="img-thumbnail" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Event.Place.Latitude,@Model.Event.Place.Longitude&zoom=10&size=250x100&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Event.Place.Latitude, @Model.Event.Place.Longitude">
+                    </a>
                 </div>
                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                     <div class="row">
@@ -142,7 +145,41 @@
                             <label class="control-label col-lg-3 col-md-3 col-sm-3 col-xs-3">
                                 Teachers:
                             </label>
-                            @Html.Partial("~/Views/Shared/_BasicTeacherListPartial.cshtml", Model.Class.Teachers.OrderBy(x => x.ApplicationUser.FullName))
+                            <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
+                                @Html.Partial("~/Views/Shared/_BasicTeacherListPartial.cshtml", Model.Class.Teachers.OrderBy(x => x.ApplicationUser.FullName))
+                                <ul class="list-inline">
+                                    @if (Model.Class.Teachers.Where(t => t.ApplicationUser.UserName == User.Identity.Name).Count() == 1)
+                                    {
+                                        foreach (var invite in Model.ClassTeacherInvitations.Where(i => i.Approved == null))
+                                        {
+                                            <li>
+                                                <div class="panel panel-default">
+                                                    <div>
+                                                        <a class="btn btn-warning" href="@Url.Action("ApproveTeacher", "Event", new { classId = invite.Class.Id, teacherId = invite.Teacher.Id, returnUrl = @Url.Action("View", new { id = @Model.Event.Id }) }) " style="text-decoration: none; width: 100%;">
+                                                            Approve Teacher
+                                                        </a>
+                                                    </div>
+                                                    <div style="display: inline-block; vertical-align: top;">
+                                                        <a class="btn btn-default" href="@Url.Action("Home", "Teacher", new { username = invite.Teacher.ApplicationUser.UserName }) " style="text-decoration: none;">
+                                                            <div class="pull-left" style="height: 40px; width: 40px; overflow: hidden;">
+                                                                @if (invite.Teacher.ApplicationUser.UserPictures != null && invite.Teacher.ApplicationUser.UserPictures.Count > 0)
+                                                                {
+                                                                    <img class="pull-left" style="width: 40px;" src="@Url.Content(invite.Teacher.ApplicationUser.UserPictures.First().ThumbnailFilename)" />
+                                                                }
+                                                                else
+                                                                {
+                                                                    <img class="pull-left" style="width: 40px;" src="@Url.Content("~/Content/images/NoPic.png")" />
+                                                                }
+                                                            </div>
+                                                            <span class="text-primary" style="vertical-align: top;">@invite.Teacher.ApplicationUser.FullName</span>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        }
+                                    }
+                                </ul>
+                            </div>
                         </div>
                     }
                     <div class="row">
@@ -178,12 +215,15 @@
                     @if (User.Identity.IsAuthenticated)
                     {
                         <p>
-                            @Html.ActionLink("Add to Your Calendar", "Signup", "Event", new { id = Model.Event.Id }, htmlAttributes: new { @class = "btn btn-primary", @style = "margin: 5px" })
+                            @Html.ActionLink("Add to Your Calendar", "Signup", "Event", new { id = Model.Event.Id, returnUrl = @Url.Action("View", new { id = @Model.Event.Id }) }, htmlAttributes: new { @class = "btn btn-primary col-lg-12 col-md-12 col-sm-12 col-xs-12", @style = "margin: 5px" })
                         </p>
                     }
-                    <a target="_blank" href="https://maps.google.com/?q=@Model.Event.Place.Latitude,@Model.Event.Place.Longitude">
-                        <img class="img-thumbnail" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Event.Place.Latitude,@Model.Event.Place.Longitude&zoom=10&size=250x200&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Event.Place.Latitude, @Model.Event.Place.Longitude">
-                    </a>
+                    @if (User.Identity.IsAuthenticated && User.IsInRole("Teacher") && Model.ClassTeacherInvitations.Where(i => i.Teacher.ApplicationUser.UserName == User.Identity.Name).Count() == 0 && Model.Class.Teachers.Where(t => t.ApplicationUser.UserName == User.Identity.Name).Count() == 0)
+                    {
+                        <p>
+                            @Html.ActionLink("Join As a Teacher", "JoinTeachers", "Event", new { eventId = Model.Event.Id, returnUrl = @Url.Action("View", new { id = @Model.Event.Id }) }, htmlAttributes: new { @class = "btn btn-warning col-lg-12 col-md-12 col-sm-12 col-xs-12", @style = "margin: 5px" })
+                        </p>
+                    }
                 </div>
             </div>
         </div>
@@ -212,7 +252,9 @@
                 </a>
             </h4>
             <hr />
-            @Html.Partial("~/Views/Shared/_PictureListPartial.cshtml", Model.Event.Pictures.OrderByDescending(p => p.PhotoDate))
+            <div style="max-height: 1000px; overflow-y: auto; overflow-x: hidden;">
+                @Html.Partial("~/Views/Shared/_PictureListPartial.cshtml", Model.Event.Pictures.OrderByDescending(p => p.PhotoDate))
+            </div>
         </div>
         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
             <h4>
@@ -222,6 +264,9 @@
                 </a>
             </h4>
             <hr />
+            <div style="max-height: 1000px; overflow-y: auto; overflow-x: hidden;">
+                @Html.Partial("~/Views/Shared/_VideoListPartial.cshtml", Model.Event.Videos.OrderByDescending(p => p.PublishDate))
+            </div>
         </div>
     </div>
     <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">

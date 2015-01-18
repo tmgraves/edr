@@ -10,5 +10,6 @@ namespace EDR.Models
     {
         public SocialType SocialType { get; set; }
         public ICollection<Promoter> Promoters { get; set; }
+        public ICollection<SocialPromoterInvitation> SocialPromoterInvitations { get; set; }
     }
 }

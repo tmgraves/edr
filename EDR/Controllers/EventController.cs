@@ -82,7 +82,14 @@ namespace EDR.Controllers
 
             if (model.Event is Class)
             {
-                model.Class = DataContext.Events.OfType<Class>().Where(x => x.Id == id).Include("Teachers").Include("Teachers.ApplicationUser").FirstOrDefault();
+                model.Class = DataContext.Events.OfType<Class>().Where(x => x.Id == id)
+                    .Include("Teachers")
+                    .Include("Teachers.ApplicationUser")
+                    .FirstOrDefault();
+                model.ClassTeacherInvitations = DataContext.ClassTeacherInvitations.Where(i => i.ClassId == id)
+                                                        .Include("Teacher")
+                                                        .Include("Teacher.ApplicationUser")
+                                                        .Include("Teacher.ApplicationUser.UserPictures");
             }
             else if (model.Event is Social)
             {
@@ -100,7 +107,16 @@ namespace EDR.Controllers
         private EventViewModel LoadEvent(int id)
         {
             var model = new EventViewModel();
-            model.Event = DataContext.Events.Where(x => x.Id == id).Include("Place").Include("DanceStyles").Include("Reviews").Include("Users").Include("Pictures").Include("Pictures.PostedBy").Include("Pictures.PostedBy.UserPictures").FirstOrDefault();
+            model.Event = DataContext.Events.Where(x => x.Id == id)
+                    .Include("Place")
+                    .Include("DanceStyles")
+                    .Include("Reviews")
+                    .Include("Users")
+                    .Include("Pictures")
+                    .Include("Pictures.PostedBy")
+                    .Include("Videos")
+                    .Include("Videos.Author")
+                    .FirstOrDefault();
             model.Review = new Review();
             model.Review.Like = true;
             var userid = User.Identity.GetUserId();
@@ -108,7 +124,21 @@ namespace EDR.Controllers
             return model;
         }
 
-#region pictures
+        [Authorize]
+        public ActionResult ApproveTeacher(int teacherId, int classId, string returnUrl)
+        {
+            var invite = DataContext.ClassTeacherInvitations.Where(i => i.TeacherId == teacherId && i.ClassId == classId).FirstOrDefault();
+            invite.Approved = true;
+            DataContext.Entry(invite).State = EntityState.Modified;
+            var cl = DataContext.Events.OfType<Class>().Where(c => c.Id == classId).Include("Teachers").FirstOrDefault();
+            cl.Teachers.Add(DataContext.Teachers.Where(t => t.Id == teacherId).FirstOrDefault());
+            DataContext.Entry(cl).State = EntityState.Modified;
+            DataContext.SaveChanges();
+            ViewBag.Message = "Teacher was approved";
+            return Redirect(returnUrl);
+        }
+        
+        #region pictures
         [Authorize]
         public ActionResult ChangePicture(int id)
         {
@@ -157,6 +187,7 @@ namespace EDR.Controllers
             return Redirect(returnUrl);
         }
 
+        [Authorize]
         public ActionResult DeletePicture(int pictureId, int eventId, string returnUrl)
         {
             var picture = DataContext.Pictures.Find(pictureId);
@@ -207,20 +238,23 @@ namespace EDR.Controllers
         }
 
         [Authorize]
-        public ActionResult AddFacebookPicture(string id, string album, string name, string largeSource, string link, DateTime photodate, string source)
+        public ActionResult AddFacebookPicture(int eventId, string id, string returnUrl)
         {
             try
             {
                 string userId = User.Identity.GetUserId();
-                var dancer = DataContext.Users.Where(x => x.Id == userId).Include("UserPictures").FirstOrDefault();
-                dancer.UserPictures.Add(new UserPicture() { Title = name, ThumbnailFilename = source, Filename = largeSource });
-                DataContext.Entry(dancer).State = EntityState.Modified;
+                var ev = DataContext.Events.Where(e => e.Id == eventId).Include("Pictures").FirstOrDefault();
+                var picture = ((List<FacebookPhoto>)Session["FacebookPictures"]).Where(p => p.Id == id).FirstOrDefault();
+                var userid = User.Identity.GetUserId();
+                var postedby = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+                ev.Pictures.Add(new EventPicture() { Title = picture.Name, ThumbnailFilename = picture.Source, Filename = picture.LargeSource, PhotoDate = picture.PhotoDate, PostedBy = postedby });
+                DataContext.Entry(ev).State = EntityState.Modified;
                 DataContext.SaveChanges();
-                return RedirectToAction("ChangePicture", "Dancer", new { username = User.Identity.Name });
+                return Redirect(returnUrl);
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ChangePicture", "Dancer", new { username = User.Identity.Name });
+                return Redirect(returnUrl);
             }
         }
 
@@ -239,6 +273,7 @@ namespace EDR.Controllers
             if (token != null)
             {
                 model.FacebookPictures = FacebookHelper.GetPhotos(token);
+                Session["FacebookPictures"] = model.FacebookPictures;
             }
 
             return View(model);
@@ -262,12 +297,42 @@ namespace EDR.Controllers
             if (youtubeUsername != null)
             {
                 model.YoutubeVideos = YouTubeHelper.GetVideos(youtubeUsername);
+                Session["YouTubeVideos"] = model.YoutubeVideos;
             }
 
             return View(model);
         }
+        [Authorize]
+        public ActionResult ImportVideo(string videoId, int eventId, string returnUrl)
+        {
+            var ytVideo = ((List<YouTubeVideo>)Session["YouTubeVideos"]).Where(x => x.Id == videoId).FirstOrDefault();
+            var userid = User.Identity.GetUserId();
+
+            var auth = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+
+            var eVideo = new EventVideo() { Title = ytVideo.Title, PublishDate = ytVideo.PubDate, YoutubeId = videoId, Author = auth };
+
+            var ev = DataContext.Events.Where(e => e.Id == eventId).Include("Videos").FirstOrDefault();
+            ev.Videos.Add(eVideo);
+            DataContext.Entry(ev).State = EntityState.Modified;
+            DataContext.SaveChanges();
+            ViewBag.Message = "Video was imported";
+            return Redirect(returnUrl);
+        }
         #endregion
-        
+
+        [Authorize]
+        public ActionResult JoinTeachers(int eventId, string returnUrl)
+        {
+            var userid = User.Identity.GetUserId();
+            var teacher = DataContext.Teachers.Where(t => t.ApplicationUser.Id == userid).FirstOrDefault();
+            var cls = DataContext.Events.OfType<Class>().Where(c => c.Id == eventId).FirstOrDefault();
+            DataContext.ClassTeacherInvitations.Add(new ClassTeacherInvitation() { Teacher = teacher, Class = cls });
+            DataContext.SaveChanges();
+            ViewBag.Message = "You requested to join this class as a teacher";
+            return Redirect(returnUrl);
+        }
+
         public ActionResult Signup(int id, string returnUrl)
         {
             var userId = User.Identity.GetUserId();

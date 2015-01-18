@@ -5,10 +5,10 @@
     {
         <li>
             <a class="btn btn-default" href="@Url.Action("Home", "Teacher", new { username = item.ApplicationUser.UserName }) " style="text-decoration: none;">
-                <div style="display: inline-block;">
+                <div class="captionpic" style="display: inline-block;">
                     @if (item.ApplicationUser.UserPictures != null && item.ApplicationUser.UserPictures.Count > 0)
                     {
-                        <img class="pull-left" style="width: 40px;" src="@Url.Content(item.ApplicationUser.UserPictures.First().ThumbnailFilename)" />
+                        <img class="pull-left" src="@Url.Content(item.ApplicationUser.UserPictures.First().ThumbnailFilename)" />
                     }
                     else
                     {

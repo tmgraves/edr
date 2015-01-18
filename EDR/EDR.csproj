@@ -275,6 +275,7 @@
     <Compile Include="Data\ApplicationDbInitializer.cs" />
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Address.cs" />
+    <Compile Include="Models\EventInviations.cs" />
     <Compile Include="Models\EventPicture.cs" />
     <Compile Include="Models\Facebook.cs" />
     <Compile Include="Models\Friend.cs" />
@@ -715,6 +716,7 @@
     <Content Include="Views\Event\ChangePicture.cshtml" />
     <Content Include="Views\Event\View.cshtml" />
     <Content Include="Views\Event\PostPicture.cshtml" />
+    <Content Include="Views\Shared\_VideoListPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Series\" />

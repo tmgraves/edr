@@ -80,6 +80,11 @@ namespace EDR.Data
 
             //Students
             modelBuilder.Entity<Student>().ToTable("Students");
+
+            //Invitations
+            modelBuilder.Entity<ClassTeacherInvitation>().ToTable("ClassTeacherInvitations");
+            modelBuilder.Entity<SocialPromoterInvitation>().ToTable("SocialPromoterInvitations");
+            modelBuilder.Entity<PlaceOwnerInvitation>().ToTable("PlaceOwnerInvitations");
         }
 
         public DbSet<Place> Places { get; set; }
@@ -96,6 +101,10 @@ namespace EDR.Data
 
         public DbSet<Picture> Pictures { get; set; }
         public DbSet<Student> Students { get; set; }
+
+        public DbSet<ClassTeacherInvitation> ClassTeacherInvitations { get; set; }
+        public DbSet<SocialPromoterInvitation> SocialPromoterInvitations { get; set; }
+        public DbSet<PlaceOwnerInvitation> PlaceOwnerInvitations { get; set; }
 
         //// TODO: REMOVE THESE DBSETS
         //public DbSet<Class> Classes { get; set; }
