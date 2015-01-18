@@ -93,13 +93,13 @@ namespace EDR
             routes.MapRoute(
                 name: "ClassView",
                 url: "Class/{id}",
-                defaults: new { controller = "Event", action = "View" }
+                defaults: new { controller = "Event", action = "Class" }
             );
 
             routes.MapRoute(
                 name: "SocialView",
                 url: "Social/{id}",
-                defaults: new { controller = "Event", action = "View" }
+                defaults: new { controller = "Event", action = "Social" }
             );
 
             routes.MapRoute(

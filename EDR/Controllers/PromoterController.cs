@@ -28,9 +28,9 @@ namespace EDR.Controllers
             var viewModel = new PromoterViewViewModel();
             viewModel.Promoter = DataContext.Promoters
                                     .Where(x => x.ApplicationUser.UserName == username)
-                                    .Include("Events")
+                                    .Include("Socials")
                                     .Include("Places")
-                                    .Include("Events.DanceStyles")
+                                    .Include("Socials.DanceStyles")
                                     .FirstOrDefault();
 
             if (viewModel.Promoter.ApplicationUser.ZipCode != null)
@@ -44,7 +44,7 @@ namespace EDR.Controllers
 
             // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE PromoterViewModel)
             viewModel.Socials = new List<Social>();
-            viewModel.Socials = viewModel.Promoter.Events.OfType<Social>();
+            viewModel.Socials = viewModel.Promoter.Socials;
             viewModel.Concerts = new List<Concert>();
             viewModel.Conferences = new List<Conference>();
             viewModel.OpenHouses = new List<OpenHouse>();

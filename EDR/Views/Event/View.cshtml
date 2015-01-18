@@ -218,11 +218,14 @@
                             @Html.ActionLink("Add to Your Calendar", "Signup", "Event", new { id = Model.Event.Id, returnUrl = @Url.Action("View", new { id = @Model.Event.Id }) }, htmlAttributes: new { @class = "btn btn-primary col-lg-12 col-md-12 col-sm-12 col-xs-12", @style = "margin: 5px" })
                         </p>
                     }
-                    @if (User.Identity.IsAuthenticated && User.IsInRole("Teacher") && Model.ClassTeacherInvitations.Where(i => i.Teacher.ApplicationUser.UserName == User.Identity.Name).Count() == 0 && Model.Class.Teachers.Where(t => t.ApplicationUser.UserName == User.Identity.Name).Count() == 0)
+                    @if (Model.Event is Class)
                     {
-                        <p>
-                            @Html.ActionLink("Join As a Teacher", "JoinTeachers", "Event", new { eventId = Model.Event.Id, returnUrl = @Url.Action("View", new { id = @Model.Event.Id }) }, htmlAttributes: new { @class = "btn btn-warning col-lg-12 col-md-12 col-sm-12 col-xs-12", @style = "margin: 5px" })
-                        </p>
+                        if (User.Identity.IsAuthenticated && User.IsInRole("Teacher") && Model.ClassTeacherInvitations.Where(i => i.Teacher.ApplicationUser.UserName == User.Identity.Name).Count() == 0 && Model.Class.Teachers.Where(t => t.ApplicationUser.UserName == User.Identity.Name).Count() == 0)
+                        {
+                            <p>
+                                @Html.ActionLink("Join As a Teacher", "JoinTeachers", "Event", new { eventId = Model.Event.Id, returnUrl = @Url.Action("View", new { id = @Model.Event.Id }) }, htmlAttributes: new { @class = "btn btn-warning col-lg-12 col-md-12 col-sm-12 col-xs-12", @style = "margin: 5px" })
+                            </p>
+                        }
                     }
                 </div>
             </div>
