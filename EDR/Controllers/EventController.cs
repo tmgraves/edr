@@ -104,51 +104,6 @@ namespace EDR.Controllers
             return View(model);
         }
 
-        public ActionResult Class(int id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            var model = LoadEvent(id);
-
-            model.Class = DataContext.Events.OfType<Class>().Where(x => x.Id == id)
-                .Include("Teachers")
-                .Include("Teachers.ApplicationUser")
-                .FirstOrDefault();
-            model.ClassTeacherInvitations = DataContext.ClassTeacherInvitations.Where(i => i.ClassId == id)
-                                                    .Include("Teacher")
-                                                    .Include("Teacher.ApplicationUser")
-                                                    .Include("Teacher.ApplicationUser.UserPictures");
-
-            if (model.Event == null)
-            {
-                return HttpNotFound();
-            }
-
-            return View(model);
-        }
-
-        public ActionResult Social(int id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            var model = LoadEvent(id);
-
-            model.Social = DataContext.Events.OfType<Social>().Where(x => x.Id == id).Include("Promoters").Include("Promoters.ApplicationUser").FirstOrDefault();
-
-            if (model.Event == null)
-            {
-                return HttpNotFound();
-            }
-
-            return View(model);
-        }
-
         private EventViewModel LoadEvent(int id)
         {
             var model = new EventViewModel();
