@@ -9,6 +9,7 @@ namespace EDR.Models.ViewModels
     {
         public Teacher Teacher { get; set; }
         public Address Address { get; set; }
+        public EventListViewModel Events { get; set; }
         public ClassNewViewModel NewClassModel { get; set; }
     }
 }

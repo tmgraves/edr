@@ -157,6 +157,7 @@ namespace EDR.Data
             };
             context.Reviews.AddRange(reviews);
 
+            context.Owners.Add(tadowner);
             context.Places.AddRange(places);
             context.Events.AddRange(salsaclasses);
             context.Events.AddRange(events);

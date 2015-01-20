@@ -29,7 +29,8 @@ namespace EDR.Controllers
             viewModel.Owner = DataContext.Owners
                                 .Where(x => x.ApplicationUser.UserName == username)
                                 .Include("ApplicationUser")
-                                .Include("Places").FirstOrDefault();
+                                .Include("Places")
+                                .FirstOrDefault();
 
             if (viewModel.Owner.ApplicationUser.ZipCode != null)
             {

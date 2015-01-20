@@ -101,4 +101,11 @@ namespace EDR.Models.ViewModels
     {
         public IEnumerable<YouTubeVideo> YoutubeVideos { get; set; }
     }
+
+    public class EventListViewModel
+    {
+        public Address Location { get; set; }
+        public EventType EventType { get; set; }
+        public IEnumerable<Event> Events { get; set; }
+    }
 }

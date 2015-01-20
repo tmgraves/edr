@@ -128,5 +128,60 @@ namespace EDR.Utilities
 
             return result;
         }
+
+        public static string FrequencyTranslate(Frequency frequency, int interval)
+        {
+            string freq = "";
+            switch (frequency)
+            {
+                case Frequency.Daily:
+                    if (interval > 1)
+                    {
+                        freq = "Days";
+                    }
+                    else
+                    {
+                        freq = "Day";
+                    }
+                    break;
+                case Frequency.Weekly:
+                    if (interval > 1)
+                    {
+                        freq = "Weeks";
+                    }
+                    else
+                    {
+                        freq = "Week";
+                    }
+                    break;
+                case Frequency.Monthly:
+                    if (interval > 1)
+                    {
+                        freq = "Months";
+                    }
+                    else
+                    {
+                        freq = "Month";
+                    }
+                    break;
+                case Frequency.Yearly:
+                    if (interval > 1)
+                    {
+                        freq = "Years";
+                    }
+                    else
+                    {
+                        freq = "Year";
+                    }
+                    break;
+            }
+
+            var message =
+                "<span class=\"text-warning\">" +
+                    "(*Repeats Every" +
+                    (interval > 1 ? interval.ToString() : "") + freq +
+                "</span>";
+        return message;
+        }
     }
 }

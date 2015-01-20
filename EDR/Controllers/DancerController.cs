@@ -113,19 +113,11 @@ namespace EDR.Controllers
             //viewModel.Dancer = dancer;
             viewModel.Teachers = new List<Teacher>();
             viewModel.Teachers = DataContext.Teachers.Where(x => x.Students.Any(s => s.DancerId == id)).Include("ApplicationUser").Include("ApplicationUser.UserPictures").ToList();
-            viewModel.Classes = new List<Class>();
+            viewModel.Classes = new EventListViewModel();
             var classes = DataContext.Events.OfType<Class>().Where(x => x.Users.Any(u => u.UserName == username)).Include("Users").Include("Teachers").ToList();
-            viewModel.Classes = classes.Where(e => e.NextDate >= today);
-            viewModel.Socials = new List<Social>();
-            viewModel.Socials = DataContext.Events.OfType<Social>().Where(x => x.Users.Any(u => u.UserName == username)).ToList();
-            viewModel.Concerts = new List<Concert>();
-            viewModel.Concerts = DataContext.Events.OfType<Concert>().Where(x => x.Users.Any(u => u.UserName == username)).ToList();
-            viewModel.Conferences = new List<Conference>();
-            viewModel.Conferences = DataContext.Events.OfType<Conference>().Where(x => x.Users.Any(u => u.UserName == username)).ToList();
-            viewModel.OpenHouses = new List<OpenHouse>();
-            viewModel.OpenHouses = DataContext.Events.OfType<OpenHouse>().Where(x => x.Users.Any(u => u.UserName == username)).ToList();
-            viewModel.Parties = new List<Party>();
-            viewModel.Parties = DataContext.Events.OfType<Party>().Where(x => x.Users.Any(u => u.UserName == username)).ToList();
+            viewModel.Classes.Events = classes.Where(e => e.NextDate >= today);
+            viewModel.Socials = new EventListViewModel();
+            viewModel.Socials.Events = DataContext.Events.OfType<Social>().Where(x => x.Users.Any(u => u.UserName == username)).ToList();
             viewModel.SuggestedEvents = new List<Event>();
             //  y.DanceStyles.Any(x => dancer.DanceStyles.Contains(x)) && y.NextDate >= today && 
             var location = Geolocation.ParseAddress(viewModel.Dancer.ZipCode);
@@ -183,10 +175,20 @@ namespace EDR.Controllers
             var id = User.Identity.GetUserId();
 
             viewModel.Teachers = new List<Teacher>();
-            viewModel.Teachers = DataContext.Teachers.Where(x => x.Students.Any(s => s.DancerId == id)).Include("ApplicationUser").Include("ApplicationUser.UserPictures").ToList();
-            viewModel.Classes = new List<Class>();
-            var classes = DataContext.Events.OfType<Class>().Where(x => x.Users.Any(u => u.UserName == username)).Include("Users").Include("Teachers").Include("DanceStyles").ToList();
-            viewModel.Classes = classes.Where(e => e.NextDate >= today);
+            viewModel.Teachers = DataContext.Teachers.Where(x => x.Students.Any(s => s.DancerId == id))
+                                    .Include("ApplicationUser")
+                                    .Include("ApplicationUser.UserPictures")
+                                    .ToList();
+            viewModel.Classes = new EventListViewModel();
+            var classes = DataContext.Events.OfType<Class>().Where(x => x.Users.Any(u => u.UserName == username))
+                                    .Include("Users")
+                                    .Include("Teachers")
+                                    .Include("DanceStyles")
+                                    .Include("Pictures")
+                                    .Include("Videos")
+                                    .ToList();
+            viewModel.Classes.Events = classes.Where(e => e.NextDate >= today);
+            viewModel.Classes.Location = viewModel.Address;
 
             //var scheduler = new DHXScheduler(this) { Skin = DHXScheduler.Skins.Terrace };
             //scheduler.Templates.map_time = "{start_date.toLocaleString()}"; //   "{start_date.toLocaleTimeString()}";    // "{start_date:date(%d.%m.%Y)}";
@@ -263,8 +265,14 @@ namespace EDR.Controllers
                 }
             }
 
-            viewModel.Socials = new List<Social>();
-            viewModel.Socials = DataContext.Events.OfType<Social>().Where(x => x.Users.Any(u => u.UserName == username)).ToList();
+            viewModel.Socials = new EventListViewModel();
+            viewModel.Socials.Events = DataContext.Events
+                                            .OfType<Social>()
+                                            .Include("Pictures")
+                                            .Include("Users")
+                                            .Include("Videos")
+                                            .Where(x => x.Users.Any(u => u.UserName == username)).ToList();
+            viewModel.Socials.Location = viewModel.Address;
 
             return View(viewModel);
         }

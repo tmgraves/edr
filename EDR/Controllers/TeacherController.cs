@@ -36,7 +36,6 @@ namespace EDR.Controllers
             var viewModel = new TeacherViewViewModel();
             viewModel.Teacher = DataContext.Teachers
                                     .Include("Classes")
-                                    .Include("Workshops")
                                     .Include("DanceStyles")
                                     .Include("ApplicationUser")
                                     .Include("ApplicationUser.UserPictures")
@@ -44,15 +43,23 @@ namespace EDR.Controllers
                                     .Include("Students.Dancer.UserPictures")
                                     .Include("Places")
                                     .Where(x => x.ApplicationUser.UserName == username).FirstOrDefault();
+            viewModel.Events = new EventListViewModel();
 
             if (viewModel.Teacher.ApplicationUser.ZipCode != null)
             {
                 viewModel.Address = Geolocation.ParseAddress(viewModel.Teacher.ApplicationUser.ZipCode);
+                viewModel.Events.Location = viewModel.Address;
             }
             else
             {
                 viewModel.Address = Geolocation.ParseAddress("90065");
+                viewModel.Events.Location = viewModel.Address;
             }
+
+            // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE PromoterViewModel)
+            viewModel.Events.EventType = Enums.EventType.Class;
+            viewModel.Events.Events = new List<Event>();
+            viewModel.Events.Events = viewModel.Teacher.Classes;
             return viewModel;
         }
 

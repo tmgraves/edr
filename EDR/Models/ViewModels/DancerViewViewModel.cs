@@ -15,12 +15,10 @@ namespace EDR.Models.ViewModels
         public IEnumerable<FacebookFriend> FriendList { get; set; }
         public List<YouTubeVideo> YouTubeVideos { get; set; }
         public Address Address { get; set; }
-        public IEnumerable<Class> Classes { get; set; }
-        public IEnumerable<Social> Socials { get; set; }
-        public IEnumerable<Concert> Concerts { get; set; }
-        public IEnumerable<Conference> Conferences { get; set; }
-        public IEnumerable<OpenHouse> OpenHouses { get; set; }
-        public IEnumerable<Party> Parties { get; set; }
+
+        public EventListViewModel Classes { get; set; }
+        public EventListViewModel Socials { get; set; }
+
         public IEnumerable<Teacher> Teachers { get; set; }
         public IEnumerable<Event> SuggestedEvents { get; set; }
         public DHXScheduler Scheduler { get; set; }

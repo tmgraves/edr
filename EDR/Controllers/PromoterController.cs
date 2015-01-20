@@ -31,24 +31,27 @@ namespace EDR.Controllers
                                     .Include("Socials")
                                     .Include("Places")
                                     .Include("Socials.DanceStyles")
+                                    .Include("Socials.Videos")
+                                    .Include("Socials.Pictures")
+                                    .Include("Socials.Users")
                                     .FirstOrDefault();
+            viewModel.Events = new EventListViewModel();
 
             if (viewModel.Promoter.ApplicationUser.ZipCode != null)
             {
                 viewModel.Address = Geolocation.ParseAddress(viewModel.Promoter.ApplicationUser.ZipCode);
+                viewModel.Events.Location = viewModel.Address;
             }
             else
             {
                 viewModel.Address = Geolocation.ParseAddress("90065");
+                viewModel.Events.Location = viewModel.Address;
             }
 
             // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE PromoterViewModel)
-            viewModel.Socials = new List<Social>();
-            viewModel.Socials = viewModel.Promoter.Socials;
-            viewModel.Concerts = new List<Concert>();
-            viewModel.Conferences = new List<Conference>();
-            viewModel.OpenHouses = new List<OpenHouse>();
-            viewModel.Parties = new List<Party>();
+            viewModel.Events.EventType = Enums.EventType.Social;
+            viewModel.Events.Events = new List<Event>();
+            viewModel.Events.Events = viewModel.Promoter.Socials;
 
             return viewModel;
         }

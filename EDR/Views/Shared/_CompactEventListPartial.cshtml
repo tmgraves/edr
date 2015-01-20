@@ -1,8 +1,123 @@
-﻿@model IEnumerable<EDR.Models.Event>
+﻿@model EDR.Models.ViewModels.EventListViewModel
 @using EDR.Utilities
 @using EDR.Models
 
-@if (Model.Count() != 0)
+<style>
+    #classMap-canvas {
+        width: 100%;
+        height: 400px;
+    }
+</style>
+<script src="https://maps.googleapis.com/maps/api/js"></script>
+<script>
+    var classmap;
+    var markers = [];
+
+    function initialize() {
+        var classMapOptions = {
+            zoom: 14,
+            zoomControl: false,
+            center: new google.maps.LatLng('@Model.Location.Latitude', '@Model.Location.Longitude')
+        };
+
+        classmap = new google.maps.Map(document.getElementById('classMap-canvas'),
+            classMapOptions);
+
+        @{
+            int idx = 1;
+            var today = DateTime.Today;
+            foreach (var ev in Model.Events.Where(x => x.EndDate >= DateTime.Today || x.EndDate == null).OrderBy(x => x.NextDate))
+            {
+                <text>
+        var marker = new google.maps.Marker({
+            position: new google.maps.LatLng('@ev.Place.Latitude', '@ev.Place.Longitude'),
+            map: classmap,
+            title: '@ev.Name',
+            icon: "http://maps.google.com/mapfiles/kml/paddle/" + @idx + "-lv.png"
+        });
+
+        attachMessage(marker, '@ev.Id', '@ev.Place.Name', '@ev.Place.Address <br/> @ev.Place.City , @ev.Place.State  @ev.Place.Zip', '<a href="@Url.Action("View", "Event", new { id = ev.Id, eventType = Model.EventType.ToString() })">' + marker.title + '</a>', '@(ev.Users != null ? ev.Users.Count : 0)', '@(ev.Videos != null ? ev.Videos.Count : 0)', '@(ev.Pictures != null ? ev.Pictures.Count : 0)', '@Model.EventType.ToString()');
+                markers.push(marker);
+
+                </text>
+                idx += 1;
+            }
+
+            foreach (var ev in Model.Events.Where(x => x.EndDate < DateTime.Today).OrderBy(x => x.NextDate))
+            {
+                <text>
+        var marker = new google.maps.Marker({
+            position: new google.maps.LatLng('@ev.Place.Latitude', '@ev.Place.Longitude'),
+            map: classmap,
+            title: '@ev.Name',
+            icon: "http://maps.google.com/mapfiles/kml/paddle/" + @idx + "-lv.png"
+        });
+
+        attachMessage(marker, '@ev.Id', '@ev.Place.Name', '@ev.Place.Address <br/> @ev.Place.City , @ev.Place.State  @ev.Place.Zip', '<a href="@Url.Action("View", "Event", new { id = ev.Id, eventType = Model.EventType.ToString() })">' + marker.title + '</a>', '@(ev.Users != null ? ev.Users.Count : 0)', '@(ev.Videos != null ? ev.Videos.Count : 0)', '@(ev.Pictures != null ? ev.Videos.Count : 0)', '@Model.EventType.ToString()');
+        markers.push(marker);
+
+        </text>
+                idx += 1;
+            }
+
+        }
+
+        clearMarkers();
+    }
+
+    function clearMarkers() {
+        setAllMap(null);
+    }
+
+    function setAllMap(map) {
+        for (var i = 0; i < markers.length; i++) {
+            markers[i].setMap(map);
+        }
+    }
+
+    // The five markers show a secret message when clicked
+    // but that message is not within the marker's instance data
+    function attachMessage(marker, num, placeName, address, link, users, videos, pictures, eventtype) {
+        var message = marker.title;
+        var infowindow = new google.maps.InfoWindow({
+            disableAutoPan: true,
+            content: '<div id="content" style="width: 250px;">' +
+            '<div id="siteNotice">' +
+            '</div>' +
+            '<h4 id="firstHeading" class="firstHeading">' + link + '</h4>' +
+            '<div id="bodyContent">' +
+            '<p>' +
+            '<b>@@' + placeName + '</b><br/>' +
+            address + '<br/>' +
+            '</p>' +
+            '<label title="' + (eventtype == 'Social' ? 'Dancers' : 'Students') + '"><span class="badge">' + users + '</span>' + (eventtype == 'Social' ? 'Dancers' : 'Students') + '</label>' +
+            ' <label title="Videos"><span class="badge">' + videos + '</span> Videos</label>' +
+            ' <label title="Pictures"><span class="badge">' + pictures + '</span> Pictures</label>' +
+            '</div>' +
+            '</div>'
+        });
+
+        infowindow.open(classmap, marker);
+
+        google.maps.event.addListener(marker, 'click', function () {
+            infowindow.open(classmap, marker);
+        });
+    }
+
+    function openEvent(id, lati, long) {
+        var latLng = new google.maps.LatLng(lati, long); //Makes a latlng
+        classmap.panTo(latLng); //Make map global
+        classmap.setZoom(14);
+        clearMarkers();
+        markers[id].setMap(classmap);
+        return false;
+    }
+
+    google.maps.event.addDomListener(window, 'load', initialize);
+</script>
+
+<div class="col-sm-6 col-md-6 col-lg-6 col-xs-6" style="height: 400px; overflow-x: auto;">
+@if (Model.Events.Count() != 0)
 {
     int rowNo = 0;
     <div class="tabbable with-nav-tabs panel panel-default">
@@ -12,11 +127,11 @@
         </ul>
         <div class="tab-content">
             <div id="current" class="tab-pane active">
-                @if (Model.Where(x => x.EndDate >= DateTime.Today || x.EndDate == null).Count() != 0)
+                @if (Model.Events.Where(x => x.EndDate >= DateTime.Today || x.EndDate == null).Count() != 0)
                 {
-                    foreach (var item in Model.Where(x => x.EndDate >= DateTime.Today || x.EndDate == null))
+                    foreach (var item in Model.Events.Where(x => x.EndDate >= DateTime.Today || x.EndDate == null).OrderBy(x => x.NextDate))
                     {
-                        <a class="btn btn-default" style="width: 100%; text-align: left; white-space: normal;" onclick="openEvent(@rowNo, @item.Place.Latitude, @item.Place.Longitude); return false;" href="#" @*href="@Url.Action("Details", "Event", new { id = item.Id, eventType = "Class" } )"*@>
+                        <a class="btn btn-default" style="width: 100%; text-align: left; white-space: normal;" onclick="openEvent(@rowNo, @item.Place.Latitude, @item.Place.Longitude); return false;" href="#">
                             <div style="width: 100%;">
                                 <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 thumbnail text-center">
                                     <span class="text-primary">@item.NextDate.ToString("ddd").ToUpper()</span><br /><span class="text-success">@item.NextDate.ToString("MMM").ToUpper() @item.NextDate.Day.ToString()</span><br /><span class="text-success">@item.NextDate.Year.ToString()</span>
@@ -26,58 +141,9 @@
                                     @item.StartDate.ToString("%h:mm tt")~@item.StartDate.AddMinutes(item.Duration).ToString("%h:mm tt")
                                     @if (item.Recurring)
                                     {
-                                        string freq = "";
-                                        switch (item.Frequency)
-                                        {
-                                            case Frequency.Daily:
-                                                if (item.Interval > 1)
-                                                {
-                                                    freq = "Days";
-                                                }
-                                                else
-                                                {
-                                                    freq = "Day";
-                                                }
-                                                break;
-                                            case Frequency.Weekly:
-                                                if (item.Interval > 1)
-                                                {
-                                                    freq = "Weeks";
-                                                }
-                                                else
-                                                {
-                                                    freq = "Week";
-                                                }
-                                                break;
-                                            case Frequency.Monthly:
-                                                if (item.Interval > 1)
-                                                {
-                                                    freq = "Months";
-                                                }
-                                                else
-                                                {
-                                                    freq = "Month";
-                                                }
-                                                break;
-                                            case Frequency.Yearly:
-                                                if (item.Interval > 1)
-                                                {
-                                                    freq = "Years";
-                                                }
-                                                else
-                                                {
-                                                    freq = "Year";
-                                                }
-                                                break;
-                                        }
-                                        <text>
-                                            <span class="text-warning">
-                                                (*Repeats Every
-                                                @(item.Interval > 1 ? item.Interval.ToString() : "") @freq)
-                                            </span>
-                                        </text>
+                                        ApplicationUtility.FrequencyTranslate(item.Frequency, item.Interval == null ? 0 : (int)item.Interval);
                                     }
-                                    @if (item is Class)
+                                    @if (Model.EventType == EDR.Enums.EventType.Class)
                                     {
                                         if (((Class)item).Teachers != null && ((Class)item).Teachers.Count > 0)
                                         {
@@ -111,7 +177,7 @@
                 }
             </div>
             <div id="past" class="tab-pane">
-                @foreach (var item in Model.Where(x => x.EndDate < DateTime.Today))
+                @foreach (var item in Model.Events.Where(x => x.EndDate < DateTime.Today).OrderBy(x => x.NextDate))
                 {
                     <a class="btn btn-default" style="width: 100%; text-align: left;" onclick="openEvent(@rowNo, @item.Place.Latitude, @item.Place.Longitude); return false;" href="#" @*href="@Url.Action("Details", "Event", new { id = item.Id, eventType = "Class" } )"*@>
                         <div style="width: 100%;">
@@ -123,58 +189,9 @@
                                 @item.StartDate.ToString("%h:mm tt")~@item.StartDate.AddMinutes(item.Duration).ToString("%h:mm tt")
                                 @if (item.Recurring)
                                 {
-                                    string freq = "";
-                                    switch (item.Frequency)
-                                    {
-                                        case Frequency.Daily:
-                                            if (item.Interval > 1)
-                                            {
-                                                freq = "Days";
-                                            }
-                                            else
-                                            {
-                                                freq = "Day";
-                                            }
-                                            break;
-                                        case Frequency.Weekly:
-                                            if (item.Interval > 1)
-                                            {
-                                                freq = "Weeks";
-                                            }
-                                            else
-                                            {
-                                                freq = "Week";
-                                            }
-                                            break;
-                                        case Frequency.Monthly:
-                                            if (item.Interval > 1)
-                                            {
-                                                freq = "Months";
-                                            }
-                                            else
-                                            {
-                                                freq = "Month";
-                                            }
-                                            break;
-                                        case Frequency.Yearly:
-                                            if (item.Interval > 1)
-                                            {
-                                                freq = "Years";
-                                            }
-                                            else
-                                            {
-                                                freq = "Year";
-                                            }
-                                            break;
-                                    }
-                                    <text>
-                                        <span class="text-warning">
-                                            (*Repeats Every
-                                            @(item.Interval > 1 ? item.Interval.ToString() : "") @freq)
-                                        </span>
-                                    </text>
+                                    ApplicationUtility.FrequencyTranslate(item.Frequency, item.Interval == null ? 0 : (int)item.Interval);
                                 }
-                                @if (item is Class)
+                                @if (Model.EventType == EDR.Enums.EventType.Class)
                                 {
                                     if (((Class)item).Teachers != null && ((Class)item).Teachers.Count > 0)
                                     {
@@ -203,3 +220,11 @@
         </div><!-- /.tab-content -->
     </div><!-- /.tabbable -->
 }
+else
+{
+    @:No Events
+}
+</div>
+<div class="col-sm-6 col-md-6 col-lg-6 col-xs-6">
+    <div class="container" id="classMap-canvas"></div>
+</div>
