@@ -3,7 +3,7 @@
 
 @foreach (var t in Model.OrderBy(x => x.FullName))
 {
-    <a class="col-lg-12 col-md-12 col-sm-12 col-xs-12 btn btn-default" href="@Url.Action("Home", "Dancer", new { username = t.UserName }) " style="text-decoration: none;">
+    <a class="col-lg-3 col-md-3 col-sm-3 col-xs-3 btn btn-default" href="@Url.Action("Home", "Dancer", new { username = t.UserName }) " style="text-decoration: none;">
         <div class="pull-left captionpic" style="display: inline-block;">
             @if (t.UserPictures != null && t.UserPictures.Count > 0)
             {

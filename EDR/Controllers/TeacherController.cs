@@ -36,6 +36,7 @@ namespace EDR.Controllers
             var viewModel = new TeacherViewViewModel();
             viewModel.Teacher = DataContext.Teachers
                                     .Include("Classes")
+                                    .Include("Classes.Users")
                                     .Include("DanceStyles")
                                     .Include("ApplicationUser")
                                     .Include("ApplicationUser.UserPictures")
@@ -60,6 +61,7 @@ namespace EDR.Controllers
             viewModel.Events.EventType = Enums.EventType.Class;
             viewModel.Events.Events = new List<Event>();
             viewModel.Events.Events = viewModel.Teacher.Classes;
+
             return viewModel;
         }
 
@@ -95,6 +97,78 @@ namespace EDR.Controllers
             }
 
             var viewModel = LoadTeacher(username);
+
+            return View(viewModel);
+        }
+
+        [Authorize]
+        public ActionResult Home(string username)
+        {
+            if (String.IsNullOrWhiteSpace(username))
+            {
+                if (User != null)
+                {
+                    username = User.Identity.GetUserName();
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+            }
+
+            var teacher = DataContext.Teachers
+                .Where(x => x.ApplicationUser.UserName == username)
+                .FirstOrDefault();
+
+            if (teacher == null)
+            {
+                if (username == User.Identity.Name && !User.IsInRole("Teacher"))
+                {
+                    return RedirectToAction("Apply", "Teacher");
+                }
+                else
+                {
+                    return HttpNotFound();
+                }
+            }
+
+            var viewModel = LoadTeacher(username);
+
+            //  Media Updates
+            var lstMedia = new List<EventMedia>();
+            var events = DataContext.Events.OfType<Class>().Where(e => e.Teachers.Any(t => t.Id == viewModel.Teacher.Id));
+            var newPictures = DataContext.Pictures.OfType<EventPicture>()
+                                .Include("Event")
+                                .Include("PostedBy")
+                                .Where(p => events.Any(e => e.Id == p.Event.Id))
+                                .OrderByDescending(p => p.PhotoDate)
+                                .Take(20);
+            foreach (var p in newPictures)
+            {
+                lstMedia.Add(new EventMedia() { Event = p.Event, Id = p.Id, Author = p.PostedBy, MediaDate = p.PhotoDate, MediaType = Enums.MediaType.Picture, PhotoUrl = p.Filename, Title = p.Title });
+            }
+            var newVideos = DataContext.Videos.OfType<EventVideo>()
+                                .Include("Event")
+                                .Include("Author")
+                                .Where(v => events.Any(e => e.Id == v.Event.Id))
+                                .OrderByDescending(v => v.PublishDate)
+                                .Take(20);
+            foreach (var v in newVideos)
+            {
+                lstMedia.Add(new EventMedia() { Event = v.Event, Id = v.Id, Author = v.Author, MediaDate = v.PublishDate, MediaType = Enums.MediaType.Video, PhotoUrl = v.PhotoUrl, MediaUrl = v.VideoUrl, Title = v.Title });
+            }
+            viewModel.MediaUpdates = lstMedia;
+            //  Media Updates
+
+            viewModel.NewClasses = new EventListViewModel();
+            viewModel.NewClasses.EventType = Enums.EventType.Class;
+            viewModel.NewClasses.Location = viewModel.Address;
+            viewModel.NewClasses.Events = new List<Event>();
+            viewModel.NewClasses.Events = viewModel.Teacher.Classes.OrderByDescending(e => e.NextDate).Take(5);
+
+            viewModel.NewStudents = new List<ApplicationUser>();
+            var classArray = viewModel.Teacher.Classes.Select(c => c.Id).ToArray();
+            viewModel.NewStudents = DataContext.Users.Include("Events").Where(u => u.Events.Any(e => classArray.Contains(e.Id)));
 
             return View(viewModel);
         }

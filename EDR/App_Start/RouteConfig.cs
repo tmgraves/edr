@@ -14,6 +14,12 @@ namespace EDR
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
+                name: "DancerHome",
+                url: "{username}",
+                defaults: new { controller = "Dancer", action = "Home" }
+            );
+
+            routes.MapRoute(
                 name: "StyleIndex",
                 url: "DanceStyle/Index",
                 defaults: new { controller = "DanceStyle", action = "Index" }
@@ -55,9 +61,21 @@ namespace EDR
             );
 
             routes.MapRoute(
-                name: "EventImportVideo",
-                url: "Event/ImportVideo",
-                defaults: new { controller = "Event", action = "ImportVideo" }
+                name: "EventImportYouTubeVideo",
+                url: "Event/ImportYouTubeVideo",
+                defaults: new { controller = "Event", action = "ImportYouTubeVideo" }
+            );
+
+            routes.MapRoute(
+                name: "EventImportFacebookVideo",
+                url: "Event/ImportFacebookVideo",
+                defaults: new { controller = "Event", action = "ImportFacebookVideo" }
+            );
+
+            routes.MapRoute(
+                name: "EventDeleteVideo",
+                url: "Event/DeleteVideo",
+                defaults: new { controller = "Event", action = "DeleteVideo" }
             );
 
             routes.MapRoute(
@@ -85,6 +103,24 @@ namespace EDR
             );
 
             routes.MapRoute(
+                name: "EventImportYouTubeList",
+                url: "Event/ImportYouTubeList",
+                defaults: new { controller = "Event", action = "ImportYouTubeList" }
+            );
+
+            routes.MapRoute(
+                name: "EventImportYouTubePlaylistLink",
+                url: "Event/ImportYouTubePlaylistLink",
+                defaults: new { controller = "Event", action = "ImportYouTubePlaylistLink" }
+            );
+
+            routes.MapRoute(
+                name: "EventImportPlayListVideoLink",
+                url: "Event/ImportPlayListVideoLink",
+                defaults: new { controller = "Event", action = "ImportPlayListVideoLink" }
+            );
+
+            routes.MapRoute(
                 name: "EventEdit",
                 url: "Event/{id}/Edit",
                 defaults: new { controller = "Event", action = "Edit" }
@@ -100,12 +136,6 @@ namespace EDR
                 name: "SocialView",
                 url: "Social/{id}",
                 defaults: new { controller = "Event", action = "View", eventType = "Social" }
-            );
-
-            routes.MapRoute(
-                name: "TeacherHome",
-                url: "Teacher/{username}/Home",
-                defaults: new { controller = "Teacher", action = "MyTeach", username = UrlParameter.Optional }
             );
 
             routes.MapRoute(
@@ -138,7 +168,7 @@ namespace EDR
             routes.MapRoute(
                 name: "TeacherDetail",
                 url: "Teacher/{username}/{action}",
-                defaults: new { controller = "Teacher", username = UrlParameter.Optional, action = UrlParameter.Optional }
+                defaults: new { controller = "Teacher", action = "Home", username = UrlParameter.Optional }
             );
 
             routes.MapRoute(
@@ -154,7 +184,7 @@ namespace EDR
             routes.MapRoute(
                 name: "Promoter",
                 url: "Promoter/{username}/{action}",
-                defaults: new { controller = "Promoter", action = UrlParameter.Optional }
+                defaults: new { controller = "Promoter", action = "Home" }
             );
 
             routes.MapRoute(
@@ -170,7 +200,7 @@ namespace EDR
             routes.MapRoute(
                 name: "Owner",
                 url: "Owner/{username}/{action}",
-                defaults: new { controller = "Owner", action = UrlParameter.Optional }
+                defaults: new { controller = "Owner", action = "Home" }
             );
 
             routes.MapRoute(

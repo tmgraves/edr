@@ -11,6 +11,14 @@ namespace EDR.Enums
         Workshop
     }
 
+    public enum MediaType
+    {
+        [Display(Name = "Picture")]
+        Picture,
+        [Display(Name = "Video")]
+        Video
+    }
+
     public enum EventType
     {
         [Display(Name = "Concert")]

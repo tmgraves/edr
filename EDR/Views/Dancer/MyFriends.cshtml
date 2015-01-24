@@ -1,13 +1,8 @@
 ﻿
 @{
     ViewBag.Title = "MyFriends";
-    Layout = "~/Views/Shared/_DancerLayout.cshtml";
+    Layout = "~/Views/Dancer/_DancerLayout.cshtml";
 }
-@section section
-{
-    My Friends
-}
-
 
 @if (Model.FriendList != null && Model.FriendList.Count() > 0)
 {

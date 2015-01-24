@@ -58,14 +58,24 @@ textarea {
     position: relative;
 }
 
-#videoimage,
-#videoimage img,
+#videoimage {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+}
 #videoplaybutton {
     width: 100%;
     height: 100%;
     position: absolute;
     top: 0;
     left: 0;
+}
+#videoimage img
+{
+    width: 100%;
 }
 
 #videoplaybutton {
@@ -89,6 +99,29 @@ textarea {
 }
 #playbutton:active {
     background: url('images/Play1Pressed.png') center center no-repeat;
+}
+
+.captionpic
+{
+    height: 40px;
+    width: 40px;
+    overflow: hidden;
+}
+.captionpic img
+{
+    width: 40px;
+}
+
+.facebookVideoContainer {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+facebookvideoimage,
+facebookvideoimage img
+{
+    width: 100%;
 }
 
 .captionpic

@@ -11,5 +11,9 @@ namespace EDR.Models.ViewModels
         public Address Address { get; set; }
         public EventListViewModel Events { get; set; }
         public ClassNewViewModel NewClassModel { get; set; }
+        public EventListViewModel NewClasses { get; set; }
+        public IEnumerable<ApplicationUser> NewStudents { get; set; }
+
+        public IEnumerable<EventMedia> MediaUpdates { get; set; }
     }
 }

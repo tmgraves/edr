@@ -1,0 +1,104 @@
+﻿@model EDR.Models.ViewModels.TeacherViewViewModel
+@using EDR.Models
+@using EDR.Utilities
+
+@{
+    ViewBag.Title = "Home";
+    Layout = "~/Views/Teacher/_TeacherLayout.cshtml";
+}
+
+<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+    <div class="panel panel-success">
+        <div class="panel-heading">
+            New Classes/Workshops...
+        </div>
+        <div class="panel-body" style="height: 300px; overflow: auto;">
+            @if (Model.NewClasses.Events.Count() > 0)
+            {
+                foreach (var cls in Model.NewClasses.Events.OfType<Class>().OrderBy(c => c.NextDate))
+                {
+                    <a class="btn btn-default" style="width: 100%; text-align: left; white-space: normal;" href="@Url.Action("View", "Event", new { id = cls.Id, eventType = "Class" })">
+                        <div style="width: 100%;">
+                            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 thumbnail text-center">
+                                <span class="text-primary">@cls.NextDate.ToString("ddd").ToUpper()</span><br /><span class="text-success">@cls.NextDate.ToString("MMM").ToUpper() @cls.NextDate.Day.ToString()</span><br /><span class="text-success">@cls.NextDate.Year.ToString()</span>
+                            </div>
+                            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
+                                <strong>@cls.Name (Level @cls.SkillLevel)<br />@@@cls.Place.Name</strong> in <span class="text-warning">@cls.Place.City</span><br />
+                                @cls.StartDate.ToString("%h:mm tt")~@cls.StartDate.AddMinutes(cls.Duration).ToString("%h:mm tt")
+                                @if (cls.Recurring)
+                                {
+                                    ApplicationUtility.FrequencyTranslate(cls.Frequency, cls.Interval == null ? 0 : (int)cls.Interval);
+                                }
+                                @if (cls.Teachers != null && cls.Teachers.Count > 0)
+                                {
+                                    var teachers = "";
+                                    foreach (Teacher t in cls.Teachers)
+                                    {
+                                        teachers += (teachers == "" ? "" : ", ") + t.ApplicationUser.FullName;
+                                    }
+                                    <br /><span class="text-primary">with @teachers</span>
+                                }
+                                @if (cls.DanceStyles != null && cls.DanceStyles.Count > 0)
+                                {
+                                    var styles = "";
+                                    foreach (DanceStyle s in cls.DanceStyles)
+                                    {
+                                        styles += (styles == "" ? "" : ", ") + s.Name;
+                                    }
+                                    <br /><span class="text-warning" style="white-space: normal;">@styles</span>
+                                }
+                            </div>
+                        </div>
+                    </a>
+                }
+            }
+            else
+            {
+                @: No New Classes/Workshops
+            }
+        </div>
+    </div>
+    <div class="panel panel-warning">
+        <div class="panel-heading">
+            New Students
+        </div>
+        <div class="panel-body">
+            @Html.Partial("~/Views/Shared/Events/_UserListPartial.cshtml", Model.NewStudents)
+        </div>
+    </div>
+    <div class="panel panel-success">
+        <div class="panel-heading">
+            My Music
+        </div>
+        <div class="panel-body text-center">
+            @if (Model.Teacher.ApplicationUser.SpotifyUri != null)
+            {
+                <iframe src="https://embed.spotify.com/?uri=@Model.Teacher.ApplicationUser.SpotifyUri" width="300" height="80" frameborder="0" allowtransparency="true"></iframe>
+            }
+            else
+            {
+                @: No Playlist Specified
+            }
+        </div>
+    </div>
+</div>
+<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+    <div class="panel panel-danger">
+        <div class="panel-heading">
+            New Videos/Pictures
+        </div>
+        <div class="panel-body">
+            @if (Model.MediaUpdates.Count() > 0)
+            {
+                foreach (var media in Model.MediaUpdates)
+                {
+                    @Html.Partial("~/Views/Shared/_MediaPartial.cshtml", media)
+                }
+            }
+            else
+            {
+                @: No Updates
+            }
+        </div>
+    </div>
+</div>

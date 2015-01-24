@@ -53,6 +53,7 @@ namespace EDR
             x.Scope.Add("user_photos");
             x.Scope.Add("user_friends");
             x.Scope.Add("user_events");
+            x.Scope.Add("user_videos");
             //x.Scope.Add("first_name");
             //x.Scope.Add("last_name");
             //  x.Scope.Add("link");

@@ -81,6 +81,42 @@ namespace EDR.Controllers
         }
 
         [Authorize]
+        public ActionResult Home(string username)
+        {
+            if (String.IsNullOrWhiteSpace(username))
+            {
+                if (User != null)
+                {
+                    username = User.Identity.GetUserName();
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+            }
+
+            var owner = DataContext.Owners
+                .Where(x => x.ApplicationUser.UserName == username)
+                .FirstOrDefault();
+
+            if (owner == null)
+            {
+                if (username == User.Identity.Name && !User.IsInRole("Owner"))
+                {
+                    return RedirectToAction("Apply", "Owner");
+                }
+                else
+                {
+                    return HttpNotFound();
+                }
+            }
+
+            var viewModel = LoadOwner(username);
+
+            return View(viewModel);
+        }
+
+        [Authorize]
         public ActionResult MyPlaces(string username)
         {
             if (String.IsNullOrWhiteSpace(username))

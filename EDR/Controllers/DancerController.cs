@@ -118,15 +118,24 @@ namespace EDR.Controllers
             viewModel.Classes.Events = classes.Where(e => e.NextDate >= today);
             viewModel.Socials = new EventListViewModel();
             viewModel.Socials.Events = DataContext.Events.OfType<Social>().Where(x => x.Users.Any(u => u.UserName == username)).ToList();
-            viewModel.SuggestedEvents = new List<Event>();
+            viewModel.SuggestedClasses = new List<Class>();
             //  y.DanceStyles.Any(x => dancer.DanceStyles.Contains(x)) && y.NextDate >= today && 
-            var location = Geolocation.ParseAddress(viewModel.Dancer.ZipCode);
-            var myLocation = DbGeography.FromText("POINT(" + location.Longitude.ToString() + " " + location.Latitude.ToString() + ")");
+            var myLocation = DbGeography.FromText("POINT(" + viewModel.Address.Longitude.ToString() + " " + viewModel.Address.Latitude.ToString() + ")");
             //  viewModel.SuggestedEvents = DataContext.Events.Where(y => y.DanceStyles.Any(x => dancer.DanceStyles.Contains(x)) && DbGeography.FromText("POINT(" + y.Place.Longitude.ToString() + " " + y.Place.Latitude.ToString() + ")").Distance(myLocation) * .00062 < 50).ToList(); // In Miles
 
             var arrStyles = viewModel.Dancer.DanceStyles.Select(s => s.Id).ToArray();
-            var suggestedEvents = DataContext.Events.Where(y => y.DanceStyles.Any(d => arrStyles.Contains(d.Id)) && DbGeography.FromText("POINT(" + y.Place.Longitude.ToString() + " " + y.Place.Latitude.ToString() + ")").Distance(myLocation) * .00062 < 50 && !y.Users.Any(u => u.Id == id)).ToList();
-            viewModel.SuggestedEvents = suggestedEvents.Where(e => e.NextDate >= today);
+            var suggestedClasses = DataContext.Events.OfType<Class>()
+                                        .Where(y => y.DanceStyles.Any(d => arrStyles.Contains(d.Id)) && DbGeography.FromText("POINT(" + y.Place.Longitude.ToString() + " " + y.Place.Latitude.ToString() + ")").Distance(myLocation) * .00062 < 50 && !y.Users.Any(u => u.Id == id))
+                                        .Include("Teachers")
+                                        .Include("Teachers.ApplicationUser")
+                                        .ToList();
+            viewModel.SuggestedClasses = suggestedClasses.Where(e => e.NextDate >= today);
+
+            viewModel.SuggestedSocials = new List<Social>();
+            var suggestedSocials = DataContext.Events.OfType<Social>()
+                                        .Where(y => y.DanceStyles.Any(d => arrStyles.Contains(d.Id)) && DbGeography.FromText("POINT(" + y.Place.Longitude.ToString() + " " + y.Place.Latitude.ToString() + ")").Distance(myLocation) * .00062 < 50 && !y.Users.Any(u => u.Id == id))
+                                        .ToList();
+            viewModel.SuggestedSocials = suggestedSocials.Where(e => e.NextDate >= today);
 
             //  viewModel.SuggestedEvents = DataContext.Events.Where(y => y.DanceStyles.Any(x => styles.Any(z => z.Id == x.Id))).ToList(); // In Miles
             //  viewModel.SuggestedEvents = DataContext.Events.Where(y => Geolocation.Distance(new Geolocation.Position() { Latitude = y.Place.Latitude, Longitude = y.Place.Longitude }, new Geolocation.Position() { Latitude = location.Latitude, Longitude = location.Longitude }, Geolocation.DistanceType.Miles) < 50).ToList();
@@ -157,6 +166,64 @@ namespace EDR.Controllers
                     }
                 }
             }
+
+            return View(viewModel);
+        }
+
+        [Authorize]
+        public ActionResult Home(string username)
+        {
+            var viewModel = LoadDancerModel(username);
+
+            if (viewModel.Dancer == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var today = DateTime.Today;
+            var id = User.Identity.GetUserId();
+
+            var lstMedia = new List<EventMedia>();
+            var events = DataContext.Events.Where(e => e.Users.Any(u => u.Id == id));
+            var newPictures = DataContext.Pictures.OfType<EventPicture>()
+                                .Include("Event")
+                                .Include("PostedBy")
+                                .Where(p => events.Any(e => e.Id == p.Event.Id))
+                                .OrderByDescending(p => p.PhotoDate)
+                                .Take(20);
+            foreach(var p in newPictures)
+            {
+                lstMedia.Add(new EventMedia() { Event = p.Event, Id = p.Id, Author = p.PostedBy, MediaDate = p.PhotoDate, MediaType = Enums.MediaType.Picture, PhotoUrl = p.Filename, Title = p.Title });
+            }
+            var newVideos = DataContext.Videos.OfType<EventVideo>()
+                                .Include("Event")
+                                .Include("Author")
+                                .Where(v => events.Any(e => e.Id == v.Event.Id))
+                                .OrderByDescending(v => v.PublishDate)
+                                .Take(20);
+            foreach(var v in newVideos)
+            {
+                lstMedia.Add(new EventMedia() { Event = v.Event, Id = v.Id, Author = v.Author, MediaDate = v.PublishDate, MediaType = Enums.MediaType.Video, PhotoUrl = v.PhotoUrl, MediaUrl = v.VideoUrl, Title = v.Title });
+            }
+
+            viewModel.MediaUpdates = lstMedia;
+
+            viewModel.SuggestedClasses = new List<Class>();
+            var myLocation = DbGeography.FromText("POINT(" + viewModel.Address.Longitude.ToString() + " " + viewModel.Address.Latitude.ToString() + ")");
+            var arrStyles = viewModel.Dancer.DanceStyles.Select(s => s.Id).ToArray();
+            var suggestedClasses = DataContext.Events.OfType<Class>()
+                                        .Where(y => y.DanceStyles.Any(d => arrStyles.Contains(d.Id)) && DbGeography.FromText("POINT(" + y.Place.Longitude.ToString() + " " + y.Place.Latitude.ToString() + ")").Distance(myLocation) * .00062 < 50 && !y.Users.Any(u => u.Id == id))
+                                        .Include("DanceStyles")
+                                        .Include("Teachers")
+                                        .Include("Teachers.ApplicationUser")
+                                        .ToList();
+            viewModel.SuggestedClasses = suggestedClasses.Where(e => e.NextDate >= today);
+            viewModel.SuggestedSocials = new List<Social>();
+            var suggestedSocials = DataContext.Events.OfType<Social>()
+                                        .Where(y => y.DanceStyles.Any(d => arrStyles.Contains(d.Id)) && DbGeography.FromText("POINT(" + y.Place.Longitude.ToString() + " " + y.Place.Latitude.ToString() + ")").Distance(myLocation) * .00062 < 50 && !y.Users.Any(u => u.Id == id))
+                                        .Include("DanceStyles")
+                                        .ToList();
+            viewModel.SuggestedSocials = suggestedSocials.Where(e => e.NextDate >= today);
 
             return View(viewModel);
         }
@@ -384,6 +451,7 @@ namespace EDR.Controllers
                 var dancer = DataContext.Users.Where(x => x.Id == model.Dancer.Id).Include("DanceStyles").Include("Parties").FirstOrDefault();
                 dancer.Experience = model.Dancer.Experience;
                 dancer.YouTubeUsername = model.Dancer.YouTubeUsername;
+                dancer.SpotifyUri = model.Dancer.SpotifyUri;
                 dancer.ZipCode = model.Dancer.ZipCode;
 
                 if (model.PostedStyles != null)
@@ -401,7 +469,7 @@ namespace EDR.Controllers
 
                 DataContext.Entry(dancer).State = EntityState.Modified;
                 DataContext.SaveChanges();
-                return RedirectToAction("MyDance", "Dancer", new { username = dancer.UserName });
+                return RedirectToAction("Home", "Dancer", new { username = dancer.UserName });
             }
             return View(model);
         }

@@ -1,0 +1,53 @@
+﻿@model EDR.Models.EventMedia
+@using EDR.Enums
+@using EDR.Models
+
+<div class="thumbnail col-lg-12 col-md-12 col-sm-12 col-xs-12">
+    <p>
+        <span class="text-danger">New @Model.MediaType.ToString()</span> for @Html.ActionLink(Model.Event.Name, "View", new { id = Model.Event.Id }, new { @style = "font-weight: bold;" }) @(Model.Event is Class ? ((Class)Model.Event).ClassType.ToString() : ((Social)Model.Event).SocialType.ToString())
+    </p>
+    @if (Model.MediaType == MediaType.Video)
+    {
+        @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new EventVideo() { Event = Model.Event, PhotoUrl = Model.PhotoUrl, VideoUrl = Model.MediaUrl })
+        @*<a target="_blank" href="https://www.youtube.com/watch?v=@video.YoutubeId&feature=player_embedded">
+                <div id="videocontainer" style="width: 240px; height: 150px;">
+                    <div id="videoimage">
+                        <img src="https://img.youtube.com/vi/@Html.DisplayFor(s => video.YoutubeId)/mqdefault.jpg" />
+                    </div>
+                    <div id="videoplaybutton">
+                        <div id="playbutton">
+                        </div>
+                    </div>
+                </div>
+            </a>*@
+        <div class="caption">
+            <h4 style="white-space: normal;">@Model.Title</h4>
+            <p>
+                Posted By:
+                <a href="@Url.Action("Home", "Dancer", new { username = Model.Author.UserName })" style="text-decoration: none;">
+                    <span class="text-primary" style="vertical-align: top;">
+                        <b>@Model.Author.FirstName</b>
+                    </span>
+                </a>
+                on <span class="text-danger" style="vertical-align: top;">@Model.MediaDate.ToShortDateString()</span>
+            </p>
+        </div>
+    }
+    else if (Model.MediaType == MediaType.Picture)
+    {
+        <a href="#">
+            <img src="@Url.Content(Model.PhotoUrl)" />
+        </a>
+        <div class="caption">
+            <p>
+                Posted By:
+                <a href="@Url.Action("Home", "Dancer", new { username = Model.Author.UserName })" style="text-decoration: none;">
+                    <span class="text-primary" style="vertical-align: top;">
+                        <b>@Model.Author.FirstName</b>
+                    </span>
+                </a>
+                on <span class="text-danger" style="vertical-align: top;">@Model.MediaDate.ToShortDateString()</span>
+            </p>
+        </div>
+    }
+</div>

@@ -115,5 +115,30 @@ namespace EDR.Utilities
             }
             return (eventsList);
         }
+
+        public static List<FacebookVideo> GetVideos(string token)
+        {
+            var fb = new FacebookClient(token);
+            dynamic myInfo = fb.Get("/me/videos?fields=id,created_time,description,embed_html,format,from,icon,name,picture,source,updated_time");
+
+            var videosList = new List<FacebookVideo>();
+            foreach (dynamic vid in myInfo.data)
+            {
+                dynamic from = vid.from;
+                videosList.Add(new FacebookVideo()
+                {
+                    Id = vid.id,
+                    Created_Time = Convert.ToDateTime(vid.created_time),
+                    Description = vid.description,
+                    Embed_Html = vid.embed_html,
+                    Icon = vid.icon,
+                    Name = vid.name,
+                    Picture = vid.picture,
+                    Source = vid.source,
+                    Updated_Time = Convert.ToDateTime(vid.updated_time)
+                });
+            }
+            return (videosList);
+        }
     }
 }

@@ -1,0 +1,13 @@
+﻿@model EDR.Models.EventVideo
+
+<a target="_blank" href="@Model.VideoUrl">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="videocontainer" style="height: 180px;">
+        <div id="videoimage">
+            <img src="@Html.DisplayFor(s => Model.PhotoUrl)" />
+        </div>
+        <div id="videoplaybutton">
+            <div id="playbutton">
+            </div>
+        </div>
+    </div>
+</a>

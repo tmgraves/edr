@@ -11,6 +11,9 @@ namespace EDR.Models.ViewModels
 
         public Promoter Promoter { get; set; }
         public Address Address { get; set; }
+        public IEnumerable<EventMedia> MediaUpdates { get; set; }
+        public EventListViewModel NewSocials { get; set; }
+        public IEnumerable<ApplicationUser> NewDancers { get; set; }
 
         public EventListViewModel Events { get; set; }
     }

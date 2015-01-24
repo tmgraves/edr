@@ -1,12 +1,14 @@
-﻿using DHTMLX.Scheduler;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using System.Web.Mvc;
 
 namespace EDR.Models.ViewModels
 {
+    public class DancerViewModels
+    {
+    }
+
     public class DancerViewViewModel
     {
         // TODO: FILL IN PROPERTIES NEEDED FOR VIEW
@@ -21,6 +23,19 @@ namespace EDR.Models.ViewModels
 
         public IEnumerable<Teacher> Teachers { get; set; }
         public IEnumerable<Event> SuggestedEvents { get; set; }
-        public DHXScheduler Scheduler { get; set; }
+        public IEnumerable<Class> SuggestedClasses { get; set; }
+        public IEnumerable<Social> SuggestedSocials { get; set; }
+
+        public IEnumerable<EventMedia> MediaUpdates { get; set; }
+    }
+
+    public class DancerEditViewModel
+    {
+        // TODO: FILL IN PROPERTIES NEEDED FOR VIEW
+
+        public ApplicationUser Dancer { get; set; }
+        public IEnumerable<DanceStyleListItem> AvailableStyles { get; set; }
+        public IEnumerable<DanceStyleListItem> SelectedStyles { get; set; }
+        public PostedStyles PostedStyles { get; set; }
     }
 }

@@ -29,6 +29,8 @@ namespace EDR.Models
         public string FacebookToken { get; set; }
         [Display(Name="YouTube Username")]
         public string YouTubeUsername { get; set; }
+        [Display(Name = "Spotify Uri")]
+        public string SpotifyUri { get; set; }
 
         [Display(Name = "Full Name")]
         public string FullName

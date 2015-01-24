@@ -5,6 +5,10 @@ using System.Web;
 
 namespace EDR.Models
 {
+    public class YouTube
+    {
+    }
+
     public class YouTubeVideo
     {
         public string Id { get; set; }
@@ -13,5 +17,14 @@ namespace EDR.Models
         public Uri YoutubeLink { get; set; }
         public Uri VideoLink { get; set; }
         public Uri Thumbnail { get; set; }
+    }
+
+    public class YouTubePlaylist
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string Url { get; set; }
+        public DateTime PubDate { get; set; }
+        public string ThumbnailUrl { get; set; }
     }
 }

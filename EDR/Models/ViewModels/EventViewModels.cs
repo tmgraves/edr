@@ -100,6 +100,8 @@ namespace EDR.Models.ViewModels
     public class EventPostVideoViewModel : EventBaseViewModel
     {
         public IEnumerable<YouTubeVideo> YoutubeVideos { get; set; }
+        public IEnumerable<FacebookVideo> FacebookVideos { get; set; }
+        public IEnumerable<YouTubePlaylist> YouTubePlaylists { get; set; }
     }
 
     public class EventListViewModel

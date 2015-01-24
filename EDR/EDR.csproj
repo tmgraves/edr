@@ -277,16 +277,24 @@
     <Compile Include="Models\Address.cs" />
     <Compile Include="Models\EventInviations.cs" />
     <Compile Include="Models\EventPicture.cs" />
+    <Compile Include="Models\EventPlaylist.cs" />
     <Compile Include="Models\Facebook.cs" />
     <Compile Include="Models\Friend.cs" />
     <Compile Include="Models\OtherPlace.cs" />
     <Compile Include="Models\Picture.cs" />
+    <Compile Include="Models\Playlist.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Models\Student.cs" />
     <Compile Include="Models\UploadFile.cs" />
     <Compile Include="Models\UserPicture.cs" />
+    <Compile Include="Models\UtilityClasses.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Models\Video.cs" />
     <Compile Include="Models\ViewModels\ChangePictureViewModel.cs" />
     <Compile Include="Models\ViewModels\DancerListViewModel.cs" />
+    <Compile Include="Models\ViewModels\DancerViewModels.cs" />
     <Compile Include="Models\ViewModels\DanceStyleViewModels.cs" />
     <Compile Include="Models\ViewModels\EventViewModels.cs" />
     <Compile Include="Models\ViewModels\OwnerListViewModel.cs" />
@@ -295,7 +303,7 @@
     <Compile Include="Models\ViewModels\PromoterListViewModel.cs" />
     <Compile Include="Models\ViewModels\TeacherViewModels.cs" />
     <Compile Include="Models\ViewModels\VisitorViewViewModel.cs" />
-    <Compile Include="Models\YouTubeVideo.cs" />
+    <Compile Include="Models\YouTube.cs" />
     <Compile Include="Types\Enums.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -329,8 +337,6 @@
     <Compile Include="Models\Studio.cs" />
     <Compile Include="Models\Team.cs" />
     <Compile Include="Areas\Admin\Models\ViewModels\RoleApprovalsViewModel.cs" />
-    <Compile Include="Models\ViewModels\DancerEditViewModel.cs" />
-    <Compile Include="Models\ViewModels\DancerViewViewModel.cs" />
     <Compile Include="Models\ViewModels\EventSignupViewModel.cs" />
     <Compile Include="Models\ViewModels\HomeExploreViewModel.cs" />
     <Compile Include="Models\ViewModels\HomeIndexViewModel.cs" />
@@ -607,7 +613,7 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="Views\Event\PostVideo.cshtml" />
-    <Content Include="Views\Shared\_TeacherLayout.cshtml">
+    <Content Include="Views\Teacher\_TeacherLayout.cshtml">
       <SubType>Code</SubType>
     </Content>
     <Content Include="Web.config">
@@ -682,7 +688,7 @@
     <Content Include="Views\Home\Index2.cshtml" />
     <Content Include="Views\Place\Edit.cshtml" />
     <Content Include="Views\Shared\_CompactEventListPartial.cshtml" />
-    <Content Include="Views\Shared\_DancerLayout.cshtml" />
+    <Content Include="Views\Dancer\_DancerLayout.cshtml" />
     <Content Include="Views\Dancer\Learn-old.cshtml" />
     <Content Include="Views\Dancer\Dance.cshtml" />
     <Content Include="Views\Scheduler\GoogleMap.cshtml" />
@@ -694,9 +700,9 @@
     <Content Include="Views\Teacher\Resume.cshtml" />
     <Content Include="Views\Shared\_StudentListPartial.cshtml" />
     <Content Include="Views\Shared\_PlaceListPartial.cshtml" />
-    <Content Include="Views\Shared\_PromoterLayout.cshtml" />
+    <Content Include="Views\Promoter\_PromoterLayout.cshtml" />
     <Content Include="Views\Promoter\MySocials.cshtml" />
-    <Content Include="Views\Shared\_OwnerLayout.cshtml" />
+    <Content Include="Views\Owner\_OwnerLayout.cshtml" />
     <Content Include="Views\Owner\MyPlaces.cshtml" />
     <Content Include="Views\Shared\_CompactPlaceListPartial.cshtml" />
     <Content Include="Views\Teacher\AddClass.cshtml" />
@@ -717,6 +723,12 @@
     <Content Include="Views\Event\View.cshtml" />
     <Content Include="Views\Event\PostPicture.cshtml" />
     <Content Include="Views\Shared\_VideoListPartial.cshtml" />
+    <Content Include="Views\Shared\_VideoPlayerPartial.cshtml" />
+    <Content Include="Views\Dancer\Home.cshtml" />
+    <Content Include="Views\Owner\Home.cshtml" />
+    <Content Include="Views\Promoter\Home.cshtml" />
+    <Content Include="Views\Teacher\Home.cshtml" />
+    <Content Include="Views\Shared\_MediaPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Series\" />

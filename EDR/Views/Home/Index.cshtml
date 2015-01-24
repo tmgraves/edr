@@ -19,10 +19,10 @@
                         </button>
                         <ul class="dropdown-menu" role="menu">
                             <li role="presentation">@Html.ActionLink("a New Visitor?", "View", "Visitor", null, null)</li>
-                            <li role="presentation">@Html.ActionLink("a Dancer?", "MyDance", "Dancer", new { username = User.Identity.IsAuthenticated ? User.Identity.Name : "NotLoggedIn" }, null)</li>
-                            <li role="presentation">@Html.ActionLink("a Teacher?", "MyTeach", "Teacher", new { username = User.Identity.IsAuthenticated ? User.Identity.Name : "NotLoggedIn" }, null)</li>
-                            <li role="presentation">@Html.ActionLink("a Promoter?", "MySocials", "Promoter", new { username = User.Identity.IsAuthenticated ? User.Identity.Name : "NotLoggedIn" }, null)</li>
-                            <li role="presentation">@Html.ActionLink("a Studio Owner?", "MyPlaces", "Owner", new { username = User.Identity.IsAuthenticated ? User.Identity.Name : "NotLoggedIn" }, null)</li>
+                            <li role="presentation">@Html.ActionLink("a Dancer?", "Home", "Dancer", new { username = User.Identity.IsAuthenticated ? User.Identity.Name : "NotLoggedIn" }, null)</li>
+                            <li role="presentation">@Html.ActionLink("a Teacher?", "Home", "Teacher", new { username = User.Identity.IsAuthenticated ? User.Identity.Name : "NotLoggedIn" }, null)</li>
+                            <li role="presentation">@Html.ActionLink("a Promoter?", "Home", "Promoter", new { username = User.Identity.IsAuthenticated ? User.Identity.Name : "NotLoggedIn" }, null)</li>
+                            <li role="presentation">@Html.ActionLink("a Studio Owner?", "Home", "Owner", new { username = User.Identity.IsAuthenticated ? User.Identity.Name : "NotLoggedIn" }, null)</li>
                         </ul>
                     </div>
                 </form>

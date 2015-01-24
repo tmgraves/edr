@@ -6,8 +6,9 @@
         <li>
             <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-12 col-xs-12">
-                    <div class="thumbnail">
-                        <a target="_blank" href="https://www.youtube.com/watch?v=@video.YoutubeId&feature=player_embedded">
+                    <div class="thumbnail" style="width: 240px;">
+                        @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", video)
+                        @*<a target="_blank" href="https://www.youtube.com/watch?v=@video.YoutubeId&feature=player_embedded">
                             <div id="videocontainer" style="width: 240px; height: 150px;">
                                 <div id="videoimage">
                                     <img src="https://img.youtube.com/vi/@Html.DisplayFor(s => video.YoutubeId)/mqdefault.jpg" />
@@ -17,7 +18,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </a>
+                        </a>*@
                         <div class="caption">
                             <h4 style="white-space: normal;">@video.Title</h4>
                             <p>

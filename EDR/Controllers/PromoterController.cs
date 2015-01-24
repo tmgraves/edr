@@ -93,6 +93,79 @@ namespace EDR.Controllers
         }
 
         [Authorize]
+        public ActionResult Home(string username)
+        {
+            if (String.IsNullOrWhiteSpace(username))
+            {
+                if (User != null)
+                {
+                    username = User.Identity.Name;
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+            }
+
+            var promoter = DataContext.Promoters
+                .Where(x => x.ApplicationUser.UserName == username)
+                .FirstOrDefault();
+
+            if (promoter == null)
+            {
+                if (username == User.Identity.Name && !User.IsInRole("Promoter"))
+                {
+                    return RedirectToAction("Apply", "Promoter");
+                }
+                else
+                {
+                    return HttpNotFound();
+                }
+            }
+
+            var viewModel = LoadPromoter(username);
+
+            //  Media Updates
+            var lstMedia = new List<EventMedia>();
+            var events = DataContext.Events.OfType<Social>().Where(e => e.Promoters.Any(t => t.Id == viewModel.Promoter.Id));
+            var newPictures = DataContext.Pictures.OfType<EventPicture>()
+                                .Include("Event")
+                                .Include("PostedBy")
+                                .Where(p => events.Any(e => e.Id == p.Event.Id))
+                                .OrderByDescending(p => p.PhotoDate)
+                                .Take(20);
+            foreach (var p in newPictures)
+            {
+                lstMedia.Add(new EventMedia() { Event = p.Event, Id = p.Id, Author = p.PostedBy, MediaDate = p.PhotoDate, MediaType = Enums.MediaType.Picture, PhotoUrl = p.Filename, Title = p.Title });
+            }
+            var newVideos = DataContext.Videos.OfType<EventVideo>()
+                                .Include("Event")
+                                .Include("Author")
+                                .Where(v => events.Any(e => e.Id == v.Event.Id))
+                                .OrderByDescending(v => v.PublishDate)
+                                .Take(20);
+            foreach (var v in newVideos)
+            {
+                lstMedia.Add(new EventMedia() { Event = v.Event, Id = v.Id, Author = v.Author, MediaDate = v.PublishDate, MediaType = Enums.MediaType.Video, PhotoUrl = v.PhotoUrl, MediaUrl = v.VideoUrl, Title = v.Title });
+            }
+
+            viewModel.MediaUpdates = lstMedia;
+            //  Media Updates
+
+            viewModel.NewSocials = new EventListViewModel();
+            viewModel.NewSocials.EventType = Enums.EventType.Social;
+            viewModel.NewSocials.Location = viewModel.Address;
+            viewModel.NewSocials.Events = new List<Event>();
+            viewModel.NewSocials.Events = viewModel.Promoter.Socials.OrderByDescending(e => e.NextDate).Take(5);
+
+            viewModel.NewDancers = new List<ApplicationUser>();
+            var socialArray = viewModel.Promoter.Socials.Select(c => c.Id).ToArray();
+            viewModel.NewDancers = DataContext.Users.Include("Events").Where(u => u.Events.Any(e => socialArray.Contains(e.Id)));
+
+            return View(viewModel);
+        }
+
+        [Authorize]
         public ActionResult MySocials(string username)
         {
             if (String.IsNullOrWhiteSpace(username))

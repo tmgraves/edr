@@ -80,5 +80,6 @@ namespace EDR.Models
 
         public ICollection<EventPicture> Pictures { get; set; }
         public ICollection<EventVideo> Videos { get; set; }
+        public ICollection<EventPlaylist> Playlists { get; set; }
     }
 }

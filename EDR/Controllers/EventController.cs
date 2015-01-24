@@ -291,32 +291,115 @@ namespace EDR.Controllers
             }
 
             var model = new EventPostVideoViewModel();
-            model.Event = DataContext.Events.Where(x => x.Id == id).Include("Place").Include("Videos").FirstOrDefault();
+            model.Event = DataContext.Events.Where(x => x.Id == id)
+                                .Include("Place")
+                                .Include("Videos")
+                                .Include("Videos.Author")
+                                .FirstOrDefault();
             var userid = User.Identity.GetUserId();
-            var youtubeUsername = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault().YouTubeUsername;
+            var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+            var youtubeUsername = user.YouTubeUsername;
             if (youtubeUsername != null)
             {
                 model.YoutubeVideos = YouTubeHelper.GetVideos(youtubeUsername);
                 Session["YouTubeVideos"] = model.YoutubeVideos;
+                model.YouTubePlaylists = YouTubeHelper.GetPlaylists(youtubeUsername);
+                Session["YouTubePlaylists"] = model.YouTubePlaylists;
+            }
+            var facebookToken = user.FacebookToken;
+            if (facebookToken != null)
+            {
+                model.FacebookVideos = FacebookHelper.GetVideos(facebookToken);
+                Session["FacebookVideos"] = model.FacebookVideos;
             }
 
             return View(model);
         }
         [Authorize]
-        public ActionResult ImportVideo(string videoId, int eventId, string returnUrl)
+        public ActionResult ImportYouTubeVideo(string videoId, int eventId, string returnUrl)
         {
             var ytVideo = ((List<YouTubeVideo>)Session["YouTubeVideos"]).Where(x => x.Id == videoId).FirstOrDefault();
             var userid = User.Identity.GetUserId();
 
             var auth = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
 
-            var eVideo = new EventVideo() { Title = ytVideo.Title, PublishDate = ytVideo.PubDate, YoutubeId = videoId, Author = auth };
+            var eVideo = new EventVideo() { Title = ytVideo.Title, PublishDate = ytVideo.PubDate, YoutubeId = videoId, Author = auth, VideoUrl = "https://www.youtube.com/watch?v=" + videoId + "&feature=player_embedded", PhotoUrl = "https://img.youtube.com/vi/" + videoId + "/mqdefault.jpg" };
 
             var ev = DataContext.Events.Where(e => e.Id == eventId).Include("Videos").FirstOrDefault();
             ev.Videos.Add(eVideo);
             DataContext.Entry(ev).State = EntityState.Modified;
             DataContext.SaveChanges();
             ViewBag.Message = "Video was imported";
+            return Redirect(returnUrl);
+        }
+        [Authorize]
+        public ActionResult ImportFacebookVideo(string videoId, int eventId, string returnUrl)
+        {
+            var video = ((List<FacebookVideo>)Session["FacebookVideos"]).Where(x => x.Id == videoId).FirstOrDefault();
+            var userid = User.Identity.GetUserId();
+
+            var auth = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+
+            var eVideo = new EventVideo() { Title = video.Name, PublishDate = video.Created_Time, FacebookId = videoId, Author = auth, VideoUrl = "https://www.facebook.com/video.php?v=" + videoId, PhotoUrl = video.Picture };
+
+            var ev = DataContext.Events.Where(e => e.Id == eventId).Include("Videos").FirstOrDefault();
+            ev.Videos.Add(eVideo);
+            DataContext.Entry(ev).State = EntityState.Modified;
+            DataContext.SaveChanges();
+            ViewBag.Message = "Video was imported";
+            return Redirect(returnUrl);
+        }
+        [Authorize]
+        public ActionResult ImportYouTubeList(string Id, int eventId, string returnUrl)
+        {
+            var ytPlaylist = ((List<YouTubePlaylist>)Session["YouTubePlaylists"]).Where(x => x.Id == Id).FirstOrDefault();
+            var userid = User.Identity.GetUserId();
+            var auth = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+            var ev = DataContext.Events.Where(e => e.Id == eventId).Include("Playlists").FirstOrDefault();
+            var ePlaylist = new EventPlaylist() { Title = ytPlaylist.Name, PublishDate = ytPlaylist.PubDate, Id = ytPlaylist.Id, Author = auth, YouTubeUrl = ytPlaylist.Url, CoverPhoto = ytPlaylist.ThumbnailUrl };
+
+            ev.Playlists.Add(ePlaylist);
+            DataContext.Entry(ev).State = EntityState.Modified;
+            DataContext.SaveChanges();
+            ViewBag.Message = "Playlist was imported";
+            return Redirect(returnUrl);
+        }
+        [Authorize]
+        public ActionResult ImportYouTubePlaylistLink(string playlistUrl, int eventId, string returnUrl)
+        {
+            var ytPlaylist = YouTubeHelper.GetPlaylist(playlistUrl);
+            var userid = User.Identity.GetUserId();
+            var auth = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+            var ev = DataContext.Events.Where(e => e.Id == eventId).Include("Playlists").FirstOrDefault();
+            var ePlaylist = new EventPlaylist() { Title = ytPlaylist.Name, PublishDate = ytPlaylist.PubDate, Id = ytPlaylist.Id, Author = auth, YouTubeUrl = ytPlaylist.Url, CoverPhoto = ytPlaylist.ThumbnailUrl };
+
+            ev.Playlists.Add(ePlaylist);
+            DataContext.Entry(ev).State = EntityState.Modified;
+            DataContext.SaveChanges();
+            ViewBag.Message = "Playlist was imported";
+            return Redirect(returnUrl);
+        }
+        [Authorize]
+        public ActionResult ImportPlayListVideoLink(string videoUrl, int eventId, string returnUrl)
+        {
+            var ytVideo = YouTubeHelper.GetVideo(videoUrl);
+            var userid = User.Identity.GetUserId();
+            var auth = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+            var ev = DataContext.Events.Where(e => e.Id == eventId).Include("Videos").FirstOrDefault();
+            var eVideo = new EventVideo() { Title = ytVideo.Title, PublishDate = ytVideo.PubDate, YoutubeId = ytVideo.Id, Author = auth, VideoUrl = "https://www.youtube.com/watch?v=" + ytVideo.Id + "&feature=player_embedded", PhotoUrl = "https://img.youtube.com/vi/" + ytVideo.Id + "/mqdefault.jpg" };
+
+            ev.Videos.Add(eVideo);
+            DataContext.Entry(ev).State = EntityState.Modified;
+            DataContext.SaveChanges();
+            ViewBag.Message = "Video was imported";
+            return Redirect(returnUrl);
+        }
+        [Authorize]
+        public ActionResult DeleteVideo(int videoId, string returnUrl)
+        {
+            DataContext.Videos.Remove(DataContext.Videos.Where(v => v.Id == videoId).FirstOrDefault());
+            DataContext.SaveChanges();
+            ViewBag.Message = "Video was deleted";
             return Redirect(returnUrl);
         }
         #endregion

@@ -77,6 +77,7 @@ namespace EDR.Data
             //Videos
             modelBuilder.Entity<Video>().ToTable("Videos");
             modelBuilder.Entity<EventVideo>().ToTable("EventVideos");
+            modelBuilder.Entity<EventPlaylist>().ToTable("EventPlaylists");
 
             //Students
             modelBuilder.Entity<Student>().ToTable("Students");
@@ -101,6 +102,7 @@ namespace EDR.Data
 
         public DbSet<Picture> Pictures { get; set; }
         public DbSet<Student> Students { get; set; }
+        public DbSet<Video> Videos { get; set; }
 
         public DbSet<ClassTeacherInvitation> ClassTeacherInvitations { get; set; }
         public DbSet<SocialPromoterInvitation> SocialPromoterInvitations { get; set; }

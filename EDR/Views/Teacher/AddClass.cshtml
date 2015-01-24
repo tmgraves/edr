@@ -4,12 +4,7 @@
 
 @{
     ViewBag.Title = "AddClass";
-    Layout = "~/Views/Shared/_TeacherLayout.cshtml";
-}
-
-@section section
-{
-    Add Class
+    Layout = "~/Views/Teacher/_TeacherLayout.cshtml";
 }
 
 @Html.Partial("~/Views/Shared/Events/_AddClassPartial.cshtml", Model.NewClassModel)

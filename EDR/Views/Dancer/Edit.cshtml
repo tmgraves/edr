@@ -25,6 +25,13 @@
             </div>
         </div>
         <div class="form-group">
+            @Html.LabelFor(model => model.Dancer.ZipCode, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Dancer.ZipCode, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Dancer.ZipCode, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
             @Html.LabelFor(model => model.Dancer.YouTubeUsername, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.EditorFor(model => model.Dancer.YouTubeUsername, new { htmlAttributes = new { @class = "form-control" } })
@@ -32,10 +39,10 @@
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.Dancer.ZipCode, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Dancer.SpotifyUri, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Dancer.ZipCode, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Dancer.ZipCode, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.Dancer.SpotifyUri, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Dancer.SpotifyUri, "", new { @class = "text-danger" })
             </div>
         </div>
         

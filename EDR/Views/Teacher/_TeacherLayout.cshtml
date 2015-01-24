@@ -1,0 +1,106 @@
+﻿@model EDR.Models.ViewModels.TeacherViewViewModel
+
+@{
+    ViewBag.Title = "Teacher Page for " + Model.Teacher.ApplicationUser.FullName;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{string ctrName = ViewContext.RouteData.Values["action"].ToString();}
+
+<div class="container" style="padding: 10px;">
+    <div class="row">
+        <h1 class="page-header">
+            @Model.Teacher.ApplicationUser.FullName
+            @if (User.Identity != null && User.Identity.Name == Model.Teacher.ApplicationUser.UserName)
+            {
+                <a title="Edit Profile" href="@Url.Action("Edit", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })">
+                    <i class="glyphicon glyphicon glyphicon-pencil btn-sm btn-info" style="vertical-align: middle;"></i>
+                    <span class="sr-only">Edit Profile</span>
+                </a>
+            }
+        </h1>
+    </div>
+    <div class="well col-lg-2 col-md-2 col-sm-2 col-xs-2">
+        <div class="row">
+            <div style="text-align: center;">
+                <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
+                    @if (Model.Teacher.ApplicationUser.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault() != null)
+                    {
+                        <img class=" img-thumbnail" src="@Url.Content(Model.Teacher.ApplicationUser.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault().ThumbnailFilename)" />
+                    }
+                    else
+                    {
+                        <img class=" img-thumbnail" src="~/Content/images/NoPic.png" />
+                    }
+                </div>
+                @if (User.Identity != null && User.Identity.Name == Model.Teacher.ApplicationUser.UserName)
+                {
+                    <p>
+                        <a style="font-size: small;" href="@Url.Action("ChangePicture", "Dancer")">Change Picture</a>
+                    </p>
+                }
+            </div>
+            <div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <p>
+                        <a target="_blank" href="https://maps.google.com/?q=@Model.Address.Latitude,@Model.Address.Longitude">
+                            <img class="img-thumbnail" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Address.Latitude,@Model.Address.Longitude&zoom=6&size=200x100&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Address.Latitude, @Model.Address.Longitude">
+                        </a>
+                    </p>
+                </div>
+                <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <label class="control-label col-lg-4 col-md-4 col-sm-4 col-xs-4">Exp:</label>
+                    <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
+                        @Model.Teacher.Experience Year(s)
+                    </div>
+                </div>
+                <p>
+                    <label class="control-label col-lg-4 col-md-4 col-sm-4 col-xs-4">Styles:</label>
+                    <div>
+                        <ul class="list-inline col-lg-8 col-md-8 col-sm-8 col-xs-8">
+                            @foreach (var item in Model.Teacher.DanceStyles)
+                            {
+                                <li>@Html.ActionLink(item.Name, "Details", "DanceStyle", new { id = item.Id }, null)</li>
+                            }
+                        </ul>
+                    </div>
+                </p>
+                <div class="text-center">
+                    @if (Model.Teacher.FacebookLink != null)
+                    {
+                        <a class="img-thumbnail" href='@Model.Teacher.FacebookLink' target="_blank" title="Visit Me On Facebook"><img src="@Url.Content("~/Content/images/facebookSmall.png")" /></a>
+                    }
+                    @if (Model.Teacher.Website != null)
+                    {
+                        <a class="img-thumbnail" href='@Model.Teacher.Website' target="_blank" title="Visit Me On the Web"><img src="@Url.Content("~/Content/images/web.png")" /></a>
+                    }
+                    @if (Model.Teacher.ContactEmail != null)
+                    {
+                        <a class="img-thumbnail" href='mailto:@Model.Teacher.ContactEmail' title="Email Me"><img src="@Url.Content("~/Content/images/email.png")" /></a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-10 col-lg-10 col-sm-10 col-xs-10">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <ul class="nav nav-pills nav-justified" role="tablist">
+                    <li @if (ctrName == "Home") { <text> class="active" </text>    }><a href="@Url.Action("Home", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })">Home</a></li>
+                    <li @if (ctrName == "MyTeach") { <text> class="active" </text>   }><a href="@Url.Action("MyTeach", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })">Where I Teach</a></li>
+                    <li @if (ctrName == "Resume") { <text> class="active" </text>    }><a href="@Url.Action("Resume", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })">My Resume</a></li>
+                    <li @if (ctrName == "AddClass") { <text> class="active" </text>     }><a title="Add a New Class or Workshop" href="@Url.Action("AddClass", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })">Add Class</a></li>
+                    <li><a href="#myperformance" role="tab" data-toggle="tab">Where I Perform</a></li>
+                </ul>
+            </div>
+            <div class="panel-body">
+                <div class="tab-content">
+                    @RenderBody()
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<p>
+    @Html.ActionLink("Back to List", "List")
+</p>
