@@ -5,6 +5,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using System.Data.Entity;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
+using System;
 
 namespace EDR.Models
 {
@@ -23,7 +24,20 @@ namespace EDR.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string ZipCode { get; set; }
-        public int Experience { get; set; }
+        public string City { get; set; }
+        public string State { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+        public int Experience
+        {
+            get
+            {
+                return StartDate != null ? (int)((DateTime.Today - (DateTime)StartDate).Days / 365) : 0;
+            }
+        }
+
+        [Display(Name = "Started Dancing")]
+        public DateTime? StartDate { get; set; }
 
         public string FacebookUsername { get; set; }
         public string FacebookToken { get; set; }

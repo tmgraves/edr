@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace EDR.Models.ViewModels
 {
@@ -7,6 +9,16 @@ namespace EDR.Models.ViewModels
         [Required]
         [Display(Name = "User name")]
         public string UserName { get; set; }
+        [Required]
+        [Display(Name = "Started Dancing")]
+        public DateTime StartDate { get; set; }
+        [Required]
+        [Display(Name = "Zipcode")]
+        public string Zipcode { get; set; }
+        public virtual ICollection<DanceStyle> DanceStyles { get; set; }
+        public IEnumerable<DanceStyleListItem> AvailableStyles { get; set; }
+        public IEnumerable<DanceStyleListItem> SelectedStyles { get; set; }
+        public PostedStyles PostedStyles { get; set; }
     }
 
     public class ExternalLoginListViewModel

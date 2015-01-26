@@ -205,14 +205,28 @@ namespace EDR.Controllers
             {
                 lstMedia.Add(new EventMedia() { Event = v.Event, Id = v.Id, Author = v.Author, MediaDate = v.PublishDate, MediaType = Enums.MediaType.Video, PhotoUrl = v.PhotoUrl, MediaUrl = v.VideoUrl, Title = v.Title });
             }
+            var playlists = DataContext.Playlists.OfType<EventPlaylist>()
+                                .Include("Event")
+                                .Include("Author")
+                                .Where(v => events.Any(e => e.Id == v.Event.Id));
+            foreach (var lst in playlists)
+            {
+                var videos = YouTubeHelper.GetPlaylistVideos(lst.Id);
 
+                foreach(var movie in videos)
+                {
+                    lstMedia.Add(new EventMedia() { Event = lst.Event, Author = lst.Author, MediaDate = movie.PubDate, MediaType = Enums.MediaType.Video, PhotoUrl = movie.Thumbnail.ToString(), MediaUrl = movie.VideoLink.ToString(), Title = movie.Title });
+                }
+            }
             viewModel.MediaUpdates = lstMedia;
 
             viewModel.SuggestedClasses = new List<Class>();
             var myLocation = DbGeography.FromText("POINT(" + viewModel.Address.Longitude.ToString() + " " + viewModel.Address.Latitude.ToString() + ")");
             var arrStyles = viewModel.Dancer.DanceStyles.Select(s => s.Id).ToArray();
             var suggestedClasses = DataContext.Events.OfType<Class>()
-                                        .Where(y => y.DanceStyles.Any(d => arrStyles.Contains(d.Id)) && DbGeography.FromText("POINT(" + y.Place.Longitude.ToString() + " " + y.Place.Latitude.ToString() + ")").Distance(myLocation) * .00062 < 50 && !y.Users.Any(u => u.Id == id))
+                                        .Where(y => y.DanceStyles.Any(d => arrStyles.Contains(d.Id))
+                                                && DbGeography.FromText("POINT(" + y.Place.Longitude.ToString() + " " + y.Place.Latitude.ToString() + ")").Distance(myLocation) * .00062 < 50
+                                                && !y.Users.Any(u => u.Id == id))
                                         .Include("DanceStyles")
                                         .Include("Teachers")
                                         .Include("Teachers.ApplicationUser")
@@ -220,11 +234,14 @@ namespace EDR.Controllers
             viewModel.SuggestedClasses = suggestedClasses.Where(e => e.NextDate >= today);
             viewModel.SuggestedSocials = new List<Social>();
             var suggestedSocials = DataContext.Events.OfType<Social>()
-                                        .Where(y => y.DanceStyles.Any(d => arrStyles.Contains(d.Id)) && DbGeography.FromText("POINT(" + y.Place.Longitude.ToString() + " " + y.Place.Latitude.ToString() + ")").Distance(myLocation) * .00062 < 50 && !y.Users.Any(u => u.Id == id))
+                                        .Where(y => y.DanceStyles.Any(d => arrStyles.Contains(d.Id)) 
+                                            && DbGeography.FromText("POINT(" + y.Place.Longitude.ToString() + " " + y.Place.Latitude.ToString() + ")").Distance(myLocation) * .00062 < 50 
+                                            && !y.Users.Any(u => u.Id == id))
                                         .Include("DanceStyles")
                                         .ToList();
             viewModel.SuggestedSocials = suggestedSocials.Where(e => e.NextDate >= today);
 
+            var groups = FacebookHelper.GetGroups(viewModel.Dancer.FacebookToken);
             return View(viewModel);
         }
 
@@ -449,7 +466,7 @@ namespace EDR.Controllers
             if (ModelState.IsValid)
             {
                 var dancer = DataContext.Users.Where(x => x.Id == model.Dancer.Id).Include("DanceStyles").Include("Parties").FirstOrDefault();
-                dancer.Experience = model.Dancer.Experience;
+                dancer.StartDate = model.Dancer.StartDate;
                 dancer.YouTubeUsername = model.Dancer.YouTubeUsername;
                 dancer.SpotifyUri = model.Dancer.SpotifyUri;
                 dancer.ZipCode = model.Dancer.ZipCode;

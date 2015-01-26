@@ -57,12 +57,19 @@
                 <p>
                     <label class="control-label col-lg-4 col-md-4 col-sm-4 col-xs-4">Styles:</label>
                     <div>
-                        <ul class="list-inline col-lg-8 col-md-8 col-sm-8 col-xs-8">
-                            @foreach (var item in Model.Teacher.DanceStyles)
-                            {
-                                <li>@Html.ActionLink(item.Name, "Details", "DanceStyle", new { id = item.Id }, null)</li>
-                            }
-                        </ul>
+                        @if (Model.Teacher.DanceStyles.Count > 0)
+                        {
+                            <ul class="list-inline col-lg-8 col-md-8 col-sm-8 col-xs-8">
+                                @foreach (var item in Model.Teacher.DanceStyles.OrderBy(s => s.Name))
+                                {
+                                        <li>@Html.ActionLink(item.Name, "Details", "DanceStyle", new { id = item.Id }, new { @class = "label label-info" })</li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            @: <span class="text-warning">NO DANCE STYLES SELECTED</span>
+                        }
                     </div>
                 </p>
                 <div class="text-center">

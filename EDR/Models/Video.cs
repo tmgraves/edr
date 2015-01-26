@@ -16,6 +16,8 @@ namespace EDR.Models
         public string YoutubeUrl { get; set; }
         public string YoutubeThumbnail { get; set; }
         public ApplicationUser Author { get; set; }
+        public string YouTubePlaylistUrl { get; set; }
+        public string YouTubePlaylistTitle { get; set; }
     }
 
     public class EventVideo : Video

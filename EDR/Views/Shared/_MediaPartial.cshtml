@@ -4,7 +4,7 @@
 
 <div class="thumbnail col-lg-12 col-md-12 col-sm-12 col-xs-12">
     <p>
-        <span class="text-danger">New @Model.MediaType.ToString()</span> for @Html.ActionLink(Model.Event.Name, "View", new { id = Model.Event.Id }, new { @style = "font-weight: bold;" }) @(Model.Event is Class ? ((Class)Model.Event).ClassType.ToString() : ((Social)Model.Event).SocialType.ToString())
+        <span class="text-danger">New @Model.MediaType.ToString()</span> for @Html.ActionLink(Model.Event.Name, "View", "Event", new { id = Model.Event.Id, eventType = (Model.Event is Class ? "Class" : "Social") }, new { @style = "font-weight: bold;" }) @(Model.Event is Class ? ((Class)Model.Event).ClassType.ToString() : ((Social)Model.Event).SocialType.ToString())
     </p>
     @if (Model.MediaType == MediaType.Video)
     {

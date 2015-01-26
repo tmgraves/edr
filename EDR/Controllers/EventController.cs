@@ -116,7 +116,20 @@ namespace EDR.Controllers
                     .Include("Pictures.PostedBy")
                     .Include("Videos")
                     .Include("Videos.Author")
+                    .Include("Playlists")
+                    .Include("Playlists.Author")
                     .FirstOrDefault();
+
+            foreach(var lst in model.Event.Playlists)
+            {
+                var videos = YouTubeHelper.GetPlaylistVideos(lst.Id);
+
+                foreach(var movie in videos)
+                {
+                    model.Event.Videos.Add(new EventVideo() { Title = movie.Title, PublishDate = movie.PubDate, YoutubeId = movie.Id, VideoUrl = "https://www.youtube.com/watch?v=" + movie.Id + "&feature=player_embedded", PhotoUrl = "https://img.youtube.com/vi/" + movie.Id + "/mqdefault.jpg", Author = lst.Author, YouTubePlaylistTitle = lst.Title, YouTubePlaylistUrl = lst.YouTubeUrl });
+                }
+            }
+
             model.Review = new Review();
             model.Review.Like = true;
             var userid = User.Identity.GetUserId();

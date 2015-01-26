@@ -55,21 +55,30 @@
                         @Model.Dancer.Experience Year(s)
                     </div>
                 </div>
-                <p>
-                    <label class="control-label col-lg-4 col-md-4 col-sm-4 col-xs-4">Styles:</label>
-                    <div>
-                        <ul class="list-inline col-lg-8 col-md-8 col-sm-8 col-xs-8">
-                            @foreach (var item in Model.Dancer.DanceStyles)
-                            {
-                                <li>@Html.ActionLink(item.Name, "Details", "DanceStyle", new { id = item.Id }, null)</li>
-                            }
-                        </ul>
+                <div class="row">
+                    <label class="control-label col-lg-3 col-md-3 col-sm-3 col-xs-3">Styles:</label>
+                    <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9" style="display: inline-block;">
+                        @if(Model.Dancer.DanceStyles.Count > 0)
+                        {
+                            <ul class="list-inline col-lg-8 col-md-8 col-sm-8 col-xs-8">
+                                @foreach (var item in Model.Dancer.DanceStyles.OrderBy(s => s.Name))
+                                {
+                                    <li>@Html.ActionLink(item.Name, "Details", "DanceStyle", new { id = item.Id }, new { @class = "label label-info" })</li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            @: <span class="text-warning">NO DANCE STYLES SELECTED</span>
+                        }
                     </div>
-                </p>
-                @if (Model.Dancer.FacebookUsername != null)
-                {
-                    <a class="img-thumbnail" href='https://www.facebook.com/@Model.Dancer.FacebookUsername' target="_blank" title="Visit Me On Facebook"><img src="@Url.Content("~/Content/images/facebookSmall.png")" /></a>
-                }
+                </div>
+                <div class="row text-center">
+                    @if (Model.Dancer.FacebookUsername != null)
+                    {
+                        <a class="img-thumbnail" href='https://www.facebook.com/@Model.Dancer.FacebookUsername' target="_blank" title="Visit Me On Facebook"><img src="@Url.Content("~/Content/images/facebookSmall.png")" /></a>
+                    }
+                </div>
             </div>
         </div>
     </div>

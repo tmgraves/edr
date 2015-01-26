@@ -3,8 +3,8 @@
 
 @foreach (var t in Model.OrderBy(x => x.FullName))
 {
-    <a class="col-lg-3 col-md-3 col-sm-3 col-xs-3 btn btn-default" href="@Url.Action("Home", "Dancer", new { username = t.UserName }) " style="text-decoration: none;">
-        <div class="pull-left captionpic" style="display: inline-block;">
+    <a class="btn btn-default thumbnail" href="@Url.Action("Home", "Dancer", new { username = t.UserName }) " style="text-decoration: none; width: 75px;">
+        <div class="captionpic" style="display: inline-block;">
             @if (t.UserPictures != null && t.UserPictures.Count > 0)
             {
                 <img class="pull-left" src="@Url.Content(t.UserPictures.First().ThumbnailFilename)" />
@@ -14,7 +14,7 @@
                 <img class="pull-left" src="@Url.Content("~/Content/images/NoPic.png")" />
             }
         </div>
-        <div class="col-lg-offset-1 pull-left" style="display: inline-block; vertical-align: top;">
+        <div class="caption">
             <span style="vertical-align: top;"><b>@t.FirstName</b></span>
         </div>
     </a>

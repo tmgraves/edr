@@ -54,6 +54,8 @@ namespace EDR
             x.Scope.Add("user_friends");
             x.Scope.Add("user_events");
             x.Scope.Add("user_videos");
+            x.Scope.Add("user_groups");
+            x.Scope.Add("user_location");
             //x.Scope.Add("first_name");
             //x.Scope.Add("last_name");
             //  x.Scope.Add("link");

@@ -45,6 +45,42 @@ namespace EDR.Utilities
             return(photoList);
         }
 
+        private static FacebookAlbum GetAlbum(dynamic fbalbum, string token)
+        {
+            var fb = new FacebookClient(token);
+            ArrayList imageSize;
+            //Get the album data
+            var album = new FacebookAlbum();
+            album.Id = fbalbum.id;
+
+            var photoList = new List<FacebookPhoto>();
+            //Get the Pictures inside the album this gives JASON objects list that has photo attributes 
+            // described here http://developers.facebook.com/docs/reference/api/photo/
+            dynamic albumsPhotos = fb.Get(fbalbum.id + "/photos");
+
+            foreach (dynamic pictures in albumsPhotos.data)
+            {
+                imageSize = new ArrayList();
+                foreach (dynamic rsa in pictures.images)
+                {
+                    imageSize.Add(rsa.height);
+                }
+                photoList.Add(new FacebookPhoto()
+                {
+                    Album = fbalbum.name,
+                    Id = pictures.id,
+                    Name = pictures.name,
+                    Link = pictures.link,
+                    Source = pictures.picture,
+                    LargeSource = pictures.source,
+                    PhotoDate = DateTime.Parse(pictures.created_time)
+                });
+            }
+
+            album.Photos = photoList;
+            return (album);
+        }
+
         public static List<FacebookFriend> GetFriends(string token)
         {
             var fb = new FacebookClient(token);
@@ -139,6 +175,44 @@ namespace EDR.Utilities
                 });
             }
             return (videosList);
+        }
+
+        public static List<FacebookGroup> GetGroups(string token)
+        {
+            var fb = new FacebookClient(token);
+            dynamic myInfo = fb.Get("/me/groups?fields=id,description,email,icon,link,name,owner,privacy,updated_time,feed");
+
+            var groupsList = new List<FacebookGroup>();
+            foreach (dynamic group in myInfo.data)
+            {
+                dynamic from = group.owner;
+                groupsList.Add(new FacebookGroup()
+                {
+                    Id = group.id,
+                    Description = group.description,
+                    Email = group.email,
+                    Icon = group.icon,
+                    Link = group.link,
+                    Name = group.name,
+                    Privacy = group.privacy,
+                    Updated_Time = Convert.ToDateTime(group.updated_time),
+                    Posts = GetPosts(group.feed)
+                });
+            }
+            return (groupsList);
+        }
+
+        public static List<FacebookPost> GetPosts(dynamic feed)
+        {
+            var posts = new List<FacebookPost>();
+            if (feed != null)
+            {
+                foreach (dynamic postdata in feed.data)
+                {
+                    posts.Add(new FacebookPost() { Id = postdata.id, Message = postdata.message, Picture = postdata.picture, Link = postdata.link, Source = postdata.source, Description = postdata.description, Icon = postdata.icon, Type = postdata.type, Object_Id = postdata.object_id, Created_Time = Convert.ToDateTime(postdata.created_time), Updated_Time = Convert.ToDateTime(postdata.updated_time) });
+                }
+            }
+            return posts;
         }
     }
 }

@@ -47,7 +47,7 @@ namespace EDR.Utilities
             try
             {
                 List<YouTubePlaylist> plLists = new List<YouTubePlaylist>();
-                string url = "http://gdata.youtube.com/feeds/api/users/UC-76c4dV88DG46Dv39vzPiA/playlists";
+                string url = "http://gdata.youtube.com/feeds/api/users/" + youTubeUsername + "/playlists";
             
                 XDocument ytDoc = XDocument.Load(url);
                 var lists = ytDoc.Descendants().Where(p => p.Name.LocalName == "entry").ToList();
@@ -57,7 +57,7 @@ namespace EDR.Utilities
                     Uri listUri = new Uri(listPath);
                     string listId = HttpUtility.ParseQueryString(listUri.Query).Get("list");
                     //  var thumbUrl = list.Descendants().Where(p => p.Name.LocalName == "media:thumbnail").FirstOrDefault().Attribute("href").Value;
-                    plLists.Add(new YouTubePlaylist() { Id = listId, Name = list.Descendants().Where(p => p.Name.LocalName == "title").FirstOrDefault().Value, PubDate = Convert.ToDateTime(list.Descendants().Where(p => p.Name.LocalName == "published").FirstOrDefault().Value) });
+                    plLists.Add(new YouTubePlaylist() { Id = listId, Name = list.Descendants().Where(p => p.Name.LocalName == "title").FirstOrDefault().Value, PubDate = Convert.ToDateTime(list.Descendants().Where(p => p.Name.LocalName == "published").FirstOrDefault().Value), Url = listPath });
                 }
 
                 return plLists;
@@ -68,13 +68,37 @@ namespace EDR.Utilities
             }
         }
 
+        public static List<YouTubeVideo> GetPlaylistVideos(string listId)
+        {
+            try
+            {
+                List<YouTubeVideo> vidList = new List<YouTubeVideo>();
+                string url = "https://gdata.youtube.com/feeds/api/playlists/" + listId + "?orderby=published";    //string url1 = "https://www.googleapis.com/youtube/v3/users/" + youTubeUsername + "/uploads?orderby=published";
+                XDocument ytDoc = XDocument.Load(url);
+                var movies = ytDoc.Descendants().Where(p => p.Name.LocalName == "entry").ToList();
+                foreach (var movie in movies)
+                {
+                    var vidPath = movie.Descendants().Where(p => p.Name.LocalName == "link").FirstOrDefault().Attribute("href").Value;
+                    Uri vidUri = new Uri(vidPath);//  new Uri("http://www.example.com?param1=good&param2=bad");
+                    string vidId = HttpUtility.ParseQueryString(vidUri.Query).Get("v");
+                    vidList.Add(new YouTubeVideo() { Id = vidId, Title = movie.Descendants().Where(p => p.Name.LocalName == "title").FirstOrDefault().Value, PubDate = Convert.ToDateTime(movie.Descendants().Where(p => p.Name.LocalName == "published").FirstOrDefault().Value), Thumbnail = new Uri("https://img.youtube.com/vi/" + vidId + "/mqdefault.jpg"), VideoLink = vidUri });
+                }
+
+                return vidList;
+            }
+            catch (Exception ex)
+            {
+                return new List<YouTubeVideo>();
+            }
+        }
+
         public static YouTubePlaylist GetPlaylist(string playlistUrl)
         {
             try
             {
                 Uri listUri = new Uri(playlistUrl);
                 string listId = HttpUtility.ParseQueryString(listUri.Query).Get("list");
-                var plList = new YouTubePlaylist() { Id = listId, Name = "No Title", PubDate = DateTime.Now };
+                var plList = new YouTubePlaylist() { Id = listId, Name = "No Title", PubDate = DateTime.Now, Url = playlistUrl };
 
                 return plList;
             }

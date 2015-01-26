@@ -42,8 +42,11 @@ namespace EDR.Controllers
                                     .Include("ApplicationUser.UserPictures")
                                     .Include("Students.Dancer")
                                     .Include("Students.Dancer.UserPictures")
+                                    .Include("Classes.Playlists")
+                                    .Include("Classes.Playlists.Author")
                                     .Include("Places")
-                                    .Where(x => x.ApplicationUser.UserName == username).FirstOrDefault();
+                                    .Where(x => x.ApplicationUser.UserName == username)
+                                    .FirstOrDefault();
             viewModel.Events = new EventListViewModel();
 
             if (viewModel.Teacher.ApplicationUser.ZipCode != null)
@@ -156,6 +159,19 @@ namespace EDR.Controllers
             foreach (var v in newVideos)
             {
                 lstMedia.Add(new EventMedia() { Event = v.Event, Id = v.Id, Author = v.Author, MediaDate = v.PublishDate, MediaType = Enums.MediaType.Video, PhotoUrl = v.PhotoUrl, MediaUrl = v.VideoUrl, Title = v.Title });
+            }
+
+            foreach (var cls in viewModel.Teacher.Classes)
+            {
+                foreach (var list in cls.Playlists)
+                {
+                    var videos = YouTubeHelper.GetPlaylistVideos(list.Id);
+
+                    foreach (var movie in videos)
+                    {
+                        lstMedia.Add(new EventMedia() { Event = cls, Author = list.Author, MediaDate = movie.PubDate, MediaType = Enums.MediaType.Video, PhotoUrl = movie.Thumbnail.ToString(), MediaUrl = movie.VideoLink.ToString(), Title = movie.Title });
+                    }
+                }
             }
             viewModel.MediaUpdates = lstMedia;
             //  Media Updates
@@ -374,7 +390,7 @@ namespace EDR.Controllers
             if (ModelState.IsValid)
             {
                 var teacher = DataContext.Teachers.Where(x => x.ApplicationUser.Id == model.Teacher.ApplicationUser.Id).Include("ApplicationUser").Include("DanceStyles").FirstOrDefault();
-                teacher.Experience = model.Teacher.Experience;
+                teacher.StartDate = model.Teacher.StartDate;
                 teacher.FacebookLink = model.Teacher.FacebookLink;
                 teacher.Resume = model.Teacher.Resume;
                 teacher.Website = model.Teacher.Website;

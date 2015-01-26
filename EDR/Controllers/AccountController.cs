@@ -18,6 +18,7 @@ using System;
 using System.Web.Security;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Facebook;
+using Newtonsoft.Json;
 
 namespace EDR.Controllers
 {
@@ -343,7 +344,17 @@ namespace EDR.Controllers
                 // If the user does not have an account, then prompt the user to create an account
                 ViewBag.ReturnUrl = returnUrl;
                 ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
-                return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { UserName = loginInfo.DefaultUserName });
+
+                var model = new ExternalLoginConfirmationViewModel { UserName = loginInfo.DefaultUserName, StartDate = DateTime.Today };
+                var selectedStyles = new List<DanceStyleListItem>();
+                model.SelectedStyles = selectedStyles;
+                var styles = new List<DanceStyleListItem>();
+                foreach (DanceStyle s in DataContext.DanceStyles)
+                {
+                    styles.Add(new DanceStyleListItem { Id = s.Id, Name = s.Name });
+                }
+                model.AvailableStyles = styles.OrderBy(x => x.Name); 
+                return View("ExternalLoginConfirmation", model);
             }
         }
 
@@ -402,6 +413,8 @@ namespace EDR.Controllers
                 var email = emailClaim != null ? emailClaim.Value : null;
                 var usernameClaim = info.ExternalIdentity.Claims.First(c => c.Type == "urn:facebook:id");
                 var username = usernameClaim != null ? usernameClaim.Value : null;
+                dynamic locationClaim = JsonConvert.DeserializeObject(info.ExternalIdentity.Claims.Single(c => c.Type == "urn:facebook:location").Value);
+                var location = locationClaim != null ? locationClaim.name : null;
                 var tokenClaim = info.ExternalIdentity.Claims.First(c => c.Type == "urn:facebook:access_token");
                 var token = tokenClaim != null ? tokenClaim.Value : null;
 
@@ -413,11 +426,13 @@ namespace EDR.Controllers
                     user = DataContext.Users.Where(x => x.Email == email).FirstOrDefault();
                     user.FacebookToken = token;
                     user.FacebookUsername = username;
+                    user.StartDate = model.StartDate;
+                    user.ZipCode = model.Zipcode;
                     DataContext.SaveChanges();
                 }
                 else
                 {
-                    user = new ApplicationUser() { UserName = model.UserName, Email = email, FirstName = firstName, LastName = lastName, FacebookToken = token, FacebookUsername = username };
+                    user = new ApplicationUser() { UserName = model.UserName, Email = email, FirstName = firstName, LastName = lastName, FacebookToken = token, FacebookUsername = username, StartDate = model.StartDate, ZipCode = model.Zipcode };
                     result = await UserManager.CreateAsync(user);
                     if (!result.Succeeded)
                     {
@@ -425,12 +440,26 @@ namespace EDR.Controllers
                     }
                 }
 
+                //  Add Profile Pictures
                 var picture = FacebookHelper.GetPhotos(token).Where(x => x.Album == "Profile Pictures").FirstOrDefault();
-
                 if (picture != null)
                 {
                     user.UserPictures = new List<UserPicture>();
                     user.UserPictures.Add(new UserPicture() { Filename = picture.LargeSource, ProfilePicture = true, Title = "Profile Picture", ThumbnailFilename = picture.LargeSource, PhotoDate = picture.PhotoDate });
+                    DataContext.SaveChanges();
+                }
+
+                //  Add Dance Styles
+                if (model.PostedStyles != null)
+                {
+                    var styles = DataContext.DanceStyles.Where(x => model.PostedStyles.DanceStyleIds.Contains(x.Id.ToString())).ToList();
+
+                    user.DanceStyles = new List<DanceStyle>();
+
+                    foreach (DanceStyle s in styles)
+                    {
+                        user.DanceStyles.Add(s);
+                    }
                     DataContext.SaveChanges();
                 }
 

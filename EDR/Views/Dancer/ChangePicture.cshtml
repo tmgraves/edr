@@ -100,15 +100,17 @@
                     @foreach (var photo in Model.FacebookPictures.OrderByDescending(photo => photo.PhotoDate))
                     {
                         <li>
-                            <a href="@photo.Link" target="_blank">
-                                <div class="photoTile">
+                            <div class="thumbnail">
+                                <a href="@photo.Link" target="_blank">
                                     @if (photo.Source != null)
                                     {
-                                        <img class="thumbnail" src="@photo.Source" />
+                                        <img src="@photo.Source" />
                                     }
+                                </a>
+                                <div class="caption">
+                                    @Html.ActionLink("Add to Locker", "AddFacebookPicture", "Dancer", new { id = photo.Id, album = photo.Album, name = photo.Name, largeSource = photo.LargeSource, link = photo.Link, photodate = photo.PhotoDate, source = photo.Source }, htmlAttributes: new { @class = "btn btn-primary" })
                                 </div>
-                            </a>
-                            @Html.ActionLink("Add to Locker", "AddFacebookPicture", "Dancer", new { id = photo.Id, album = photo.Album, name = photo.Name, largeSource = photo.LargeSource, link = photo.Link, photodate = photo.PhotoDate, source = photo.Source }, htmlAttributes: new { @class = "btn btn-primary" })
+                            </div>
                         </li>
                     }
                 </ul>

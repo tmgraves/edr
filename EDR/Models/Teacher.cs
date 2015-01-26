@@ -8,7 +8,15 @@ namespace EDR.Models
 {
     public class Teacher : Entity
     {
-        public int Experience { get; set; }
+        [Display(Name = "Started Teaching")]
+        public DateTime? StartDate { get; set; }
+        public int Experience
+        {
+            get
+            {
+                return StartDate != null ? (int)((DateTime.Today - (DateTime)StartDate).Days / 365) : 0;
+            }
+        }
         public string Resume { get; set; }
         [Display(Name = "Facebook Page")]
         [RegularExpression("http[s]?://(www.facebook.com)/?[a-zA-Z0-9/\\-\\.]*", ErrorMessage = "Please enter a valid facebook page.")]

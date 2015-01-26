@@ -1,4 +1,6 @@
 ﻿@model EDR.Models.ViewModels.ExternalLoginConfirmationViewModel
+@using MvcCheckBoxList.Model
+
 @{
     ViewBag.Title = "Register";
 }
@@ -23,6 +25,31 @@
             @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
             @Html.ValidationMessageFor(m => m.UserName)
         </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.StartDate, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.StartDate, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.StartDate)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Zipcode, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Zipcode, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Zipcode)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.DanceStyles, htmlAttributes: new { @class = "control-label col-md-2" })
+        <section class="checkBoxListFor col-md-10">
+            @Html.CheckBoxListFor(model => model.PostedStyles.DanceStyleIds,
+                                  model => model.AvailableStyles.OrderBy(s => s.Name),
+                                  style => style.Id,
+                                  style => style.Name,
+                                  model => model.SelectedStyles,
+                                  Position.Horizontal)
+        </section>
     </div>
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">

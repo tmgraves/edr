@@ -30,6 +30,17 @@
                                 </a>
                                 on <span class="text-danger" style="vertical-align: top;">@video.PublishDate.ToShortDateString()</span>
                             </p>
+                            @if (video.YouTubePlaylistUrl != null)
+                            {
+                            <p>
+                                YouTube Playlist:
+                                <a href="@video.YouTubePlaylistUrl" target="_blank" style="text-decoration: none;">
+                                    <span class="text-primary" style="vertical-align: top;">
+                                        <b>@video.YouTubePlaylistTitle</b>
+                                    </span>
+                                </a>
+                            </p>
+                            }
                         </div>
                     </div>
                 </div>
