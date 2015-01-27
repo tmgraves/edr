@@ -56,8 +56,16 @@ namespace EDR.Utilities
                     var listPath = list.Descendants().Where(p => p.Name.LocalName == "link" && p.Attribute("rel").Value == "alternate").FirstOrDefault().Attribute("href").Value;
                     Uri listUri = new Uri(listPath);
                     string listId = HttpUtility.ParseQueryString(listUri.Query).Get("list");
+                    XDocument xlist = XDocument.Load("https://gdata.youtube.com/feeds/api/playlists/" + listId + "?v=2");
+                    //foreach (var node in xlist.Descendants())
+                    //{
+                    //    var x = node;
+                    //    var mg = list.Descendants().Where(p => p.Name.LocalName == "group").FirstOrDefault();
+                    //    var thb = mg.Descendants().Where(m => m.Name.LocalName == "thumbnail").FirstOrDefault();
+                    //}
+                    var thumbnail = list.Descendants().Where(p => p.Name.LocalName == "group").FirstOrDefault().Descendants().Where(m => m.Name.LocalName == "thumbnail").FirstOrDefault().Attribute("url").Value;
                     //  var thumbUrl = list.Descendants().Where(p => p.Name.LocalName == "media:thumbnail").FirstOrDefault().Attribute("href").Value;
-                    plLists.Add(new YouTubePlaylist() { Id = listId, Name = list.Descendants().Where(p => p.Name.LocalName == "title").FirstOrDefault().Value, PubDate = Convert.ToDateTime(list.Descendants().Where(p => p.Name.LocalName == "published").FirstOrDefault().Value), Url = listPath });
+                    plLists.Add(new YouTubePlaylist() { Id = listId, Name = list.Descendants().Where(p => p.Name.LocalName == "title").FirstOrDefault().Value, PubDate = Convert.ToDateTime(list.Descendants().Where(p => p.Name.LocalName == "published").FirstOrDefault().Value), Url = listPath, ThumbnailUrl = thumbnail });
                 }
 
                 return plLists;

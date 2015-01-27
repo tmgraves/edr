@@ -79,6 +79,12 @@ namespace EDR
             );
 
             routes.MapRoute(
+                name: "EventDeletePlaylist",
+                url: "Event/DeletePlaylist",
+                defaults: new { controller = "Event", action = "DeletePlaylist" }
+            );
+
+            routes.MapRoute(
                 name: "EventUploadPic",
                 url: "Event/UploadPicture",
                 defaults: new { controller = "Event", action = "UploadPicture" }

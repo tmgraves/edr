@@ -5,13 +5,13 @@ using System.Web;
 
 namespace EDR.Models
 {
-    public class Playlist
+    public class Playlist : Entity
     {
-        public string Id { get; set; }
         public string Title { get; set; }
         public DateTime PublishDate { get; set; }
         public string CoverPhoto { get; set; }
         public string YouTubeUrl { get; set; }
         public ApplicationUser Author { get; set; }
+        public string YouTubeId { get; set; }
     }
 }

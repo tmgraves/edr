@@ -165,7 +165,7 @@ namespace EDR.Controllers
             {
                 foreach (var list in cls.Playlists)
                 {
-                    var videos = YouTubeHelper.GetPlaylistVideos(list.Id);
+                    var videos = YouTubeHelper.GetPlaylistVideos(list.YouTubeId);
 
                     foreach (var movie in videos)
                     {

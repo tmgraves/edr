@@ -122,7 +122,7 @@ namespace EDR.Controllers
 
             foreach(var lst in model.Event.Playlists)
             {
-                var videos = YouTubeHelper.GetPlaylistVideos(lst.Id);
+                var videos = YouTubeHelper.GetPlaylistVideos(lst.YouTubeId);
 
                 foreach(var movie in videos)
                 {
@@ -308,6 +308,8 @@ namespace EDR.Controllers
                                 .Include("Place")
                                 .Include("Videos")
                                 .Include("Videos.Author")
+                                .Include("Playlists")
+                                .Include("Playlists.Author")
                                 .FirstOrDefault();
             var userid = User.Identity.GetUserId();
             var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
@@ -369,7 +371,7 @@ namespace EDR.Controllers
             var userid = User.Identity.GetUserId();
             var auth = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
             var ev = DataContext.Events.Where(e => e.Id == eventId).Include("Playlists").FirstOrDefault();
-            var ePlaylist = new EventPlaylist() { Title = ytPlaylist.Name, PublishDate = ytPlaylist.PubDate, Id = ytPlaylist.Id, Author = auth, YouTubeUrl = ytPlaylist.Url, CoverPhoto = ytPlaylist.ThumbnailUrl };
+            var ePlaylist = new EventPlaylist() { Title = ytPlaylist.Name, PublishDate = ytPlaylist.PubDate, YouTubeId = ytPlaylist.Id, Author = auth, YouTubeUrl = ytPlaylist.Url, CoverPhoto = ytPlaylist.ThumbnailUrl };
 
             ev.Playlists.Add(ePlaylist);
             DataContext.Entry(ev).State = EntityState.Modified;
@@ -384,7 +386,7 @@ namespace EDR.Controllers
             var userid = User.Identity.GetUserId();
             var auth = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
             var ev = DataContext.Events.Where(e => e.Id == eventId).Include("Playlists").FirstOrDefault();
-            var ePlaylist = new EventPlaylist() { Title = ytPlaylist.Name, PublishDate = ytPlaylist.PubDate, Id = ytPlaylist.Id, Author = auth, YouTubeUrl = ytPlaylist.Url, CoverPhoto = ytPlaylist.ThumbnailUrl };
+            var ePlaylist = new EventPlaylist() { Title = ytPlaylist.Name, PublishDate = ytPlaylist.PubDate, YouTubeId = ytPlaylist.Id, Author = auth, YouTubeUrl = ytPlaylist.Url, CoverPhoto = ytPlaylist.ThumbnailUrl };
 
             ev.Playlists.Add(ePlaylist);
             DataContext.Entry(ev).State = EntityState.Modified;
@@ -413,6 +415,14 @@ namespace EDR.Controllers
             DataContext.Videos.Remove(DataContext.Videos.Where(v => v.Id == videoId).FirstOrDefault());
             DataContext.SaveChanges();
             ViewBag.Message = "Video was deleted";
+            return Redirect(returnUrl);
+        }
+        [Authorize]
+        public ActionResult DeletePlaylist(int listId, string returnUrl)
+        {
+            DataContext.Playlists.Remove(DataContext.Playlists.Where(l => l.Id == listId).FirstOrDefault());
+            DataContext.SaveChanges();
+            ViewBag.Message = "Playlist was removed";
             return Redirect(returnUrl);
         }
         #endregion

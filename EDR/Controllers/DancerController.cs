@@ -211,7 +211,7 @@ namespace EDR.Controllers
                                 .Where(v => events.Any(e => e.Id == v.Event.Id));
             foreach (var lst in playlists)
             {
-                var videos = YouTubeHelper.GetPlaylistVideos(lst.Id);
+                var videos = YouTubeHelper.GetPlaylistVideos(lst.YouTubeId);
 
                 foreach(var movie in videos)
                 {
@@ -241,7 +241,7 @@ namespace EDR.Controllers
                                         .ToList();
             viewModel.SuggestedSocials = suggestedSocials.Where(e => e.NextDate >= today);
 
-            var groups = FacebookHelper.GetGroups(viewModel.Dancer.FacebookToken);
+            //  var groups = FacebookHelper.GetGroups(viewModel.Dancer.FacebookToken);
             return View(viewModel);
         }
 

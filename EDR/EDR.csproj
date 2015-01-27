@@ -377,9 +377,13 @@
     <Content Include="Content\images\NoPicTiny.png" />
     <Content Include="Content\images\NoProfilePic.gif" />
     <Content Include="Content\images\Play1Hot.png" />
+    <Content Include="Content\images\Play1HotSmall.png" />
     <Content Include="Content\images\Play1Normal.png" />
+    <Content Include="Content\images\Play1NormalSmall.png" />
     <Content Include="Content\images\Play1Pressed.png" />
     <Content Include="Content\images\NoPic.png" />
+    <Content Include="Content\images\Play1PressedSmall.png" />
+    <Content Include="Content\images\SpotifyHelp.png" />
     <Content Include="Content\images\thumbdown.png" />
     <Content Include="Content\images\thumbdownsm.png" />
     <Content Include="Content\images\thumbup.png" />
@@ -729,6 +733,7 @@
     <Content Include="Views\Promoter\Home.cshtml" />
     <Content Include="Views\Teacher\Home.cshtml" />
     <Content Include="Views\Shared\_MediaPartial.cshtml" />
+    <Content Include="Views\Shared\_PlaylistPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Series\" />
