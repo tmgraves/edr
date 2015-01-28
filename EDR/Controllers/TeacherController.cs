@@ -186,12 +186,15 @@ namespace EDR.Controllers
             var classArray = viewModel.Teacher.Classes.Select(c => c.Id).ToArray();
             viewModel.NewStudents = DataContext.Users.Include("Events").Where(u => u.Events.Any(e => classArray.Contains(e.Id)));
 
+            Session["ReturnUrl"] = Url.Action("Home", "Teacher", new { username = User.Identity.Name });
+
             return View(viewModel);
         }
 
         [Authorize]
         public ActionResult MyTeach(string username)
         {
+            Session["ReturnUrl"] = Url.Action("MyTeach", "Teacher", new { username = User.Identity.Name });
             if (String.IsNullOrWhiteSpace(username))
             {
                 if (User != null)
@@ -221,6 +224,7 @@ namespace EDR.Controllers
             }
 
             var viewModel = LoadTeacher(username);
+            viewModel.Events.ReturnUrl = Url.Action("MyTeach", "Teacher", new { id = teacher.Id });
 
             return View(viewModel);
         }
@@ -228,6 +232,7 @@ namespace EDR.Controllers
         [Authorize]
         public ActionResult Resume(string username)
         {
+            Session["ReturnUrl"] = Url.Action("Resume", "Teacher", new { username = User.Identity.Name });
             if (String.IsNullOrWhiteSpace(username))
             {
                 if (User != null)
@@ -259,94 +264,6 @@ namespace EDR.Controllers
             var viewModel = LoadTeacher(username);
 
             return View(viewModel);
-        }
-
-        [Authorize]
-        public ActionResult AddClass(string username)
-        {
-            if (String.IsNullOrWhiteSpace(username))
-            {
-                if (User != null)
-                {
-                    username = User.Identity.GetUserName();
-                }
-                else
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
-            }
-
-            var teacher = DataContext.Teachers
-                .Where(x => x.ApplicationUser.UserName == username)
-                .FirstOrDefault();
-
-            if (teacher == null)
-            {
-                if (username == User.Identity.Name && !User.IsInRole("Teacher"))
-                {
-                    return RedirectToAction("Apply", "Teacher");
-                }
-                else
-                {
-                    return HttpNotFound();
-                }
-            }
-
-            var viewModel = LoadTeacher(username);
-            viewModel.NewClassModel = new ClassNewViewModel();
-            if (viewModel.Teacher.ApplicationUser.FacebookToken != null)
-            {
-                viewModel.NewClassModel.FacebookEvents = FacebookHelper.GetEvents(viewModel.Teacher.ApplicationUser.FacebookToken).Where(x => !teacher.Classes.Any(y => y.FacebookId == x.Id)).ToList();
-                Session["FacebookEvents"] = viewModel.NewClassModel.FacebookEvents.ToList();
-            }
-
-            return View(viewModel);
-        }
-
-        [Authorize]
-        public ActionResult AddFacebookClass(string id, string returnUrl)
-        {
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    var userid = User.Identity.GetUserId();
-                    var teacher = DataContext.Teachers.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").FirstOrDefault();
-
-                    var fbevent = ((List<FacebookEvent>)Session["FacebookEvents"]).Where(x => x.Id == id).FirstOrDefault();
-
-                    Address ad = new Address();
-                    Place pl = new Place();
-                    if (fbevent.Address.FacebookId != null)
-                    {
-                        pl = new Place() { FacebookId = fbevent.Address.FacebookId, Name = fbevent.Location, PlaceType = Enums.PlaceType.OtherPlace, Zip = fbevent.Address.ZipCode, Address = fbevent.Address.Street, City = fbevent.Address.City, State = (Enums.State)System.Enum.Parse(typeof(Enums.State), fbevent.Address.State), Latitude = fbevent.Address.Latitude, Longitude = fbevent.Address.Longitude };
-                    }
-                    else
-                    {
-                        ad = Utilities.Geolocation.ParseAddress(teacher.ApplicationUser.ZipCode != null ? teacher.ApplicationUser.ZipCode : "90065");
-                        pl = new Place() { Name = "TBD", PlaceType = Enums.PlaceType.OtherPlace, Zip = teacher.ApplicationUser.ZipCode != null ? teacher.ApplicationUser.ZipCode : "90065", Address = ad.StreetNumber + " " + ad.StreetName, City = ad.City, State = (Enums.State)System.Enum.Parse(typeof(Enums.State), ad.State), Latitude = ad.Latitude, Longitude = ad.Longitude };
-                    }
-
-                    teacher.Classes.Add(new Class() { Name = fbevent.Name, ClassType = Enums.ClassType.Class, Description = fbevent.Description, EndDate = fbevent.EndTime, FacebookId = id, StartDate = fbevent.StartTime, PhotoUrl = fbevent.CoverPhoto.LargeSource, Place = pl });
-                    DataContext.Entry(teacher).State = EntityState.Modified;
-                    DataContext.SaveChanges();
-                    return Redirect(returnUrl);
-                }
-                catch (DbEntityValidationException e)
-                {
-                    var msg = "";
-                    foreach (var eve in e.EntityValidationErrors)
-                    {
-                        msg = eve.Entry.Entity.GetType().Name + " " + eve.Entry.State;
-                        foreach (var ve in eve.ValidationErrors)
-                        {
-                            msg = ve.PropertyName + " " + ve.ErrorMessage;
-                        }
-                    }
-                    return View();
-                }
-            }
-            return View();
         }
 
         [Authorize]

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EDR.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -135,13 +136,13 @@ namespace EDR
             routes.MapRoute(
                 name: "ClassView",
                 url: "Class/{id}",
-                defaults: new { controller = "Event", action = "View", eventType = "Class" }
+                defaults: new { controller = "Event", action = "View", eventType = EventType.Class }
             );
 
             routes.MapRoute(
                 name: "SocialView",
                 url: "Social/{id}",
-                defaults: new { controller = "Event", action = "View", eventType = "Social" }
+                defaults: new { controller = "Event", action = "View", eventType = EventType.Social }
             );
 
             routes.MapRoute(

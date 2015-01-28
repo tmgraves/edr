@@ -227,6 +227,15 @@
                             </p>
                         }
                     }
+                    @if (User.Identity != null && ((Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)) || (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
+                    {
+                        <p>
+                            <a class="btn btn btn-danger col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin: 5px;" title="Delete" href="@Url.Action("Delete", "Event", new { id = Model.Event.Id, returnUrl = Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this Event?')">
+                                <i class="glyphicon glyphicon glyphicon-remove"></i>
+                                Delete Video
+                            </a>
+                        </p>
+                    }
                 </div>
             </div>
         </div>
@@ -333,6 +342,6 @@
 
 
 <p>
-    @Html.ActionLink("Back to List", "Learn", "Home")
+    <a class="btn btn-primary" href="@Session["ReturnUrl"]">Back</a>
 </p>
 

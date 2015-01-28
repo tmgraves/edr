@@ -12,7 +12,7 @@
             @if (User.Identity != null && User.Identity.Name == Model.Teacher.ApplicationUser.UserName)
             {
                 <p>
-                    <a class="btn btn-warning" title="Create a New Class" style="vertical-align: top;" href="@Url.Action("Create", "Event", new { role = "Teacher", eventType = "Class", returnUrl = Url.Action("MyTeach", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName }) }, null)">
+                    <a class="btn btn-warning" title="Create a New Class" style="vertical-align: top;" href="@Url.Action("Create", "Event", new { role = "Teacher", eventType = "Class" }, null)">
                         <i class="glyphicon glyphicon glyphicon-plus"></i>
                         Add a New Class/Workshop
                     </a>

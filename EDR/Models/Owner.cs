@@ -24,5 +24,7 @@ namespace EDR.Models
         public virtual ApplicationUser ApplicationUser { get; set; }
         public virtual ICollection<Place> Places { get; set; }
         public ICollection<PlaceOwnerInvitation> PlaceOwnerInvitations { get; set; }
+        public virtual ICollection<Class> Classes { get; set; }
+        public virtual ICollection<Social> Socials { get; set; }
     }
 }

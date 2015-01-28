@@ -470,6 +470,20 @@ namespace EDR.Controllers
             return View(model);
         }
 
+        [Authorize]
+        public ActionResult Delete(int id)
+        {
+            DataContext.Events.Remove(DataContext.Events.Where(e => e.Id == id).FirstOrDefault());
+            DataContext.SaveChanges();
+            if (Session["ReturnUrl"] != null)
+            {
+                return Redirect(Session["ReturnUrl"].ToString());
+            }
+            {
+                return View();
+            }
+        }
+
         private EventEditViewModel LoadEditModel(int id)
         {
             var model = new EventEditViewModel();
@@ -500,15 +514,20 @@ namespace EDR.Controllers
         }
 
         [Authorize]
-        public ActionResult Create(string role, string eventType, int? placeId, string returnUrl)
+        public ActionResult Create(RoleName role, EventType eventType, int? placeId)
         {
-            var model = GetInitialClassCreateViewModel(role, eventType);
+            var model = new EventCreateViewModel();
+            var id = User.Identity.GetUserId();
+            model.Role = role;
+            model.EventType = eventType;
+
+            LoadModel(model);
+
             if (placeId != null)
             {
                 model.PlaceId = (int)placeId;
             }
 
-            model.ReturnUrl = returnUrl;
             var userid = User.Identity.GetUserId();
             var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
 
@@ -523,14 +542,15 @@ namespace EDR.Controllers
         }
 
         [Authorize]
-        public ActionResult AddFacebookClass(string id)
+        public ActionResult AddFacebookEvent(string id, RoleName role, EventType eventType)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
                     var userid = User.Identity.GetUserId();
-                    var teacher = DataContext.Teachers.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").FirstOrDefault();
+                    var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+                    int eventId;
 
                     var fbevent = ((List<FacebookEvent>)Session["FacebookEvents"]).Where(x => x.Id == id).FirstOrDefault();
 
@@ -542,15 +562,49 @@ namespace EDR.Controllers
                     }
                     else
                     {
-                        ad = Utilities.Geolocation.ParseAddress(teacher.ApplicationUser.ZipCode != null ? teacher.ApplicationUser.ZipCode : "90065");
-                        pl = new Place() { Name = "TBD", PlaceType = Enums.PlaceType.OtherPlace, Zip = teacher.ApplicationUser.ZipCode != null ? teacher.ApplicationUser.ZipCode : "90065", Address = ad.StreetNumber + " " + ad.StreetName, City = ad.City, State = (Enums.State)System.Enum.Parse(typeof(Enums.State), ad.State), Latitude = ad.Latitude, Longitude = ad.Longitude };
+                        ad = Utilities.Geolocation.ParseAddress(user.ZipCode != null ? user.ZipCode : "90065");
+                        pl = new Place() { Name = "TBD", PlaceType = Enums.PlaceType.OtherPlace, Zip = user.ZipCode != null ? user.ZipCode : "90065", Address = ad.StreetNumber + " " + ad.StreetName, City = ad.City, State = (Enums.State)System.Enum.Parse(typeof(Enums.State), ad.State), Latitude = ad.Latitude, Longitude = ad.Longitude };
                     }
 
-                    var cls = new Class() { Name = fbevent.Name, ClassType = Enums.ClassType.Class, Description = fbevent.Description, EndDate = fbevent.EndTime, FacebookId = id, StartDate = fbevent.StartTime, PhotoUrl = fbevent.CoverPhoto.LargeSource, Place = pl };
-                    teacher.Classes.Add(cls);
-                    DataContext.Entry(teacher).State = EntityState.Modified;
-                    DataContext.SaveChanges();
-                    return RedirectToAction("View", "Event", new { id = cls.Id });
+                    if (eventType == EventType.Class)
+                    {
+                        var cls = new Class() { Name = fbevent.Name, ClassType = Enums.ClassType.Class, Description = fbevent.Description, EndDate = fbevent.EndTime, FacebookId = id, StartDate = fbevent.StartTime, PhotoUrl = fbevent.CoverPhoto.LargeSource, Place = pl };
+                        if (role == RoleName.Teacher)
+                        {
+                            var teacher = DataContext.Teachers.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").FirstOrDefault();
+                            teacher.Classes.Add(cls);
+                            DataContext.Entry(teacher).State = EntityState.Modified;
+                            DataContext.SaveChanges();
+                        }
+                        else if (role == RoleName.Owner)
+                        {
+                            var owner = DataContext.Owners.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").FirstOrDefault();
+                            owner.Classes.Add(cls);
+                            DataContext.Entry(owner).State = EntityState.Modified;
+                            DataContext.SaveChanges();
+                        }
+                        eventId = cls.Id;
+                    }
+                    else
+                    {
+                        var social = new Social() { Name = fbevent.Name, SocialType = Enums.SocialType.Social, Description = fbevent.Description, EndDate = fbevent.EndTime, FacebookId = id, StartDate = fbevent.StartTime, PhotoUrl = fbevent.CoverPhoto.LargeSource, Place = pl };
+                        if (role == RoleName.Promoter)
+                        {
+                            var promoter = DataContext.Promoters.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").FirstOrDefault();
+                            promoter.Socials.Add(social);
+                            DataContext.Entry(promoter).State = EntityState.Modified;
+                            DataContext.SaveChanges();
+                        }
+                        else if (role == RoleName.Owner)
+                        {
+                            var owner = DataContext.Owners.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").FirstOrDefault();
+                            owner.Socials.Add(social);
+                            DataContext.Entry(owner).State = EntityState.Modified;
+                            DataContext.SaveChanges();
+                        }
+                        eventId = social.Id;
+                    }
+                    return RedirectToAction("View", "Event", new { id = eventId, eventType = eventType });
                 }
                 catch (DbEntityValidationException e)
                 {
@@ -569,16 +623,37 @@ namespace EDR.Controllers
             return View();
         }
 
-        private EventCreateViewModel GetInitialClassCreateViewModel(string role, string eventType)
+        [Authorize]
+        public ActionResult ConfirmFacebookEvent(string id, RoleName role, EventType eventType)
         {
-            var model = new EventCreateViewModel();
-            var id = User.Identity.GetUserId();
-            model.Role = role;
-            model.EventType = eventType;
+            var model = new ConfirmFacebookEvent();
+            var userid = User.Identity.GetUserId();
 
-            LoadModel(model);
+            model.FacebookEvent = ((List<FacebookEvent>)Session["FacebookEvents"]).Where(x => x.Id == id).FirstOrDefault();
+            if (eventType == EventType.Class)
+            {
+                if (role == RoleName.Teacher)
+                {
+                    model.Places = DataContext.Places.Where(p => p.Teachers.Any(t => t.ApplicationUser.Id == userid));
+                }
+                else
+                {
+                    model.Places = DataContext.Places.Where(p => p.Owners.Any(o => o.ApplicationUser.Id == userid));
+                }
+            }
+            else
+            {
+                if (role == RoleName.Promoter)
+                {
+                    model.Places = DataContext.Places.Where(p => p.Promoters.Any(pr => pr.ApplicationUser.Id == userid));
+                }
+                else
+                {
+                    model.Places = DataContext.Places.Where(p => p.Owners.Any(o => o.ApplicationUser.Id == userid));
+                }
+            }
 
-            return model;
+            return View(model);
         }
 
         private void LoadModel(EventCreateViewModel model)
@@ -595,15 +670,15 @@ namespace EDR.Controllers
             }
             model.AvailableStyles = styles.OrderBy(x => x.Name);
 
-            if (model.Role == "Teacher")
+            if (model.Role == RoleName.Teacher)
             {
                 model.PlaceList = DataContext.Places.Where(x => x.Teachers.Any(t => t.ApplicationUser.Id == id)).Select(p => new SelectListItem() { Text = p.Name, Value = p.Id.ToString() }).ToList();
             }
-            else if (model.Role == "Owner")
+            else if (model.Role == RoleName.Owner)
             {
                 model.PlaceList = DataContext.Places.Where(x => x.Owners.Any(t => t.ApplicationUser.Id == id)).Select(p => new SelectListItem() { Text = p.Name, Value = p.Id.ToString() }).ToList();
             }
-            else if (model.Role == "Promoter")
+            else if (model.Role == RoleName.Promoter)
             {
                 model.PlaceList = DataContext.Places.Where(x => x.Promoters.Any(t => t.ApplicationUser.Id == id)).Select(p => new SelectListItem() { Text = p.Name, Value = p.Id.ToString() }).ToList();
             }
@@ -632,35 +707,25 @@ namespace EDR.Controllers
                     event1.DanceStyles.Add(s);
                 }
 
-                if (model.EventType == "Class")
+                if (model.EventType == EventType.Class)
                 {
                     var class1 = ConvertToClass(event1);
-                    if (model.Role == "Teacher")
+                    if (model.Role == RoleName.Teacher)
                     {
                         var teacher = DataContext.Teachers.Include("ApplicationUser").Where(x => x.ApplicationUser.Id == id).FirstOrDefault();
                         class1.Teachers.Add(teacher);
                     }
                     DataContext.Events.Add(class1);
                 }
-                else if (model.EventType == "Social")
+                else if (model.EventType == EventType.Social)
                 {
                     var social = ConvertToSocial(event1);
-                    if (model.Role == "Promoter")
+                    if (model.Role == RoleName.Promoter)
                     {
                         var promoter = DataContext.Promoters.Include("ApplicationUser").Where(x => x.ApplicationUser.Id == id).FirstOrDefault();
                         social.Promoters.Add(promoter);
                     }
                     DataContext.Events.Add(social);
-                }
-                else if (model.EventType == "Rehearsal")
-                {
-                    var rehearsal = ConvertToRehearsal(event1);
-                    if (model.Role == "Teacher")
-                    {
-                        var teacher = DataContext.Teachers.Include("ApplicationUser").Where(x => x.ApplicationUser.Id == id).FirstOrDefault();
-                        rehearsal.Teacher = teacher;
-                    }
-                    DataContext.Events.Add(rehearsal);
                 }
                 DataContext.SaveChanges();
                 //promoter.ContactEmail = model.Promoter.ContactEmail;
@@ -669,7 +734,15 @@ namespace EDR.Controllers
 
                 //DataContext.Entry(promoter).State = EntityState.Modified;
                 //DataContext.SaveChanges();
-                return RedirectToAction("Manage", "Account");
+                //return RedirectToAction("Manage", "Account");
+                if (Session["ReturnUrl"] != null)
+                {
+                    return Redirect(Session["ReturnUrl"].ToString());
+                }
+                else
+                {
+                    return View();
+                }
             }
             else
             {

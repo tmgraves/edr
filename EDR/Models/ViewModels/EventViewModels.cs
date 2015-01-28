@@ -26,8 +26,8 @@ namespace EDR.Models.ViewModels
         [DataType(DataType.Time)]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:H:mm tt}")]
         public DateTime Time { get; set; }
-        public string EventType { get; set; }
-        public string Role { get; set; }
+        public EventType EventType { get; set; }
+        public RoleName Role { get; set; }
         [Display(Name = "Your Skill Level")]
         public SkillLevel SkillLevel { get; set; }
         [Display(Name = "Prerequisite(s)")]
@@ -71,6 +71,7 @@ namespace EDR.Models.ViewModels
     public class EventBaseViewModel
     {
         public Event Event { get; set; }
+        public string ReturnUrl { get; set; }
     }
 
     public class EventViewModel : EventBaseViewModel
@@ -105,10 +106,16 @@ namespace EDR.Models.ViewModels
         public IEnumerable<YouTubePlaylist> YouTubePlaylists { get; set; }
     }
 
-    public class EventListViewModel
+    public class EventListViewModel : EventBaseViewModel
     {
         public Address Location { get; set; }
         public EventType EventType { get; set; }
         public IEnumerable<Event> Events { get; set; }
+    }
+
+    public class ConfirmFacebookEvent : EventBaseViewModel
+    {
+        public FacebookEvent FacebookEvent { get; set; }
+        public IEnumerable<Place> Places { get; set; }
     }
 }

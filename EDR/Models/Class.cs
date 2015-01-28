@@ -13,5 +13,6 @@ namespace EDR.Models
         public ClassType ClassType { get; set; }
         public ICollection<Teacher> Teachers { get; set; }
         public ICollection<ClassTeacherInvitation> ClassTeacherInvitations { get; set; }
+        public ICollection<Owner> Owners { get; set; }
     }
 }

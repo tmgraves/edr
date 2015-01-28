@@ -20,7 +20,6 @@
             @using (Html.BeginForm("Create", "Event", FormMethod.Post))
             {
                 @Html.AntiForgeryToken()
-                @Html.Hidden(Model.Role)
                 <div class="form-horizontal">
                     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                     <div class="form-group">
@@ -38,15 +37,15 @@
                             @Html.ValidationMessageFor(model => model.Event.Description, "", new { @class = "text-danger" })
                         </div>
                     </div>
-                    @if (Model.EventType != "Party")
-                    {
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Event.Place, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10">
-                                @Html.DropDownList("PlaceId", Model.PlaceList, "- Select a Place -", new { @class = "form-control" })
-                                @Html.ValidationMessageFor(model => model.Event.Place, "", new { @class = "text-danger" })
-                            </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Event.Place, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.DropDownList("PlaceId", Model.PlaceList, "- Select a Place -", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Event.Place, "", new { @class = "text-danger" })
                         </div>
+                    </div>
+                    @*@if (Model.EventType != "Party")
+                    {
                     }
                     else
                     {
@@ -92,7 +91,7 @@
                                 @Html.ValidationMessageFor(model => model.Zip, "", new { @class = "text-danger" })
                             </div>
                         </div>
-                    }
+                    }*@
 
                     <div class="form-group">
                         <section class="checkBoxListFor">
@@ -245,7 +244,7 @@
                                                 </span>
                                             </div>
                                         </a>
-                                        @Html.ActionLink("Import this Event", "AddFacebookClass", "Event", new { id = ev.Id }, htmlAttributes: new { @class = "btn btn-primary", @style = " margin: 2px; width: 100%; vertical-align: bottom;" })
+                                        @Html.ActionLink("Import this Event", "ConfirmFacebookEvent", "Event", new { id = ev.Id, role = Model.Role, eventType = Model.EventType, returnUrl = Model.ReturnUrl }, htmlAttributes: new { @class = "btn btn-primary", @style = " margin: 2px; width: 100%; vertical-align: bottom;" })
                                     </div>
                                 </div>
                             </div>
