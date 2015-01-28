@@ -21,9 +21,8 @@ namespace EDR.Models.ViewModels
         public IEnumerable<Teacher> Teachers { get; set; }
     }
 
-    public class EventCreateViewModel
+    public class EventCreateViewModel : EventBaseViewModel
     {
-        public Event Event { get; set; }
         [DataType(DataType.Time)]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:H:mm tt}")]
         public DateTime Time { get; set; }
@@ -45,6 +44,8 @@ namespace EDR.Models.ViewModels
         public IEnumerable<DanceStyleListItem> AvailableStyles { get; set; }
         public IEnumerable<DanceStyleListItem> SelectedStyles { get; set; }
         public PostedStyles PostedStyles { get; set; }
+        public IEnumerable<FacebookEvent> FacebookEvents { get; set; }
+        public string ReturnUrl { get; set; }
     }
 
     public class EventEditViewModel

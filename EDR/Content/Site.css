@@ -156,3 +156,12 @@ facebookvideoimage img
 {
     width: 40px;
 }
+
+.croppedpic
+{
+    overflow: hidden;
+}
+.croppedpic img
+{
+    width: 100%;
+}

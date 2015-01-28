@@ -500,14 +500,73 @@ namespace EDR.Controllers
         }
 
         [Authorize]
-        public ActionResult Create(string role, string eventType, int? placeId)
+        public ActionResult Create(string role, string eventType, int? placeId, string returnUrl)
         {
             var model = GetInitialClassCreateViewModel(role, eventType);
             if (placeId != null)
             {
                 model.PlaceId = (int)placeId;
             }
+
+            model.ReturnUrl = returnUrl;
+            var userid = User.Identity.GetUserId();
+            var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+
+            if (user.FacebookToken != null)
+            {
+                model.FacebookEvents = FacebookHelper.GetEvents(user.FacebookToken);
+                Session["FacebookEvents"] = model.FacebookEvents;
+                var evt = FacebookHelper.GetEvent(model.FacebookEvents.FirstOrDefault().Id, user.FacebookToken);
+            }
+
             return View(model);
+        }
+
+        [Authorize]
+        public ActionResult AddFacebookClass(string id)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var userid = User.Identity.GetUserId();
+                    var teacher = DataContext.Teachers.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").FirstOrDefault();
+
+                    var fbevent = ((List<FacebookEvent>)Session["FacebookEvents"]).Where(x => x.Id == id).FirstOrDefault();
+
+                    Address ad = new Address();
+                    Place pl = new Place();
+                    if (fbevent.Address.FacebookId != null)
+                    {
+                        pl = new Place() { FacebookId = fbevent.Address.FacebookId, Name = fbevent.Location, PlaceType = Enums.PlaceType.OtherPlace, Zip = fbevent.Address.ZipCode, Address = fbevent.Address.Street, City = fbevent.Address.City, State = (Enums.State)System.Enum.Parse(typeof(Enums.State), fbevent.Address.State), Latitude = fbevent.Address.Latitude, Longitude = fbevent.Address.Longitude };
+                    }
+                    else
+                    {
+                        ad = Utilities.Geolocation.ParseAddress(teacher.ApplicationUser.ZipCode != null ? teacher.ApplicationUser.ZipCode : "90065");
+                        pl = new Place() { Name = "TBD", PlaceType = Enums.PlaceType.OtherPlace, Zip = teacher.ApplicationUser.ZipCode != null ? teacher.ApplicationUser.ZipCode : "90065", Address = ad.StreetNumber + " " + ad.StreetName, City = ad.City, State = (Enums.State)System.Enum.Parse(typeof(Enums.State), ad.State), Latitude = ad.Latitude, Longitude = ad.Longitude };
+                    }
+
+                    var cls = new Class() { Name = fbevent.Name, ClassType = Enums.ClassType.Class, Description = fbevent.Description, EndDate = fbevent.EndTime, FacebookId = id, StartDate = fbevent.StartTime, PhotoUrl = fbevent.CoverPhoto.LargeSource, Place = pl };
+                    teacher.Classes.Add(cls);
+                    DataContext.Entry(teacher).State = EntityState.Modified;
+                    DataContext.SaveChanges();
+                    return RedirectToAction("View", "Event", new { id = cls.Id });
+                }
+                catch (DbEntityValidationException e)
+                {
+                    var msg = "";
+                    foreach (var eve in e.EntityValidationErrors)
+                    {
+                        msg = eve.Entry.Entity.GetType().Name + " " + eve.Entry.State;
+                        foreach (var ve in eve.ValidationErrors)
+                        {
+                            msg = ve.PropertyName + " " + ve.ErrorMessage;
+                        }
+                    }
+                    return View();
+                }
+            }
+            return View();
         }
 
         private EventCreateViewModel GetInitialClassCreateViewModel(string role, string eventType)

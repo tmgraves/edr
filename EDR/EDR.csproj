@@ -734,6 +734,7 @@
     <Content Include="Views\Teacher\Home.cshtml" />
     <Content Include="Views\Shared\_MediaPartial.cshtml" />
     <Content Include="Views\Shared\_PlaylistPartial.cshtml" />
+    <Content Include="Views\Shared\Events\_ImportFacebookEventPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Series\" />

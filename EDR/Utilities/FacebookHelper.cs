@@ -3,6 +3,7 @@ using Facebook;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Web;
 
@@ -103,7 +104,7 @@ namespace EDR.Utilities
         public static List<FacebookEvent> GetEvents(string token)
         {
             var fb = new FacebookClient(token);
-            dynamic myInfo = fb.Get("/me/events?fields=id,cover,description,end_time,is_date_only,location,name,owner,privacy,start_time,ticket_uri,timezone,updated_time,venue,parent_group");
+            dynamic myInfo = fb.Get("/me/events?fields=id,cover,description,end_time,is_date_only,location,name,owner,privacy,start_time,ticket_uri,timezone,updated_time,venue,parent_group,feed");
             var eventsList = new List<FacebookEvent>();
             foreach (dynamic ev in myInfo.data)
             {
@@ -150,6 +151,13 @@ namespace EDR.Utilities
                 }
             }
             return (eventsList);
+        }
+
+        public static dynamic GetEvent(string id, string token)
+        {
+            var fb = new FacebookClient(token);
+            dynamic evt = fb.Get("/" + id + "?fields=id,name,feed");
+            return evt;
         }
 
         public static List<FacebookVideo> GetVideos(string token)

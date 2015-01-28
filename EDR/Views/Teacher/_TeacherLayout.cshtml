@@ -94,9 +94,8 @@
             <div class="panel-heading">
                 <ul class="nav nav-pills nav-justified" role="tablist">
                     <li @if (ctrName == "Home") { <text> class="active" </text>    }><a href="@Url.Action("Home", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })">Home</a></li>
-                    <li @if (ctrName == "MyTeach") { <text> class="active" </text>   }><a href="@Url.Action("MyTeach", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })">Where I Teach</a></li>
+                    <li @if (ctrName == "MyTeach") { <text> class="active" </text>   }><a href="@Url.Action("MyTeach", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })">My Classes/Workshops</a></li>
                     <li @if (ctrName == "Resume") { <text> class="active" </text>    }><a href="@Url.Action("Resume", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })">My Resume</a></li>
-                    <li @if (ctrName == "AddClass") { <text> class="active" </text>     }><a title="Add a New Class or Workshop" href="@Url.Action("AddClass", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })">Add Class</a></li>
                     <li><a href="#myperformance" role="tab" data-toggle="tab">Where I Perform</a></li>
                 </ul>
             </div>
