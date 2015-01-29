@@ -636,13 +636,13 @@ namespace EDR.Controllers
                     int eventId;
 
                     Place pl = new Place();
-                    if (model.NewPlace.Selected)
+                    if (model.PlaceId == 0)
                     {
                         pl = new Place() { FacebookId = model.NewPlace.FacebookId, Name = model.NewPlace.Name, PlaceType = Enums.PlaceType.OtherPlace, Zip = model.NewPlace.Zip, Address = model.NewPlace.Address, City = model.NewPlace.City, State = model.NewPlace.State, Latitude = model.NewPlace.Latitude, Longitude = model.NewPlace.Longitude };
                     }
-                    else if (model.Places.Where(p => p.Selected).Count() == 1)
+                    else if (model.PlaceId > 0)
                     {
-                        pl = model.Places.Where(p => p.Selected).FirstOrDefault();
+                        pl = DataContext.Places.Where(p => p.Id == model.PlaceId).FirstOrDefault();
                     }
                     else
                     {
@@ -650,10 +650,11 @@ namespace EDR.Controllers
                         ad = Utilities.Geolocation.ParseAddress(user.ZipCode != null ? user.ZipCode : "90065");
                         pl = new Place() { Name = "TBD", PlaceType = Enums.PlaceType.OtherPlace, Zip = user.ZipCode != null ? user.ZipCode : "90065", Address = ad.StreetNumber + " " + ad.StreetName, City = ad.City, State = (Enums.State)System.Enum.Parse(typeof(Enums.State), ad.State), Latitude = ad.Latitude, Longitude = ad.Longitude };
                     }
+                    model.NewEvent.Place = pl;
 
                     if (model.EventType == EventType.Class)
                     {
-                        var cls = new Class() { Name = model.FacebookEvent.Name, ClassType = model.ClassType, Description = model.FacebookEvent.Description, EndDate = model.FacebookEvent.EndTime, FacebookId = model.FacebookEvent.Id, StartDate = model.FacebookEvent.StartTime, PhotoUrl = model.FacebookEvent.CoverPhoto.LargeSource, Place = pl };
+                        var cls = new Class() { Name = model.NewEvent.Name, Description = model.NewEvent.Description, FacebookId = model.NewEvent.FacebookId, PhotoUrl = model.NewEvent.PhotoUrl, StartDate = model.NewEvent.StartDate, EndDate = model.NewEvent.EndDate, ClassType = model.ClassType, Place = pl };
                         if (model.Role == RoleName.Teacher)
                         {
                             var teacher = DataContext.Teachers.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").FirstOrDefault();
@@ -672,7 +673,7 @@ namespace EDR.Controllers
                     }
                     else
                     {
-                        var social = new Social() { Name = model.FacebookEvent.Name, SocialType = model.SocialType, Description = model.FacebookEvent.Description, EndDate = model.FacebookEvent.EndTime, FacebookId = model.FacebookEvent.Id, StartDate = model.FacebookEvent.StartTime, PhotoUrl = model.FacebookEvent.CoverPhoto.LargeSource, Place = pl };
+                        var social = new Social() { Name = model.NewEvent.Name, Description = model.NewEvent.Description, FacebookId = model.NewEvent.FacebookId, PhotoUrl = model.NewEvent.PhotoUrl, StartDate = model.NewEvent.StartDate, EndDate = model.NewEvent.EndDate, SocialType = model.SocialType, Place = pl };
                         if (model.Role == RoleName.Promoter)
                         {
                             var promoter = DataContext.Promoters.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").FirstOrDefault();
@@ -714,12 +715,18 @@ namespace EDR.Controllers
             var model = new ConfirmFacebookEvent();
             var userid = User.Identity.GetUserId();
 
-            model.FacebookEvent = ((List<FacebookEvent>)Session["FacebookEvents"]).Where(x => x.Id == id).FirstOrDefault();
-            model.Places = new List<PlaceItem>();
+            model.EventType = eventType;
+            var fbevent = ((List<FacebookEvent>)Session["FacebookEvents"]).Where(x => x.Id == id).FirstOrDefault();
             model.Role = role;
-            model.NewPlace = new PlaceItem() { Id = 0, Name = model.FacebookEvent.Location, Address = model.FacebookEvent.Address.Street, City = model.FacebookEvent.Address.City, State = (State)Enum.Parse(typeof(State), model.FacebookEvent.Address.State), Zip = model.FacebookEvent.Address.ZipCode, Latitude = model.FacebookEvent.Address.Latitude, Longitude = model.FacebookEvent.Address.Longitude };
+            model.PlaceId = -1;
+            model.NewPlace = new PlaceItem() { Id = 0, Name = fbevent.Location, Address = fbevent.Address.Street, City = fbevent.Address.City, State = (State)Enum.Parse(typeof(State), fbevent.Address.State), Zip = fbevent.Address.ZipCode, Latitude = fbevent.Address.Latitude, Longitude = fbevent.Address.Longitude };
+            model.Places = new List<PlaceItem>();
+            var blankPlace = new PlaceItem() { Id = 0 };
+            model.Places.Add(blankPlace);
+            model.NewEvent = new Event() { Name = fbevent.Name, Description = fbevent.Description, StartDate = Convert.ToDateTime(fbevent.StartTime.ToShortDateString()), EndDate = fbevent.EndTime, PhotoUrl = fbevent.CoverPhoto.LargeSource.ToString(), FacebookId = fbevent.Id };
             if (eventType == EventType.Class)
             {
+
                 if (role == RoleName.Teacher)
                 {
                     foreach(var pl in DataContext.Places.Where(p => p.Teachers.Any(t => t.ApplicationUser.Id == userid)))
@@ -753,9 +760,9 @@ namespace EDR.Controllers
                 }
             }
 
-            if (model.FacebookEvent.Address.Street != null && model.FacebookEvent.Address.City != null && model.FacebookEvent.Address.State != null && model.FacebookEvent.Address.ZipCode != null)
+            if (fbevent.Address.Street != null && fbevent.Address.City != null && fbevent.Address.State != null && fbevent.Address.ZipCode != null)
             {
-                var fbeventAddress = Geolocation.ParseAddress(model.FacebookEvent.Address.Street + " " + model.FacebookEvent.Address.City + ", " + model.FacebookEvent.Address.State + " " + model.FacebookEvent.Address.ZipCode);
+                var fbeventAddress = Geolocation.ParseAddress(fbevent.Address.Street + " " + fbevent.Address.City + ", " + fbevent.Address.State + " " + fbevent.Address.ZipCode);
                 var pl = model.Places.Where(p => p.Address == fbeventAddress.Street && p.City == fbeventAddress.City && p.State.ToString() == fbeventAddress.State).FirstOrDefault();
                 if (pl != null)
                 {
@@ -763,7 +770,7 @@ namespace EDR.Controllers
                 }
                 else
                 {
-                    model.NewPlace.Selected = true;
+                    blankPlace.Selected = true;
                 }
             }
 

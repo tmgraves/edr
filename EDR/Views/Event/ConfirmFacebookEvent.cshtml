@@ -1,6 +1,10 @@
 ﻿@model EDR.Models.ViewModels.ConfirmFacebookEvent
 @using EDR.Enums
 
+@{
+    ViewBag.Title = "Confirm New Event";
+}
+
 <style>
     .radio-list div
     {
@@ -35,11 +39,12 @@
 @using (Html.BeginForm())
 {
 @Html.AntiForgeryToken()
+@Html.HiddenFor(x => x.NewEvent.PhotoUrl)
 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
     <h3>Please Confirm Details for the New @Model.EventType</h3>
     <div class="col-lg-3 col-md-3">
         <div class="col-lg-12 col-md-12 croppedpic" style="height: 250px;">
-            <a href="@Model.FacebookEvent.CoverPhoto.LargeSource" target="_blank"><img src="@Model.FacebookEvent.CoverPhoto.LargeSource" /></a>
+            <a href="@Model.NewEvent.PhotoUrl" target="_blank"><img src="@Model.NewEvent.PhotoUrl" /></a>
         </div>
     </div>
     <div class="col-lg-9 col-md-9">
@@ -48,7 +53,7 @@
             {
                 @Html.LabelFor(model => model.ClassType, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10 col-lg-10">
-                    @Html.EditorFor(model => model.ClassType, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.EnumDropDownListFor(model => model.ClassType, htmlAttributes: new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => model.ClassType, "", new { @class = "text-danger" })
                 </div>
             }
@@ -62,64 +67,65 @@
             }
         </div>
         <div class="col-lg-12 col-md-12">
-            @Html.LabelFor(model => model.FacebookEvent.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.NewEvent.Name, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10 col-lg-10">
-                @Html.DisplayFor(model => model.FacebookEvent.Name, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.FacebookEvent.Name, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.NewEvent.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.NewEvent.Name, "", new { @class = "text-danger" })
             </div>
         </div>
         <div class="col-lg-12 col-md-12">
-            @Html.LabelFor(model => model.FacebookEvent.StartTime, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.NewEvent.StartDate, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10 col-lg-10">
-                @Html.DisplayFor(model => model.FacebookEvent.StartTime, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.FacebookEvent.StartTime, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.NewEvent.StartDate, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.NewEvent.StartDate, "", new { @class = "text-danger" })
             </div>
         </div>
         <div class="col-lg-12 col-md-12">
-            @Html.LabelFor(model => model.FacebookEvent.EndTime, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.NewEvent.EndDate, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10 col-lg-10">
-                @Html.DisplayFor(model => model.FacebookEvent.EndTime, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.FacebookEvent.EndTime, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.NewEvent.EndDate, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.NewEvent.EndDate, "", new { @class = "text-danger" })
             </div>
         </div>
         <div class="col-lg-12 col-md-12">
-            @Html.LabelFor(model => model.FacebookEvent.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.NewEvent.Description, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10 col-lg-10">
-                @Html.DisplayFor(model => model.FacebookEvent.Description, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.FacebookEvent.Description, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.NewEvent.Description, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.NewEvent.Description, "", new { @class = "text-danger" })
             </div>
         </div>
     </div>
     <div class="col-lg-12 col-md-12 radio-list">
         <h4>Select a Place for this Event</h4>
-        <div class="col-lg-4 col-md-4">
-            @Html.RadioButton("Places", Model.NewPlace.Selected, new { @id = Model.NewPlace.Id })
-            <label class="col-lg-12 col-md-12 btn btn-default" for="@Model.NewPlace.Id">
-                <h4>New Place</h4>
-                @Html.EditorFor(model => model.Places.Where(x => x.Id == 0).FirstOrDefault().Name, new { htmlAttributes = new { @class = "form-control", @placeholder = "Place Name" } })
-                @Html.EditorFor(model => model.Places.Where(x => x.Id == 0).FirstOrDefault().Address, new { htmlAttributes = new { @class = "form-control", @placeholder = "Address" } })
-                @Html.EditorFor(model => model.Places.Where(x => x.Id == 0).FirstOrDefault().City, new { htmlAttributes = new { @class = "form-control", @placeholder = "City" } })
-                @Html.EnumDropDownListFor(model => model.Places.Where(x => x.Id == 0).FirstOrDefault().State, "- Select a State-", new { @class = "form-control" }) 
-                @Html.EditorFor(model => model.Places.Where(x => x.Id == 0).FirstOrDefault().Zip, new { htmlAttributes = new { @class = "form-control", @placeholder = "Zipcode" } })
-            </label>
-        </div>
         @foreach (var pl in Model.Places)
         {
             <div class="col-lg-4 col-md-4">
                 @if (pl.Selected)
                 {
-                    @Html.RadioButtonFor(m => m.Places, pl.Selected, new { id = pl.Id })
+                    @Html.RadioButtonFor(m => m.PlaceId, pl.Id, new { id = pl.Id, @checked = true })
                 }
                 else
                 {
-                    @Html.RadioButtonFor(m => m.Places, pl.Selected, new { id = pl.Id })
+                    @Html.RadioButtonFor(m => m.PlaceId, pl.Id, new { id = pl.Id })
                 }
                 <label class="col-lg-12 col-md-12 btn btn-default" for="@pl.Id">
-                    <h4>@pl.Name</h4>
-                    @pl.PlaceType<br />
-                    @pl.Address<br />
-                    @pl.City @pl.State, @pl.Zip<br />
-                    <img src="https://maps.googleapis.com/maps/api/staticmap?center=@pl.Latitude,@pl.Longitude&zoom=10&size=250x100&maptype=roadmap&markers=color:red%7Clabel:A%7C @pl.Latitude, @pl.Longitude">
+                    @if(pl.Id == 0)
+                    {
+                        <h4>New Place</h4>
+                        @Html.EditorFor(model => model.NewPlace.Name, new { htmlAttributes = new { @class = "form-control", @placeholder = "Place Name" } })
+                        @Html.EditorFor(model => model.NewPlace.Address, new { htmlAttributes = new { @class = "form-control", @placeholder = "Address" } })
+                        @Html.EditorFor(model => model.NewPlace.City, new { htmlAttributes = new { @class = "form-control", @placeholder = "City" } })
+                        @Html.EnumDropDownListFor(model => model.NewPlace.State, "- Select a State-", new { @class = "form-control" })
+                        @Html.EditorFor(model => model.NewPlace.Zip, new { htmlAttributes = new { @class = "form-control", @placeholder = "Zipcode" } })
+                    }
+                    else
+                    {
+                        <h4>@pl.Name</h4>
+                        @pl.PlaceType<br />
+                        @pl.Address<br />
+                        @pl.City@:, @pl.State @pl.Zip<br />
+                        <img src="https://maps.googleapis.com/maps/api/staticmap?center=@pl.Latitude,@pl.Longitude&zoom=10&size=250x100&maptype=roadmap&markers=color:red%7Clabel:A%7C @pl.Latitude, @pl.Longitude">
+                    }
                 </label>
             </div>
         }

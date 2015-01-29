@@ -122,8 +122,8 @@ namespace EDR.Utilities
                     {
                         add.City = ev.venue.city;
                         add.Country = ev.venue.country;
-                        add.Latitude = ev.venue.latitude;
-                        add.Longitude = ev.venue.longitude;
+                        add.Latitude = ev.venue.latitude == null ? 0.0 : ev.venue.latitude;
+                        add.Longitude = ev.venue.longitude == null ? 0.0 : ev.venue.longitude;
                         add.State = ev.venue.state;
                         add.Street = ev.venue.street;
                         add.ZipCode = ev.venue.zip;

@@ -21,12 +21,12 @@ namespace EDR.Models
         [Required]
         [DataType(DataType.Date)]
         [Display(Name = "Start Date")]
-        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime StartDate { get; set; }
 
         [DataType(DataType.Date)]
         [Display(Name = "End Date")]
-        [DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? EndDate { get; set; }
 
         [DataType(DataType.Currency)]

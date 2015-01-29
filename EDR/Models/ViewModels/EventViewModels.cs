@@ -115,7 +115,8 @@ namespace EDR.Models.ViewModels
 
     public class ConfirmFacebookEvent : EventBaseViewModel
     {
-        public FacebookEvent FacebookEvent { get; set; }
+        public Event NewEvent { get; set; }
+        public int PlaceId { get; set; }
         public List<PlaceItem> Places { get; set; }
         public RoleName Role { get; set; }
         public EventType EventType { get; set; }
