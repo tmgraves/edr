@@ -81,6 +81,7 @@ namespace EDR.Utilities
 
                 address.Longitude = Convert.ToDouble(resObj.results[0].geometry.location.lng);
                 address.Latitude = Convert.ToDouble(resObj.results[0].geometry.location.lat);
+                address.Street = address.StreetNumber + " " + address.StreetName;
             }
             return address;
         }

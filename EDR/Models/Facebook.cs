@@ -70,6 +70,7 @@ namespace EDR.Models
         public DateTime? EndTime;
         public bool IsDateOnly;
         public string Location;
+        [Display(Name = "Event Name")]
         public string Name;
         public string Owner;
         public string Privacy;
