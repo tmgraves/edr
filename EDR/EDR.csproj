@@ -276,6 +276,7 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Address.cs" />
     <Compile Include="Models\EventInviations.cs" />
+    <Compile Include="Models\EventMember.cs" />
     <Compile Include="Models\EventPicture.cs" />
     <Compile Include="Models\EventPlaylist.cs" />
     <Compile Include="Models\Facebook.cs" />
@@ -736,6 +737,7 @@
     <Content Include="Views\Shared\_PlaylistPartial.cshtml" />
     <Content Include="Views\Shared\Events\_ImportFacebookEventPartial.cshtml" />
     <Content Include="Views\Event\ConfirmFacebookEvent.cshtml" />
+    <Content Include="Views\Shared\Events\_EventMembersPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Series\" />

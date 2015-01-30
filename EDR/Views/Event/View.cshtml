@@ -250,20 +250,36 @@
                     <h4>Students</h4>
                 </div>
                 <div class="panel-body">
-                    @Html.Partial("~/Views/Shared/Events/_UserListPartial.cshtml", Model.Event.Users)
+                    @Html.Partial("~/Views/Shared/Events/_EventMembersPartial.cshtml", Model.Event.EventMembers)
                 </div>
             </div>
         </div>
     </div>
     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <h4>
-                Pictures
+                Updates
                 <a class="btn btn-warning pull-right top-right" title="Add New Picture" href="@Url.Action("PostPicture", "Event", new { id = Model.Event.Id })">
-                    <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+                    <span class="glyphicon glyphicon-camera" aria-hidden="true"></span>
+                </a>
+                <a class="btn btn-warning pull-right top-right" title="Add New Video" href="@Url.Action("PostVideo", "Event", new { id = Model.Event.Id })" style="margin-left: 5px; margin-right: 5px;">
+                    <span class="glyphicon glyphicon-facetime-video" aria-hidden="true"></span>
                 </a>
             </h4>
             <hr />
+            @if (Model.MediaUpdates.Count() > 0)
+            {
+                foreach (var media in Model.MediaUpdates)
+                {
+                    @Html.Partial("~/Views/Shared/_MediaPartial.cshtml", media)
+                }
+            }
+            else
+            {
+                @: No Updates
+            }
+        </div>
+        @*<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
             <div style="max-height: 1000px; overflow-y: auto; overflow-x: hidden;">
                 @Html.Partial("~/Views/Shared/_PictureListPartial.cshtml", Model.Event.Pictures.OrderByDescending(p => p.PhotoDate))
             </div>
@@ -271,15 +287,12 @@
         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
             <h4>
                 Videos
-                <a class="btn btn-warning pull-right top-right" title="Add New Video" href="@Url.Action("PostVideo", "Event", new { id = Model.Event.Id })">
-                    <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
-                </a>
             </h4>
             <hr />
             <div style="max-height: 1000px; overflow-y: auto; overflow-x: hidden;">
                 @Html.Partial("~/Views/Shared/_VideoListPartial.cshtml", Model.Event.Videos.OrderByDescending(p => p.PublishDate))
             </div>
-        </div>
+        </div>*@
     </div>
     <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
         <div id="reviews">

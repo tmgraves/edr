@@ -82,6 +82,9 @@ namespace EDR.Data
             //Students
             modelBuilder.Entity<Student>().ToTable("Students");
 
+            //EventMembers
+            modelBuilder.Entity<EventMember>().ToTable("EventMembers");
+
             //Invitations
             modelBuilder.Entity<ClassTeacherInvitation>().ToTable("ClassTeacherInvitations");
             modelBuilder.Entity<SocialPromoterInvitation>().ToTable("SocialPromoterInvitations");
@@ -104,6 +107,7 @@ namespace EDR.Data
         public DbSet<Student> Students { get; set; }
         public DbSet<Video> Videos { get; set; }
         public DbSet<Playlist> Playlists { get; set; }
+        public DbSet<EventMember> EventMembers { get; set; }
 
         public DbSet<ClassTeacherInvitation> ClassTeacherInvitations { get; set; }
         public DbSet<SocialPromoterInvitation> SocialPromoterInvitations { get; set; }

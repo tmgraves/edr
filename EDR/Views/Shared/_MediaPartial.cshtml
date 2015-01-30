@@ -36,7 +36,9 @@
     else if (Model.MediaType == MediaType.Picture)
     {
         <a href="#">
-            <img src="@Url.Content(Model.PhotoUrl)" />
+            <a target="_blank" href="@Model.PhotoUrl">
+                <img src="@Url.Content(Model.PhotoUrl)" />
+            </a>
         </a>
         <div class="caption">
             <p>

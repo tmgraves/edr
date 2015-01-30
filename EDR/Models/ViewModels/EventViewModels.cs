@@ -80,6 +80,7 @@ namespace EDR.Models.ViewModels
         public Social Social { get; set; }
         public Review Review { get; set; }
         public IEnumerable<ClassTeacherInvitation> ClassTeacherInvitations { get; set; }
+        public IEnumerable<EventMedia> MediaUpdates { get; set; }
     }
 
     public class EventReviewsViewModel

@@ -36,7 +36,7 @@
             icon: "http://maps.google.com/mapfiles/kml/paddle/" + @idx + "-lv.png"
         });
 
-        attachMessage(marker, '@ev.Id', '@ev.Place.Name', '@ev.Place.Address <br/> @ev.Place.City , @ev.Place.State  @ev.Place.Zip', '<a href="@Url.Action("View", "Event", new { id = ev.Id, eventType = Model.EventType })">' + marker.title + '</a>', '@(ev.Users != null ? ev.Users.Count : 0)', '@(ev.Videos != null ? ev.Videos.Count : 0)', '@(ev.Pictures != null ? ev.Pictures.Count : 0)', '@Model.EventType.ToString()');
+        attachMessage(marker, '@ev.Id', '@ev.Place.Name', '@ev.Place.Address <br/> @ev.Place.City , @ev.Place.State  @ev.Place.Zip', '<a href="@Url.Action("View", "Event", new { id = ev.Id, eventType = Model.EventType })">' + marker.title + '</a>', '@(ev.EventMembers != null ? ev.EventMembers.Count : 0)', '@(ev.Videos != null ? ev.Videos.Count : 0)', '@(ev.Pictures != null ? ev.Pictures.Count : 0)', '@Model.EventType.ToString()');
                 markers.push(marker);
 
                 </text>
@@ -53,7 +53,7 @@
             icon: "http://maps.google.com/mapfiles/kml/paddle/" + @idx + "-lv.png"
         });
 
-        attachMessage(marker, '@ev.Id', '@ev.Place.Name', '@ev.Place.Address <br/> @ev.Place.City , @ev.Place.State  @ev.Place.Zip', '<a href="@Url.Action("View", "Event", new { id = ev.Id, eventType = Model.EventType })">' + marker.title + '</a>', '@(ev.Users != null ? ev.Users.Count : 0)', '@(ev.Videos != null ? ev.Videos.Count : 0)', '@(ev.Pictures != null ? ev.Videos.Count : 0)', '@Model.EventType.ToString()');
+        attachMessage(marker, '@ev.Id', '@ev.Place.Name', '@ev.Place.Address <br/> @ev.Place.City , @ev.Place.State  @ev.Place.Zip', '<a href="@Url.Action("View", "Event", new { id = ev.Id, eventType = Model.EventType })">' + marker.title + '</a>', '@(ev.EventMembers != null ? ev.EventMembers.Count : 0)', '@(ev.Videos != null ? ev.Videos.Count : 0)', '@(ev.Pictures != null ? ev.Videos.Count : 0)', '@Model.EventType.ToString()');
         markers.push(marker);
 
         </text>

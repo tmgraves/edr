@@ -40,6 +40,9 @@
 {
 @Html.AntiForgeryToken()
 @Html.HiddenFor(x => x.NewEvent.PhotoUrl)
+@Html.HiddenFor(x => x.NewPlace.Latitude)
+@Html.HiddenFor(x => x.NewPlace.Longitude)
+@Html.HiddenFor(x => x.NewPlace.FacebookId)
 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
     <h3>Please Confirm Details for the New @Model.EventType</h3>
     <div class="col-lg-3 col-md-3">
