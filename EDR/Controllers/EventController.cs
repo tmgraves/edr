@@ -18,6 +18,7 @@ namespace EDR.Controllers
 {
     public class EventController : BaseController
     {
+        #region reviews
         public ActionResult Reviews(int id)
         {
             var model = new EventReviewsViewModel();
@@ -42,6 +43,7 @@ namespace EDR.Controllers
             var reviews = DataContext.Reviews.Where(x => x.Event.Id == model.NewReview.Event.Id);
             return PartialView("~/Views/Shared/Events/_Reviews.cshtml", reviews);
         }
+        #endregion
 
         public ActionResult Details(int id, EventType eventType)
         {
@@ -119,27 +121,18 @@ namespace EDR.Controllers
                     .Include("Videos.Author")
                     .Include("Playlists")
                     .Include("Playlists.Author")
+                    .Include("Creator")
                     .FirstOrDefault();
-
-            foreach(var lst in model.Event.Playlists)
-            {
-                var videos = YouTubeHelper.GetPlaylistVideos(lst.YouTubeId);
-
-                foreach(var movie in videos)
-                {
-                    model.Event.Videos.Add(new EventVideo() { Title = movie.Title, PublishDate = movie.PubDate, YoutubeId = movie.Id, VideoUrl = "https://www.youtube.com/watch?v=" + movie.Id + "&feature=player_embedded", PhotoUrl = "https://img.youtube.com/vi/" + movie.Id + "/mqdefault.jpg", Author = lst.Author, YouTubePlaylistTitle = lst.Title, YouTubePlaylistUrl = lst.YouTubeUrl });
-                }
-            }
 
             //  Media Updates
             var lstMedia = new List<EventMedia>();
             foreach (var p in model.Event.Pictures)
             {
-                lstMedia.Add(new EventMedia() { Event = p.Event, Id = p.Id, Author = p.PostedBy, MediaDate = p.PhotoDate, MediaType = Enums.MediaType.Picture, PhotoUrl = p.Filename, Title = p.Title });
+                lstMedia.Add(new EventMedia() { Event = p.Event, Id = p.Id, Author = p.PostedBy, MediaDate = p.PhotoDate, MediaType = Enums.MediaType.Picture, PhotoUrl = p.Filename, Title = p.Title, MediaSource = p.MediaSource  });
             }
             foreach (var v in model.Event.Videos)
             {
-                lstMedia.Add(new EventMedia() { Event = v.Event, Id = v.Id, Author = v.Author, MediaDate = v.PublishDate, MediaType = Enums.MediaType.Video, PhotoUrl = v.PhotoUrl, MediaUrl = v.VideoUrl, Title = v.Title });
+                lstMedia.Add(new EventMedia() { Event = v.Event, Id = v.Id, Author = v.Author, MediaDate = v.PublishDate, MediaType = Enums.MediaType.Video, PhotoUrl = v.PhotoUrl, MediaUrl = v.VideoUrl, Title = v.Title, MediaSource = v.MediaSource });
             }
             foreach (var lst in model.Event.Playlists)
             {
@@ -147,8 +140,31 @@ namespace EDR.Controllers
 
                 foreach (var movie in videos)
                 {
-                    lstMedia.Add(new EventMedia() { Event = lst.Event, Author = lst.Author, MediaDate = movie.PubDate, MediaType = Enums.MediaType.Video, PhotoUrl = movie.Thumbnail.ToString(), MediaUrl = movie.VideoLink.ToString(), Title = movie.Title });
+                    lstMedia.Add(new EventMedia() { Event = lst.Event, Author = lst.Author, MediaDate = movie.PubDate, MediaType = Enums.MediaType.Video, PhotoUrl = movie.Thumbnail.ToString(), MediaUrl = movie.VideoLink.ToString(), Title = movie.Title, MediaSource = lst.MediaSource });
                 }
+            }
+            if (model.Event.FacebookId != null)
+            {
+                if (model.Event.Creator != null && model.Event.Creator.FacebookToken != null)
+                {
+                    var posts = FacebookHelper.GetFeed(model.Event.FacebookId, model.Event.Creator.FacebookToken);
+                    foreach (var post in posts)
+                    {
+                        if (post.Type == "video")
+                        {
+                            lstMedia.Add(new EventMedia() { Event = model.Event, Author = model.Event.Creator, MediaDate = post.Created_Time, MediaType = Enums.MediaType.Video, PhotoUrl = post.Picture, MediaUrl = post.Source, Text = post.Description, MediaSource = MediaSource.Facebook });
+                        }
+                        else if (post.Type == "picture")
+                        {
+                            lstMedia.Add(new EventMedia() { Event = model.Event, Author = model.Event.Creator, MediaDate = post.Created_Time, MediaType = Enums.MediaType.Picture, PhotoUrl = post.Picture, Text = post.Description, MediaSource = MediaSource.Facebook });
+                        }
+                        else if (post.Type == "status")
+                        {
+                            lstMedia.Add(new EventMedia() { Event = model.Event, Author = model.Event.Creator, MediaDate = post.Created_Time, MediaType = Enums.MediaType.Comment, Title = post.Name, Text = post.Message, MediaSource = MediaSource.Facebook });
+                        }
+                    }
+                }
+
             }
             model.MediaUpdates = lstMedia;
             //  Media Updates
@@ -283,7 +299,7 @@ namespace EDR.Controllers
                 var picture = ((List<FacebookPhoto>)Session["FacebookPictures"]).Where(p => p.Id == id).FirstOrDefault();
                 var userid = User.Identity.GetUserId();
                 var postedby = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
-                ev.Pictures.Add(new EventPicture() { Title = picture.Name, ThumbnailFilename = picture.Source, Filename = picture.LargeSource, PhotoDate = picture.PhotoDate, PostedBy = postedby });
+                ev.Pictures.Add(new EventPicture() { Title = picture.Name, ThumbnailFilename = picture.Source, Filename = picture.LargeSource, PhotoDate = picture.PhotoDate, PostedBy = postedby, MediaSource = MediaSource.Facebook });
                 DataContext.Entry(ev).State = EntityState.Modified;
                 DataContext.SaveChanges();
                 return Redirect(returnUrl);
@@ -361,7 +377,7 @@ namespace EDR.Controllers
 
             var auth = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
 
-            var eVideo = new EventVideo() { Title = ytVideo.Title, PublishDate = ytVideo.PubDate, YoutubeId = videoId, Author = auth, VideoUrl = "https://www.youtube.com/watch?v=" + videoId + "&feature=player_embedded", PhotoUrl = "https://img.youtube.com/vi/" + videoId + "/mqdefault.jpg" };
+            var eVideo = new EventVideo() { Title = ytVideo.Title, PublishDate = ytVideo.PubDate, YoutubeId = videoId, Author = auth, VideoUrl = "https://www.youtube.com/watch?v=" + videoId + "&feature=player_embedded", PhotoUrl = "https://img.youtube.com/vi/" + videoId + "/mqdefault.jpg", MediaSource = MediaSource.YouTube };
 
             var ev = DataContext.Events.Where(e => e.Id == eventId).Include("Videos").FirstOrDefault();
             ev.Videos.Add(eVideo);
@@ -378,7 +394,7 @@ namespace EDR.Controllers
 
             var auth = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
 
-            var eVideo = new EventVideo() { Title = video.Name, PublishDate = video.Created_Time, FacebookId = videoId, Author = auth, VideoUrl = "https://www.facebook.com/video.php?v=" + videoId, PhotoUrl = video.Picture };
+            var eVideo = new EventVideo() { Title = video.Name, PublishDate = video.Created_Time, FacebookId = videoId, Author = auth, VideoUrl = "https://www.facebook.com/video.php?v=" + videoId, PhotoUrl = video.Picture, MediaSource = MediaSource.Facebook };
 
             var ev = DataContext.Events.Where(e => e.Id == eventId).Include("Videos").FirstOrDefault();
             ev.Videos.Add(eVideo);
@@ -394,7 +410,7 @@ namespace EDR.Controllers
             var userid = User.Identity.GetUserId();
             var auth = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
             var ev = DataContext.Events.Where(e => e.Id == eventId).Include("Playlists").FirstOrDefault();
-            var ePlaylist = new EventPlaylist() { Title = ytPlaylist.Name, PublishDate = ytPlaylist.PubDate, YouTubeId = ytPlaylist.Id, Author = auth, YouTubeUrl = ytPlaylist.Url, CoverPhoto = ytPlaylist.ThumbnailUrl };
+            var ePlaylist = new EventPlaylist() { Title = ytPlaylist.Name, PublishDate = ytPlaylist.PubDate, YouTubeId = ytPlaylist.Id, Author = auth, YouTubeUrl = ytPlaylist.Url, CoverPhoto = ytPlaylist.ThumbnailUrl, MediaSource = MediaSource.YouTube };
 
             ev.Playlists.Add(ePlaylist);
             DataContext.Entry(ev).State = EntityState.Modified;
@@ -409,7 +425,7 @@ namespace EDR.Controllers
             var userid = User.Identity.GetUserId();
             var auth = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
             var ev = DataContext.Events.Where(e => e.Id == eventId).Include("Playlists").FirstOrDefault();
-            var ePlaylist = new EventPlaylist() { Title = ytPlaylist.Name, PublishDate = ytPlaylist.PubDate, YouTubeId = ytPlaylist.Id, Author = auth, YouTubeUrl = ytPlaylist.Url, CoverPhoto = ytPlaylist.ThumbnailUrl };
+            var ePlaylist = new EventPlaylist() { Title = ytPlaylist.Name, PublishDate = ytPlaylist.PubDate, YouTubeId = ytPlaylist.Id, Author = auth, YouTubeUrl = ytPlaylist.Url, CoverPhoto = ytPlaylist.ThumbnailUrl, MediaSource = MediaSource.YouTube };
 
             ev.Playlists.Add(ePlaylist);
             DataContext.Entry(ev).State = EntityState.Modified;
@@ -424,7 +440,7 @@ namespace EDR.Controllers
             var userid = User.Identity.GetUserId();
             var auth = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
             var ev = DataContext.Events.Where(e => e.Id == eventId).Include("Videos").FirstOrDefault();
-            var eVideo = new EventVideo() { Title = ytVideo.Title, PublishDate = ytVideo.PubDate, YoutubeId = ytVideo.Id, Author = auth, VideoUrl = "https://www.youtube.com/watch?v=" + ytVideo.Id + "&feature=player_embedded", PhotoUrl = "https://img.youtube.com/vi/" + ytVideo.Id + "/mqdefault.jpg" };
+            var eVideo = new EventVideo() { Title = ytVideo.Title, PublishDate = ytVideo.PubDate, YoutubeId = ytVideo.Id, Author = auth, VideoUrl = "https://www.youtube.com/watch?v=" + ytVideo.Id + "&feature=player_embedded", PhotoUrl = "https://img.youtube.com/vi/" + ytVideo.Id + "/mqdefault.jpg", MediaSource = MediaSource.YouTube };
 
             ev.Videos.Add(eVideo);
             DataContext.Entry(ev).State = EntityState.Modified;
@@ -687,7 +703,7 @@ namespace EDR.Controllers
 
                     if (model.EventType == EventType.Class)
                     {
-                        var cls = new Class() { Name = model.NewEvent.Name, Description = model.NewEvent.Description, FacebookId = model.NewEvent.FacebookId, PhotoUrl = model.NewEvent.PhotoUrl, StartDate = model.NewEvent.StartDate, EndDate = model.NewEvent.EndDate, ClassType = model.ClassType, Place = pl };
+                        var cls = new Class() { Name = model.NewEvent.Name, Description = model.NewEvent.Description, FacebookId = model.NewEvent.FacebookId, PhotoUrl = model.NewEvent.PhotoUrl, StartDate = model.NewEvent.StartDate, EndDate = model.NewEvent.EndDate, ClassType = model.ClassType, Place = pl, FacebookLink = model.NewEvent.FacebookLink, Creator = user };
                         if (model.Role == RoleName.Teacher)
                         {
                             var teacher = DataContext.Teachers.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").Include("Places").FirstOrDefault();
@@ -707,7 +723,7 @@ namespace EDR.Controllers
                     }
                     else
                     {
-                        var social = new Social() { Name = model.NewEvent.Name, Description = model.NewEvent.Description, FacebookId = model.NewEvent.FacebookId, PhotoUrl = model.NewEvent.PhotoUrl, StartDate = model.NewEvent.StartDate, EndDate = model.NewEvent.EndDate, SocialType = model.SocialType, Place = pl };
+                        var social = new Social() { Name = model.NewEvent.Name, Description = model.NewEvent.Description, FacebookId = model.NewEvent.FacebookId, PhotoUrl = model.NewEvent.PhotoUrl, StartDate = model.NewEvent.StartDate, EndDate = model.NewEvent.EndDate, SocialType = model.SocialType, Place = pl, FacebookLink = model.NewEvent.FacebookLink, Creator = user };
                         if (model.Role == RoleName.Promoter)
                         {
                             var promoter = DataContext.Promoters.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").FirstOrDefault();
@@ -753,11 +769,11 @@ namespace EDR.Controllers
             var fbevent = ((List<FacebookEvent>)Session["FacebookEvents"]).Where(x => x.Id == id).FirstOrDefault();
             model.Role = role;
             model.PlaceId = -1;
-            model.NewPlace = new PlaceItem() { Id = 0, Name = fbevent.Location, Address = fbevent.Address.Street, City = fbevent.Address.City, State = (State)Enum.Parse(typeof(State), fbevent.Address.State), Zip = fbevent.Address.ZipCode, Latitude = fbevent.Address.Latitude, Longitude = fbevent.Address.Longitude };
+            model.NewPlace = new PlaceItem() { Id = 0, Name = fbevent.Location, Address = fbevent.Address.Street, City = fbevent.Address.City, State = fbevent.Address.State != null ? (State)Enum.Parse(typeof(State), fbevent.Address.State) : State.CA, Zip = fbevent.Address.ZipCode, Latitude = fbevent.Address.Latitude, Longitude = fbevent.Address.Longitude};
             model.Places = new List<PlaceItem>();
             var blankPlace = new PlaceItem() { Id = 0 };
             model.Places.Add(blankPlace);
-            model.NewEvent = new Event() { Name = fbevent.Name, Description = fbevent.Description, StartDate = Convert.ToDateTime(fbevent.StartTime.ToShortDateString()), EndDate = fbevent.EndTime, PhotoUrl = fbevent.CoverPhoto.LargeSource.ToString(), FacebookId = fbevent.Id };
+            model.NewEvent = new Event() { Name = fbevent.Name, Description = fbevent.Description, StartDate = Convert.ToDateTime(fbevent.StartTime.ToShortDateString()), EndDate = fbevent.EndTime, PhotoUrl = fbevent.CoverPhoto.LargeSource, FacebookId = fbevent.Id, FacebookLink = fbevent.EventLink };
             if (eventType == EventType.Class)
             {
 
@@ -806,6 +822,10 @@ namespace EDR.Controllers
                 {
                     blankPlace.Selected = true;
                 }
+            }
+            else
+            {
+                blankPlace.Selected = true;
             }
 
             return View(model);

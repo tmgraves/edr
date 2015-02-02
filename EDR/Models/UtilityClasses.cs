@@ -30,6 +30,8 @@ namespace EDR.Models
         public string MediaUrl { get; set; }
         public string PhotoUrl { get; set; }
         public ApplicationUser Author { get; set; }
+        public string Text { get; set; }
+        public MediaSource MediaSource { get; set; }
     }
 
     public class EventMedia : Media

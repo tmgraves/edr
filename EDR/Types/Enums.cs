@@ -16,7 +16,9 @@ namespace EDR.Enums
         [Display(Name = "Picture")]
         Picture,
         [Display(Name = "Video")]
-        Video
+        Video,
+        [Display(Name = "Comment")]
+        Comment
     }
 
     public enum EventType
@@ -25,6 +27,22 @@ namespace EDR.Enums
         Social,
         [Display(Name = "Class")]
         Class
+    }
+
+    public enum MediaSource
+    {
+        [Display(Name = "Facebook")]
+        Facebook,
+        [Display(Name = "YouTube")]
+        YouTube,
+        [Display(Name = "Instagram")]
+        Instagram,
+        [Display(Name = "Meetup")]
+        Meetup,
+        [Display(Name = "LinkedIn")]
+        LinkedIn,
+        [Display(Name = "Yelp")]
+        Yelp
     }
 
     public enum PlaceType

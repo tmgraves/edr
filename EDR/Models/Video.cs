@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EDR.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -18,6 +19,7 @@ namespace EDR.Models
         public ApplicationUser Author { get; set; }
         public string YouTubePlaylistUrl { get; set; }
         public string YouTubePlaylistTitle { get; set; }
+        public MediaSource MediaSource { get; set; }
     }
 
     public class EventVideo : Video

@@ -3,9 +3,39 @@
 @using EDR.Models
 
 <div class="thumbnail col-lg-12 col-md-12 col-sm-12 col-xs-12">
-    <p>
-        <span class="text-danger">New @Model.MediaType.ToString()</span> for @Html.ActionLink(Model.Event.Name, "View", "Event", new { id = Model.Event.Id, eventType = (Model.Event is Class ? "Class" : "Social") }, new { @style = "font-weight: bold;" }) @(Model.Event is Class ? ((Class)Model.Event).ClassType.ToString() : ((Social)Model.Event).SocialType.ToString())
-    </p>
+    <div class="caption">
+        <p>
+            @if (Model.MediaType == MediaType.Video)
+            {
+                <img style="width: 25px;" src="@Url.Content("~/Content/images/video.png")">
+            }
+            else if (Model.MediaType == MediaType.Picture)
+            {
+                <img style="width: 25px;" src="@Url.Content("~/Content/images/camera.png")">
+            }
+            else if (Model.MediaType == MediaType.Comment)
+            {
+                <img style="width: 25px;" src="@Url.Content("~/Content/images/comment.png")">
+            }
+            by <a href="@Url.Action("Home", "Dancer", new { username = Model.Author.UserName })" style="text-decoration: none;">
+                <span class="text-primary" style="vertical-align: top;">
+                    <b>@Model.Author.FirstName</b>
+                </span>
+            </a>
+             - <span class="text-danger" style="vertical-align: top;">@Model.MediaDate.ToLongDateString()</span>
+            @*@Html.ActionLink(Model.Event.Name, "View", "Event", new { id = Model.Event.Id, eventType = (Model.Event is Class ? "Class" : "Social") }, new { @style = "font-weight: bold;" }) @(Model.Event is Class ? ((Class)Model.Event).ClassType.ToString() : ((Social)Model.Event).SocialType.ToString())*@
+            <span class="pull-right">
+                @if (Model.MediaSource == MediaSource.Facebook)
+                {
+                    <img style="width: 25px;" src="@Url.Content("~/Content/images/facebookSmall.png")">
+                }
+                else if (Model.MediaSource == MediaSource.YouTube)
+                {
+                    <img style="width: 25px;" src="@Url.Content("~/Content/images/youtube.png")">
+                }
+            </span>
+        </p>
+    </div>
     @if (Model.MediaType == MediaType.Video)
     {
         @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new EventVideo() { Event = Model.Event, PhotoUrl = Model.PhotoUrl, VideoUrl = Model.MediaUrl })
@@ -20,36 +50,17 @@
                     </div>
                 </div>
             </a>*@
-        <div class="caption">
-            <h4 style="white-space: normal;">@Model.Title</h4>
-            <p>
-                Posted By:
-                <a href="@Url.Action("Home", "Dancer", new { username = Model.Author.UserName })" style="text-decoration: none;">
-                    <span class="text-primary" style="vertical-align: top;">
-                        <b>@Model.Author.FirstName</b>
-                    </span>
-                </a>
-                on <span class="text-danger" style="vertical-align: top;">@Model.MediaDate.ToShortDateString()</span>
-            </p>
-        </div>
     }
     else if (Model.MediaType == MediaType.Picture)
     {
-        <a href="#">
-            <a target="_blank" href="@Model.PhotoUrl">
-                <img src="@Url.Content(Model.PhotoUrl)" />
-            </a>
+        <a target="_blank" href="@Model.PhotoUrl">
+            <img src="@Url.Content(Model.PhotoUrl)" alt="@Model.Text" />
         </a>
-        <div class="caption">
-            <p>
-                Posted By:
-                <a href="@Url.Action("Home", "Dancer", new { username = Model.Author.UserName })" style="text-decoration: none;">
-                    <span class="text-primary" style="vertical-align: top;">
-                        <b>@Model.Author.FirstName</b>
-                    </span>
-                </a>
-                on <span class="text-danger" style="vertical-align: top;">@Model.MediaDate.ToShortDateString()</span>
-            </p>
+    }
+    else if (Model.MediaType == MediaType.Comment)
+    {
+        <div>
+            @Model.Text
         </div>
     }
 </div>

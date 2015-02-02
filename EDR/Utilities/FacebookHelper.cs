@@ -130,6 +130,18 @@ namespace EDR.Utilities
                         add.FacebookId = ev.venue.id;
                     }
 
+                    if (add.FacebookId == null && ev.venue.name != null)
+                    {
+                        var address = Geolocation.ParseAddress(ev.venue.name);
+                        add.City = address.City;
+                        add.Country = address.Country;
+                        add.Latitude = address.Latitude;
+                        add.Longitude = address.Longitude;
+                        add.State = address.State.ToString();
+                        add.Street = address.Street;
+                        add.ZipCode = address.ZipCode;
+                    }
+
                     eventsList.Add(new FacebookEvent()
                     {
                         Id = ev.id,
@@ -204,13 +216,13 @@ namespace EDR.Utilities
                     Name = group.name,
                     Privacy = group.privacy,
                     Updated_Time = Convert.ToDateTime(group.updated_time),
-                    Posts = GetPosts(group.feed)
+                    Posts = ParsePosts(group.feed)
                 });
             }
             return (groupsList);
         }
 
-        public static List<FacebookPost> GetPosts(dynamic feed)
+        public static List<FacebookPost> ParsePosts(dynamic feed)
         {
             var posts = new List<FacebookPost>();
             if (feed != null)
@@ -221,6 +233,29 @@ namespace EDR.Utilities
                 }
             }
             return posts;
+        }
+
+        public static List<FacebookPost> GetFeed(string objectId, string token)
+        {
+            try
+            {
+                var fb = new FacebookClient(token);
+                dynamic feed = fb.Get(objectId + "/feed");
+
+                var posts = new List<FacebookPost>();
+                if (feed != null)
+                {
+                    foreach (dynamic postdata in feed.data)
+                    {
+                        posts.Add(new FacebookPost() { Id = postdata.id, Message = postdata.message, Picture = postdata.picture, Link = postdata.link, Source = postdata.source, Description = postdata.description, Icon = postdata.icon, Type = postdata.type, Object_Id = postdata.object_id, Created_Time = Convert.ToDateTime(postdata.created_time), Updated_Time = Convert.ToDateTime(postdata.updated_time) });
+                    }
+                }
+                return posts;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
     }
 }

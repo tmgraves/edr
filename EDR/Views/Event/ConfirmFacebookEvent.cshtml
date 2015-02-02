@@ -43,11 +43,13 @@
 @Html.HiddenFor(x => x.NewPlace.Latitude)
 @Html.HiddenFor(x => x.NewPlace.Longitude)
 @Html.HiddenFor(x => x.NewPlace.FacebookId)
+@Html.HiddenFor(x => x.NewEvent.FacebookLink)
+@Html.HiddenFor(x => x.NewEvent.FacebookId)
 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
     <h3>Please Confirm Details for the New @Model.EventType</h3>
     <div class="col-lg-3 col-md-3">
         <div class="col-lg-12 col-md-12 croppedpic" style="height: 250px;">
-            <a href="@Model.NewEvent.PhotoUrl" target="_blank"><img src="@Model.NewEvent.PhotoUrl" /></a>
+            <a href="@Model.NewEvent.PhotoUrl" target="_blank"><img class="img-thumbnail" src="@(Model.NewEvent.PhotoUrl != null ? Model.NewEvent.PhotoUrl : Url.Content("~/Content/images/MissingImage.jpg"))" /></a>
         </div>
     </div>
     <div class="col-lg-9 col-md-9">
@@ -93,7 +95,7 @@
         <div class="col-lg-12 col-md-12">
             @Html.LabelFor(model => model.NewEvent.Description, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10 col-lg-10">
-                @Html.EditorFor(model => model.NewEvent.Description, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.EditorFor(model => model.NewEvent.Description, new { htmlAttributes = new { @class = "form-control", @rows = 10 } })
                 @Html.ValidationMessageFor(model => model.NewEvent.Description, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -127,7 +129,7 @@
                         @pl.PlaceType<br />
                         @pl.Address<br />
                         @pl.City@:, @pl.State @pl.Zip<br />
-                        <img src="https://maps.googleapis.com/maps/api/staticmap?center=@pl.Latitude,@pl.Longitude&zoom=10&size=250x100&maptype=roadmap&markers=color:red%7Clabel:A%7C @pl.Latitude, @pl.Longitude">
+                        <img src="https://maps.googleapis.com/maps/api/staticmap?center=@pl.Latitude,@pl.Longitude&zoom=10&size=200x100&maptype=roadmap&markers=color:red%7Clabel:A%7C @pl.Latitude, @pl.Longitude">
                     }
                 </label>
             </div>
@@ -135,6 +137,7 @@
     </div>
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin: 10px;">
         <input type="submit" value="Finish Creating @Model.EventType" class="btn btn-lg btn-primary" />
+        <a class="btn btn-lg btn-warning" href="@Session["ReturnUrl"]">Cancel</a>
     </div>
 </div>
 }

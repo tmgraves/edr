@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EDR.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -13,5 +14,6 @@ namespace EDR.Models
         public string YouTubeUrl { get; set; }
         public ApplicationUser Author { get; set; }
         public string YouTubeId { get; set; }
+        public MediaSource MediaSource { get; set; }
     }
 }
