@@ -368,6 +368,7 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\images\camera.png" />
     <Content Include="Content\images\comment.png" />
     <Content Include="Content\images\email.png" />
     <Content Include="Content\images\error.png" />
@@ -391,6 +392,7 @@
     <Content Include="Content\images\thumbdownsm.png" />
     <Content Include="Content\images\thumbup.png" />
     <Content Include="Content\images\thumbupsm.png" />
+    <Content Include="Content\images\video.png" />
     <Content Include="Content\images\web.png" />
     <Content Include="Content\images\www.png" />
     <Content Include="Content\images\youtube.png" />
