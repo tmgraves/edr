@@ -368,7 +368,9 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\images\comment.png" />
     <Content Include="Content\images\email.png" />
+    <Content Include="Content\images\error.png" />
     <Content Include="Content\images\facebookSmall.png" />
     <Content Include="Content\images\MissingImage.jpg" />
     <Content Include="Content\images\MissingImageThumbnail.jpg" />
@@ -391,6 +393,7 @@
     <Content Include="Content\images\thumbupsm.png" />
     <Content Include="Content\images\web.png" />
     <Content Include="Content\images\www.png" />
+    <Content Include="Content\images\youtube.png" />
     <Content Include="favicon.ico" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
