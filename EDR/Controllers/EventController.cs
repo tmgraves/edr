@@ -514,7 +514,11 @@ namespace EDR.Controllers
         [Authorize]
         public ActionResult Delete(int id)
         {
-            DataContext.Events.Remove(DataContext.Events.Where(e => e.Id == id).FirstOrDefault());
+            var evt = DataContext.Events.Where(e => e.Id == id).Include("Videos").Include("Pictures").Include("Playlists").FirstOrDefault();
+            evt.Videos.Clear();
+            evt.Pictures.Clear();
+            evt.Playlists.Clear();
+            DataContext.Events.Remove(evt);
             DataContext.SaveChanges();
             if (Session["ReturnUrl"] != null)
             {

@@ -51,37 +51,44 @@ namespace EDR.Utilities
                 var result = new System.Net.WebClient().DownloadString(googleStr);
                 var resObj = JsonConvert.DeserializeObject<GoogleGeoCodeResponse>(result);
 
-                foreach (address_component comp in resObj.results[0].address_components)
+                if (resObj.status != "ZERO_RESULTS")
                 {
-                    if (comp.types[0] == "postal_code")
+                    foreach (address_component comp in resObj.results[0].address_components)
                     {
-                        address.ZipCode = comp.long_name;
+                        if (comp.types[0] == "postal_code")
+                        {
+                            address.ZipCode = comp.long_name;
+                        }
+                        else if (comp.types[0] == "street_number")
+                        {
+                            address.StreetNumber = comp.long_name;
+                        }
+                        else if (comp.types[0] == "route")
+                        {
+                            address.StreetName = comp.long_name;
+                        }
+                        else if (comp.types[0] == "locality")
+                        {
+                            address.City = comp.long_name;
+                        }
+                        else if (comp.types[0] == "administrative_area_level_1")
+                        {
+                            address.State = comp.short_name;
+                        }
+                        else if (comp.types[0] == "country")
+                        {
+                            address.Country = comp.short_name;
+                        }
                     }
-                    else if (comp.types[0] == "street_number")
-                    {
-                        address.StreetNumber = comp.long_name;
-                    }
-                    else if (comp.types[0] == "route")
-                    {
-                        address.StreetName = comp.long_name;
-                    }
-                    else if (comp.types[0] == "locality")
-                    {
-                        address.City = comp.long_name;
-                    }
-                    else if (comp.types[0] == "administrative_area_level_1")
-                    {
-                        address.State = comp.short_name;
-                    }
-                    else if (comp.types[0] == "country")
-                    {
-                        address.Country = comp.short_name;
-                    }
-                }
 
-                address.Longitude = Convert.ToDouble(resObj.results[0].geometry.location.lng);
-                address.Latitude = Convert.ToDouble(resObj.results[0].geometry.location.lat);
-                address.Street = address.StreetNumber + " " + address.StreetName;
+                    address.Longitude = Convert.ToDouble(resObj.results[0].geometry.location.lng);
+                    address.Latitude = Convert.ToDouble(resObj.results[0].geometry.location.lat);
+                    address.Street = address.StreetNumber + " " + address.StreetName;
+                }
+                else
+                {
+                    address = null;
+                }
             }
             return address;
         }

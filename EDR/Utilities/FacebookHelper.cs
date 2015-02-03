@@ -105,64 +105,99 @@ namespace EDR.Utilities
         {
             var fb = new FacebookClient(token);
             dynamic myInfo = fb.Get("/me/events?fields=id,cover,description,end_time,is_date_only,location,name,owner,privacy,start_time,ticket_uri,timezone,updated_time,venue,parent_group,feed");
-            var eventsList = new List<FacebookEvent>();
-            foreach (dynamic ev in myInfo.data)
+            var eventList = new List<FacebookEvent>();
+            dynamic paging;
+            dynamic next;
+            if (myInfo != null)
             {
-                if (DateTime.Parse(ev.start_time) >= DateTime.Today)
+                ParseData(myInfo.data, eventList);
+                paging = myInfo.paging;
+                if (paging != null)
                 {
-                    FacebookPhoto coverPic = new FacebookPhoto();
-                    if (ev.cover != null)
+                    next = paging.next;
+                    while (next != null)
                     {
-                        coverPic.Id = ev.cover.id;
-                        coverPic.LargeSource = ev.cover.source;
+                        myInfo = fb.Get(next);
+                        ParseData(myInfo.data, eventList);
+                        paging = myInfo.paging;
+                        if (paging != null)
+                        {
+                            next = paging.next;
+                        }
+                        else
+                        {
+                            next = null;
+                        }
                     }
-
-                    var add = new FacebookAddress();
-                    if (ev.venue != null)
-                    {
-                        add.City = ev.venue.city;
-                        add.Country = ev.venue.country;
-                        add.Latitude = ev.venue.latitude == null ? 0.0 : ev.venue.latitude;
-                        add.Longitude = ev.venue.longitude == null ? 0.0 : ev.venue.longitude;
-                        add.State = ev.venue.state;
-                        add.Street = ev.venue.street;
-                        add.ZipCode = ev.venue.zip;
-                        add.FacebookId = ev.venue.id;
-                    }
-
-                    if (add.FacebookId == null && ev.venue.name != null)
-                    {
-                        var address = Geolocation.ParseAddress(ev.venue.name);
-                        add.City = address.City;
-                        add.Country = address.Country;
-                        add.Latitude = address.Latitude;
-                        add.Longitude = address.Longitude;
-                        add.State = address.State.ToString();
-                        add.Street = address.Street;
-                        add.ZipCode = address.ZipCode;
-                    }
-
-                    eventsList.Add(new FacebookEvent()
-                    {
-                        Id = ev.id,
-                        Description = ev.description,
-                        EndTime = ev.end_time != null ? DateTime.Parse(ev.end_time) : null,
-                        IsDateOnly = ev.is_date_only,
-                        Location = ev.location,
-                        Name = ev.name,
-                        //  Owner = ev.owner,
-                        Privacy = ev.privacy,
-                        StartTime = DateTime.Parse(ev.start_time),
-                        TicketUri = ev.ticket_uri,
-                        Timezone = ev.timezone,
-                        Updated = DateTime.Parse(ev.updated_time),
-                        EventLink = @"https://www.facebook.com/events/" + ev.id,
-                        CoverPhoto = coverPic,
-                        Address = add
-                    });
                 }
             }
-            return (eventsList);
+            return (eventList);
+        }
+
+        private static List<FacebookEvent> ParseData(dynamic data, List<FacebookEvent> eventList)
+        {
+            foreach (dynamic ev in data)
+            {
+                FacebookPhoto coverPic = new FacebookPhoto();
+                if (ev.cover != null)
+                {
+                    coverPic.Id = ev.cover.id;
+                    coverPic.LargeSource = ev.cover.source;
+                }
+
+                var add = new FacebookAddress();
+                if (ev.venue != null)
+                {
+                    add.City = ev.venue.city;
+                    add.Country = ev.venue.country;
+                    add.Latitude = ev.venue.latitude == null ? 0.0 : ev.venue.latitude;
+                    add.Longitude = ev.venue.longitude == null ? 0.0 : ev.venue.longitude;
+                    add.State = ev.venue.state;
+                    add.Street = ev.venue.street;
+                    add.ZipCode = ev.venue.zip;
+                    add.FacebookId = ev.venue.id;
+                }
+
+                if (add.FacebookId == null && ev.venue != null)
+                {
+                    if (ev.venue.name != null)
+                    {
+                        var address = Geolocation.ParseAddress(ev.venue.name);
+
+                        if (address != null)
+                        {
+                            add.City = address.City;
+                            add.Country = address.Country;
+                            add.Latitude = address.Latitude;
+                            add.Longitude = address.Longitude;
+                            add.State = address.State.ToString();
+                            add.Street = address.Street;
+                            add.ZipCode = address.ZipCode;
+                        }
+                    }
+                }
+
+                eventList.Add(new FacebookEvent()
+                {
+                    Id = ev.id,
+                    Description = ev.description,
+                    EndTime = ev.end_time != null ? DateTime.Parse(ev.end_time) : null,
+                    IsDateOnly = ev.is_date_only,
+                    Location = ev.location,
+                    Name = ev.name,
+                    //  Owner = ev.owner,
+                    Privacy = ev.privacy,
+                    StartTime = DateTime.Parse(ev.start_time),
+                    TicketUri = ev.ticket_uri,
+                    Timezone = ev.timezone,
+                    Updated = DateTime.Parse(ev.updated_time),
+                    EventLink = @"https://www.facebook.com/events/" + ev.id,
+                    CoverPhoto = coverPic,
+                    Address = add
+                });
+            }
+
+            return eventList;
         }
 
         public static dynamic GetEvent(string id, string token)
