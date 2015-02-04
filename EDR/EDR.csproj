@@ -373,6 +373,7 @@
     <Content Include="Content\images\email.png" />
     <Content Include="Content\images\error.png" />
     <Content Include="Content\images\facebookSmall.png" />
+    <Content Include="Content\images\indicator.white.gif" />
     <Content Include="Content\images\MissingImage.jpg" />
     <Content Include="Content\images\MissingImageThumbnail.jpg" />
     <Content Include="Content\images\NoImage.png" />
