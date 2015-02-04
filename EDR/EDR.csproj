@@ -743,6 +743,7 @@
     <Content Include="Views\Shared\Events\_ImportFacebookEventPartial.cshtml" />
     <Content Include="Views\Event\ConfirmFacebookEvent.cshtml" />
     <Content Include="Views\Shared\Events\_EventMembersPartial.cshtml" />
+    <Content Include="Views\Event\_EventLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Series\" />

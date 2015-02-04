@@ -72,6 +72,7 @@ namespace EDR.Models.ViewModels
     {
         public Event Event { get; set; }
         public string ReturnUrl { get; set; }
+        public EventType EventType { get; set; }
     }
 
     public class EventViewModel : EventBaseViewModel
@@ -110,7 +111,6 @@ namespace EDR.Models.ViewModels
     public class EventListViewModel : EventBaseViewModel
     {
         public Address Location { get; set; }
-        public EventType EventType { get; set; }
         public IEnumerable<Event> Events { get; set; }
     }
 
@@ -120,10 +120,12 @@ namespace EDR.Models.ViewModels
         public int PlaceId { get; set; }
         public List<PlaceItem> Places { get; set; }
         public RoleName Role { get; set; }
-        public EventType EventType { get; set; }
         public ClassType ClassType { get; set; }
         public SocialType SocialType { get; set; }
         public PlaceItem NewPlace { get; set; }
+        public IEnumerable<DanceStyleListItem> AvailableStyles { get; set; }
+        public IEnumerable<DanceStyleListItem> SelectedStyles { get; set; }
+        public PostedStyles PostedStyles { get; set; }
     }
 
     public class PlaceItem: Place

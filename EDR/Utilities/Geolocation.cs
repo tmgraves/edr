@@ -47,7 +47,7 @@ namespace EDR.Utilities
             var address = new Address();
             if (addressStr != null)
             {
-                var googleStr = "https://maps.googleapis.com/maps/api/geocode/json?address=" + addressStr + "&key=AIzaSyDJ-5NkuPkx9Q7PcmBMcHGVB7R5eYa0yRo";
+                var googleStr = "https://maps.googleapis.com/maps/api/geocode/json?address=" + HttpUtility.UrlEncode(addressStr) + "&key=AIzaSyDJ-5NkuPkx9Q7PcmBMcHGVB7R5eYa0yRo";
                 var result = new System.Net.WebClient().DownloadString(googleStr);
                 var resObj = JsonConvert.DeserializeObject<GoogleGeoCodeResponse>(result);
 

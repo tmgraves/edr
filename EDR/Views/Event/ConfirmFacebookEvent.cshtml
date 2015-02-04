@@ -1,5 +1,6 @@
 ﻿@model EDR.Models.ViewModels.ConfirmFacebookEvent
 @using EDR.Enums
+@using MvcCheckBoxList.Model
 
 @{
     ViewBag.Title = "Confirm New Event";
@@ -90,6 +91,17 @@
             <div class="col-md-10 col-lg-10">
                 @Html.EditorFor(model => model.NewEvent.EndDate, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.NewEvent.EndDate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-lg-12 col-md-12">
+            @Html.LabelFor(model => model.Event.Name, "Dance Styles", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.CheckBoxListFor(model => model.PostedStyles.DanceStyleIds,
+                                    model => model.AvailableStyles,
+                                    style => style.Id,
+                                    style => style.Name,
+                                    model => model.SelectedStyles,
+                                    new HtmlListInfo(HtmlTag.table, 2, new { @class = "checkboxlist" }, TextLayout.Default ))
             </div>
         </div>
         <div class="col-lg-12 col-md-12">

@@ -94,17 +94,16 @@
                     }*@
 
                     <div class="form-group">
-                        <section class="checkBoxListFor">
-                            @Html.LabelFor(model => model.Event.Name, "Dance Styles", htmlAttributes: new { @class = "control-label col-md-2" })
+                        @Html.LabelFor(model => model.Event.Name, "Dance Styles", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
                             @Html.CheckBoxListFor(model => model.PostedStyles.DanceStyleIds,
                                                 model => model.AvailableStyles,
                                                 style => style.Id,
                                                 style => style.Name,
                                                 model => model.SelectedStyles,
-                                                Position.Horizontal)
-                        </section>
+                                                new HtmlListInfo(HtmlTag.table, 2, new { @class = "checkboxlist" }, TextLayout.Default ))
+                        </div>
                     </div>
-
                     <div class="form-group">
                         @Html.LabelFor(model => model.Event.FacebookLink, htmlAttributes: new { @class = "control-label col-md-2" })
                         <div class="col-md-10">

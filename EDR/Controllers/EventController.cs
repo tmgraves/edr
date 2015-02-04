@@ -73,7 +73,7 @@ namespace EDR.Controllers
             return View(model);
         }
 
-        public ActionResult View(int id)
+        public ActionResult View(int id, EventType eventType)
         {
             if (id == null)
             {
@@ -81,8 +81,9 @@ namespace EDR.Controllers
             }
 
             var model = LoadEvent(id);
+            model.EventType = eventType;
 
-            if (model.Event is Class)
+            if (eventType == EventType.Class)
             {
                 model.Class = DataContext.Events.OfType<Class>().Where(x => x.Id == id)
                     .Include("Teachers")
@@ -93,7 +94,7 @@ namespace EDR.Controllers
                                                         .Include("Teacher.ApplicationUser")
                                                         .Include("Teacher.ApplicationUser.UserPictures");
             }
-            else if (model.Event is Social)
+            else if (eventType == EventType.Social)
             {
                 model.Social = DataContext.Events.OfType<Social>().Where(x => x.Id == id).Include("Promoters").Include("Promoters.ApplicationUser").FirstOrDefault();
             }
@@ -507,30 +508,6 @@ namespace EDR.Controllers
         [Authorize]
         public ActionResult Edit(int id)
         {
-            var model = LoadEditModel(id);
-            return View(model);
-        }
-
-        [Authorize]
-        public ActionResult Delete(int id)
-        {
-            var evt = DataContext.Events.Where(e => e.Id == id).Include("Videos").Include("Pictures").Include("Playlists").FirstOrDefault();
-            evt.Videos.Clear();
-            evt.Pictures.Clear();
-            evt.Playlists.Clear();
-            DataContext.Events.Remove(evt);
-            DataContext.SaveChanges();
-            if (Session["ReturnUrl"] != null)
-            {
-                return Redirect(Session["ReturnUrl"].ToString());
-            }
-            {
-                return View();
-            }
-        }
-
-        private EventEditViewModel LoadEditModel(int id)
-        {
             var model = new EventEditViewModel();
             var ev = DataContext.Events.Where(e => e.Id == id).FirstOrDefault();
 
@@ -555,7 +532,25 @@ namespace EDR.Controllers
                 model.Places = DataContext.Places.Where(x => x.Owners.Any(t => t.ApplicationUser.Id == userid) || x.Promoters.Any(p => p.ApplicationUser.Id == userid)).Select(p => new SelectListItem() { Text = p.Name, Value = p.Id.ToString() }).ToList();
             }
 
-            return model;
+            return View(model);
+        }
+
+        [Authorize]
+        public ActionResult Delete(int id)
+        {
+            var evt = DataContext.Events.Where(e => e.Id == id).Include("Videos").Include("Pictures").Include("Playlists").FirstOrDefault();
+            evt.Videos.Clear();
+            evt.Pictures.Clear();
+            evt.Playlists.Clear();
+            DataContext.Events.Remove(evt);
+            DataContext.SaveChanges();
+            if (Session["ReturnUrl"] != null)
+            {
+                return Redirect(Session["ReturnUrl"].ToString());
+            }
+            {
+                return View();
+            }
         }
 
         [Authorize]
@@ -578,9 +573,14 @@ namespace EDR.Controllers
 
             if (user.FacebookToken != null)
             {
-                model.FacebookEvents = FacebookHelper.GetEvents(user.FacebookToken);
-                Session["FacebookEvents"] = model.FacebookEvents;
-                var evt = FacebookHelper.GetEvent(model.FacebookEvents.FirstOrDefault().Id, user.FacebookToken);
+                if (Session["FacebookEvents"] == null)
+                {
+                    Session["FacebookEvents"] = FacebookHelper.GetEvents(user.FacebookToken);
+                }
+                if (Session["FacebookEvents"] != null)
+                {
+                    model.FacebookEvents = (List<FacebookEvent>)Session["FacebookEvents"];
+                }
             }
 
             return View(model);
@@ -707,7 +707,7 @@ namespace EDR.Controllers
 
                     if (model.EventType == EventType.Class)
                     {
-                        var cls = new Class() { Name = model.NewEvent.Name, Description = model.NewEvent.Description, FacebookId = model.NewEvent.FacebookId, PhotoUrl = model.NewEvent.PhotoUrl, StartDate = model.NewEvent.StartDate, EndDate = model.NewEvent.EndDate, ClassType = model.ClassType, Place = pl, FacebookLink = model.NewEvent.FacebookLink, Creator = user };
+                        var cls = new Class() { Name = model.NewEvent.Name, Description = model.NewEvent.Description, FacebookId = model.NewEvent.FacebookId, PhotoUrl = model.NewEvent.PhotoUrl, StartDate = model.NewEvent.StartDate, EndDate = model.NewEvent.EndDate, ClassType = model.ClassType, Place = pl, FacebookLink = model.NewEvent.FacebookLink, Creator = user, DanceStyles = DataContext.DanceStyles.Where(s => model.PostedStyles.DanceStyleIds.Any(ps => ps == s.Id.ToString())).ToList() };
                         if (model.Role == RoleName.Teacher)
                         {
                             var teacher = DataContext.Teachers.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").Include("Places").FirstOrDefault();
@@ -727,7 +727,7 @@ namespace EDR.Controllers
                     }
                     else
                     {
-                        var social = new Social() { Name = model.NewEvent.Name, Description = model.NewEvent.Description, FacebookId = model.NewEvent.FacebookId, PhotoUrl = model.NewEvent.PhotoUrl, StartDate = model.NewEvent.StartDate, EndDate = model.NewEvent.EndDate, SocialType = model.SocialType, Place = pl, FacebookLink = model.NewEvent.FacebookLink, Creator = user };
+                        var social = new Social() { Name = model.NewEvent.Name, Description = model.NewEvent.Description, FacebookId = model.NewEvent.FacebookId, PhotoUrl = model.NewEvent.PhotoUrl, StartDate = model.NewEvent.StartDate, EndDate = model.NewEvent.EndDate, SocialType = model.SocialType, Place = pl, FacebookLink = model.NewEvent.FacebookLink, Creator = user, DanceStyles = DataContext.DanceStyles.Where(s => model.PostedStyles.DanceStyleIds.Any(ps => ps == s.Id.ToString())).ToList() };
                         if (model.Role == RoleName.Promoter)
                         {
                             var promoter = DataContext.Promoters.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").FirstOrDefault();
@@ -768,6 +768,18 @@ namespace EDR.Controllers
         {
             var model = new ConfirmFacebookEvent();
             var userid = User.Identity.GetUserId();
+
+            //  Load Dance Styles
+            var selectedStyles = new List<DanceStyleListItem>();
+            model.SelectedStyles = selectedStyles;
+
+            var styles = new List<DanceStyleListItem>();
+            foreach (DanceStyle s in DataContext.DanceStyles)
+            {
+                styles.Add(new DanceStyleListItem { Id = s.Id, Name = s.Name });
+            }
+            model.AvailableStyles = styles.OrderBy(x => x.Name);
+            //  Load Dance Styles
 
             model.EventType = eventType;
             var fbevent = ((List<FacebookEvent>)Session["FacebookEvents"]).Where(x => x.Id == id).FirstOrDefault();
