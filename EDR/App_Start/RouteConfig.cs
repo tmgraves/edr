@@ -62,6 +62,18 @@ namespace EDR
             );
 
             routes.MapRoute(
+                name: "EventReviews2",
+                url: "Event/{id}/Reviews2",
+                defaults: new { controller = "Event", action = "Reviews2" }
+            );
+
+            routes.MapRoute(
+                name: "EventGetUpdates",
+                url: "Event/{id}/GetUpdates",
+                defaults: new { controller = "Event", action = "GetUpdates" }
+            );
+
+            routes.MapRoute(
                 name: "EventImportYouTubeVideo",
                 url: "Event/ImportYouTubeVideo",
                 defaults: new { controller = "Event", action = "ImportYouTubeVideo" }

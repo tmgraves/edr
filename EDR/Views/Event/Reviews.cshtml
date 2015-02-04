@@ -1,41 +1,120 @@
-﻿@model EDR.Models.ViewModels.EventReviewsViewModel
+﻿@model EDR.Models.ViewModels.EventViewModel
+@using EDR.Utilities
+@using EDR.Models
+@using EDR.Enums
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = Model.Event.Name + " Reviews";
+    Layout = "~/Views/Event/_EventLayout.cshtml";
 }
-<h2>Index</h2>
 
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
 <script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
-<div id='reviewList'>
-    @Html.Partial("~/Views/Shared/Events/_Reviews.cshtml", Model.EventReviews)
+<script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
+
+<script type="text/javascript">
+    function done(form) {
+        $('#reviewform')[0].reset();
+        $('#reviewform')[0].disabled = true;
+        $('#reviewinput')[0].hidden = true;
+    }
+
+    function OnSuccess(response) {
+        alert(response);
+        var y = document.getElementById("Review_ReviewText");
+        alert(y.innerHTML)
+        document.getElementByName('Review_ReviewText').value = '';
+    }
+
+    function OnFailure(response) {
+        alert("Whoops! That didn't go so well did it?");
+    }
+
+</script>
+<style type="text/css">
+    /*
+      Hide radio button (the round disc)
+      we will use just the label to create pushbutton effect
+    */
+    input[type=radio] {
+        display: none;
+        margin: 10px;
+    }
+
+        /*
+      Change the look'n'feel of labels (which are adjacent to radiobuttons).
+      Add some margin, padding to label
+    */
+        input[type=radio] + label {
+            display: inline-block;
+            margin: -2px;
+            padding: 4px 12px;
+            background-color: #fff;
+            border-color: #ddd;
+        }
+        /*
+     Change background color for label next to checked radio button
+     to make it look like highlighted button
+    */
+        input[type=radio]:checked + label {
+            background-image: none;
+            background-color: #d0d0d0;
+        }
+</style>
+
+<div id="reviews">
+    @Html.Partial("~/Views/Shared/Events/_ReviewsPartial.cshtml", Model.Reviews.EventReviews)
 </div>
-@using (Ajax.BeginForm("Reviews_Insert",
-                            "Event",
-                            new AjaxOptions()
-                            {
-                                UpdateTargetId = "reviewList"
-                            }
-                            ))
+@if (User.Identity.IsAuthenticated)
 {
-    @Html.AntiForgeryToken()
+    if (Model.Reviews.EventReviews.Where(r => r.Author.UserName == User.Identity.Name).Count() == 0)
+    {
+        <div id="reviewinput" class="panel panel-default col-lg-6 col-md-6 col-sm-12 col-xs-12" style="margin-top: 5px;">
+            <div class="panel-body">
+                @using (Ajax.BeginForm("PostReview",
+                                "Event",
+                                new AjaxOptions()
+                                {
+                                    UpdateTargetId = "reviews",
+                                    OnSuccess = "done(this)"
+                                },
+                                new { @id = "reviewform" }
+                                ))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(x => x.Event.Name)
 
-    <div class="form-horizontal">
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(x => x.EventId)
+                    <div class="form-horizontal">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(model => model.Event.Id)
 
-        <div>
-            @Html.LabelFor(model => model.NewReview.Like)
-            @Html.EditorFor(model => model.NewReview.Like)
-        </div>
-        <div>
-            @Html.LabelFor(model => model.NewReview.ReviewText)
-            @Html.EditorFor(model => model.NewReview.ReviewText)
-        </div>
+                        <div class="form-group">
+                            @Html.RadioButtonFor(m => m.Reviews.NewReview.Like, "true", new { id = "radio1", @checked = "checked" })
+                            <label for="radio1">
+                                <img src="~/Content/images/thumbupsm.png" />
+                            </label>
+                            @Html.RadioButtonFor(m => m.Reviews.NewReview.Like, "false", new { id = "radio2" })
+                            <label for="radio2">
+                                <img src="~/Content/images/thumbdownsm.png" />
+                            </label>
+                        </div>
 
-        <div class="form-group">
-            <div class="col-md-offset-8 col-md-12">
-                <input type="submit" value="PostReview" class="btn btn-default" />
+                        <div class="form-group">
+                            <div>
+                                @Html.TextAreaFor(model => model.Reviews.NewReview.ReviewText, 4, 100, new { @style = "max-width: 400px;", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Reviews.NewReview.ReviewText, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-md-offset-8 col-md-12">
+                                <input type="submit" value="PostReview" class="btn btn-default" />
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
-    </div>
+    }
 }

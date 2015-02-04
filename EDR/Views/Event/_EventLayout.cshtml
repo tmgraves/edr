@@ -16,61 +16,6 @@
     }
 }
 
-<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
-<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
-<script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
-<script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
-
-<script type="text/javascript">
-    function done(form) {
-        $('#reviewform')[0].reset();
-        $('#reviewform')[0].disabled = true;
-        $('#reviewinput')[0].hidden = true;
-    }
-
-    function OnSuccess(response) {
-        alert(response);
-        var y = document.getElementById("Review_ReviewText");
-        alert(y.innerHTML)
-        document.getElementByName('Review_ReviewText').value = '';
-    }
-
-    function OnFailure(response) {
-        alert("Whoops! That didn't go so well did it?");
-    }
-
-</script>
-<style type="text/css">
-    /*
-      Hide radio button (the round disc)
-      we will use just the label to create pushbutton effect
-    */
-    input[type=radio] {
-        display: none;
-        margin: 10px;
-    }
-
-        /*
-      Change the look'n'feel of labels (which are adjacent to radiobuttons).
-      Add some margin, padding to label
-    */
-        input[type=radio] + label {
-            display: inline-block;
-            margin: -2px;
-            padding: 4px 12px;
-            background-color: #fff;
-            border-color: #ddd;
-        }
-        /*
-     Change background color for label next to checked radio button
-     to make it look like highlighted button
-    */
-        input[type=radio]:checked + label {
-            background-image: none;
-            background-color: #d0d0d0;
-        }
-</style>
-
 @{string ctrName = ViewContext.RouteData.Values["action"].ToString();}
 
 <div class="row">

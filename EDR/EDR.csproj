@@ -723,7 +723,7 @@
     <Content Include="Views\Shared\Events\_ReviewsPartial.cshtml" />
     <Content Include="Views\Shared\_DanceStyleListPartial.cshtml" />
     <Content Include="Views\DanceStyle\Index.cshtml" />
-    <Content Include="Views\Event\Reviews.cshtml" />
+    <Content Include="Views\Event\Reviews2.cshtml" />
     <Content Include="Views\Shared\Events\_Reviews.cshtml" />
     <Content Include="Views\Shared\Events\_UserListPartial.cshtml" />
     <Content Include="Views\Event\Edit.cshtml" />
@@ -744,6 +744,8 @@
     <Content Include="Views\Event\ConfirmFacebookEvent.cshtml" />
     <Content Include="Views\Shared\Events\_EventMembersPartial.cshtml" />
     <Content Include="Views\Event\_EventLayout.cshtml" />
+    <Content Include="Views\Event\Reviews.cshtml" />
+    <Content Include="Views\Shared\Events\_EventUpdatesPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Series\" />

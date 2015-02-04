@@ -8,6 +8,19 @@
     Layout = "~/Views/Event/_EventLayout.cshtml";
 }
 
+<script type="text/javascript">
+    $(document).ready(function (e) {
+        //  locate each partial section
+        //  if it has a URL set, load the contents into the area.
+
+        $(".partialContents").each(function (index, item) {
+            var url = $(item).data("url");
+            if (url && url.length > 0) {
+                $(item).load(url);
+            }
+        });
+    });
+</script>
 <div class="row">
     <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
         <div class="panel panel-default">
@@ -18,27 +31,22 @@
                 @Html.Partial("~/Views/Shared/Events/_EventMembersPartial.cshtml", Model.Event.EventMembers)
             </div>
         </div>
-        <h4>
-            Updates
-            <a class="btn btn-warning pull-right top-right" title="Add New Picture" href="@Url.Action("PostPicture", "Event", new { id = Model.Event.Id })">
-                <span class="glyphicon glyphicon-camera" aria-hidden="true"></span>
-            </a>
-            <a class="btn btn-warning pull-right top-right" title="Add New Video" href="@Url.Action("PostVideo", "Event", new { id = Model.Event.Id })" style="margin-left: 5px; margin-right: 5px;">
-                <span class="glyphicon glyphicon-facetime-video" aria-hidden="true"></span>
-            </a>
-        </h4>
-        <hr />
-        @if (Model.MediaUpdates.Count() > 0)
-        {
-            foreach (var media in Model.MediaUpdates)
-            {
-                @Html.Partial("~/Views/Shared/_MediaPartial.cshtml", media)
-            }
-        }
-        else
-        {
-            @: No Updates
-        }
+        <div class="updates">
+            <h4>
+                Updates
+                <a class="btn btn-warning pull-right top-right" title="Add New Picture" href="@Url.Action("PostPicture", "Event", new { id = Model.Event.Id })">
+                    <span class="glyphicon glyphicon-camera" aria-hidden="true"></span>
+                </a>
+                <a class="btn btn-warning pull-right top-right" title="Add New Video" href="@Url.Action("PostVideo", "Event", new { id = Model.Event.Id })" style="margin-left: 5px; margin-right: 5px;">
+                    <span class="glyphicon glyphicon-facetime-video" aria-hidden="true"></span>
+                </a>
+            </h4>
+            <hr />
+            <div class="partialContents" data-url="/Event/@Model.Event.Id/GetUpdates">
+                <img src="~/Content/images/indicator.white.gif" />Loading...
+            </div>
+        </div>
+        @*@Html.Partial("~/Views/Shared/Events/_EventUpdatesPartial.cshtml", Model.MediaUpdates)*@
         @*<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
             <div style="max-height: 1000px; overflow-y: auto; overflow-x: hidden;">
                 @Html.Partial("~/Views/Shared/_PictureListPartial.cshtml", Model.Event.Pictures.OrderByDescending(p => p.PhotoDate))
@@ -55,61 +63,8 @@
         </div>*@
     </div>
     <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-        <p>@Html.Raw(Model.Event.Description)</p>
-        <div id="reviews">
-            @Html.Partial("~/Views/Shared/Events/_ReviewsPartial.cshtml", Model.Event.Reviews)
+        <div class="well">
+            @Model.Event.Description
         </div>
-        @if (User.Identity.IsAuthenticated)
-        {
-            if (Model.Event.Reviews.Where(r => r.Author.UserName == User.Identity.Name).Count() == 0)
-            {
-                <div id="reviewinput" class="panel panel-default col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 5px;">
-                    <div class="panel-body">
-                        @using (Ajax.BeginForm("PostReview",
-                                "Event",
-                                new AjaxOptions()
-                                {
-                                    UpdateTargetId = "reviews",
-                                    OnSuccess = "done(this)"
-                                },
-                                new { @id = "reviewform" }
-                                ))
-                        {
-                            @Html.AntiForgeryToken()
-                            @Html.HiddenFor(x => x.Event.Name)
-
-                            <div class="form-horizontal">
-                                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                                @Html.HiddenFor(model => model.Event.Id)
-
-                                <div class="form-group">
-                                    @Html.RadioButtonFor(m => m.Review.Like, "true", new { id = "radio1", @checked = "checked" })
-                                    <label class="thumbnail" for="radio1">
-                                        <img src="~/Content/images/thumbupsm.png" />
-                                    </label>
-                                    @Html.RadioButtonFor(m => m.Review.Like, "false", new { id = "radio2" })
-                                    <label class="thumbnail" for="radio2">
-                                        <img src="~/Content/images/thumbdownsm.png" />
-                                    </label>
-                                </div>
-
-                                <div class="form-group">
-                                    <div>
-                                        @Html.TextAreaFor(model => model.Review.ReviewText, 4, 100, new { @style = "max-width: 400px;", @class = "form-control" })
-                                        @Html.ValidationMessageFor(model => model.Review.ReviewText, "", new { @class = "text-danger" })
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <div class="col-md-offset-8 col-md-12">
-                                        <input type="submit" value="PostReview" class="btn btn-default" />
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                </div>
-            }
-        }
     </div>
 </div>
