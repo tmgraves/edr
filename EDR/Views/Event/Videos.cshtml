@@ -31,8 +31,8 @@
     <div class="tabbable panel panel-info">
         <div class="panel-heading">
             <ul class="nav nav-tabs nav-justified" role="tablist">
-                <li class="active"><a href="#youtubevideos" data-toggle="tab"><img style="width: 30px;" src="@Url.Content("~/Content/images/facebookSmall.png")"></a></li>
-                <li><a href="#facebookvideos" data-toggle="tab"><img style="width: 30px;" src="@Url.Content("~/Content/images/youtube.png")"></a></li>
+                <li class="active"><a href="#youtubevideos" data-toggle="tab"><img style="width: 30px;" src="@Url.Content("~/Content/images/youtube.png")"></a></li>
+                <li><a href="#facebookvideos" data-toggle="tab"><img style="width: 30px;" src="@Url.Content("~/Content/images/facebookSmall.png")"></a></li>
             </ul>
         </div>
         <div class="tab-content panel-body">
@@ -103,7 +103,7 @@
                     <div id="ytvideourl" class="tab-pane">
                         @using (Html.BeginForm("ImportPlayListVideoLink",
                                                 "Event",
-                                                new { returnUrl = @Url.Action("PostVideo", new { eventId = @Model.Event.Id }) },
+                                                new { returnUrl = Request.Url.AbsolutePath },
                                                 FormMethod.Post,
                                                 new { enctype = "multipart/form-data" }))
                         {
@@ -122,7 +122,7 @@
                     <div id="ytplaylisturl" class="tab-pane">
                         @using (Html.BeginForm("ImportYouTubePlaylistLink",
                                             "Event",
-                                            new { returnUrl = @Url.Action("PostVideo", new { eventId = @Model.Event.Id }) },
+                                            new { returnUrl = Request.Url.AbsolutePath },
                                             FormMethod.Post,
                                             new { enctype = "multipart/form-data" }))
                         {
@@ -152,7 +152,7 @@
                                         <div style="height: 100px;">
                                             @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new EventVideo() { Event = Model.Event, FacebookId = video.Id, MediaSource = MediaSource.Facebook, PhotoUrl = video.Picture, VideoUrl = video.Source, PublishDate = video.Created_Time, Title = video.Name })
                                         </div>
-                                        <a class="btn btn-warning" title="Import Video" style="vertical-align: top; width: 100%;" href="@Url.Action("ImportFacebookVideo", "Event", new { videoId = video.Id, eventId = Model.Event.Id, returnUrl = @Url.Action("Videos", new { id = @Model.Event.Id, eventType = @Model.EventType }) })">
+                                        <a class="btn btn-warning" title="Import Video" style="vertical-align: top; width: 100%;" href="@Url.Action("ImportFacebookVideo", "Event", new { videoId = video.Id, eventId = Model.Event.Id, returnUrl = Request.Url.AbsolutePath })">
                                             <i class="glyphicon glyphicon glyphicon-plus"></i>
                                             Import Video
                                         </a>

@@ -122,8 +122,12 @@ namespace EDR.Utilities
             {
                 Uri vidUri = new Uri(videoUrl);//  new Uri("http://www.example.com?param1=good&param2=bad");
                 string vidId = HttpUtility.ParseQueryString(vidUri.Query).Get("v");
-                var ytVideo = new YouTubeVideo() { Id = vidId, Title = "No Title", PubDate = DateTime.Now };
-                return ytVideo;
+
+                string url = "https://gdata.youtube.com/feeds/api/videos/" + vidId + "?v=2";
+                XDocument movie = XDocument.Load(url);
+                YouTubeVideo video = new YouTubeVideo() { Id = vidId, Title = movie.Descendants().Where(p => p.Name.LocalName == "title").FirstOrDefault().Value, PubDate = Convert.ToDateTime(movie.Descendants().Where(p => p.Name.LocalName == "published").FirstOrDefault().Value), Thumbnail = new Uri("https://img.youtube.com/vi/" + vidId + "/mqdefault.jpg"), VideoLink = vidUri };
+
+                return video;
             }
             catch (Exception ex)
             {

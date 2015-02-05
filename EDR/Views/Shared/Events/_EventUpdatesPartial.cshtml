@@ -2,7 +2,7 @@
 
 @if (Model.Count() > 0)
 {
-    foreach (var media in Model)
+    foreach (var media in Model.OrderByDescending(m => m.MediaDate))
     {
         @Html.Partial("~/Views/Shared/_MediaPartial.cshtml", media)
     }
