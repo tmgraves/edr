@@ -38,7 +38,9 @@
     </div>
     @if (Model.MediaType == MediaType.Video)
     {
-        @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new EventVideo() { Event = Model.Event, PhotoUrl = Model.PhotoUrl, VideoUrl = Model.MediaUrl })
+        <div style="height: 150px;">
+            @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new EventVideo() { Event = Model.Event, PhotoUrl = Model.PhotoUrl, VideoUrl = Model.MediaUrl })
+        </div>
         @*<a target="_blank" href="https://www.youtube.com/watch?v=@video.YoutubeId&feature=player_embedded">
                 <div id="videocontainer" style="width: 240px; height: 150px;">
                     <div id="videoimage">

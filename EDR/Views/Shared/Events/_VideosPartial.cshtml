@@ -1,0 +1,53 @@
+﻿@model EDR.Models.ViewModels.EventVideos
+@using EDR.Enums
+
+@if (Model.Videos != null && Model.Videos.Count() > 0)
+{
+    foreach (var video in Model.Videos.OrderByDescending(v => v.PublishDate))
+    {
+        <ul class="list-inline">
+            <li class="col-lg-6 col-md-6 col-sm-12 col-xs-12" style="vertical-align: top;">
+                <div class="thumbnail col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="caption">
+                        <div style="width: 100%; height: 25px; display: inline-block;">
+                            @if (video.MediaSource == MediaSource.Facebook)
+                            {
+                                <img style="width: 20px;" src="@Url.Content("~/Content/images/facebookSmall.png")">
+                            }
+                            else if (video.MediaSource == MediaSource.YouTube)
+                            {
+                                <img style="width: 20px;" src="@Url.Content("~/Content/images/youtube.png")">
+                            }
+                            by <a href="@Url.Action("Home", "Dancer", new { username = video.Author.UserName })" style="text-decoration: none;">
+                                <span class="text-primary" style="vertical-align: top;">
+                                    <b>@video.Author.FirstName</b>
+                                </span>
+                            </a>
+                            - <span class="text-danger">@video.PublishDate.ToShortDateString()</span>
+                            <span style="">
+                                @if (video.MediaSource != EDR.Enums.MediaSource.Facebook)
+                                {
+                                    if (video.PlayList == null)
+                                    {
+                                        <a class="btn btn-sm btn-danger" style="vertical-align: top; float: right;" title="Delete Video" href="@Url.Action("DeleteVideo", "Event", new { videoId = video.Id, returnUrl = @Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this video?')">
+                                            <i class="glyphicon glyphicon glyphicon-remove"></i>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a class="btn btn-sm btn-danger" style="vertical-align: top; float: right;" title="Delete Playlist" href="@Url.Action("DeletePlaylist", "Event", new { listId = video.PlayList.Id, returnUrl = @Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this playlist?')">
+                                            <i class="glyphicon glyphicon glyphicon-remove"></i>
+                                        </a>
+                                    }
+                                }
+                            </span>
+                        </div>
+                    </div>
+                    <div style="height: 100px;">
+                        @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", video)
+                    </div>
+                </div>
+            </li>
+        </ul>
+    }
+}

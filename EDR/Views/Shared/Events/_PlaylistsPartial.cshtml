@@ -1,0 +1,30 @@
+﻿@model IEnumerable<EDR.Models.EventPlaylist>
+
+<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+    <ul class="list-inline">
+        @if (Model != null && Model.Count > 0)
+        {
+            foreach (var list in Model)
+            {
+                <li class="col-lg-6 col-md-6 col-sm-12 col-xs-12" style="vertical-align: top;">
+                    <div class="thumbnail">
+                        <p>
+                            <span class="text-danger">Playlist</span>
+                            Posted By:
+                            <a href="@Url.Action("Home", "Dancer", new { username = list.Author.UserName })" style="text-decoration: none;">
+                                <span class="text-primary" style="vertical-align: top;">
+                                    <b>@list.Author.FirstName</b>
+                                </span>
+                            </a>
+                        </p>
+                        @Html.Partial("~/Views/Shared/_PlaylistPartial.cshtml", list)
+                        <a class="btn btn-sm btn-danger" style="vertical-align: top; width: 100%;" title="Delete Playlist" href="@Url.Action("DeletePlaylist", "Event", new { listId = list.Id, returnUrl = @Url.Action("PostVideo", new { id = @Model.Event.Id }) })" onclick="return confirm('Are you sure you want to DELETE this playlist?')">
+                            <i class="glyphicon glyphicon glyphicon-remove"></i>
+                            Remove Playlist
+                        </a>
+                    </div>
+                </li>
+            }
+        }
+    </ul>
+</div>

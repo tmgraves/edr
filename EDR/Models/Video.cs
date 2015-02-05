@@ -20,6 +20,7 @@ namespace EDR.Models
         public string YouTubePlaylistUrl { get; set; }
         public string YouTubePlaylistTitle { get; set; }
         public MediaSource MediaSource { get; set; }
+        public Playlist PlayList { get; set; }
     }
 
     public class EventVideo : Video

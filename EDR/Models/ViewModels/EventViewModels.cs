@@ -82,6 +82,14 @@ namespace EDR.Models.ViewModels
         public IEnumerable<ClassTeacherInvitation> ClassTeacherInvitations { get; set; }
         public IEnumerable<EventMedia> MediaUpdates { get; set; }
         public EventReviewsViewModel Reviews { get; set; }
+        public IEnumerable<YouTubeVideo> YoutubeVideos { get; set; }
+        public IEnumerable<FacebookVideo> FacebookVideos { get; set; }
+        public IEnumerable<YouTubePlaylist> YouTubePlaylists { get; set; }
+    }
+
+    public class EventVideos : EventBaseViewModel
+    {
+        public IEnumerable<EventVideo> Videos { get; set; }
     }
 
     public class EventReviewsViewModel

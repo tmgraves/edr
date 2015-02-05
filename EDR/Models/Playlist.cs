@@ -15,5 +15,6 @@ namespace EDR.Models
         public ApplicationUser Author { get; set; }
         public string YouTubeId { get; set; }
         public MediaSource MediaSource { get; set; }
+        public virtual ICollection<Video> Videos { get; set; }
     }
 }

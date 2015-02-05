@@ -56,12 +56,6 @@ namespace EDR
             );
 
             routes.MapRoute(
-                name: "EventReviews",
-                url: "Event/{id}/Reviews",
-                defaults: new { controller = "Event", action = "Reviews" }
-            );
-
-            routes.MapRoute(
                 name: "EventReviews2",
                 url: "Event/{id}/Reviews2",
                 defaults: new { controller = "Event", action = "Reviews2" }
@@ -71,6 +65,12 @@ namespace EDR
                 name: "EventGetUpdates",
                 url: "Event/{id}/GetUpdates",
                 defaults: new { controller = "Event", action = "GetUpdates" }
+            );
+
+            routes.MapRoute(
+                name: "EventGetVideos",
+                url: "Event/{id}/GetVideos",
+                defaults: new { controller = "Event", action = "GetVideos" }
             );
 
             routes.MapRoute(
@@ -155,6 +155,42 @@ namespace EDR
                 name: "SocialView",
                 url: "Social/{id}",
                 defaults: new { controller = "Event", action = "View", eventType = EventType.Social }
+            );
+
+            routes.MapRoute(
+                name: "ClassReviews",
+                url: "Class/{id}/Reviews",
+                defaults: new { controller = "Event", action = "Reviews", eventType = EventType.Class }
+            );
+
+            routes.MapRoute(
+                name: "SocialReviews",
+                url: "Social/{id}/Reviews",
+                defaults: new { controller = "Event", action = "Reviews", eventType = EventType.Social }
+            );
+
+            routes.MapRoute(
+                name: "ClassPictures",
+                url: "Class/{id}/Pictures",
+                defaults: new { controller = "Event", action = "Pictures", eventType = EventType.Class }
+            );
+
+            routes.MapRoute(
+                name: "SocialPictures",
+                url: "Social/{id}/Pictures",
+                defaults: new { controller = "Event", action = "Pictures", eventType = EventType.Social }
+            );
+
+            routes.MapRoute(
+                name: "ClassVideos",
+                url: "Class/{id}/Videos",
+                defaults: new { controller = "Event", action = "Videos", eventType = EventType.Class }
+            );
+
+            routes.MapRoute(
+                name: "SocialVideos",
+                url: "Social/{id}/Videos",
+                defaults: new { controller = "Event", action = "Videos", eventType = EventType.Social }
             );
 
             routes.MapRoute(

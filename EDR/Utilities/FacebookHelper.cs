@@ -170,7 +170,7 @@ namespace EDR.Utilities
                             add.Country = address.Country;
                             add.Latitude = address.Latitude;
                             add.Longitude = address.Longitude;
-                            add.State = address.State.ToString();
+                            add.State = address.State != null ? address.State.ToString() : null;
                             add.Street = address.Street;
                             add.ZipCode = address.ZipCode;
                         }

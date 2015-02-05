@@ -110,11 +110,126 @@ namespace EDR.Controllers
             return View(model);
         }
 
+        public ActionResult Pictures(int id, EventType eventType)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var model = LoadEvent(id, eventType);
+            model.EventType = eventType;
+
+            if (model.Event == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View(model);
+        }
+
+        public ActionResult Videos(int id, EventType eventType)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var model = LoadEvent(id, eventType);
+            model.EventType = eventType;
+
+            if (model.Event == null)
+            {
+                return HttpNotFound();
+            }
+
+            var userid = User.Identity.GetUserId();
+            var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+            var youtubeUsername = user.YouTubeUsername;
+            if (youtubeUsername != null)
+            {
+                model.YoutubeVideos = YouTubeHelper.GetVideos(youtubeUsername);
+                Session["YouTubeVideos"] = model.YoutubeVideos;
+                model.YouTubePlaylists = YouTubeHelper.GetPlaylists(youtubeUsername);
+                Session["YouTubePlaylists"] = model.YouTubePlaylists;
+            }
+            var facebookToken = user.FacebookToken;
+            if (facebookToken != null)
+            {
+                model.FacebookVideos = FacebookHelper.GetVideos(facebookToken);
+                Session["FacebookVideos"] = model.FacebookVideos;
+            }
+
+            return View(model);
+        }
+        public ActionResult GetVideos(int id, EventType eventType)
+        {
+            var model = new EventVideos();
+            model.EventType = eventType;
+            model.ReturnUrl = Url.Action("Videos", new { id = id, eventType = eventType });
+            var lstVideos = new List<EventVideo>();
+
+            var evt = DataContext.Events.Where(e => e.Id == id)
+                    .Include("Creator")
+                    .Include("Videos")
+                    .Include("Videos.Author")
+                    .Include("Playlists")
+                    .Include("Playlists.Author")
+                    .FirstOrDefault();
+
+            lstVideos = evt.Videos.ToList();
+
+            foreach (var lst in evt.Playlists)
+            {
+                var videos = YouTubeHelper.GetPlaylistVideos(lst.YouTubeId);
+
+                foreach (var movie in videos)
+                {
+                    lstVideos.Add(new EventVideo() { Event = lst.Event, Author = lst.Author, PublishDate = movie.PubDate, PhotoUrl = movie.Thumbnail.ToString(), VideoUrl = movie.VideoLink.ToString(), Title = movie.Title, MediaSource = lst.MediaSource, PlayList = lst });
+                }
+            }
+            if (evt.FacebookId != null)
+            {
+                if (evt.Creator != null && evt.Creator.FacebookToken != null)
+                {
+                    var posts = new List<FacebookPost>();
+                    if (Session["FacebookPosts"] != null)
+                    {
+                        posts = (List<FacebookPost>)Session["FacebookPosts"];
+                    }
+                    else
+                    {
+                        posts = FacebookHelper.GetFeed(evt.FacebookId, evt.Creator.FacebookToken);
+                        Session["FacebookPosts"] = posts;
+                    }
+
+                    foreach (var post in posts)
+                    {
+                        if (post.Type == "video")
+                        {
+                            lstVideos.Add(new EventVideo() { Event = evt, Author = evt.Creator, PublishDate = post.Created_Time, PhotoUrl = post.Picture, VideoUrl = post.Source, Title = post.Description, MediaSource = MediaSource.Facebook });
+                        }
+                    }
+                }
+
+            }
+
+            model.Videos = lstVideos;
+
+            return PartialView("~/Views/Shared/Events/_VideosPartial.cshtml", model);
+        }
+
+        public ActionResult GetPictures(int id)
+        {
+            return PartialView("~/Views/Shared/Events/_EventVideosPartial.cshtml", DataContext.Videos.OfType<EventVideo>().Where(v => v.Event.Id == id).ToList());
+        }
+
         public ActionResult GetUpdates(int id)
         {
             //  Media Updates
             var lstMedia = new List<EventMedia>();
             var evt = DataContext.Events.Where(e => e.Id == id)
+                    .Include("Creator")
                     .Include("Pictures")
                     .Include("Pictures.PostedBy")
                     .Include("Videos")

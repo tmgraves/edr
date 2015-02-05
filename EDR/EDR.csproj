@@ -747,6 +747,10 @@
     <Content Include="Views\Event\_EventLayout.cshtml" />
     <Content Include="Views\Event\Reviews.cshtml" />
     <Content Include="Views\Shared\Events\_EventUpdatesPartial.cshtml" />
+    <Content Include="Views\Event\Videos.cshtml" />
+    <Content Include="Views\Event\Pictures.cshtml" />
+    <Content Include="Views\Shared\Events\_VideosPartial.cshtml" />
+    <Content Include="Views\Shared\Events\_PlaylistsPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Series\" />

@@ -172,7 +172,6 @@
                 <ul class="nav nav-pills nav-justified" role="tablist">
                     <li @if (ctrName == "View") { <text> class="active" </text>      }><a href="@Url.Action("View", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">Details</a></li>
                     <li @if (ctrName == "Reviews") { <text> class="active" </text>     }><a href="@Url.Action("Reviews", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">Reviews</a></li>
-                    <li @if (ctrName == "Teachers") { <text> class="active" </text>      }><a href="@Url.Action("Teachers", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">Teachers</a></li>
                     <li @if (ctrName == "Videos") { <text> class="active" </text>       }><a href="@Url.Action("Videos", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">Videos</a></li>
                     <li @if (ctrName == "Pictures") { <text> class="active" </text>        }><a href="@Url.Action("Pictures", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">Pictures</a></li>
                 </ul>

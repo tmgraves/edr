@@ -1,0 +1,172 @@
+﻿@model EDR.Models.ViewModels.EventViewModel
+@using EDR.Utilities
+@using EDR.Models
+@using EDR.Enums
+
+@{
+    ViewBag.Title = "Videos for " + Model.Event.Name;
+    Layout = "~/Views/Event/_EventLayout.cshtml";
+}
+
+<script type="text/javascript">
+    $(document).ready(function (e) {
+        //  locate each partial section
+        //  if it has a URL set, load the contents into the area.
+
+        $(".partialContents").each(function (index, item) {
+            var url = $(item).data("url");
+            if (url && url.length > 0) {
+                $(item).load(url);
+            }
+        });
+    });
+</script>
+
+<div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+    <div class="partialContents" data-url="/Event/@Model.Event.Id/GetVideos?eventType=@Model.EventType.ToString()">
+        <img src="~/Content/images/indicator.white.gif" />Loading...
+    </div>
+</div>
+<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+    <div class="tabbable panel panel-info">
+        <div class="panel-heading">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+                <li class="active"><a href="#youtubevideos" data-toggle="tab"><img style="width: 30px;" src="@Url.Content("~/Content/images/facebookSmall.png")"></a></li>
+                <li><a href="#facebookvideos" data-toggle="tab"><img style="width: 30px;" src="@Url.Content("~/Content/images/youtube.png")"></a></li>
+            </ul>
+        </div>
+        <div class="tab-content panel-body">
+            <div id="youtubevideos" class="tab-pane active">
+                <ul class="nav nav-pills" role="tablist">
+                    <li class="active"><a href="#ytvideos" data-toggle="tab">My Videos</a></li>
+                    <li><a href="#ytplaylists" data-toggle="tab">My Playlists</a></li>
+                    <li><a href="#ytvideourl" data-toggle="tab">Video Url</a></li>
+                    <li><a href="#ytplaylisturl" data-toggle="tab">Playlist Url</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="ytvideos" class="tab-pane active">
+                        @if (Model.YoutubeVideos != null && Model.YoutubeVideos.Count() > 0)
+                        {
+                            <ul class="list-inline">
+                                @foreach (var video in Model.YoutubeVideos.OrderByDescending(v => v.PubDate))
+                                {
+                                    <li class="col-lg-3 col-md-3 col-sm-12 col-xs-12" style="vertical-align: top;">
+                                        <div class="thumbnail">
+                                            <a target="_blank" href="https://www.youtube.com/watch?v=@video.Id&feature=player_embedded">
+                                                <div id="videocontainer" style="height: 60px;">
+                                                    <div id="videoimage" title="@video.Title">
+                                                        <img src="https://img.youtube.com/vi/@Html.DisplayFor(s => video.Id)/mqdefault.jpg" />
+                                                    </div>
+                                                    <div id="videoplaybutton">
+                                                        <div id="playbuttonsmall" title="@video.Title (@video.PubDate.ToShortDateString())">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                            <a class="btn btn-xs btn-success" title="Import Video" style="vertical-align: top; width: 100%;" href="@Url.Action("ImportYouTubeVideo", "Event", new { videoId = video.Id, eventId = Model.Event.Id, returnUrl = @Url.Action("PostVideo", new { id = @Model.Event.Id }) })">
+                                                <i class="glyphicon glyphicon glyphicon-plus"></i>
+                                                Add
+                                            </a>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            @:No YouTube videos found.
+                        }
+                    </div>
+                    <div id="ytplaylists" class="tab-pane">
+                        @if (Model.YouTubePlaylists != null && Model.YouTubePlaylists.Count() > 0)
+                        {
+                            <ul class="list-inline">
+                                @foreach (var list in Model.YouTubePlaylists)
+                                {
+                                    <li class="col-lg-3 col-md-3 col-sm-12 col-xs-12" style="vertical-align: top;" title="@list.Name (@list.PubDate)">
+                                        <div class="thumbnail">
+                                            <img src="@Html.DisplayFor(s => list.ThumbnailUrl)" alt="@list.Name (@list.PubDate)" />
+                                            <a class="btn btn-xs btn-success" title="Import List" style="vertical-align: top; width: 100%;" href="@Url.Action("ImportYouTubeList", "Event", new { id = list.Id, eventId = Model.Event.Id, returnUrl = @Url.Action("PostVideo", new { id = @Model.Event.Id }) })">
+                                                <i class="glyphicon glyphicon glyphicon-plus"></i>
+                                                Add
+                                            </a>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            @:No YouTube Playlists found.
+                        }
+                    </div>
+                    <div id="ytvideourl" class="tab-pane">
+                        @using (Html.BeginForm("ImportPlayListVideoLink",
+                                                "Event",
+                                                new { returnUrl = @Url.Action("PostVideo", new { eventId = @Model.Event.Id }) },
+                                                FormMethod.Post,
+                                                new { enctype = "multipart/form-data" }))
+                        {
+                            @Html.Hidden("eventId", Model.Event.Id)
+                            <div class="form-group form-inline" style="padding: 10px;">
+                                <p>
+                                    <label for="videoUrl">Video Url:</label>
+                                    <input type="text" name="videoUrl" id="videoUrl" class="form-control" size="100" />
+                                </p>
+                                <p>
+                                    <input id="submit" type="submit" class="btn btn-success" value="Import Video" />
+                                </p>
+                            </div>
+                        }
+                    </div>
+                    <div id="ytplaylisturl" class="tab-pane">
+                        @using (Html.BeginForm("ImportYouTubePlaylistLink",
+                                            "Event",
+                                            new { returnUrl = @Url.Action("PostVideo", new { eventId = @Model.Event.Id }) },
+                                            FormMethod.Post,
+                                            new { enctype = "multipart/form-data" }))
+                        {
+                            @Html.Hidden("eventId", Model.Event.Id)
+                            <div class="form-group form-inline" style="padding: 10px;">
+                                <p>
+                                    <label for="videoUrl">Playlist Url:</label>
+                                    <input type="text" name="playlistUrl" id="playlistUrl" class="form-control" size="100" />
+                                </p>
+                                <p>
+                                    <input id="submit" type="submit" class="btn btn-success" value="Import Playlist" />
+                                </p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div id="facebookvideos" class="tab-pane">
+                @if (Model.FacebookVideos != null && Model.FacebookVideos.Count() > 0)
+                {
+                    <ul class="list-inline">
+                        @foreach (var video in Model.FacebookVideos)
+                        {
+                            <li class="col-lg-12 col-md-12" style="vertical-align: top;">
+                                <div>
+                                    <div class="thumbnail">
+                                        <div style="height: 100px;">
+                                            @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new EventVideo() { Event = Model.Event, FacebookId = video.Id, MediaSource = MediaSource.Facebook, PhotoUrl = video.Picture, VideoUrl = video.Source, PublishDate = video.Created_Time, Title = video.Name })
+                                        </div>
+                                        <a class="btn btn-warning" title="Import Video" style="vertical-align: top; width: 100%;" href="@Url.Action("ImportFacebookVideo", "Event", new { videoId = video.Id, eventId = Model.Event.Id, returnUrl = @Url.Action("Videos", new { id = @Model.Event.Id, eventType = @Model.EventType }) })">
+                                            <i class="glyphicon glyphicon glyphicon-plus"></i>
+                                            Import Video
+                                        </a>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    @:No Facebook videos found.
+        }
+            </div>
+        </div>
+    </div>
+</div>
