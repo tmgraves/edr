@@ -84,7 +84,7 @@ textarea {
     z-index: 10;
 }
 #playbutton {
-    background: url('images/Play1Normal.png') center center no-repeat;
+    background: url('images/Play1NormalSmall.png') bottom left no-repeat;
     max-height: 100%;
     max-width: 100%;
     width: auto;
@@ -97,10 +97,10 @@ textarea {
     margin: auto;
 }
 #playbutton:hover {
-    background: url('images/Play1Hot.png') center center no-repeat;
+    background: url('images/Play1HotSmall.png') bottom left no-repeat;
 }
 #playbutton:active {
-    background: url('images/Play1Pressed.png') center center no-repeat;
+    background: url('images/Play1PressedSmall.png') bottom left no-repeat;
 }
 
 #playbuttonsmall {

@@ -210,13 +210,79 @@ namespace EDR.Utilities
         public static List<FacebookVideo> GetVideos(string token)
         {
             var fb = new FacebookClient(token);
-            dynamic myInfo = fb.Get("/me/videos?fields=id,created_time,description,embed_html,format,from,icon,name,picture,source,updated_time");
-
+            dynamic myInfo;
             var videosList = new List<FacebookVideo>();
-            foreach (dynamic vid in myInfo.data)
+            dynamic paging;
+            dynamic next;
+
+            //  Get Tagged Videos
+            myInfo = fb.Get("/me/videos?fields=id,created_time,description,embed_html,format,from,icon,name,picture,source,updated_time");
+            if (myInfo != null)
+            {
+                ParseVideos(myInfo.data, videosList);
+                paging = myInfo.paging;
+                if (paging != null)
+                {
+                    next = paging.next;
+                    while (next != null)
+                    {
+                        myInfo = fb.Get(next);
+                        
+                        ParseVideos(myInfo.data, videosList);
+
+                        paging = myInfo.paging;
+                        if (paging != null)
+                        {
+                            next = paging.next;
+                        }
+                        else
+                        {
+                            next = null;
+                        }
+                    }
+                }
+            }
+            //  Get Tagged Videos
+
+            //  Get Uploaded Videos
+            myInfo = fb.Get("/me/videos/uploaded?fields=id,created_time,description,embed_html,format,from,icon,name,picture,source,updated_time");
+            if (myInfo != null)
+            {
+                ParseVideos(myInfo.data, videosList);
+
+                paging = myInfo.paging;
+                if (paging != null)
+                {
+                    next = paging.next;
+                    while (next != null)
+                    {
+                        myInfo = fb.Get(next);
+
+                        ParseVideos(myInfo.data, videosList);
+
+                        paging = myInfo.paging;
+                        if (paging != null)
+                        {
+                            next = paging.next;
+                        }
+                        else
+                        {
+                            next = null;
+                        }
+                    }
+                }
+            }
+            //  Get Uploaded Videos
+
+            return (videosList);
+        }
+
+        public static void ParseVideos(dynamic data, List<FacebookVideo> lstVideos)
+        {
+            foreach (dynamic vid in data)
             {
                 dynamic from = vid.from;
-                videosList.Add(new FacebookVideo()
+                lstVideos.Add(new FacebookVideo()
                 {
                     Id = vid.id,
                     Created_Time = Convert.ToDateTime(vid.created_time),
@@ -229,7 +295,6 @@ namespace EDR.Utilities
                     Updated_Time = Convert.ToDateTime(vid.updated_time)
                 });
             }
-            return (videosList);
         }
 
         public static List<FacebookGroup> GetGroups(string token)

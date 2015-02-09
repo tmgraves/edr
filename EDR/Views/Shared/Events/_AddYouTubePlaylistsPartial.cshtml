@@ -1,0 +1,29 @@
+﻿@model EDR.Models.ViewModels.EventYouTubePlaylistsContainer
+@using EDR.Models
+@using EDR.Enums
+
+@if (Model.YouTubePlaylists != null && Model.YouTubePlaylists.Count() > 0)
+{
+    <ul class="list-inline">
+        @foreach (var list in Model.YouTubePlaylists)
+        {
+            <li class="col-lg-2 col-md-2 col-sm-6 col-xs-6" style="vertical-align: top;" title="@list.Name (@list.PubDate)">
+                <div class="thumbnail">
+                    <img src="@Html.DisplayFor(s => list.ThumbnailUrl)" alt="@list.Name (@list.PubDate)" />
+                    <a class="btn btn-xs btn-success" title="Import List" style="vertical-align: top; width: 100%;" href="@Url.Action("ImportYouTubeList", "Event", new { id = list.Id, eventId = Model.Event.Id, returnUrl = @Url.Action("Videos", new { id = @Model.Event.Id, eventType = @Model.EventType }) })">
+                        <i class="glyphicon glyphicon glyphicon-plus"></i>
+                        Add
+                    </a>
+                </div>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p style="margin: 20px;">
+        No YouTube Playlists found.
+    </p>
+}
+
+

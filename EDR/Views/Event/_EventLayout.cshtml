@@ -136,7 +136,10 @@
                 @if (User.Identity.IsAuthenticated)
                     {
                     <p>
-                        @Html.ActionLink("Add to Your Calendar", "Signup", "Event", new { id = Model.Event.Id, returnUrl = @Url.Action("View", new { id = @Model.Event.Id }) }, htmlAttributes: new { @class = "btn btn-primary col-lg-12 col-md-12 col-sm-12 col-xs-12", @style = "margin: 5px" })
+                        <a class="btn btn btn-primary col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 5px;" title="Signup" href="@Url.Action("Signup", "Event", new { id = Model.Event.Id, returnUrl = Request.Url.AbsolutePath })">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                            Add to Your Calendar
+                        </a>
                     </p>
                     }
                 @if (Model.Event is Class)
@@ -144,25 +147,31 @@
                         if (User.Identity.IsAuthenticated && User.IsInRole("Teacher") && Model.ClassTeacherInvitations.Where(i => i.Teacher.ApplicationUser.UserName == User.Identity.Name).Count() == 0 && Model.Class.Teachers.Where(t => t.ApplicationUser.UserName == User.Identity.Name).Count() == 0)
                         {
                             <p>
-                                @Html.ActionLink("Join As a Teacher", "JoinTeachers", "Event", new { eventId = Model.Event.Id, returnUrl = @Url.Action("View", new { id = @Model.Event.Id }) }, htmlAttributes: new { @class = "btn btn-warning col-lg-12 col-md-12 col-sm-12 col-xs-12", @style = "margin: 5px" })
+                                <a class="btn btn btn-warning col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 5px;" title="Signup" href="@Url.Action("JoinTeachers", "Event", new { id = Model.Event.Id, returnUrl = Request.Url.AbsolutePath })">
+                                    <i class="glyphicon glyphicon-plus"></i>
+                                    Join As a Teacher
+                                </a>
                             </p>
                         }
-                    }
-                @if (User.Identity != null && ((Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)) || (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
-                    {
-                    <p>
-                        <a class="btn btn btn-danger col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin: 5px;" title="Delete" href="@Url.Action("Delete", "Event", new { id = Model.Event.Id, returnUrl = Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this Event?')">
-                            <i class="glyphicon glyphicon glyphicon-remove"></i>
-                            Delete Event
-                        </a>
-                    </p>
                     }
                 @if (Model.Event.FacebookLink != null)
                     {
                     <p>
-                        <a class="btn btn-info col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin: 5px;" href='@Model.Event.FacebookLink' target="_blank" title="Open in Facebook">Open in Facebook</a>
+                        <a class="btn btn-info col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 5px;" href='@Model.Event.FacebookLink' target="_blank" title="Open in Facebook">
+                            <i class="glyphicon glyphicon-share-alt"></i>
+                            Open in Facebook
+                        </a>
                     </p>
                     }
+                @if (User.Identity != null && ((Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)) || (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
+                {
+                    <p>
+                        <a class="btn btn btn-danger col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 5px;" title="Delete" href="@Url.Action("Delete", "Event", new { id = Model.Event.Id, returnUrl = Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this Event?')">
+                            <i class="glyphicon glyphicon-remove"></i>
+                            Delete Event
+                        </a>
+                    </p>
+                }
             </div>
         </div>
     </div>
@@ -170,10 +179,10 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <ul class="nav nav-pills nav-justified" role="tablist">
-                    <li @if (ctrName == "View") { <text> class="active" </text>      }><a href="@Url.Action("View", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">Details</a></li>
-                    <li @if (ctrName == "Reviews") { <text> class="active" </text>     }><a href="@Url.Action("Reviews", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">Reviews</a></li>
-                    <li @if (ctrName == "Videos") { <text> class="active" </text>       }><a href="@Url.Action("Videos", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">Videos</a></li>
-                    <li @if (ctrName == "Pictures") { <text> class="active" </text>        }><a href="@Url.Action("Pictures", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">Pictures</a></li>
+                    <li @if (ctrName == "View") { <text> class="active" </text>      }><a href="@Url.Action("View", "Event", new { id = Model.Event.Id, eventType = Model.EventType })"><i class="glyphicon glyphicon-home"></i> Details</a></li>
+                    <li @if (ctrName == "Reviews") { <text> class="active" </text>     }><a href="@Url.Action("Reviews", "Event", new { id = Model.Event.Id, eventType = Model.EventType })"><i class="glyphicon glyphicon-comment"></i> Reviews</a></li>
+                    <li @if (ctrName == "Videos") { <text> class="active" </text>       }><a href="@Url.Action("Videos", "Event", new { id = Model.Event.Id, eventType = Model.EventType })"><i class="glyphicon glyphicon-facetime-video"></i> Videos</a></li>
+                    <li @if (ctrName == "Pictures") { <text> class="active" </text>        }><a href="@Url.Action("Pictures", "Event", new { id = Model.Event.Id, eventType = Model.EventType })"><i class="glyphicon glyphicon-camera"></i> Pictures</a></li>
                 </ul>
             </div>
             <div class="panel-body">

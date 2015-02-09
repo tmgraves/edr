@@ -1,0 +1,39 @@
+﻿@model EDR.Models.ViewModels.EventYouTubeVideosContainer
+@using EDR.Models
+@using EDR.Enums
+
+@if (Model.YouTubeVideos != null && Model.YouTubeVideos.Count() > 0)
+{
+    <ul class="list-inline">
+        @foreach (var video in Model.YouTubeVideos.OrderByDescending(v => v.PubDate))
+        {
+            <li class="col-lg-2 col-md-2 col-sm-6 col-xs-6" style="vertical-align: top;">
+                <div class="thumbnail">
+                    <a target="_blank" href="https://www.youtube.com/watch?v=@video.Id&feature=player_embedded">
+                        <div id="videocontainer" style="height: 100px;">
+                            <div id="videoimage" title="@video.Title">
+                                <img src="https://img.youtube.com/vi/@Html.DisplayFor(s => video.Id)/mqdefault.jpg" />
+                            </div>
+                            <div id="videoplaybutton">
+                                <div id="playbuttonsmall" title="@video.Title (@video.PubDate.ToShortDateString())">
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <a class="btn btn-xs btn-success" title="Import Video" style="vertical-align: top; width: 100%;" href="@Url.Action("ImportYouTubeVideo", "Event", new { videoId = video.Id, eventId = Model.Event.Id, returnUrl = @Url.Action("Videos", new { id = @Model.Event.Id, eventType = @Model.EventType }) })">
+                        <i class="glyphicon glyphicon glyphicon-plus"></i>
+                        Add
+                    </a>
+                </div>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p style="margin: 20px;">
+        No YouTube videos found.
+    </p>
+}
+
+

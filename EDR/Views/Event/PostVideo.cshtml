@@ -1,17 +1,105 @@
 ﻿@model EDR.Models.ViewModels.EventPostVideoViewModel
+@using EDR.Models
+@using EDR.Enums
 
 @{
     ViewBag.Title = "Post a Video";
 }
 
+<script type="text/javascript">
+    $(document).ready(function (e) {
+        //  locate each partial section
+        //  if it has a URL set, load the contents into the area.
+
+        $(".partialContents").each(function (index, item) {
+            var url = $(item).data("url");
+            if (url && url.length > 0) {
+                $(item).load(url);
+            }
+        });
+    });
+</script>
+
 <h1 class="page-header">
     <span class="text-warning">Post a Video</span> for @Model.Event.Name
-    <small>at @Model.Event.Place.Name</small>
 </h1>
 
 <div class="container">
+    <div class="tabbable panel panel-info">
+        <div class="panel-heading">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+                <li class="active"><a href="#youtubevideos" data-toggle="tab">From <img class="img-circle" style="width: 30px;" src="@Url.Content("~/Content/images/youtube.png")" /></a></li>
+                <li><a href="#facebookvideos" data-toggle="tab">From <img class="img-circle" style="width: 30px;" src="@Url.Content("~/Content/images/facebookSmall.png")" /></a></li>
+            </ul>
+        </div>
+        <div class="tab-content panel-body">
+            <div id="youtubevideos" class="tab-pane active">
+                <ul class="nav nav-pills text-center" role="tablist">
+                    <li class="active"><a href="#ytvideos" data-toggle="tab">My Videos</a></li>
+                    <li><a href="#ytplaylists" data-toggle="tab">My Playlists</a></li>
+                    <li><a href="#ytvideourl" data-toggle="tab">Video Url</a></li>
+                    <li><a href="#ytplaylisturl" data-toggle="tab">Playlist Url</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="ytvideos" class="tab-pane active">
+                        <div class="partialContents" data-url="/Event/@Model.Event.Id/GetYouTubeVideos?eventType=@Model.EventType">
+                            <img src="~/Content/images/indicator.white.gif" />Loading...
+                        </div>
+                    </div>
+                    <div id="ytplaylists" class="tab-pane">
+                        <div class="partialContents" data-url="/Event/@Model.Event.Id/GetYouTubePlaylists?eventType=@Model.EventType">
+                            <img src="~/Content/images/indicator.white.gif" />Loading...
+                        </div>
+                    </div>
+                    <div id="ytvideourl" class="tab-pane">
+                        @using (Html.BeginForm("ImportPlayListVideoLink",
+                                                "Event",
+                                                new { returnUrl = Request.Url.AbsolutePath },
+                                                FormMethod.Post,
+                                                new { enctype = "multipart/form-data" }))
+                        {
+                            @Html.Hidden("eventId", Model.Event.Id)
+                            <div class="form-group form-inline" style="padding: 10px;">
+                                <p>
+                                    <label for="videoUrl">Video Url:</label>
+                                    <input type="text" name="videoUrl" id="videoUrl" class="form-control" size="200" />
+                                </p>
+                                <p>
+                                    <input id="submit" type="submit" class="btn btn-success" value="Import Video" />
+                                </p>
+                            </div>
+                        }
+                    </div>
+                    <div id="ytplaylisturl" class="tab-pane">
+                        @using (Html.BeginForm("ImportYouTubePlaylistLink",
+                                            "Event",
+                                            new { returnUrl = Request.Url.AbsolutePath },
+                                            FormMethod.Post,
+                                            new { enctype = "multipart/form-data" }))
+                        {
+                            @Html.Hidden("eventId", Model.Event.Id)
+                            <div class="form-group form-inline" style="padding: 10px;">
+                                <p>
+                                    <label for="videoUrl">Playlist Url:</label>
+                                    <input type="text" name="playlistUrl" id="playlistUrl" class="form-control" size="200" />
+                                </p>
+                                <p>
+                                    <input id="submit" type="submit" class="btn btn-success" value="Import Playlist" />
+                                </p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div id="facebookvideos" class="tab-pane">
+                <div class="partialContents" data-url="/Event/@Model.Event.Id/GetFacebookVideos?eventType=@Model.EventType">
+                    <img src="~/Content/images/indicator.white.gif" />Loading...
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row">
-        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        @*<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <ul class="list-inline">
                     @if (Model.Event.Videos != null && Model.Event.Videos.Count > 0)
@@ -65,9 +153,9 @@
                     }
                 </ul>
             </div>
-        </div>
+        </div>*@
 
-        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        @*<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <div class="tabbable panel panel-info">
                 <div class="panel-heading">
                     <ul class="nav nav-tabs nav-justified" role="tablist">
@@ -223,8 +311,8 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div>*@
     </div>
 </div>
 
-@Html.ActionLink("Back to Event", "View", "Event", new { id = Model.Event.Id }, htmlAttributes: new { @class = "btn btn-primary" })
+@Html.ActionLink("Back to Videos", "Videos", "Event", new { id = Model.Event.Id }, htmlAttributes: new { @class = "btn btn-primary" })

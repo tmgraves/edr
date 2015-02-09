@@ -45,6 +45,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="bouncy_castle_hmac_sha_pcl">
+      <HintPath>..\packages\BouncyCastle-PCL.1.0.0.4\lib\bouncy_castle_hmac_sha_pcl.dll</HintPath>
+    </Reference>
     <Reference Include="DayPilot.Web.Mvc, Version=1.4.410.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Library\DayPilot.Web.Mvc.dll</HintPath>
@@ -90,6 +93,9 @@
     <Reference Include="Google.GData.YouTube">
       <HintPath>..\packages\Google.GData.YouTube.2.2.0.0\lib\Google.GData.YouTube.dll</HintPath>
     </Reference>
+    <Reference Include="InstaSharp">
+      <HintPath>..\packages\InstaSharp.2.0.0-beta7\lib\portable-net403+sl5+wp8+win8\InstaSharp.dll</HintPath>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
@@ -133,6 +139,9 @@
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="RestSharp">
+      <HintPath>..\packages\RestSharp.104.1\lib\net4\RestSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -210,6 +219,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
     </Reference>
+    <Reference Include="YelpSharp">
+      <HintPath>..\packages\YelpSharp.1.2.1.0\lib\net4\YelpSharp.dll</HintPath>
+    </Reference>
     <Reference Include="Zlib.Portable">
       <HintPath>..\packages\Zlib.Portable.1.10.0\lib\portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid\Zlib.Portable.dll</HintPath>
     </Reference>
@@ -262,6 +274,7 @@
     <Compile Include="Controllers\DayPilotController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\SocialMediaController.cs" />
     <Compile Include="Controllers\OwnerController.cs" />
     <Compile Include="Controllers\PlaceController.cs" />
     <Compile Include="Controllers\DancerController.cs" />
@@ -361,6 +374,8 @@
     <Compile Include="Utilities\FacebookHelper.cs" />
     <Compile Include="Utilities\Geolocation.cs" />
     <Compile Include="Utilities\IdentityExtension.cs" />
+    <Compile Include="Utilities\InstagramHelper.cs" />
+    <Compile Include="Utilities\YelpHelper.cs" />
     <Compile Include="Utilities\YouTubeHelper.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -374,6 +389,7 @@
     <Content Include="Content\images\error.png" />
     <Content Include="Content\images\facebookSmall.png" />
     <Content Include="Content\images\indicator.white.gif" />
+    <Content Include="Content\images\instagram.png" />
     <Content Include="Content\images\MissingImage.jpg" />
     <Content Include="Content\images\MissingImageThumbnail.jpg" />
     <Content Include="Content\images\NoImage.png" />
@@ -388,6 +404,7 @@
     <Content Include="Content\images\Play1Pressed.png" />
     <Content Include="Content\images\NoPic.png" />
     <Content Include="Content\images\Play1PressedSmall.png" />
+    <Content Include="Content\images\Share.png" />
     <Content Include="Content\images\SpotifyHelp.png" />
     <Content Include="Content\images\thumbdown.png" />
     <Content Include="Content\images\thumbdownsm.png" />
@@ -751,8 +768,15 @@
     <Content Include="Views\Event\Pictures.cshtml" />
     <Content Include="Views\Shared\Events\_VideosPartial.cshtml" />
     <Content Include="Views\Shared\Events\_PlaylistsPartial.cshtml" />
+    <Content Include="Views\Shared\Events\_PicturesPartial.cshtml" />
+    <Content Include="Views\Shared\Events\_AddFacebookPicturesPartial.cshtml" />
+    <Content Include="Views\Shared\Events\_AddFacebookVideosPartial.cshtml" />
+    <Content Include="Views\Shared\Events\_AddYouTubeVideosPartial.cshtml" />
+    <Content Include="Views\Shared\Events\_AddYouTubePlaylistsPartial.cshtml" />
+    <Content Include="Views\Dancer\SocialMedia.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Views\Instagram\" />
     <Folder Include="Views\Series\" />
   </ItemGroup>
   <ItemGroup>

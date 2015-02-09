@@ -4,14 +4,27 @@
     ViewBag.Title = "Post a Picture";
 }
 
+<script type="text/javascript">
+    $(document).ready(function (e) {
+        //  locate each partial section
+        //  if it has a URL set, load the contents into the area.
+
+        $(".partialContents").each(function (index, item) {
+            var url = $(item).data("url");
+            if (url && url.length > 0) {
+                $(item).load(url);
+            }
+        });
+    });
+</script>
+
 <h1 class="page-header">
-    <span class="text-warning">Post a Picture</span> for @Model.Event.Name
-    <small>at @Model.Event.Place.Name</small>
+    <span class="text-warning">Add a New Picture</span> for @Model.Event.Name
 </h1>
 
 <div class="container">
     <div class="row">
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        @*<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <h3>All Event Photos</h3>
             <ul class="list-inline">
                 @if (Model.Event.Pictures != null && Model.Event.Pictures.Count > 0)
@@ -28,8 +41,6 @@
                                     <i class="glyphicon glyphicon glyphicon-remove btn btn-danger"></i>
                                     <span class="sr-only">Delete</span>
                                 </a>
-                                @*@Html.ActionLink("Profile Pic", "ProfilePicture", "Dancer", htmlAttributes: new { @class = "btn btn-primary" })*@
-
                             }
                         </li>
                     }
@@ -40,9 +51,69 @@
                 }
             </ul>
         </div>
+    </div>*@
+
+    <div class="tabbable panel panel-info">
+        <div class="panel-heading">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+                <li class="active"><a href="#newpic" data-toggle="tab">New Picture</a></li>
+                <li><a href="#facebookpics" data-toggle="tab">From <img class="img-circle" style="width: 20px;" src="@Url.Content("~/Content/images/facebookSmall.png")" /></a></li>
+            </ul>
+        </div>
+        <div class="tab-content panel-body">
+            <div id="newpic" class="tab-pane active">
+                <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    @using (Html.BeginForm("UploadPicture",
+                                    "Event",
+                                    new { returnUrl = @Url.Action("Pictures", new { id = @Model.Event.Id, eventType = @Model.EventType }) },
+                                    FormMethod.Post,
+                                    new { enctype = "multipart/form-data" }))
+                    {
+                        @Html.HiddenFor(x => x.Event.Id)
+                        <div class="form-group form-inline">
+                            <p>
+                                <input type="file" name="file" id="file" class="form-control" size="20" /><br />
+                            </p>
+                            <p>
+                                <input id="submit" type="submit" class="btn btn-success" value="Upload Picture" />
+                            </p>
+                        </div>
+                        <p>
+                            @ViewBag.Message
+                        </p>
+
+                        <script type="text/javascript">
+                            $('#submit').click(function () {
+                                //check whether browser fully supports all File API
+                                if (window.File && window.FileReader && window.FileList && window.Blob) {
+                                    //get the file size and file type from file input field
+                                    var fsize = $('#file')[0].files[0].size;
+
+                                    if (fsize > 1048576) //do something if file size more than 1 mb (1048576)
+                                    {
+                                        alert("File is too big.  Please try another.");
+                                        return false;
+                                    } else {
+                                        return true;
+                                    }
+                                } else {
+                                    alert("Please upgrade your browser, because your current browser lacks some new features we need!");
+                                }
+                            });
+                        </script>
+                    }
+
+                </div>
+            </div>
+            <div id="facebookpics" class="tab-pane">
+                <div class="partialContents" data-url="/Event/@Model.Event.Id/GetFacebookPictures?eventType=@Model.EventType">
+                    <img src="~/Content/images/indicator.white.gif" />Loading...
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="tabbable panel panel-default">
+    @*<div class="tabbable panel panel-default">
         <div class="panel-heading">
             <ul class="nav nav-tabs nav-justified" role="tablist">
                 <li class="active"><a href="#newpic" data-toggle="tab"><h4>Upload a New Picture</h4></a></li>
@@ -122,7 +193,7 @@
             }
             </div>
         </div>
-    </div>
+    </div>*@
 </div>
 
-@Html.ActionLink("Back to Event", "View", "Event", new { id = Model.Event.Id }, htmlAttributes: new { @class = "btn btn-primary" })
+@Html.ActionLink("Back to Pictures", "Pictures", "Event", new { id = Model.Event.Id, eventType = Model.EventType }, htmlAttributes: new { @class = "btn btn-primary" })

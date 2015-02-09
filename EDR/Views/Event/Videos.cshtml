@@ -22,26 +22,33 @@
     });
 </script>
 
-<div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+    <div style="width: 100%; display: inline-block;">
+        <a class="btn btn-warning pull-left" title="Add New Video" href="@Url.Action("PostVideo", "Event", new { id = Model.Event.Id, eventType = Model.EventType })" style="margin: 5px;">
+            <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+            Add Video
+        </a>
+    </div>
     <div class="partialContents" data-url="/Event/@Model.Event.Id/GetVideos?eventType=@Model.EventType.ToString()">
         <img src="~/Content/images/indicator.white.gif" />Loading...
     </div>
 </div>
-<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+@*<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
     <div class="tabbable panel panel-info">
         <div class="panel-heading">
+            <h4><i class="glyphicon glyphicon-upload"></i> Upload</h4>
             <ul class="nav nav-tabs nav-justified" role="tablist">
-                <li class="active"><a href="#youtubevideos" data-toggle="tab"><img style="width: 30px;" src="@Url.Content("~/Content/images/youtube.png")"></a></li>
-                <li><a href="#facebookvideos" data-toggle="tab"><img style="width: 30px;" src="@Url.Content("~/Content/images/facebookSmall.png")"></a></li>
+                <li class="active"><a href="#youtubevideos" data-toggle="tab">From <img class="img-circle" style="width: 30px;" src="@Url.Content("~/Content/images/youtube.png")" /></a></li>
+                <li><a href="#facebookvideos" data-toggle="tab">From <img class="img-circle" style="width: 30px;" src="@Url.Content("~/Content/images/facebookSmall.png")" /></a></li>
             </ul>
         </div>
         <div class="tab-content panel-body">
             <div id="youtubevideos" class="tab-pane active">
-                <ul class="nav nav-pills" role="tablist">
+                <ul class="nav nav-pills nav-stacked text-center" role="tablist">
                     <li class="active"><a href="#ytvideos" data-toggle="tab">My Videos</a></li>
                     <li><a href="#ytplaylists" data-toggle="tab">My Playlists</a></li>
-                    <li><a href="#ytvideourl" data-toggle="tab">Video Url</a></li>
-                    <li><a href="#ytplaylisturl" data-toggle="tab">Playlist Url</a></li>
+                    <li><a href="#ytvideourl" data-toggle="tab">Other Video</a></li>
+                    <li><a href="#ytplaylisturl" data-toggle="tab">Other Playlist</a></li>
                 </ul>
                 <div class="tab-content">
                     <div id="ytvideos" class="tab-pane active">
@@ -74,7 +81,9 @@
                         }
                         else
                         {
-                            @:No YouTube videos found.
+                            <p>
+                                No YouTube videos found.
+                            </p>
                         }
                     </div>
                     <div id="ytplaylists" class="tab-pane">
@@ -97,7 +106,9 @@
                         }
                         else
                         {
-                            @:No YouTube Playlists found.
+                            <p>
+                                No YouTube Playlists found.
+                            </p>
                         }
                     </div>
                     <div id="ytvideourl" class="tab-pane">
@@ -111,7 +122,7 @@
                             <div class="form-group form-inline" style="padding: 10px;">
                                 <p>
                                     <label for="videoUrl">Video Url:</label>
-                                    <input type="text" name="videoUrl" id="videoUrl" class="form-control" size="100" />
+                                    <textarea name="videoUrl" id="videoUrl" class="form-control" cols="20" rows="5"></textarea>
                                 </p>
                                 <p>
                                     <input id="submit" type="submit" class="btn btn-success" value="Import Video" />
@@ -130,7 +141,7 @@
                             <div class="form-group form-inline" style="padding: 10px;">
                                 <p>
                                     <label for="videoUrl">Playlist Url:</label>
-                                    <input type="text" name="playlistUrl" id="playlistUrl" class="form-control" size="100" />
+                                    <textarea name="playlistUrl" id="playlistUrl" class="form-control" cols="20" rows="5"></textarea>
                                 </p>
                                 <p>
                                     <input id="submit" type="submit" class="btn btn-success" value="Import Playlist" />
@@ -164,9 +175,11 @@
                 }
                 else
                 {
-                    @:No Facebook videos found.
+                    <p>
+                        No Facebook videos found.
+                    </p>
         }
             </div>
         </div>
     </div>
-</div>
+</div>*@

@@ -1,0 +1,31 @@
+﻿@model EDR.Models.ViewModels.EventFacebookVideosContainer
+@using EDR.Models
+@using EDR.Enums
+
+@if (Model.FacebookVideos != null && Model.FacebookVideos.Count() > 0)
+{
+    <ul class="list-inline">
+        @foreach (var video in Model.FacebookVideos)
+        {
+            <li class="col-lg-2 col-md-2 col-sm-12 col-xs-12" style="vertical-align: top;">
+                <div>
+                    <div class="thumbnail">
+                        <div style="height: 100px;">
+                            @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new EventVideo() { Event = Model.Event, FacebookId = video.Id, MediaSource = MediaSource.Facebook, PhotoUrl = video.Picture, VideoUrl = video.Source, PublishDate = video.Created_Time, Title = video.Name })
+                        </div>
+                        <a class="btn btn-warning" title="Import Video" style="vertical-align: top; width: 100%;" href="@Url.Action("ImportFacebookVideo", "Event", new { videoId = video.Id, eventId = Model.Event.Id, returnUrl = @Url.Action("Videos", new { id = @Model.Event.Id, eventType = @Model.EventType }) })">
+                            <i class="glyphicon glyphicon glyphicon-plus"></i>
+                            Import Video
+                        </a>
+                    </div>
+                </div>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p style="margin: 5px;">
+        No Facebook videos found.
+    </p>
+}

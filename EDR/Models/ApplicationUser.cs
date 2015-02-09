@@ -45,6 +45,10 @@ namespace EDR.Models
         public string YouTubeUsername { get; set; }
         [Display(Name = "Spotify Uri")]
         public string SpotifyUri { get; set; }
+        public int InstagramId { get; set; }
+        [Display(Name = "Instagram Username")]
+        public string InstagramUsername { get; set; }
+        public string InstagramToken { get; set; }
 
         [Display(Name = "Full Name")]
         public string FullName

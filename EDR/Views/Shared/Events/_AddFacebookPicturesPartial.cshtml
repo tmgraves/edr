@@ -1,0 +1,29 @@
+﻿@model EDR.Models.ViewModels.EventFacebookPictureContainer
+
+@if (Model.FacebookPictures != null && Model.FacebookPictures.Count() > 0)
+{
+    <ul class="list-inline">
+        @foreach (var photo in Model.FacebookPictures.OrderByDescending(photo => photo.PhotoDate))
+        {
+            <li>
+                <div class="thumbnail text-center">
+                    <a href="@photo.Link" target="_blank">
+                        @if (photo.Source != null)
+                        {
+                            <img src="@photo.Source" />
+                        }
+                    </a>
+                    <div class="caption">
+                        @Html.ActionLink("Import this Picture", "AddFacebookPicture", "Event", new { eventId = Model.Event.Id, id = photo.Id, returnUrl = @Url.Action("Pictures", new { id = Model.Event.Id, eventType = Model.EventType }) }, htmlAttributes: new { @class = "btn btn-primary" })
+                    </div>
+                </div>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    @:No Facebook pictures found.
+}
+
+

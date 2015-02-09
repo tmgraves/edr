@@ -21,6 +21,18 @@ namespace EDR
             );
 
             routes.MapRoute(
+                name: "SocialMediaGetAuth",
+                url: "SocialMedia/AddInstagram",
+                defaults: new { controller = "SocialMedia", action = "AddInstagram" }
+            );
+
+            routes.MapRoute(
+                name: "SocialMediaAuthenticate",
+                url: "SocialMedia/Authenticate",
+                defaults: new { controller = "SocialMedia", action = "Authenticate" }
+            );
+
+            routes.MapRoute(
                 name: "StyleIndex",
                 url: "DanceStyle/Index",
                 defaults: new { controller = "DanceStyle", action = "Index" }
@@ -71,6 +83,36 @@ namespace EDR
                 name: "EventGetVideos",
                 url: "Event/{id}/GetVideos",
                 defaults: new { controller = "Event", action = "GetVideos" }
+            );
+
+            routes.MapRoute(
+                name: "EventGetPictures",
+                url: "Event/{id}/GetPictures",
+                defaults: new { controller = "Event", action = "GetPictures" }
+            );
+
+            routes.MapRoute(
+                name: "EventGetFacebookPictures",
+                url: "Event/{id}/GetFacebookPictures",
+                defaults: new { controller = "Event", action = "GetFacebookPictures" }
+            );
+
+            routes.MapRoute(
+                name: "EventGetFacebookVideos",
+                url: "Event/{id}/GetFacebookVideos",
+                defaults: new { controller = "Event", action = "GetFacebookVideos" }
+            );
+
+            routes.MapRoute(
+                name: "EventGetYouTubeVideos",
+                url: "Event/{id}/GetYouTubeVideos",
+                defaults: new { controller = "Event", action = "GetYouTubeVideos" }
+            );
+
+            routes.MapRoute(
+                name: "EventGetYouTubePlaylists",
+                url: "Event/{id}/GetYouTubePlaylists",
+                defaults: new { controller = "Event", action = "GetYouTubePlaylists" }
             );
 
             routes.MapRoute(
@@ -191,6 +233,30 @@ namespace EDR
                 name: "SocialVideos",
                 url: "Social/{id}/Videos",
                 defaults: new { controller = "Event", action = "Videos", eventType = EventType.Social }
+            );
+
+            routes.MapRoute(
+                name: "ClassPostPicture",
+                url: "Class/{id}/PostPicture",
+                defaults: new { controller = "Event", action = "PostPicture", eventType = EventType.Class }
+            );
+
+            routes.MapRoute(
+                name: "SocialPostVideo",
+                url: "Social/{id}/PostVideo",
+                defaults: new { controller = "Event", action = "PostVideo", eventType = EventType.Social }
+            );
+
+            routes.MapRoute(
+                name: "ClassPostVideo",
+                url: "Class/{id}/PostVideo",
+                defaults: new { controller = "Event", action = "PostVideo", eventType = EventType.Class }
+            );
+
+            routes.MapRoute(
+                name: "SocialPostPicture",
+                url: "Social/{id}/PostPicture",
+                defaults: new { controller = "Event", action = "PostPicture", eventType = EventType.Social }
             );
 
             routes.MapRoute(

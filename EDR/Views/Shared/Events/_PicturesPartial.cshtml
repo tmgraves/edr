@@ -1,0 +1,31 @@
+﻿@model EDR.Models.ViewModels.EventPictures
+@using EDR.Enums
+
+@if (Model.Pictures != null && Model.Pictures.Count() > 0)
+{
+    foreach (var picture in Model.Pictures.OrderByDescending(v => v.PhotoDate))
+    {
+        <ul class="list-inline">
+            <li class="thumbnail col-lg-2 col-md-2 col-sm-6 col-xs-6">
+                <div style="width: 100%; height: 20px; display: block;">
+                    @if (picture.MediaSource == MediaSource.Facebook)
+                    {
+                        <img class="img-circle" style="width: 18px;" src="@Url.Content("~/Content/images/facebookSmall.png")">
+                    }
+                    @if (picture.Id > 0)
+                    {
+                        <a class="text-danger" style="vertical-align: top; float: right;" title="Delete Picture" href="@Url.Action("DeletePicture", "Event", new { pictureId = picture.Id, returnUrl = @Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this picture?')">
+                            <i class="glyphicon glyphicon-remove-circle"></i>
+                        </a>
+                    }
+                </div>
+                <div style="height: 75px;">
+                    <a target="_blank" href="@Url.Content(picture.Filename)">
+                        <img src="@Url.Content(picture.Filename)" alt="@picture.Title" style="max-height: 75px;" />
+                    </a>
+                </div>
+            </li>
+        </ul>
+    }
+}
+

@@ -23,16 +23,8 @@
 </script>
 <div class="row">
     <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h4>Students</h4>
-            </div>
-            <div class="panel-body">
-                @Html.Partial("~/Views/Shared/Events/_EventMembersPartial.cshtml", Model.Event.EventMembers)
-            </div>
-        </div>
-        <div class="updates">
-            <h4>
+        <div>
+            @*<h4>
                 Updates
                 <a class="btn btn-warning pull-right top-right" title="Add New Picture" href="@Url.Action("PostPicture", "Event", new { id = Model.Event.Id })">
                     <span class="glyphicon glyphicon-camera" aria-hidden="true"></span>
@@ -41,7 +33,7 @@
                     <span class="glyphicon glyphicon-facetime-video" aria-hidden="true"></span>
                 </a>
             </h4>
-            <hr />
+            <hr />*@
             <div class="partialContents" data-url="/Event/@Model.Event.Id/GetUpdates">
                 <img src="~/Content/images/indicator.white.gif" />Loading...
             </div>
@@ -65,6 +57,14 @@
     <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
         <div class="well">
             @Model.Event.Description
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4>Students</h4>
+            </div>
+            <div class="panel-body">
+                @Html.Partial("~/Views/Shared/Events/_EventMembersPartial.cshtml", Model.Event.EventMembers)
+            </div>
         </div>
     </div>
 </div>

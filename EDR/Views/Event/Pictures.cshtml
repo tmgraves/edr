@@ -7,3 +7,91 @@
     ViewBag.Title = "Pictures for " + Model.Event.Name;
     Layout = "~/Views/Event/_EventLayout.cshtml";
 }
+
+<script type="text/javascript">
+    $(document).ready(function (e) {
+        //  locate each partial section
+        //  if it has a URL set, load the contents into the area.
+
+        $(".partialContents").each(function (index, item) {
+            var url = $(item).data("url");
+            if (url && url.length > 0) {
+                $(item).load(url);
+            }
+        });
+    });
+</script>
+
+<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+    <div style="width: 100%; display: inline-block;">
+        <a class="btn btn-warning pull-left" title="Add New Picture" href="@Url.Action("PostPicture", "Event", new { id = Model.Event.Id, eventType = Model.EventType })" style="margin: 5px;">
+            <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+            Add Picture
+        </a>
+    </div>
+    <div class="partialContents" data-url="/Event/@Model.Event.Id/GetPictures?eventType=@Model.EventType.ToString()">
+        <img src="~/Content/images/indicator.white.gif" />Loading...
+    </div>
+</div>
+@*<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+    <div class="tabbable panel panel-info">
+        <div class="panel-heading">
+            <h4>Upload Picture</h4>
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+                <li class="active"><a href="#newpic" data-toggle="tab">New Picture</a></li>
+                <li><a href="#facebookpics" data-toggle="tab">From <img class="img-circle" style="width: 20px;" src="@Url.Content("~/Content/images/facebookSmall.png")" /></a></li>
+            </ul>
+        </div>
+        <div class="tab-content panel-body">
+            <div id="newpic" class="tab-pane active">
+                <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12 col-lg-offset-1">
+                    @using (Html.BeginForm("UploadPicture",
+                                    "Event",
+                                    new { returnUrl = @Url.Action("PostPicture", new { id = @Model.Event.Id }) },
+                                    FormMethod.Post,
+                                    new { enctype = "multipart/form-data" }))
+                    {
+                        @Html.HiddenFor(x => x.Event.Id)
+                        <div class="form-group form-inline">
+                            <p>
+                                <input type="file" name="file" id="file" class="form-control" size="20" /><br />
+                            </p>
+                            <p>
+                                <input id="submit" type="submit" class="btn btn-success" value="Upload Picture" />
+                            </p>
+                        </div>
+                        <p>
+                            @ViewBag.Message
+                        </p>
+
+                        <script type="text/javascript">
+                            $('#submit').click(function () {
+                                //check whether browser fully supports all File API
+                                if (window.File && window.FileReader && window.FileList && window.Blob) {
+                                    //get the file size and file type from file input field
+                                    var fsize = $('#file')[0].files[0].size;
+
+                                    if (fsize > 1048576) //do something if file size more than 1 mb (1048576)
+                                    {
+                                        alert("File is too big.  Please try another.");
+                                        return false;
+                                    } else {
+                                        return true;
+                                    }
+                                } else {
+                                    alert("Please upgrade your browser, because your current browser lacks some new features we need!");
+                                }
+                            });
+                        </script>
+                    }
+
+                </div>
+            </div>
+            <div id="facebookpics" class="tab-pane">
+                <div class="partialContents" data-url="/Event/@Model.Event.Id/GetFacebookPictures">
+                    <img src="~/Content/images/indicator.white.gif" />Loading...
+                </div>
+            </div>
+        </div>
+    </div>
+</div>*@

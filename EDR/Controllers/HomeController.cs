@@ -5,6 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using System.Data.Entity;
+using Owin;
+using EDR.Utilities;
+
+using YelpSharp;
 
 namespace EDR.Controllers
 {

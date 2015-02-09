@@ -7,31 +7,34 @@
         <p>
             @if (Model.MediaType == MediaType.Video)
             {
-                <img style="width: 25px;" src="@Url.Content("~/Content/images/video.png")">
+                <i class="text-primary glyphicon glyphicon-facetime-video"></i>
+                @*<img style="width: 25px;" src="@Url.Content("~/Content/images/video.png")">*@
             }
             else if (Model.MediaType == MediaType.Picture)
             {
-                <img style="width: 25px;" src="@Url.Content("~/Content/images/camera.png")">
+                <i class="text-primary glyphicon glyphicon-camera"></i>
+                @*<img style="width: 25px;" src="@Url.Content("~/Content/images/camera.png")">*@
             }
             else if (Model.MediaType == MediaType.Comment)
             {
-                <img style="width: 25px;" src="@Url.Content("~/Content/images/comment.png")">
+                <i class="text-primary glyphicon glyphicon-comment"></i>
+                @*<img style="width: 25px;" src="@Url.Content("~/Content/images/comment.png")">*@
             }
             by <a href="@Url.Action("Home", "Dancer", new { username = Model.Author.UserName })" style="text-decoration: none;">
                 <span class="text-primary" style="vertical-align: top;">
                     <b>@Model.Author.FirstName</b>
                 </span>
             </a>
-             - <span class="text-danger" style="vertical-align: top;">@Model.MediaDate.ToLongDateString()</span>
+             - <span class="text-danger" style="vertical-align: top;">@Model.MediaDate.ToShortDateString()</span>
             @*@Html.ActionLink(Model.Event.Name, "View", "Event", new { id = Model.Event.Id, eventType = (Model.Event is Class ? "Class" : "Social") }, new { @style = "font-weight: bold;" }) @(Model.Event is Class ? ((Class)Model.Event).ClassType.ToString() : ((Social)Model.Event).SocialType.ToString())*@
             <span class="pull-right">
                 @if (Model.MediaSource == MediaSource.Facebook)
                 {
-                    <img style="width: 25px;" src="@Url.Content("~/Content/images/facebookSmall.png")">
+                    <img class="img-circle" style="width: 25px;" src="@Url.Content("~/Content/images/facebookSmall.png")">
                 }
                 else if (Model.MediaSource == MediaSource.YouTube)
                 {
-                    <img style="width: 25px;" src="@Url.Content("~/Content/images/youtube.png")">
+                    <img class="img-circle" style="width: 25px;" src="@Url.Content("~/Content/images/youtube.png")">
                 }
             </span>
         </p>
@@ -55,7 +58,7 @@
     }
     else if (Model.MediaType == MediaType.Picture)
     {
-        <a target="_blank" href="@Model.PhotoUrl">
+        <a target="_blank" href="@Url.Content(Model.PhotoUrl)">
             <img src="@Url.Content(Model.PhotoUrl)" alt="@Model.Text" />
         </a>
     }

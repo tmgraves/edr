@@ -6,35 +6,35 @@
     foreach (var video in Model.Videos.OrderByDescending(v => v.PublishDate))
     {
         <ul class="list-inline">
-            <li class="col-lg-6 col-md-6 col-sm-12 col-xs-12" style="vertical-align: top;">
+            <li class="col-lg-3 col-md-3 col-sm-6 col-xs-6" style="vertical-align: top;">
                 <div class="thumbnail col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="caption">
-                        <div style="width: 100%; height: 25px; display: inline-block;">
+                        <div style="width: 100%; height: 20px; display: inline-block;">
                             @if (video.MediaSource == MediaSource.Facebook)
                             {
-                                <img style="width: 20px;" src="@Url.Content("~/Content/images/facebookSmall.png")">
+                                <img class="img-circle" style="width: 20px;" src="@Url.Content("~/Content/images/facebookSmall.png")">
                             }
                             else if (video.MediaSource == MediaSource.YouTube)
                             {
-                                <img style="width: 20px;" src="@Url.Content("~/Content/images/youtube.png")">
+                                <img class="img-circle" style="width: 20px;" src="@Url.Content("~/Content/images/youtube.png")">
                             }
-                            by <a href="@Url.Action("Home", "Dancer", new { username = video.Author.UserName })" style="text-decoration: none;">
+                            @*by <a href="@Url.Action("Home", "Dancer", new { username = video.Author.UserName })" style="text-decoration: none;">
                                 <span class="text-primary" style="vertical-align: top;">
                                     <b>@video.Author.FirstName</b>
                                 </span>
                             </a>
-                            - <span class="text-danger">@video.PublishDate.ToShortDateString()</span>
+                            - <span class="text-danger">@video.PublishDate.ToShortDateString()</span>*@
                             <span style="">
                                 @if (video.Id > 0)
                                 {
-                                    <a class="btn btn-sm btn-danger" style="vertical-align: top; float: right;" title="Delete Video" href="@Url.Action("DeleteVideo", "Event", new { videoId = video.Id, returnUrl = @Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this video?')">
-                                        <i class="glyphicon glyphicon glyphicon-remove"></i>
+                                    <a class="text-danger" style="vertical-align: top; float: right;" title="Delete Video" href="@Url.Action("DeleteVideo", "Event", new { videoId = video.Id, returnUrl = @Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this video?')">
+                                        <i class="glyphicon glyphicon-remove-circle"></i>
                                     </a>
                                 }
                                 else if (video.PlayList != null)
                                 {
-                                    <a class="btn btn-sm btn-danger" style="vertical-align: top; float: right;" title="Delete Playlist" href="@Url.Action("DeletePlaylist", "Event", new { listId = video.PlayList.Id, returnUrl = @Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this playlist?')">
-                                        <i class="glyphicon glyphicon glyphicon-remove"></i>
+                                    <a class="text-danger" style="vertical-align: top; float: right;" title="Delete Playlist" href="@Url.Action("DeletePlaylist", "Event", new { listId = video.PlayList.Id, returnUrl = @Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this playlist?')">
+                                        <i class="glyphicon glyphicon-remove-circle"></i>
                                     </a>
                                 }
                             </span>

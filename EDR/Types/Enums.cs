@@ -31,6 +31,8 @@ namespace EDR.Enums
 
     public enum MediaSource
     {
+        [Display(Name = "None")]
+        None,
         [Display(Name = "Facebook")]
         Facebook,
         [Display(Name = "YouTube")]

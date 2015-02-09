@@ -423,6 +423,38 @@ namespace EDR.Controllers
         }
 
         [Authorize]
+        public ActionResult SocialMedia(string username)
+        {
+            var viewModel = LoadDancerModel(username);
+
+            if (viewModel.Dancer == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var today = DateTime.Today;
+            var id = User.Identity.GetUserId();
+
+            if (viewModel.Dancer.FacebookToken != null)
+            {
+                viewModel.FriendList = FacebookHelper.GetFriends(viewModel.Dancer.FacebookToken);
+
+                foreach (FacebookFriend f in viewModel.FriendList)
+                {
+                    var user = DataContext.Users.Where(x => x.FacebookUsername == f.Id).FirstOrDefault();
+                    if (user != null)
+                    {
+                        user.UserPictures = DataContext.Pictures.OfType<UserPicture>().Where(x => x.User.Id == user.Id).ToList();
+                        user.UserPictures.Add(ApplicationUtility.GetNoProfilePicture());
+                        f.User = user;
+                    }
+                }
+            }
+
+            return View(viewModel);
+        }
+
+        [Authorize]
         public ActionResult Edit()
         {
             // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE DancerViewModel)

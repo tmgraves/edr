@@ -87,9 +87,32 @@ namespace EDR.Models.ViewModels
         public IEnumerable<YouTubePlaylist> YouTubePlaylists { get; set; }
     }
 
+    public class EventFacebookPictureContainer : EventBaseViewModel
+    {
+        public IEnumerable<FacebookPhoto> FacebookPictures { get; set; }
+    }
+
+    public class EventFacebookVideosContainer : EventBaseViewModel
+    {
+        public IEnumerable<FacebookVideo> FacebookVideos { get; set; }
+    }
+    public class EventYouTubeVideosContainer : EventBaseViewModel
+    {
+        public IEnumerable<YouTubeVideo> YouTubeVideos { get; set; }
+    }
+    public class EventYouTubePlaylistsContainer : EventBaseViewModel
+    {
+        public IEnumerable<YouTubePlaylist> YouTubePlaylists { get; set; }
+    }
+
     public class EventVideos : EventBaseViewModel
     {
         public IEnumerable<EventVideo> Videos { get; set; }
+    }
+
+    public class EventPictures : EventBaseViewModel
+    {
+        public IEnumerable<EventPicture> Pictures { get; set; }
     }
 
     public class EventReviewsViewModel
@@ -107,6 +130,7 @@ namespace EDR.Models.ViewModels
     public class EventPostPictureViewModel : EventBaseViewModel
     {
         public IEnumerable<FacebookPhoto> FacebookPictures { get; set; }
+        public EventFacebookPictureContainer FacebookPictureContainer { get; set; }
     }
 
     public class EventPostVideoViewModel : EventBaseViewModel
