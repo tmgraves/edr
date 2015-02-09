@@ -1,0 +1,30 @@
+﻿@model EDR.Models.ViewModels.DancerViewViewModel
+@using EDR.Models
+@using EDR.Utilities
+
+@{
+    ViewBag.Title = "Social Media";
+    Layout = "~/Views/Dancer/_DancerLayout.cshtml";
+}
+
+@if (Model.Dancer.InstagramId == null)
+{
+    <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12 col-lg-offset-0" style="margin: 5px;">
+        <a class="btn btn-primary" href=@Url.Action("AddInstagram", "SocialMedia", null) title="Link to your Instagram" style="width: 150px;">
+            <img class="img-rounded" style="height: 30px;" src="@Url.Content("~/Content/images/instagram.png")" />
+            Add Instagram
+        </a>
+    </div>
+}
+<div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12 col-lg-offset-0" style="margin: 5px;">
+    <a class="btn btn-primary" href=@Url.Action("AddYelp", "SocialMedia", null) title="Link to your Yelp" style="width: 150px;">
+        <img class="img-rounded" style="height: 30px;" src="@Url.Content("~/Content/images/yelp.png")" />
+        Add Yelp
+    </a>
+</div>
+<div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12 col-lg-offset-0" style="margin: 5px;">
+    <a class="btn btn-primary" href=@Url.Action("AddTwitter", "SocialMedia", null) title="Link to your Yelp" style="width: 150px;">
+        <img class="img-rounded" style="height: 30px;" src="@Url.Content("~/Content/images/twitter.png")" />
+        Add Twitter
+    </a>
+</div>
