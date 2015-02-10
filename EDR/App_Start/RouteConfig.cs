@@ -61,59 +61,59 @@ namespace EDR
                 defaults: new { controller = "Event", action = "Reviews_Insert" }
             );
 
-            routes.MapRoute(
-                name: "EventReview",
-                url: "Event/{id}/PostReview",
-                defaults: new { controller = "Event", action = "PostReview" }
-            );
+            //routes.MapRoute(
+            //    name: "EventReview",
+            //    url: "Event/{id}/PostReview",
+            //    defaults: new { controller = "Event", action = "PostReview" }
+            //);
 
-            routes.MapRoute(
-                name: "EventReviews2",
-                url: "Event/{id}/Reviews2",
-                defaults: new { controller = "Event", action = "Reviews2" }
-            );
+            //routes.MapRoute(
+            //    name: "EventReviews2",
+            //    url: "Event/{id}/Reviews2",
+            //    defaults: new { controller = "Event", action = "Reviews2" }
+            //);
 
-            routes.MapRoute(
-                name: "EventGetUpdates",
-                url: "Event/{id}/GetUpdates",
-                defaults: new { controller = "Event", action = "GetUpdates" }
-            );
+            //routes.MapRoute(
+            //    name: "EventGetUpdates",
+            //    url: "Event/{id}/GetUpdates",
+            //    defaults: new { controller = "Event", action = "GetUpdates" }
+            //);
 
-            routes.MapRoute(
-                name: "EventGetVideos",
-                url: "Event/{id}/GetVideos",
-                defaults: new { controller = "Event", action = "GetVideos" }
-            );
+            //routes.MapRoute(
+            //    name: "EventGetVideos",
+            //    url: "Event/{id}/GetVideos",
+            //    defaults: new { controller = "Event", action = "GetVideos" }
+            //);
 
-            routes.MapRoute(
-                name: "EventGetPictures",
-                url: "Event/{id}/GetPictures",
-                defaults: new { controller = "Event", action = "GetPictures" }
-            );
+            //routes.MapRoute(
+            //    name: "EventGetPictures",
+            //    url: "Event/{id}/GetPictures",
+            //    defaults: new { controller = "Event", action = "GetPictures" }
+            //);
 
-            routes.MapRoute(
-                name: "EventGetFacebookPictures",
-                url: "Event/{id}/GetFacebookPictures",
-                defaults: new { controller = "Event", action = "GetFacebookPictures" }
-            );
+            //routes.MapRoute(
+            //    name: "EventGetFacebookPictures",
+            //    url: "Event/{id}/GetFacebookPictures",
+            //    defaults: new { controller = "Event", action = "GetFacebookPictures" }
+            //);
 
-            routes.MapRoute(
-                name: "EventGetFacebookVideos",
-                url: "Event/{id}/GetFacebookVideos",
-                defaults: new { controller = "Event", action = "GetFacebookVideos" }
-            );
+            //routes.MapRoute(
+            //    name: "EventGetFacebookVideos",
+            //    url: "Event/{id}/GetFacebookVideos",
+            //    defaults: new { controller = "Event", action = "GetFacebookVideos" }
+            //);
 
-            routes.MapRoute(
-                name: "EventGetYouTubeVideos",
-                url: "Event/{id}/GetYouTubeVideos",
-                defaults: new { controller = "Event", action = "GetYouTubeVideos" }
-            );
+            //routes.MapRoute(
+            //    name: "EventGetYouTubeVideos",
+            //    url: "Event/{id}/GetYouTubeVideos",
+            //    defaults: new { controller = "Event", action = "GetYouTubeVideos" }
+            //);
 
-            routes.MapRoute(
-                name: "EventGetYouTubePlaylists",
-                url: "Event/{id}/GetYouTubePlaylists",
-                defaults: new { controller = "Event", action = "GetYouTubePlaylists" }
-            );
+            //routes.MapRoute(
+            //    name: "EventGetYouTubePlaylists",
+            //    url: "Event/{id}/GetYouTubePlaylists",
+            //    defaults: new { controller = "Event", action = "GetYouTubePlaylists" }
+            //);
 
             routes.MapRoute(
                 name: "EventImportYouTubeVideo",
@@ -257,6 +257,12 @@ namespace EDR
                 name: "SocialPostPicture",
                 url: "Social/{id}/PostPicture",
                 defaults: new { controller = "Event", action = "PostPicture", eventType = EventType.Social }
+            );
+
+            routes.MapRoute(
+                name: "EventAction",
+                url: "Event/{id}/{action}",
+                defaults: new { controller = "Event", action = "View" }
             );
 
             routes.MapRoute(

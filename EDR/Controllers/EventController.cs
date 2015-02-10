@@ -342,6 +342,31 @@ namespace EDR.Controllers
             return PartialView("~/Views/Shared/Events/_AddYouTubePlaylistsPartial.cshtml", model);
         }
 
+        public ActionResult GetInstagramPictures(int id, EventType eventType)
+        {
+            var model = new EventInstagramPicturesContainer();
+            model.EventType = eventType;
+            var evt = DataContext.Events.Where(e => e.Id == id).Include("Creator").Include("Pictures").FirstOrDefault();
+            model.Event = evt;
+
+            var userid = User.Identity.GetUserId();
+            var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+            var token = user.InstagramToken;
+            if (token != null)
+            {
+                if (Session["InstagramPictures"] == null)
+                {
+                    Session["InstagramPictures"] = InstagramHelper.GetPictures(token, (int)user.InstagramId);
+
+                }
+                var instagramIds = evt.Pictures.Where(p => p.InstagramId != null).Select(p => p.InstagramId).ToArray();
+
+                model.InstagramPictures = ((List<InstagramPicture>)Session["InstagramPictures"]).Where(p => !instagramIds.Any(f => f.Contains(p.InstagramId)));
+            }
+
+            return PartialView("~/Views/Shared/Events/_AddInstagramPicturesPartial.cshtml", model);
+        }
+
         public ActionResult GetUpdates(int id)
         {
             //  Media Updates
@@ -556,6 +581,27 @@ namespace EDR.Controllers
                 var userid = User.Identity.GetUserId();
                 var postedby = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
                 ev.Pictures.Add(new EventPicture() { Title = picture.Name, ThumbnailFilename = picture.Source, Filename = picture.LargeSource, PhotoDate = picture.PhotoDate, PostedBy = postedby, MediaSource = MediaSource.Facebook, FacebookId = picture.Id });
+                DataContext.Entry(ev).State = EntityState.Modified;
+                DataContext.SaveChanges();
+                return Redirect(returnUrl);
+            }
+            catch (Exception ex)
+            {
+                return Redirect(returnUrl);
+            }
+        }
+
+        [Authorize]
+        public ActionResult AddInstagramPicture(int eventId, string id, string returnUrl)
+        {
+            try
+            {
+                string userId = User.Identity.GetUserId();
+                var ev = DataContext.Events.Where(e => e.Id == eventId).Include("Pictures").FirstOrDefault();
+                var picture = ((List<InstagramPicture>)Session["InstagramPictures"]).Where(p => p.InstagramId == id).FirstOrDefault();
+                var userid = User.Identity.GetUserId();
+                var postedby = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+                ev.Pictures.Add(new EventPicture() { Title = picture.Caption, ThumbnailFilename = picture.Thumbnail, Filename = picture.Photo, PhotoDate = picture.PhotoDate, PostedBy = postedby, MediaSource = MediaSource.Instagram, InstagramId = picture.InstagramId });
                 DataContext.Entry(ev).State = EntityState.Modified;
                 DataContext.SaveChanges();
                 return Redirect(returnUrl);

@@ -12,6 +12,10 @@
                     {
                         <img class="img-circle" style="width: 18px;" src="@Url.Content("~/Content/images/facebookSmall.png")">
                     }
+                    @if (picture.MediaSource == MediaSource.Instagram)
+                    {
+                        <img class="img-circle" style="width: 18px;" src="@Url.Content("~/Content/images/instagram.png")">
+                    }
                     @if (picture.Id > 0)
                     {
                         <a class="text-danger" style="vertical-align: top; float: right;" title="Delete Picture" href="@Url.Action("DeletePicture", "Event", new { pictureId = picture.Id, returnUrl = @Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this picture?')">

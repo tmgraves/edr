@@ -15,5 +15,6 @@ namespace EDR.Models
         public DateTime PhotoDate { get; set; }
         public MediaSource MediaSource { get; set; }
         public string FacebookId { get; set; }
+        public string InstagramId { get; set; }
     }
 }

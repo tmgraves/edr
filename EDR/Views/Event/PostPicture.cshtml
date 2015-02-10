@@ -57,7 +57,8 @@
         <div class="panel-heading">
             <ul class="nav nav-tabs nav-justified" role="tablist">
                 <li class="active"><a href="#newpic" data-toggle="tab">New Picture</a></li>
-                <li><a href="#facebookpics" data-toggle="tab">From <img class="img-circle" style="width: 20px;" src="@Url.Content("~/Content/images/facebookSmall.png")" /></a></li>
+                <li title="From Facebook"><a href="#facebookpics" data-toggle="tab">From <img class="img-rounded" style="width: 20px;" src="@Url.Content("~/Content/images/facebookSmall.png")" /></a></li>
+                <li title="From Instagram"><a href="#instagrampics" data-toggle="tab">From <img class="img-rounded" style="width: 20px;" src="@Url.Content("~/Content/images/instagram.png")" /></a></li>
             </ul>
         </div>
         <div class="tab-content panel-body">
@@ -107,6 +108,11 @@
             </div>
             <div id="facebookpics" class="tab-pane">
                 <div class="partialContents" data-url="/Event/@Model.Event.Id/GetFacebookPictures?eventType=@Model.EventType">
+                    <img src="~/Content/images/indicator.white.gif" />Loading...
+                </div>
+            </div>
+            <div id="instagrampics" class="tab-pane">
+                <div class="partialContents" data-url="/Event/@Model.Event.Id/GetInstagramPictures?eventType=@Model.EventType">
                     <img src="~/Content/images/indicator.white.gif" />Loading...
                 </div>
             </div>

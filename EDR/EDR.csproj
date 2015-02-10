@@ -294,6 +294,7 @@
     <Compile Include="Models\EventPlaylist.cs" />
     <Compile Include="Models\Facebook.cs" />
     <Compile Include="Models\Friend.cs" />
+    <Compile Include="Models\Instagram.cs" />
     <Compile Include="Models\OtherPlace.cs" />
     <Compile Include="Models\Picture.cs" />
     <Compile Include="Models\Playlist.cs">
@@ -774,6 +775,7 @@
     <Content Include="Views\Shared\Events\_AddYouTubeVideosPartial.cshtml" />
     <Content Include="Views\Shared\Events\_AddYouTubePlaylistsPartial.cshtml" />
     <Content Include="Views\Dancer\SocialMedia.cshtml" />
+    <Content Include="Views\Shared\Events\_AddInstagramPicturesPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Instagram\" />
