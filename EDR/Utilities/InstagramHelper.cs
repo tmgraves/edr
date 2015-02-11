@@ -16,8 +16,8 @@ namespace EDR.Utilities
         public static List<InstagramPicture> GetPictures(string token, int id)
         {
             var lstPictures = new List<InstagramPicture>();
-            NameValueCollection parameters = new NameValueCollection();
-            parameters.Add("access_token", token);
+            //NameValueCollection parameters = new NameValueCollection();
+            //parameters.Add("access_token", token);
 
             WebClient client = new WebClient();
             var result = client.DownloadString("https://api.instagram.com/v1/users/" + id.ToString() + "/media/recent?access_token=" + token);

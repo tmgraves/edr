@@ -16,10 +16,28 @@
             @if (Model.Dancer.SpotifyUri != null)
             { 
                 <iframe src="https://embed.spotify.com/?uri=@Model.Dancer.SpotifyUri" width="300" height="80" frameborder="0" allowtransparency="true"></iframe>
+                <p>
+                    <a class="btn-link" href=@Url.Action("ChangeSpotifyPlaylist", "Dancer", new { username = Model.Dancer.UserName }) title="Add Your Playlist">
+                        Change Your Playlist
+                    </a>
+                </p>
             }
             else
             {
-                @: No Playlist Specified
+                if (Model.Dancer.SpotifyId != null)
+                {
+                    <a class="btn btn-primary" href=@Url.Action("ChangeSpotifyPlaylist", "Dancer", new { username = Model.Dancer.UserName }) title="Add Your Playlist">
+                        Add Your Playlist
+                        <img class="img-rounded" style="height: 30px;" src="@Url.Content("~/Content/images/spotify.png")" />
+                    </a>
+                }
+                else
+                {
+                    <a class="btn btn-primary" href=@Url.Action("SocialMedia", "Dancer", new { username = Model.Dancer.UserName }) title="Link Your Spotify Account">
+                        Link Your Spotify Account
+                        <img class="img-rounded" style="height: 30px;" src="@Url.Content("~/Content/images/spotify.png")" />
+                    </a>
+                }
             }
         </div>
     </div>

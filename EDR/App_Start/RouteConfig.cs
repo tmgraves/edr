@@ -21,15 +21,9 @@ namespace EDR
             );
 
             routes.MapRoute(
-                name: "SocialMediaGetAuth",
-                url: "SocialMedia/AddInstagram",
-                defaults: new { controller = "SocialMedia", action = "AddInstagram" }
-            );
-
-            routes.MapRoute(
-                name: "SocialMediaAuthenticate",
-                url: "SocialMedia/Authenticate",
-                defaults: new { controller = "SocialMedia", action = "Authenticate" }
+                name: "SocialMedia",
+                url: "SocialMedia/{action}",
+                defaults: new { controller = "SocialMedia", action = UrlParameter.Optional }
             );
 
             routes.MapRoute(

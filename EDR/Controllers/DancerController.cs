@@ -455,6 +455,69 @@ namespace EDR.Controllers
         }
 
         [Authorize]
+        public ActionResult ChangeSpotifyPlaylist(string username)
+        {
+            if (User.Identity.IsAuthenticated && username == "View")
+            {
+                username = User.Identity.Name;
+            }
+            if (String.IsNullOrWhiteSpace(username))
+            {
+                if (User != null)
+                {
+                    username = User.Identity.GetUserName();
+                }
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+            }
+
+            var dancer = DataContext.Users.Where(x => x.UserName == username).Include("DanceStyles").Include("UserPictures").FirstOrDefault();
+            if (dancer == null)
+            {
+                return HttpNotFound();
+            }
+
+            var today = DateTime.Today;
+
+            var viewModel = new DancerViewViewModel();
+            viewModel.Dancer = dancer;
+            var location = Geolocation.ParseAddress(dancer.ZipCode);
+
+            if (dancer.ZipCode != null)
+            {
+                viewModel.Address = Geolocation.ParseAddress(dancer.ZipCode);
+            }
+            else
+            {
+                viewModel.Address = Geolocation.ParseAddress("90065");
+            }
+
+            //  Return Spotify Playlists
+            if (viewModel.Dancer.SpotifyId != null)
+            {
+                Session["SpotifyPlaylists"] = SpotifyHelper.GetPlaylists(viewModel.Dancer.SpotifyToken, viewModel.Dancer.SpotifyId);
+                viewModel.SpotifyPlaylists = new List<SpotifyPlaylist>();
+                viewModel.SpotifyPlaylists = (List<SpotifyPlaylist>)Session["SpotifyPlaylists"];
+            }
+            //  Return Spotify Playlists
+
+            return View(viewModel);
+        }
+
+        [Authorize]
+        public ActionResult UpdateSpotifyPlaylist(string playlistid)
+        {
+            var userid = User.Identity.GetUserId();
+            var user = DataContext.Users.Where(x => x.Id == userid).FirstOrDefault();
+            user.SpotifyUri = ((List<SpotifyPlaylist>)Session["SpotifyPlaylists"]).Where(l => l.id == playlistid).FirstOrDefault().uri;
+            DataContext.Entry(user).State = EntityState.Modified;
+            DataContext.SaveChanges();
+            return RedirectToAction("Home", "Dancer", new { username = user.UserName });
+        }
+
+        [Authorize]
         public ActionResult Edit()
         {
             // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE DancerViewModel)

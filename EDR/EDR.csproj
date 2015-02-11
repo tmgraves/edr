@@ -300,6 +300,7 @@
     <Compile Include="Models\Playlist.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Models\Spotify.cs" />
     <Compile Include="Models\Student.cs" />
     <Compile Include="Models\UploadFile.cs" />
     <Compile Include="Models\UserPicture.cs" />
@@ -376,6 +377,7 @@
     <Compile Include="Utilities\Geolocation.cs" />
     <Compile Include="Utilities\IdentityExtension.cs" />
     <Compile Include="Utilities\InstagramHelper.cs" />
+    <Compile Include="Utilities\SpotifyHelper.cs" />
     <Compile Include="Utilities\YelpHelper.cs" />
     <Compile Include="Utilities\YouTubeHelper.cs" />
   </ItemGroup>
@@ -406,14 +408,17 @@
     <Content Include="Content\images\NoPic.png" />
     <Content Include="Content\images\Play1PressedSmall.png" />
     <Content Include="Content\images\Share.png" />
+    <Content Include="Content\images\spotify.png" />
     <Content Include="Content\images\SpotifyHelp.png" />
     <Content Include="Content\images\thumbdown.png" />
     <Content Include="Content\images\thumbdownsm.png" />
     <Content Include="Content\images\thumbup.png" />
     <Content Include="Content\images\thumbupsm.png" />
+    <Content Include="Content\images\twitter.png" />
     <Content Include="Content\images\video.png" />
     <Content Include="Content\images\web.png" />
     <Content Include="Content\images\www.png" />
+    <Content Include="Content\images\yelp.png" />
     <Content Include="Content\images\youtube.png" />
     <Content Include="favicon.ico" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
@@ -776,6 +781,7 @@
     <Content Include="Views\Shared\Events\_AddYouTubePlaylistsPartial.cshtml" />
     <Content Include="Views\Dancer\SocialMedia.cshtml" />
     <Content Include="Views\Shared\Events\_AddInstagramPicturesPartial.cshtml" />
+    <Content Include="Views\Dancer\ChangeSpotifyPlaylist.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Instagram\" />

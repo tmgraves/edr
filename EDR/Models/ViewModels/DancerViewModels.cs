@@ -27,6 +27,7 @@ namespace EDR.Models.ViewModels
         public IEnumerable<Social> SuggestedSocials { get; set; }
 
         public IEnumerable<EventMedia> MediaUpdates { get; set; }
+        public IEnumerable<SpotifyPlaylist> SpotifyPlaylists { get; set; }
     }
 
     public class DancerEditViewModel

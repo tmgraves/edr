@@ -1,0 +1,45 @@
+﻿@model EDR.Models.ViewModels.DancerViewViewModel
+
+@{
+    ViewBag.Title = "Change Music Playlist for " ;
+    Layout = "~/Views/Dancer/_DancerLayout.cshtml";
+}
+
+@if (Model.SpotifyPlaylists != null)
+{
+    foreach (var lst in Model.SpotifyPlaylists)
+    {
+        <div class="panel panel-default col-lg-6 col-md-6 col-sm-12 col-xs-12 ">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                        @if (lst.images != null && lst.images.Count() > 0)
+                        {
+                            <img class="img-thumbnail" src="@lst.images[0].url" style="width: 100px; height: 100px;">
+                        }
+                        else
+                        {
+                            <img class="img-thumbnail" src="~/Content/images/NoImage.png" style="width: 100px; height: 100px;">
+                        }
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                        @lst.name<br />
+                        Tracks: @lst.tracks.total<br />
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+                        @if (Model.Dancer.SpotifyUri != lst.uri)
+                        {
+                            <a class="btn btn-primary" href=@Url.Action("UpdateSpotifyPlaylist", "Dancer", new { playlistid = @lst.id }) title="Link to your Spotify">
+                                Pick this Playlist
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="btn btn-info">Current Playlist</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
