@@ -61,6 +61,7 @@ namespace EDR.Data
             modelBuilder.Entity<Concert>().ToTable("Concerts");
             modelBuilder.Entity<Social>().ToTable("Socials");
             modelBuilder.Entity<Party>().ToTable("Parties");
+            modelBuilder.Entity<ExternalEvent>().ToTable("ExternalEvents");
 
             // Groups
             modelBuilder.Entity<Team>().ToTable("Teams");

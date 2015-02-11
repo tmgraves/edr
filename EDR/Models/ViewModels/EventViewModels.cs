@@ -83,6 +83,7 @@ namespace EDR.Models.ViewModels
         public IEnumerable<YouTubeVideo> YoutubeVideos { get; set; }
         public IEnumerable<FacebookVideo> FacebookVideos { get; set; }
         public IEnumerable<YouTubePlaylist> YouTubePlaylists { get; set; }
+        public IEnumerable<FacebookEvent> FacebookEvents { get; set; }
     }
 
     public class EventFacebookPictureContainer : EventBaseViewModel

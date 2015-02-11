@@ -172,6 +172,16 @@
                         </a>
                     </p>
                 }
+                @if (User.Identity != null && ((Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)) || (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
+                {
+                    <p>
+                        <a class="btn btn btn-primary col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 5px;" title="Delete" href="@Url.Action("AddExternalEvent", "Event", new { id = Model.Event.Id, eventType = Model.EventType })" >
+                            <i class="glyphicon glyphicon-link"></i>
+                            Link Event
+                            <img class="img-rounded" style="height: 25px;" src="@Url.Content("~/Content/images/facebookSmall.png")" />
+                        </a>
+                    </p>
+                }
             </div>
         </div>
     </div>

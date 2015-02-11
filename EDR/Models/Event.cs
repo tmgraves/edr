@@ -72,6 +72,7 @@ namespace EDR.Models
         public virtual Place Place { get; set; }
         public ApplicationUser Creator { get; set; }
         public ICollection<EventMember> EventMembers { get; set; }
+        public ICollection<ExternalEvent> ExternalEvents { get; set; }
 
         public ICollection<DanceStyle> DanceStyles { get; set; }
 

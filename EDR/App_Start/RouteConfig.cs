@@ -194,6 +194,18 @@ namespace EDR
             );
 
             routes.MapRoute(
+                name: "ClassActions",
+                url: "Class/{id}/{action}",
+                defaults: new { controller = "Event", action = UrlParameter.Optional, eventType = EventType.Class }
+            );
+
+            routes.MapRoute(
+                name: "SocialActions",
+                url: "Social/{id}/{action}",
+                defaults: new { controller = "Event", action = UrlParameter.Optional, eventType = EventType.Class }
+            );
+
+            routes.MapRoute(
                 name: "ClassReviews",
                 url: "Class/{id}/Reviews",
                 defaults: new { controller = "Event", action = "Reviews", eventType = EventType.Class }

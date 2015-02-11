@@ -379,6 +379,7 @@ namespace EDR.Controllers
                     .Include("Videos.Author")
                     .Include("Playlists")
                     .Include("Playlists.Author")
+                    .Include("ExternalEvents")
                     .FirstOrDefault();
             foreach (var p in evt.Pictures)
             {
@@ -397,11 +398,20 @@ namespace EDR.Controllers
                     lstMedia.Add(new EventMedia() { Event = lst.Event, Author = lst.Author, MediaDate = movie.PubDate, MediaType = Enums.MediaType.Video, PhotoUrl = movie.Thumbnail.ToString(), MediaUrl = movie.VideoLink.ToString(), Title = movie.Title, MediaSource = lst.MediaSource });
                 }
             }
+
+            var FacebookIds = new List<string>();
             if (evt.FacebookId != null)
+            {
+                FacebookIds.Add(evt.FacebookId);
+            }
+
+            FacebookIds.AddRange(evt.ExternalEvents.Where(f => f.MediaSource == MediaSource.Facebook).Select(e => e.Id));
+
+            foreach (var fbid in FacebookIds)
             {
                 if (evt.Creator != null && evt.Creator.FacebookToken != null)
                 {
-                    var posts = FacebookHelper.GetFeed(evt.FacebookId, evt.Creator.FacebookToken);
+                    var posts = FacebookHelper.GetFeed(fbid, evt.Creator.FacebookToken);
                     foreach (var post in posts)
                     {
                         if (post.Type == "video")
@@ -418,7 +428,6 @@ namespace EDR.Controllers
                         }
                     }
                 }
-
             }
             return PartialView("~/Views/Shared/Events/_EventUpdatesPartial.cshtml", lstMedia);
             //  Media Updates
@@ -1275,6 +1284,45 @@ namespace EDR.Controllers
             //    var allErrors = ModelState.Values.SelectMany(v => v.Errors);
             //}
             //return View(model);
+        }
+
+        [Authorize]
+        public ActionResult AddExternalEvent(int id, EventType eventType)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var model = LoadEvent(id, eventType);
+            model.EventType = eventType;
+
+            if (model.Event == null)
+            {
+                return HttpNotFound();
+            }
+
+            //  Add Facebook Events
+            var userid = User.Identity.GetUserId();
+            var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+            var facebookToken = user.FacebookToken;
+            if (facebookToken != null)
+            {
+                var eventIds = DataContext.Events.Where(e => e.Id == id).Include("ExternalEvents").FirstOrDefault().ExternalEvents.Select(ee => ee.Id).ToArray();
+                model.FacebookEvents = FacebookHelper.GetEvents(facebookToken).Where(f => !eventIds.Any(e => e.Contains(f.Id)));
+                Session["ExternalFacebookEvents"] = model.FacebookEvents.ToList();
+            }
+
+            return View(model);
+        }
+
+        [Authorize]
+        public ActionResult LinkFacebookEvent(string id, int eventId, string returnUrl)
+        {
+            var fbEvent = ((List<FacebookEvent>)Session["ExternalFacebookEvents"]).Where(f => f.Id == id).FirstOrDefault();
+            DataContext.Events.Where(e => e.Id == eventId).Include("ExternalEvents").FirstOrDefault().ExternalEvents.Add(new ExternalEvent { Id = id, MediaSource = MediaSource.Facebook, Name = fbEvent.Name, Url = fbEvent.EventLink });
+            DataContext.SaveChanges();
+            return Redirect(returnUrl);
         }
 
         public Class ConvertToClass(Event event1)
