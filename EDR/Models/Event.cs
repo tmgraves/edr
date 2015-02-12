@@ -2,6 +2,7 @@
 using Microsoft.Linq.Translations;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
@@ -56,8 +57,11 @@ namespace EDR.Models
         [Display(Name = "Does This Event Repeat?")]
         public bool Recurring { get; set; }
         public Frequency Frequency { get; set; }
-        public int? Interval { get; set; }
+        [DefaultValue(0)]
+        [Range(1, 100)]
+        public int Interval { get; set; }
         public DayOfWeek Day { get; set; }
+        public string MonthDays { get; set; }
 
         public string PhotoUrl { get; set; }
 
