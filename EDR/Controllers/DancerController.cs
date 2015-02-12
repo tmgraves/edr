@@ -497,9 +497,16 @@ namespace EDR.Controllers
             //  Return Spotify Playlists
             if (viewModel.Dancer.SpotifyId != null)
             {
-                Session["SpotifyPlaylists"] = SpotifyHelper.GetPlaylists(viewModel.Dancer.SpotifyToken, viewModel.Dancer.SpotifyId);
+                var token = new SpotifyAccessToken() { Access_Token = viewModel.Dancer.SpotifyToken, Refresh_Token = viewModel.Dancer.SpotifyRefreshToken };
+                Session["SpotifyPlaylists"] = SpotifyHelper.GetPlaylists(ref token, viewModel.Dancer.SpotifyId);
                 viewModel.SpotifyPlaylists = new List<SpotifyPlaylist>();
                 viewModel.SpotifyPlaylists = (List<SpotifyPlaylist>)Session["SpotifyPlaylists"];
+
+                if (token.Refresh_Token == null)
+                {
+                    dancer.SpotifyToken = token.Access_Token;
+                    DataContext.SaveChanges();
+                }
             }
             //  Return Spotify Playlists
 

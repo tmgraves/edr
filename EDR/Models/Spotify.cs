@@ -40,4 +40,10 @@ namespace EDR.Models
     {
         public SpotifyPlaylist[] items { get; set; }
     }
+
+    public enum SpotifyGrantType
+    {
+        authorization_code,
+        refresh_token
+    }
 }

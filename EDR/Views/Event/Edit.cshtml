@@ -1,8 +1,218 @@
 ﻿@model EDR.Models.ViewModels.EventEditViewModel
+@using EDR.Enums
+@using MvcCheckBoxList.Model
 
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = Model.UpdateType.ToString() + " " + Model.EventType.ToString();
 }
 
-<h2>Edit</h2>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
 
+<style>
+    .radio-list div {
+        text-align: left;
+        white-space: normal;
+        vertical-align: text-top;
+        position: relative;
+        margin-top: 5px;
+    }
+
+    .radio-list input[type="radio"] {
+        vertical-align: top;
+        width: 20px;
+        height: 20px;
+        position: absolute;
+        top: 5px;
+        left: 20px;
+        z-index: 10;
+    }
+
+    .radio-list label {
+        z-index: 5;
+        height: 240px;
+        text-align: left;
+        display: block;
+        padding: 5px 40px;
+    }
+
+    .radio-list input[type="radio"]:checked + label {
+        background-color: #FFCC99;
+    }
+</style>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('input[id="Event_AllDay"]').click(function () {
+            if ($(this).attr("value") == "True") {
+                $("#eventtime").hide();
+            }
+            if ($(this).attr("value") == "False") {
+                $("#eventtime").show();
+            }
+        });
+    });
+</script>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(x => x.Event.Id)
+        @Html.HiddenFor(x => x.Event.PhotoUrl)
+        @Html.HiddenFor(x => x.NewPlace.Latitude)
+        @Html.HiddenFor(x => x.NewPlace.Longitude)
+        @Html.HiddenFor(x => x.NewPlace.FacebookId)
+        @Html.HiddenFor(x => x.Event.FacebookLink)
+        @Html.HiddenFor(x => x.Event.FacebookId)
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <h3>Fill in Details for the @Model.EventType</h3>
+            <div class="col-lg-2 col-md-2">
+                <div class="col-lg-12 col-md-12 croppedpic" style="height: 250px;">
+                    <a href="@Model.Event.PhotoUrl" target="_blank"><img class="img-thumbnail" src="@(Model.Event.PhotoUrl != null ? Model.Event.PhotoUrl : Url.Content("~/Content/images/MissingImage.jpg"))" /></a>
+                </div>
+            </div>
+            <div class="col-lg-10 col-md-10">
+                <div class="col-lg-12 col-md-12">
+                    @if (Model.EventType == EventType.Class)
+                    {
+                        @Html.LabelFor(model => model.ClassType, htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
+                        <div class="col-md-9 col-lg-9">
+                            @Html.EnumDropDownListFor(model => model.ClassType, htmlAttributes: new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ClassType, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                    else
+                    {
+                        @Html.LabelFor(model => model.SocialType, htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
+                        <div class="col-md-9 col-lg-9">
+                            @Html.EnumDropDownListFor(model => model.SocialType, htmlAttributes: new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.SocialType, "", new { @class = "text-danger" })
+                        </div>
+                    }
+                </div>
+                <div class="col-lg-12 col-md-12">
+                    @Html.LabelFor(model => model.Event.Name, htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
+                    <div class="col-md-9 col-lg-9">
+                        @Html.EditorFor(model => model.Event.Name, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Event.Name, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-lg-12 col-md-12">
+                    @Html.LabelFor(model => model.Event.StartDate, htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
+                    <div class="col-md-9 col-lg-9">
+                        @Html.EditorFor(model => model.Event.StartDate, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Event.StartDate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-lg-12 col-md-12">
+                    @Html.LabelFor(model => model.Event.AllDay, htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
+                    <div class="col-md-9 col-lg-9">
+                        <label>
+                            @Html.RadioButtonFor(model => model.Event.AllDay, true, htmlAttributes: new { @checked = Model.Event.AllDay })
+                            Yes
+                        </label>
+                        <label>
+                            @Html.RadioButtonFor(model => model.Event.AllDay, false, htmlAttributes: new { @checked = (!Model.Event.AllDay) })
+                            No
+                        </label>
+                        <div id="eventtime">
+                            <div class="col-md-12 col-lg-12">
+                                <span class="col-lg-1 col-md-1">From</span>
+                                <div class="col-lg-3 col-md-3">
+                                    @Html.EditorFor(model => model.Event.StartTime, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Event.StartTime, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-lg-12">
+                                <span class="col-lg-1 col-md-1">To</span>
+                                <div class="col-lg-3 col-md-3">
+                                    @Html.EditorFor(model => model.Event.EndTime, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Event.EndTime, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-lg-12 col-md-12">
+                    @Html.LabelFor(model => model.Event.EndDate, htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
+                    <div class="col-md-9 col-lg-9">
+                        @Html.EditorFor(model => model.Event.EndDate, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Event.EndDate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-lg-12 col-md-12">
+                    @Html.LabelFor(model => model.Event.Name, "Dance Styles", htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
+                    <div class="col-md-9 col-lg-9">
+                        @Html.CheckBoxListFor(model => model.PostedStyles.DanceStyleIds,
+                                    model => model.AvailableStyles,
+                                    style => style.Id,
+                                    style => style.Name,
+                                    model => model.SelectedStyles,
+                                    new HtmlListInfo(HtmlTag.table, 2, new { @class = "checkboxlist" }, TextLayout.Default))
+                    </div>
+                </div>
+                <div class="col-lg-12 col-md-12">
+                    @Html.LabelFor(model => model.Event.Description, htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
+                    <div class="col-md-9 col-lg-9">
+                        @Html.EditorFor(model => model.Event.Description, new { htmlAttributes = new { @class = "form-control", @rows = 10 } })
+                        @Html.ValidationMessageFor(model => model.Event.Description, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-lg-12 col-md-12">
+                    @Html.LabelFor(model => model.Event.Recurring, htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
+                    <div class="col-md-9 col-lg-9">
+                        <label>
+                            @Html.RadioButtonFor(model => model.Event.Recurring, false, htmlAttributes: new { @checked = (!Model.Event.Recurring) })
+                            No
+                        </label>
+                        <label>
+                            @Html.RadioButtonFor(model => model.Event.Recurring, true, htmlAttributes: new { @checked = Model.Event.Recurring })
+                            Yes
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12 col-md-12 radio-list">
+                <h4>Select a Place for this Event</h4>
+                @foreach (var pl in Model.Places)
+                {
+                    <div class="col-lg-4 col-md-4">
+                        @if (pl.Selected)
+                        {
+                            @Html.RadioButtonFor(m => m.PlaceId, pl.Id, new { id = pl.Id, @checked = true })
+                        }
+                        else
+                        {
+                            @Html.RadioButtonFor(m => m.PlaceId, pl.Id, new { id = pl.Id })
+                        }
+                        <label class="col-lg-12 col-md-12 btn btn-default" for="@pl.Id">
+                            @if (pl.Id == 0)
+                            {
+                                <h4>New Place</h4>
+                                @Html.EditorFor(model => model.NewPlace.Name, new { htmlAttributes = new { @class = "form-control", @placeholder = "Place Name" } })
+                                @Html.EditorFor(model => model.NewPlace.Address, new { htmlAttributes = new { @class = "form-control", @placeholder = "Address" } })
+                                @Html.EditorFor(model => model.NewPlace.City, new { htmlAttributes = new { @class = "form-control", @placeholder = "City" } })
+                                @Html.EnumDropDownListFor(model => model.NewPlace.State, "- Select a State-", new { @class = "form-control" })
+                                @Html.EditorFor(model => model.NewPlace.Zip, new { htmlAttributes = new { @class = "form-control", @placeholder = "Zipcode" } })
+                            }
+                            else
+                            {
+                                <h4>@pl.Name</h4>
+                                @pl.PlaceType<br />
+                                @pl.Address<br />
+                                @pl.City@:, @pl.State @pl.Zip<br />
+                                <img src="https://maps.googleapis.com/maps/api/staticmap?center=@pl.Latitude,@pl.Longitude&zoom=10&size=200x100&maptype=roadmap&markers=color:red%7Clabel:A%7C @pl.Latitude, @pl.Longitude">
+                            }
+                        </label>
+                    </div>
+                }
+            </div>
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin: 10px;">
+                <input type="submit" value="Save @Model.EventType" class="btn btn-lg btn-primary" />
+                <a class="btn btn-lg btn-warning" href="@Session["ReturnUrl"]">Cancel</a>
+            </div>
+        </div>
+    }

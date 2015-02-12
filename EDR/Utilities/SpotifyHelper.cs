@@ -12,14 +12,24 @@ namespace EDR.Utilities
 {
     public class SpotifyHelper
     {
-        public static List<SpotifyPlaylist> GetPlaylists(string token, string userid)
+        public static List<SpotifyPlaylist> GetPlaylists(ref SpotifyAccessToken token, string spotifyid)
         {
             var lstPlaylists = new List<SpotifyPlaylist>();
             //NameValueCollection parameters = new NameValueCollection();
             //parameters.Add("access_token", token);
 
             WebClient client = new WebClient();
-            var result = client.DownloadString("https://api.spotify.com/v1/users/" + userid + "/playlists?access_token=" + token);
+            try
+            {
+                var test = client.DownloadString("https://api.spotify.com/v1/me?access_token=" + token.Access_Token);
+            }
+            catch (WebException ex)
+            {
+                token = GetAccessToken(token.Refresh_Token, SpotifyGrantType.refresh_token);
+            }
+            
+            var result = client.DownloadString("https://api.spotify.com/v1/users/" + spotifyid + "/playlists?access_token=" + token.Access_Token);
+
             // deserializing nested JSON string to object  
             var jsResult = JsonConvert.DeserializeObject<SpotifyPlaylistsResponse>(result);
 
@@ -32,18 +42,30 @@ namespace EDR.Utilities
             return jsResult.items.ToList();
         }
 
-        public static SpotifyAccessToken GetAccessToken(string code)
+        public static SpotifyAccessToken GetAccessToken(string code, SpotifyGrantType grant_type = SpotifyGrantType.authorization_code)
         {
             var client_id = "44d7c94dd6c847ff93d25447c09d37ca";
             var client_secret = "03b18ba62015498bb19d45fb1898dd55";
             var redirect_uri = "https://localhost:44302/SocialMedia/AuthenticateSpotify";
 
             NameValueCollection parameters = new NameValueCollection();
-            parameters.Add("client_id", client_id);
-            parameters.Add("client_secret", client_secret);
-            parameters.Add("grant_type", "authorization_code");
-            parameters.Add("redirect_uri", redirect_uri);
-            parameters.Add("code", code);
+
+            if (grant_type == SpotifyGrantType.authorization_code)
+            {
+                parameters.Add("client_id", client_id);
+                parameters.Add("client_secret", client_secret);
+                parameters.Add("grant_type", grant_type.ToString());
+                parameters.Add("redirect_uri", redirect_uri);
+                parameters.Add("code", code);
+            }
+            else
+            {
+                parameters.Add("client_id", client_id);
+                parameters.Add("client_secret", client_secret);
+                parameters.Add("grant_type", grant_type.ToString());
+                parameters.Add("redirect_uri", redirect_uri);
+                parameters.Add("refresh_token", code);
+            }
 
             WebClient client = new WebClient();
             var result = client.UploadValues("https://accounts.spotify.com/api/token", "POST", parameters);

@@ -46,10 +46,15 @@ namespace EDR.Models.ViewModels
         public IEnumerable<FacebookEvent> FacebookEvents { get; set; }
     }
 
-    public class EventEditViewModel
+    public class EventEditViewModel : EventBaseViewModel
     {
-        public Event Event { get; set; }
-        public List<SelectListItem> Places { get; set; }
+        public UpdateType UpdateType { get; set; }
+        public int PlaceId { get; set; }
+        public List<PlaceItem> Places { get; set; }
+        public RoleName Role { get; set; }
+        public ClassType ClassType { get; set; }
+        public SocialType SocialType { get; set; }
+        public PlaceItem NewPlace { get; set; }
         public IEnumerable<DanceStyleListItem> AvailableStyles { get; set; }
         public IEnumerable<DanceStyleListItem> SelectedStyles { get; set; }
         public PostedStyles PostedStyles { get; set; }

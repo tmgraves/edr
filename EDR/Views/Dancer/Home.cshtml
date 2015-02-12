@@ -1,6 +1,7 @@
 ﻿@model EDR.Models.ViewModels.DancerViewViewModel
 @using EDR.Models
 @using EDR.Utilities
+@using EDR.Enums
 
 @{
     ViewBag.Title = "Home";
@@ -70,7 +71,7 @@
             {
                 foreach (var cls in Model.SuggestedClasses.OrderBy(c => c.NextDate))
                 {
-                    <a class="btn btn-default" style="width: 100%; text-align: left; white-space: normal;" href="@Url.Action("View", "Event", new { id = cls.Id, eventType = "Class" })">
+                    <a class="btn btn-default" style="width: 100%; text-align: left; white-space: normal;" href="@Url.Action("View", "Event", new { id = cls.Id, eventType = EventType.Class })">
                         <div style="width: 100%;">
                             <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 thumbnail text-center">
                                 <span class="text-primary">@cls.NextDate.ToString("ddd").ToUpper()</span><br /><span class="text-success">@cls.NextDate.ToString("MMM").ToUpper() @cls.NextDate.Day.ToString()</span><br /><span class="text-success">@cls.NextDate.Year.ToString()</span>
@@ -120,7 +121,7 @@
             {
                 foreach (var social in Model.SuggestedSocials.OrderBy(c => c.NextDate))
                 {
-                    <a class="btn btn-default" style="width: 100%; text-align: left; white-space: normal;" href="@Url.Action("View", "Event", new { id = social.Id, eventType = "Social" })">
+                    <a class="btn btn-default" style="width: 100%; text-align: left; white-space: normal;" href="@Url.Action("View", "Event", new { id = social.Id, eventType = EventType.Social })">
                         <div style="width: 100%;">
                             <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 thumbnail text-center">
                                 <span class="text-primary">@social.NextDate.ToString("ddd").ToUpper()</span><br /><span class="text-success">@social.NextDate.ToString("MMM").ToUpper() @social.NextDate.Day.ToString()</span><br /><span class="text-success">@social.NextDate.Year.ToString()</span>

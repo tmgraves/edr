@@ -258,4 +258,10 @@ namespace EDR.Enums
         [Display(Name = "Wyoming")]
         WY
     }
+
+    public enum UpdateType
+    {
+        Add,
+        Edit
+    }
 }

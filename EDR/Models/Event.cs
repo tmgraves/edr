@@ -25,6 +25,23 @@ namespace EDR.Models
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime StartDate { get; set; }
 
+        [Required]
+        [Display(Name = "Is this an All Day event?")]
+        public bool AllDay { get; set; }
+
+        [DataType(DataType.Time)]
+        [Display(Name = "Start Time")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:H:mm}")]
+        public DateTime? StartTime { get; set; }
+
+        [DataType(DataType.Time)]
+        [Display(Name = "End Time")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:H:mm}")]
+        public DateTime? EndTime { get; set; }
+
+        [Display(Name = "Duration")]
+        public int Duration { get; set; }
+        
         [DataType(DataType.Date)]
         [Display(Name = "End Date")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
@@ -36,11 +53,11 @@ namespace EDR.Models
         public bool IsAvailable { get; set; }
 
         [Required]
+        [Display(Name = "Does This Event Repeat?")]
         public bool Recurring { get; set; }
         public Frequency Frequency { get; set; }
         public int? Interval { get; set; }
         public DayOfWeek Day { get; set; }
-        public int Duration { get; set; }
 
         public string PhotoUrl { get; set; }
 

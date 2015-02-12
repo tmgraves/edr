@@ -286,6 +286,10 @@
     <Compile Include="Controllers\VisitorController.cs" />
     <Compile Include="Data\ApplicationDbContext.cs" />
     <Compile Include="Data\ApplicationDbInitializer.cs" />
+    <Compile Include="Migrations\201502120039436_SpotifyFields.cs" />
+    <Compile Include="Migrations\201502120039436_SpotifyFields.Designer.cs">
+      <DependentUpon>201502120039436_SpotifyFields.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Address.cs" />
     <Compile Include="Models\EventInviations.cs" />
@@ -791,6 +795,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201502120039436_SpotifyFields.resx">
+      <DependentUpon>201502120039436_SpotifyFields.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
