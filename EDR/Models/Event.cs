@@ -60,7 +60,13 @@ namespace EDR.Models
         [DefaultValue(0)]
         [Range(1, 100)]
         public int Interval { get; set; }
-        public DayOfWeek Day { get; set; }
+        public DayOfWeek Day 
+        {
+            get
+            {
+                return StartDate.DayOfWeek;
+            }
+        }
         public string MonthDays { get; set; }
 
         public string PhotoUrl { get; set; }

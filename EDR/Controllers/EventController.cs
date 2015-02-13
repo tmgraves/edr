@@ -855,6 +855,7 @@ namespace EDR.Controllers
             //  For Month Days Checkbox List
             var selectedMonthDays = new List<SelectListItem>();
             string[] daysarray;
+            model.SelectedMonthDays = new List<SelectListItem>();
             if (model.Event.MonthDays != null)
             {
                 daysarray = model.Event.MonthDays.Split(new char[] { '-' });
@@ -1324,7 +1325,6 @@ namespace EDR.Controllers
             if (ModelState.IsValid)
             {
                 var event1 = model.Event;
-                event1.Day = model.Event.StartDate.DayOfWeek;
                 event1.StartDate = event1.StartDate.AddHours(model.Time.Hour).AddMinutes(model.Time.Minute);
                 event1.Place = DataContext.Places.Find(model.PlaceId);
                 var id = User.Identity.GetUserId();
@@ -1467,7 +1467,6 @@ namespace EDR.Controllers
                 Recurring = event1.Recurring,
                 Frequency = event1.Frequency,
                 Interval = event1.Interval,
-                Day = event1.Day,
                 Duration = event1.Duration,
                 Place = event1.Place,
                 Teachers = new List<Teacher>(),
@@ -1491,7 +1490,6 @@ namespace EDR.Controllers
                 Recurring = event1.Recurring,
                 Frequency = event1.Frequency,
                 Interval = event1.Interval,
-                Day = event1.Day,
                 Duration = event1.Duration,
                 Place = event1.Place,
                 DanceStyles = event1.DanceStyles,
@@ -1515,7 +1513,6 @@ namespace EDR.Controllers
                 Recurring = event1.Recurring,
                 Frequency = event1.Frequency,
                 Interval = event1.Interval,
-                Day = event1.Day,
                 Duration = event1.Duration,
                 Place = event1.Place,
                 DanceStyles = event1.DanceStyles

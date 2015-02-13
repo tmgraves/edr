@@ -49,6 +49,29 @@
             var daysofmonth = ["blank", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th", "13th", "14th", "15th", "16th", "17th", "18th", "19th", "20th", "21st", "22nd", "23rd", "24th", "25th", "26th", "27th", "28th", "29th", "30th", "31st"];
             $("#dayofweek").text(weekdays[date.getDay()]);
             $("#eventday").text(daysofmonth[date.getDate()] + " of the Month");
+            var nth = parseInt(date.getDate() / 7) + 1;
+            var cb1 = $('input[type=checkbox][name="PostedMonthDays"][value="1"]');
+            cb1.prop("disabled", false);
+            var cb2 = $('input[type=checkbox][name="PostedMonthDays"][value="2"]');
+            cb2.prop("disabled", false);
+            var cb3 = $('input[type=checkbox][name="PostedMonthDays"][value="3"]');
+            cb3.prop("disabled", false);
+            var cb4 = $('input[type=checkbox][name="PostedMonthDays"][value="4"]');
+            cb4.prop("disabled", false);
+            cb1.prop("checked", "");
+            cb2.prop("checked", "");
+            cb3.prop("checked", "");
+            cb4.prop("checked", "");
+
+            var cb = $('input[type=checkbox][name="PostedMonthDays"][value="' + nth.toString() + '"]');
+            //  var test = $('input[type=checkbox][name="cbtest"]');
+            //  alert(cb.attr("value").valueOf());
+            //  alert(test.attr("value").valueOf());
+            cb.prop("checked", "checked");
+            cb.prop("disabled", true);
+
+            //  test.prop("checked", "checked");
+            //  .prop("checked",true);​
         }
 
 
@@ -101,7 +124,6 @@
         });
     });
 </script>
-
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
@@ -115,12 +137,7 @@
         @Html.HiddenFor(x => x.Event.FacebookId)
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <h3>Fill in Details for the @Model.EventType</h3>
-            <div class="col-lg-2 col-md-2">
-                <div class="col-lg-12 col-md-12 croppedpic" style="height: 250px;">
-                    <a href="@Model.Event.PhotoUrl" target="_blank"><img class="img-thumbnail" src="@(Model.Event.PhotoUrl != null ? Model.Event.PhotoUrl : Url.Content("~/Content/images/MissingImage.jpg"))" /></a>
-                </div>
-            </div>
-            <div class="col-lg-10 col-md-10">
+            <div class="col-lg-8 col-md-8">
                 <div class="col-lg-12 col-md-12">
                     @if (Model.EventType == EventType.Class)
                     {
@@ -166,15 +183,15 @@
                         </label>
                         <div id="eventtime">
                             <div class="col-md-12 col-lg-12" style="margin-top: 5px;">
-                                <span class="col-lg-1 col-md-1">From</span>
-                                <div class="col-lg-3 col-md-3">
+                                <span class="col-lg-1 col-md-1 text-warning">From</span>
+                                <div class="col-lg-6 col-md-6">
                                     @Html.EditorFor(model => model.Event.StartTime, new { htmlAttributes = new { @class = "form-control" } })
                                     @Html.ValidationMessageFor(model => model.Event.StartTime, "", new { @class = "text-danger" })
                                 </div>
                             </div>
                             <div class="col-md-12 col-lg-12" style="margin-top: 5px;">
-                                <span class="col-lg-1 col-md-1">To</span>
-                                <div class="col-lg-3 col-md-3">
+                                <span class="col-lg-1 col-md-1 text-warning">To</span>
+                                <div class="col-lg-6 col-md-6">
                                     @Html.EditorFor(model => model.Event.EndTime, new { htmlAttributes = new { @class = "form-control" } })
                                     @Html.ValidationMessageFor(model => model.Event.EndTime, "", new { @class = "text-danger" })
                                 </div>
@@ -220,14 +237,14 @@
                         </label>
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="recurring" style="margin-top: 5px;">
                             <div class="row">
-                                <span class="control-label col-lg-2 col-md-2 text-warning">Repeats</span>
-                                <div class="col-md-3 col-lg-3">
+                                <span class="control-label col-lg-3 col-md-3 text-warning">Repeats</span>
+                                <div class="col-md-4 col-lg-4">
                                     @Html.EnumDropDownListFor(model => model.Event.Frequency, htmlAttributes: new { @class = "form-control" })
                                     @Html.ValidationMessageFor(model => model.Event.Frequency, "", new { @class = "text-danger" })
                                 </div>
                             </div>
                             <div class="row" style="margin-top: 5px;">
-                                <span class="control-label col-lg-2 col-md-2 text-warning">Every</span>
+                                <span class="control-label col-lg-3 col-md-3 text-warning">Every</span>
                                 <div class="col-md-2 col-lg-2">
                                     @Html.TextBoxFor(model => model.Event.Interval, htmlAttributes: new { @class = "form-control", @type = "number", @min = "1", @max = "200" })
                                     @Html.ValidationMessageFor(model => model.Event.Interval, "", new { @class = "text-danger" })
@@ -236,46 +253,55 @@
                                     @if (Model.Event.Frequency == EDR.Models.Frequency.Daily)
                                     {
                                         @: Day(s)
-                                }
+                            }
                                     else if (Model.Event.Frequency == EDR.Models.Frequency.Weekly)
                                     {
                                         @: Week(s)
-                                }
+                            }
                                     else if (Model.Event.Frequency == EDR.Models.Frequency.Monthly)
                                     {
                                         @: Month(s)
-                                }
+                            }
                                     else if (Model.Event.Frequency == EDR.Models.Frequency.Yearly)
                                     {
                                         @: Year(s)
-                                }
+                            }
                                 </label>
                             </div>
-                            <div class="row panel panel-info" id="monthly" style="padding-top: 5px; margin-top: 5px;" hidden="@(Model.Event.Frequency == EDR.Models.Frequency.Monthly ? "" : "hidden")">
-                                <span class="control-label col-lg-2 col-md-2 text-warning">On the </span>
-                                <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
-                                    <label class="control-label text-warning" id="eventday">@Model.MonthDay</label>
-                                </div>
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="background-color: #eee;">
-                                    <span class="control-label col-lg-12 col-md-12 text-primary">OR</span>
-                                </div>
-                                <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                    <span class="control-label col-lg-2 col-md-2 text-warning">On the </span>
-                                    <span class="col-lg-3 col-md-3 col-sm-12 col-xs-4">
-                                        @Html.CheckBoxListFor(model => model.PostedMonthDays,
-                                                        model => model.MonthDays,
-                                                        item => item.Value,
-                                                        item => item.Text,
-                                                        model => model.SelectedMonthDays,
-                                                        new HtmlListInfo(HtmlTag.table, 2, new { @class = "checkboxlist text-warning" }, TextLayout.Default))
-                                    </span>
-                                    <label class="col-lg-2 col-md-2 text-warning" id="dayofweek">@Model.Event.StartDate.DayOfWeek</label>
+                            <div class="row col-lg-10 col-md-10" id="monthly" style="padding-top: 5px; margin-top: 5px;" @(Model.Event.Frequency == EDR.Models.Frequency.Monthly ? "" : "hidden='hidden'")>
+                                <div class="panel panel-info">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <span class="control-label col-lg-3 col-md-3 text-warning">On the </span>
+                                            <label class="control-label text-warning col-lg-6 col-md-6" id="eventday">@Model.MonthDay</label>
+                                        </div>
+                                        <div class="row" style="background-color: #eee;">
+                                            <span class="control-label text-primary col-lg-12 col-md-12">OR</span>
+                                        </div>
+                                        <div class="row">
+                                            <span class="control-label col-lg-3 col-md-3 text-warning">On the </span>
+                                            <span class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                                @Html.CheckBoxListFor(model => model.PostedMonthDays,
+                                                    model => model.MonthDays,
+                                                    item => item.Value,
+                                                    item => item.Text,
+                                                    model => model.SelectedMonthDays,
+                                                    new HtmlListInfo(HtmlTag.table, 2, new { @class = "checkboxlist text-warning" }, TextLayout.Default))
+                                            </span>
+                                            <label class="col-lg-1 col-md-1 text-warning" id="dayofweek">@Model.Event.StartDate.DayOfWeek</label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
+            </div>
+            <div class="col-lg-4 col-md-4">
+                <div class="col-lg-12 col-md-12 croppedpic" style="height: 250px;">
+                    <a href="@Model.Event.PhotoUrl" target="_blank"><img class="img-thumbnail" src="@(Model.Event.PhotoUrl != null ? Model.Event.PhotoUrl : Url.Content("~/Content/images/MissingImage.jpg"))" /></a>
+                </div>
             </div>
             <div class="col-lg-12 col-md-12 radio-list">
                 <h4>Select a Place for this Event</h4>
@@ -314,7 +340,7 @@
             </div>
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin: 10px;">
                 <input type="submit" value="Save @Model.EventType" class="btn btn-lg btn-primary" />
-                <a class="btn btn-lg btn-warning" href="@Session["ReturnUrl"]">Cancel</a>
+                <a class="btn btn-lg btn-warning" href="@Url.Action("View", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">Cancel</a>
             </div>
         </div>
     }
