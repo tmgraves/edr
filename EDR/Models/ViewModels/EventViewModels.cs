@@ -58,6 +58,10 @@ namespace EDR.Models.ViewModels
         public IEnumerable<DanceStyleListItem> AvailableStyles { get; set; }
         public IEnumerable<DanceStyleListItem> SelectedStyles { get; set; }
         public PostedStyles PostedStyles { get; set; }
+        public List<SelectListItem> MonthDays { get; set; }
+        public List<SelectListItem> SelectedMonthDays { get; set; }
+        public string[] PostedMonthDays { get; set; }
+        public string MonthDay { get; set; }
     }
 
     public class EventNewViewModel

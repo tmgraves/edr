@@ -42,7 +42,16 @@
 </style>
 
 <script type="text/javascript">
+
     $(document).ready(function () {
+        function setMonthDay ( date ){
+            var weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            var daysofmonth = ["blank", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th", "13th", "14th", "15th", "16th", "17th", "18th", "19th", "20th", "21st", "22nd", "23rd", "24th", "25th", "26th", "27th", "28th", "29th", "30th", "31st"];
+            $("#dayofweek").text(weekdays[date.getDay()]);
+            $("#eventday").text(daysofmonth[date.getDate()] + " of the Month");
+        }
+
+
         $('input[id="Event_AllDay"]').click(function () {
             if ($(this).attr("value") == "True") {
                 $("#eventtime").hide();
@@ -61,6 +70,13 @@
             }
         });
 
+        $('input[id="Event_StartDate"]').change(function () {
+            var date = $('#Event_StartDate').val();
+            var res = date.split("-");
+            date = new Date(res[1] + "/" + res[2] + "/" + res[0]);
+            setMonthDay(date);
+        });
+
         $('select[id="Event_Frequency"]').change(function () {
             if ($('option:selected', $(this)).text() == "Daily") {
                 $('#frequency').text('Day(s)');
@@ -72,15 +88,11 @@
             }
             if ($('option:selected', $(this)).text() == "Monthly") {
                 $('#frequency').text('Month(s)');
-                var weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-                //  alert($('input[id="Event_StartDate"]').attr("value"));
                 $("#monthly").show();
                 var date = $('#Event_StartDate').val();
                 var res = date.split("-");
-                var date = new Date(res[1] + "/" + res[2] + "/" + res[0]);
-                var weekday = weekdays[0];
-                $("#dayofweek").text(weekdays[date.getDay()]);
-                $("#eventday").text(date.getDate());
+                date = new Date(res[1] + "/" + res[2] + "/" + res[0]);
+                setMonthDay(date);
             }
             if ($('option:selected', $(this)).text() == "Yearly") {
                 $('#frequency').text('Year(s)');
@@ -94,6 +106,7 @@
     {
         @Html.AntiForgeryToken()
         @Html.HiddenFor(x => x.Event.Id)
+        @Html.HiddenFor(x => x.EventType)
         @Html.HiddenFor(x => x.Event.PhotoUrl)
         @Html.HiddenFor(x => x.NewPlace.Latitude)
         @Html.HiddenFor(x => x.NewPlace.Longitude)
@@ -206,20 +219,20 @@
                             Yes
                         </label>
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="recurring" style="margin-top: 5px;">
-                            <div class="row col-lg-12 col-md-12">
-                                <span class="col-lg-2 col-md-2">Frequency</span>
+                            <div class="row">
+                                <span class="control-label col-lg-2 col-md-2 text-warning">Repeats</span>
                                 <div class="col-md-3 col-lg-3">
                                     @Html.EnumDropDownListFor(model => model.Event.Frequency, htmlAttributes: new { @class = "form-control" })
                                     @Html.ValidationMessageFor(model => model.Event.Frequency, "", new { @class = "text-danger" })
                                 </div>
                             </div>
-                            <div class="row col-lg-12 col-md-12" style="margin-top: 5px;">
-                                <span class="col-lg-2 col-md-2">Every</span>
+                            <div class="row" style="margin-top: 5px;">
+                                <span class="control-label col-lg-2 col-md-2 text-warning">Every</span>
                                 <div class="col-md-2 col-lg-2">
-                                    @Html.TextBoxFor(model => model.Event.Interval, htmlAttributes: new { @class = "form-control", @type = "number" })
+                                    @Html.TextBoxFor(model => model.Event.Interval, htmlAttributes: new { @class = "form-control", @type = "number", @min = "1", @max = "200" })
                                     @Html.ValidationMessageFor(model => model.Event.Interval, "", new { @class = "text-danger" })
                                 </div>
-                                <label id="frequency" style="font-weight: normal; height: 30px; vertical-align: bottom;">
+                                <label class="text-warning" id="frequency" style="font-weight: normal; height: 30px; vertical-align: bottom;">
                                     @if (Model.Event.Frequency == EDR.Models.Frequency.Daily)
                                     {
                                         @: Day(s)
@@ -237,13 +250,26 @@
                                         @: Year(s)
                                 }
                                 </label>
-                                <div id="monthly">
-                                    <div class="row">
-                                        <span class="col-lg-2 col-md-2">On the </span>
-                                        <label id="eventday"></label>
-                                    </div>
-                                    OR<br />
-                                    On the <span>first,second,third,forth,fifth</span> <label id="dayofweek"></label>
+                            </div>
+                            <div class="row panel panel-info" id="monthly" style="padding-top: 5px; margin-top: 5px;" hidden="@(Model.Event.Frequency == EDR.Models.Frequency.Monthly ? "" : "hidden")">
+                                <span class="control-label col-lg-2 col-md-2 text-warning">On the </span>
+                                <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
+                                    <label class="control-label text-warning" id="eventday">@Model.MonthDay</label>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="background-color: #eee;">
+                                    <span class="control-label col-lg-12 col-md-12 text-primary">OR</span>
+                                </div>
+                                <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                    <span class="control-label col-lg-2 col-md-2 text-warning">On the </span>
+                                    <span class="col-lg-3 col-md-3 col-sm-12 col-xs-4">
+                                        @Html.CheckBoxListFor(model => model.PostedMonthDays,
+                                                        model => model.MonthDays,
+                                                        item => item.Value,
+                                                        item => item.Text,
+                                                        model => model.SelectedMonthDays,
+                                                        new HtmlListInfo(HtmlTag.table, 2, new { @class = "checkboxlist text-warning" }, TextLayout.Default))
+                                    </span>
+                                    <label class="col-lg-2 col-md-2 text-warning" id="dayofweek">@Model.Event.StartDate.DayOfWeek</label>
                                 </div>
                             </div>
                         </div>
