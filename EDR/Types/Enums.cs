@@ -264,4 +264,21 @@ namespace EDR.Enums
         Add,
         Edit
     }
+
+    public enum ExternalObjectType
+    {
+        [Display(Name = "Group")]
+        Group,
+        [Display(Name = "Event")]
+        Event,
+        [Display(Name = "Page")]
+        Page
+    }
+
+    public enum MediaTarget
+    {
+        User,
+        Event,
+        Place
+    }
 }

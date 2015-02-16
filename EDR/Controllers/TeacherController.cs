@@ -148,7 +148,7 @@ namespace EDR.Controllers
                                 .Take(20);
             foreach (var p in newPictures)
             {
-                lstMedia.Add(new EventMedia() { Event = p.Event, Id = p.Id, Author = p.PostedBy, MediaDate = p.PhotoDate, MediaType = Enums.MediaType.Picture, PhotoUrl = p.Filename, Title = p.Title });
+                lstMedia.Add(new EventMedia() { Event = p.Event, SourceName = p.Title, SourceLink = p.SourceLink, Id = p.Id, Author = p.PostedBy, MediaDate = p.PhotoDate, MediaType = Enums.MediaType.Picture, PhotoUrl = p.Filename, Title = p.Title });
             }
             var newVideos = DataContext.Videos.OfType<EventVideo>()
                                 .Include("Event")
@@ -158,7 +158,7 @@ namespace EDR.Controllers
                                 .Take(20);
             foreach (var v in newVideos)
             {
-                lstMedia.Add(new EventMedia() { Event = v.Event, Id = v.Id, Author = v.Author, MediaDate = v.PublishDate, MediaType = Enums.MediaType.Video, PhotoUrl = v.PhotoUrl, MediaUrl = v.VideoUrl, Title = v.Title });
+                lstMedia.Add(new EventMedia() { Event = v.Event, SourceName = v.Title, SourceLink = v.VideoUrl, Id = v.Id, Author = v.Author, MediaDate = v.PublishDate, MediaType = Enums.MediaType.Video, PhotoUrl = v.PhotoUrl, MediaUrl = v.VideoUrl, Title = v.Title });
             }
 
             foreach (var cls in viewModel.Teacher.Classes)
@@ -169,7 +169,7 @@ namespace EDR.Controllers
 
                     foreach (var movie in videos)
                     {
-                        lstMedia.Add(new EventMedia() { Event = cls, Author = list.Author, MediaDate = movie.PubDate, MediaType = Enums.MediaType.Video, PhotoUrl = movie.Thumbnail.ToString(), MediaUrl = movie.VideoLink.ToString(), Title = movie.Title });
+                        lstMedia.Add(new EventMedia() { Event = cls, SourceName = movie.Title, SourceLink = movie.VideoLink.ToString(), Author = list.Author, MediaDate = movie.PubDate, MediaType = Enums.MediaType.Video, PhotoUrl = movie.Thumbnail.ToString(), MediaUrl = movie.VideoLink.ToString(), Title = movie.Title });
                     }
                 }
             }

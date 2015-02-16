@@ -62,6 +62,7 @@ namespace EDR.Models.ViewModels
         public List<SelectListItem> SelectedMonthDays { get; set; }
         public string[] PostedMonthDays { get; set; }
         public string MonthDay { get; set; }
+        public string HiddenMonthDay { get; set; }
     }
 
     public class EventNewViewModel
@@ -93,6 +94,7 @@ namespace EDR.Models.ViewModels
         public IEnumerable<FacebookVideo> FacebookVideos { get; set; }
         public IEnumerable<YouTubePlaylist> YouTubePlaylists { get; set; }
         public IEnumerable<FacebookEvent> FacebookEvents { get; set; }
+        public IEnumerable<LinkedFacebookObject> LinkedFacebookObjects { get; set; }
     }
 
     public class EventFacebookPictureContainer : EventBaseViewModel
@@ -173,7 +175,22 @@ namespace EDR.Models.ViewModels
         public PostedStyles PostedStyles { get; set; }
     }
 
-    public class PlaceItem: Place
+    public class EventLinkedFacebookEventContainer : EventBaseViewModel
+    {
+        public IEnumerable<FacebookEvent> FacebookEvents { get; set; }
+    }
+
+    public class EventLinkedFacebookGroupContainer : EventBaseViewModel
+    {
+        public IEnumerable<FacebookGroup> FacebookGroups { get; set; }
+    }
+
+    public class RelatedEvents : EventBaseViewModel
+    {
+        public IEnumerable<Event> Events { get; set; }
+    }
+
+    public class PlaceItem : Place
     {
         public bool Selected { get; set; }
     }

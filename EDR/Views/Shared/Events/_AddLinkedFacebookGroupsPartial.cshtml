@@ -1,0 +1,19 @@
+﻿@model EDR.Models.ViewModels.EventLinkedFacebookGroupContainer
+
+@if (Model.FacebookGroups != null)
+{
+    if (Model.FacebookGroups.Count() != 0)
+    {
+        foreach(var g in Model.FacebookGroups.OrderBy(g => g.Name))
+        {
+            <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="col-lg-8 col-md-8">
+                    <img src="@g.Icon" />
+                    @g.Name.PadRight(30, ' ').Substring(0, 30)<br />
+                </div>
+                <a class="btn btn-warning" href="@g.Link" title="Open in Facebook">Open</a>
+                @Html.ActionLink("Link", "LinkFacebookGroup", "Event", new { id = g.Id, eventId = Model.Event.Id, returnUrl = @Url.Action("View", "Event", new { id = Model.Event.Id, eventType = Model.EventType }) }, htmlAttributes: new { @class = "btn btn-primary", @style = "margin: 5px" })
+            </div>
+        }
+    }
+}

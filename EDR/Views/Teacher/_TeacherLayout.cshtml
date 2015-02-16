@@ -20,17 +20,17 @@
             }
         </h1>
     </div>
-    <div class="well col-lg-2 col-md-2 col-sm-2 col-xs-2">
+    <div class="well col-lg-3 col-md-3 col-sm-12 col-xs-12">
         <div class="row">
             <div style="text-align: center;">
-                <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
+                <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12 croppedpic" style="height: 250px;">
                     @if (Model.Teacher.ApplicationUser.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault() != null)
                     {
-                        <img class=" img-thumbnail" src="@Url.Content(Model.Teacher.ApplicationUser.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault().ThumbnailFilename)" />
+                        <img style="width: 100%;" src="@Url.Content(Model.Teacher.ApplicationUser.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault().ThumbnailFilename)" />
                     }
                     else
                     {
-                        <img class=" img-thumbnail" src="~/Content/images/NoPic.png" />
+                        <img style="width: 100%;" src="~/Content/images/NoPic.png" />
                     }
                 </div>
                 @if (User.Identity != null && User.Identity.Name == Model.Teacher.ApplicationUser.UserName)
@@ -44,17 +44,15 @@
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <p>
                         <a target="_blank" href="https://maps.google.com/?q=@Model.Address.Latitude,@Model.Address.Longitude">
-                            <img class="img-thumbnail" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Address.Latitude,@Model.Address.Longitude&zoom=6&size=200x100&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Address.Latitude, @Model.Address.Longitude">
+                            <img style="width: 100%;" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Address.Latitude,@Model.Address.Longitude&zoom=6&size=250x100&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Address.Latitude, @Model.Address.Longitude">
                         </a>
                     </p>
                 </div>
                 <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <label class="control-label col-lg-4 col-md-4 col-sm-4 col-xs-4">Exp:</label>
-                    <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
-                        @Model.Teacher.Experience Year(s)
-                    </div>
+                    @Model.Teacher.Experience Year(s)
                 </div>
-                <p>
+                <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <label class="control-label col-lg-4 col-md-4 col-sm-4 col-xs-4">Styles:</label>
                     <div>
                         @if (Model.Teacher.DanceStyles.Count > 0)
@@ -71,7 +69,7 @@
                             @: <span class="text-warning">NO DANCE STYLES SELECTED</span>
                         }
                     </div>
-                </p>
+                </div>
                 <div class="text-center">
                     @if (Model.Teacher.FacebookLink != null)
                     {
@@ -89,13 +87,13 @@
             </div>
         </div>
     </div>
-    <div class="col-md-10 col-lg-10 col-sm-10 col-xs-10">
+    <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <ul class="nav nav-pills nav-justified" role="tablist">
-                    <li @if (ctrName == "Home") { <text> class="active" </text>    }><a href="@Url.Action("Home", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })">Home</a></li>
-                    <li @if (ctrName == "MyTeach") { <text> class="active" </text>   }><a href="@Url.Action("MyTeach", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })">My Classes/Workshops</a></li>
-                    <li @if (ctrName == "Resume") { <text> class="active" </text>    }><a href="@Url.Action("Resume", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })">My Resume</a></li>
+                    <li @if (ctrName == "Home") { <text> class="active" </text>     }><a href="@Url.Action("Home", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })">Home</a></li>
+                    <li @if (ctrName == "MyTeach") { <text> class="active" </text>    }><a href="@Url.Action("MyTeach", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })">My Classes/Workshops</a></li>
+                    <li @if (ctrName == "Resume") { <text> class="active" </text>     }><a href="@Url.Action("Resume", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })">My Resume</a></li>
                     <li><a href="#myperformance" role="tab" data-toggle="tab">Where I Perform</a></li>
                 </ul>
             </div>

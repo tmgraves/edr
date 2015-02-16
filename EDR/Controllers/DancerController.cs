@@ -26,6 +26,7 @@ using EDR.Data;
 using DHTMLX.Scheduler;
 using DHTMLX.Scheduler.Controls;
 using DHTMLX.Scheduler.Data;
+using EDR.Enums;
 
 namespace EDR.Controllers
 {
@@ -183,42 +184,44 @@ namespace EDR.Controllers
             var today = DateTime.Today;
             var id = User.Identity.GetUserId();
 
-            var lstMedia = new List<EventMedia>();
-            var events = DataContext.Events.Where(e => e.Users.Any(u => u.Id == id));
-            var newPictures = DataContext.Pictures.OfType<EventPicture>()
-                                .Include("Event")
-                                .Include("PostedBy")
-                                .Where(p => events.Any(e => e.Id == p.Event.Id))
-                                .OrderByDescending(p => p.PhotoDate)
-                                .Take(20);
-            foreach(var p in newPictures)
-            {
-                lstMedia.Add(new EventMedia() { Event = p.Event, Id = p.Id, Author = p.PostedBy, MediaDate = p.PhotoDate, MediaType = Enums.MediaType.Picture, PhotoUrl = p.Filename, Title = p.Title });
-            }
-            var newVideos = DataContext.Videos.OfType<EventVideo>()
-                                .Include("Event")
-                                .Include("Author")
-                                .Where(v => events.Any(e => e.Id == v.Event.Id))
-                                .OrderByDescending(v => v.PublishDate)
-                                .Take(20);
-            foreach(var v in newVideos)
-            {
-                lstMedia.Add(new EventMedia() { Event = v.Event, Id = v.Id, Author = v.Author, MediaDate = v.PublishDate, MediaType = Enums.MediaType.Video, PhotoUrl = v.PhotoUrl, MediaUrl = v.VideoUrl, Title = v.Title });
-            }
-            var playlists = DataContext.Playlists.OfType<EventPlaylist>()
-                                .Include("Event")
-                                .Include("Author")
-                                .Where(v => events.Any(e => e.Id == v.Event.Id));
-            foreach (var lst in playlists)
-            {
-                var videos = YouTubeHelper.GetPlaylistVideos(lst.YouTubeId);
+            ////  Media Updates
+            //var lstMedia = new List<EventMedia>();
+            //var events = DataContext.Events.Where(e => e.EventMembers.Any(m => m.Member.Id == id));
+            //var newPictures = DataContext.Pictures.OfType<EventPicture>()
+            //                    .Include("Event")
+            //                    .Include("PostedBy")
+            //                    .Where(p => events.Any(e => e.Id == p.Event.Id))
+            //                    .OrderByDescending(p => p.PhotoDate)
+            //                    .Take(20);
+            //foreach(var p in newPictures)
+            //{
+            //    lstMedia.Add(new EventMedia() { Event = p.Event, SourceName = p.Title, SourceLink = p.SourceLink, Id = p.Id, Author = p.PostedBy, MediaDate = p.PhotoDate, MediaType = Enums.MediaType.Picture, PhotoUrl = p.Filename, Title = p.Title, MediaSource = p.MediaSource });
+            //}
+            //var newVideos = DataContext.Videos.OfType<EventVideo>()
+            //                    .Include("Event")
+            //                    .Include("Author")
+            //                    .Where(v => events.Any(e => e.Id == v.Event.Id))
+            //                    .OrderByDescending(v => v.PublishDate)
+            //                    .Take(20);
+            //foreach(var v in newVideos)
+            //{
+            //    lstMedia.Add(new EventMedia() { Event = v.Event, SourceName = v.Title, SourceLink = v.VideoUrl, Id = v.Id, Author = v.Author, MediaDate = v.PublishDate, MediaType = Enums.MediaType.Video, PhotoUrl = v.PhotoUrl, MediaUrl = v.VideoUrl, Title = v.Title, MediaSource = v.MediaSource });
+            //}
+            //var playlists = DataContext.Playlists.OfType<EventPlaylist>()
+            //                    .Include("Event")
+            //                    .Include("Author")
+            //                    .Where(v => events.Any(e => e.Id == v.Event.Id));
+            //foreach (var lst in playlists)
+            //{
+            //    var videos = YouTubeHelper.GetPlaylistVideos(lst.YouTubeId);
 
-                foreach(var movie in videos)
-                {
-                    lstMedia.Add(new EventMedia() { Event = lst.Event, Author = lst.Author, MediaDate = movie.PubDate, MediaType = Enums.MediaType.Video, PhotoUrl = movie.Thumbnail.ToString(), MediaUrl = movie.VideoLink.ToString(), Title = movie.Title });
-                }
-            }
-            viewModel.MediaUpdates = lstMedia;
+            //    foreach(var movie in videos)
+            //    {
+            //        lstMedia.Add(new EventMedia() { Event = lst.Event, SourceName = movie.Title, SourceLink = movie.VideoLink.ToString(), Author = lst.Author, MediaDate = movie.PubDate, MediaType = Enums.MediaType.Video, PhotoUrl = movie.Thumbnail.ToString(), MediaUrl = movie.VideoLink.ToString(), Title = movie.Title, MediaSource = lst.MediaSource });
+            //    }
+            //}
+            //viewModel.MediaUpdates = lstMedia;
+            ////  Media Updates
 
             viewModel.SuggestedClasses = new List<Class>();
             var myLocation = DbGeography.FromText("POINT(" + viewModel.Address.Longitude.ToString() + " " + viewModel.Address.Latitude.ToString() + ")");
@@ -226,23 +229,42 @@ namespace EDR.Controllers
             var suggestedClasses = DataContext.Events.OfType<Class>()
                                         .Where(y => y.DanceStyles.Any(d => arrStyles.Contains(d.Id))
                                                 && DbGeography.FromText("POINT(" + y.Place.Longitude.ToString() + " " + y.Place.Latitude.ToString() + ")").Distance(myLocation) * .00062 < 50
-                                                && !y.Users.Any(u => u.Id == id))
+                                                && !y.EventMembers.Any(u => u.Member.Id == id))
                                         .Include("DanceStyles")
                                         .Include("Teachers")
                                         .Include("Teachers.ApplicationUser")
                                         .ToList();
-            viewModel.SuggestedClasses = suggestedClasses.Where(e => e.NextDate >= today);
+            viewModel.SuggestedClasses = suggestedClasses.Where(e => e.NextDate >= today).Take(5);
             viewModel.SuggestedSocials = new List<Social>();
             var suggestedSocials = DataContext.Events.OfType<Social>()
                                         .Where(y => y.DanceStyles.Any(d => arrStyles.Contains(d.Id)) 
                                             && DbGeography.FromText("POINT(" + y.Place.Longitude.ToString() + " " + y.Place.Latitude.ToString() + ")").Distance(myLocation) * .00062 < 50 
-                                            && !y.Users.Any(u => u.Id == id))
+                                            && !y.EventMembers.Any(u => u.Member.Id == id))
                                         .Include("DanceStyles")
                                         .ToList();
-            viewModel.SuggestedSocials = suggestedSocials.Where(e => e.NextDate >= today);
+            viewModel.SuggestedSocials = suggestedSocials.Where(e => e.NextDate >= today).Take(5);
 
             //  var groups = FacebookHelper.GetGroups(viewModel.Dancer.FacebookToken);
             return View(viewModel);
+        }
+
+        public ActionResult GetUpdates(string username)
+        {
+            var evt = DataContext.Events.Where(e => e.EventMembers.Any(m => m.Member.UserName == username))
+                    .Include("Creator")
+                    .Include("Pictures")
+                    .Include("Pictures.PostedBy")
+                    .Include("Videos")
+                    .Include("Videos.Author")
+                    .Include("Playlists")
+                    .Include("Playlists.Author")
+                    .Include("LinkedFacebookObjects");
+
+            var lstMedia = EventHelper.BuildAllUpdates(evt, MediaTarget.User);
+
+            return PartialView("~/Views/Shared/_MediaUpdatesPartial.cshtml", lstMedia);
+            //  Media Updates
+
         }
 
         [Authorize]
@@ -264,6 +286,7 @@ namespace EDR.Controllers
                                     .Include("ApplicationUser.UserPictures")
                                     .ToList();
             viewModel.Classes = new EventListViewModel();
+            viewModel.Classes.EventType = EventType.Class;
             var classes = DataContext.Events.OfType<Class>()
                                     .Where(x => x.EventMembers.Any(u => u.Member.UserName == username))
                                     .Include("EventMembers.Member")
@@ -351,6 +374,7 @@ namespace EDR.Controllers
             }
 
             viewModel.Socials = new EventListViewModel();
+            viewModel.Socials.EventType = EventType.Social;
             viewModel.Socials.Events = DataContext.Events
                                             .OfType<Social>()
                                             .Include("Pictures")

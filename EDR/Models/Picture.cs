@@ -13,6 +13,7 @@ namespace EDR.Models
         public string Filename { get; set; }
         public string ThumbnailFilename { get; set; }
         public DateTime PhotoDate { get; set; }
+        public string SourceLink { get; set; }
         public MediaSource MediaSource { get; set; }
         public string FacebookId { get; set; }
         public string InstagramId { get; set; }

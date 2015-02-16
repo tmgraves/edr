@@ -120,11 +120,13 @@
 @if (Model.Events.Count() != 0)
 {
     int rowNo = 0;
-    <div class="tabbable with-nav-tabs panel panel-default">
-        <ul class="nav nav-tabs nav-justified" role="tablist">
-            <li class="active"><a href="#current" data-toggle="tab">Current Events</a></li>
-            <li><a href="#past" data-toggle="tab">Past Events</a></li>
-        </ul>
+    <div class="tabbable with-nav-tabs">
+        <div style="margin: 5px;">
+            <ul class="nav nav-pills" role="tablist">
+                <li class="active"><a href="#current" data-toggle="tab">Current Events</a></li>
+                <li><a href="#past" data-toggle="tab">Past Events</a></li>
+            </ul>
+        </div>
         <div class="tab-content">
             <div id="current" class="tab-pane active">
                 @if (Model.Events.Where(x => x.EndDate >= DateTime.Today || x.EndDate == null).Count() != 0)
@@ -179,7 +181,7 @@
             <div id="past" class="tab-pane">
                 @foreach (var item in Model.Events.Where(x => x.EndDate < DateTime.Today).OrderBy(x => x.NextDate))
                 {
-                    <a class="btn btn-default" style="width: 100%; text-align: left;" onclick="openEvent(@rowNo, @item.Place.Latitude, @item.Place.Longitude); return false;" href="#" @*href="@Url.Action("Details", "Event", new { id = item.Id, eventType = "Class" } )"*@>
+                    <a class="btn btn-default" style="width: 100%; text-align: left; white-space: normal;" onclick="openEvent(@rowNo, @item.Place.Latitude, @item.Place.Longitude); return false;" href="#" @*href="@Url.Action("Details", "Event", new { id = item.Id, eventType = "Class" } )"*@>
                         <div style="width: 100%;">
                             <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 thumbnail text-center">
                                 <span class="text-primary">@item.NextDate.ToString("ddd").ToUpper()</span><br /><span class="text-success">@item.NextDate.ToString("MMM").ToUpper() @item.NextDate.Day.ToString()</span><br /><span class="text-success">@item.NextDate.Year.ToString()</span>

@@ -55,7 +55,10 @@
         </div>*@
     </div>
     <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-        <div class="well">
+        <div class="partialContents" data-url="/Event/@Model.Event.Id/GetRelatedEvents?eventType=@Model.EventType">
+            <img src="~/Content/images/indicator.white.gif" />Loading...
+        </div>
+        <div class="well" style="white-space: pre-line">
             @Model.Event.Description
         </div>
         <div class="panel panel-default">
@@ -64,6 +67,28 @@
             </div>
             <div class="panel-body">
                 @Html.Partial("~/Views/Shared/Events/_EventMembersPartial.cshtml", Model.Event.EventMembers)
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4>Linked Facebook Events/Groups</h4>
+            </div>
+            <div class="panel-body">
+                @foreach (var ee in Model.LinkedFacebookObjects)
+                {
+                    <div class="row" style="margin-top: 5px;">
+                        <a class="btn btn-primary col-lg-8 col-md-8 col-lg-offset-1 col-md-offset-1" target="_blank" href="@Url.Content(ee.Url)" title="@ee.Name" style="text-align: left;">
+                            <img class="img-rounded" style="height: 20px;" src="@Url.Content("~/Content/images/facebookSmall.png")" />
+                            @ee.Name.PadRight(25, ' ').Substring(0, 25)
+                        </a>
+                        @if (User.Identity != null && ((Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)) || (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
+                        {
+                            <a class="btn btn-danger" href="@Url.Action("RemoveLinkedFacebookObject", "Event", new { id = ee.Id, returnUrl = Request.Url.AbsolutePath })">
+                                <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
+                            </a>
+                        }
+                    </div>
+                }
             </div>
         </div>
     </div>

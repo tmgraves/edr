@@ -4,72 +4,94 @@
 
 <div class="thumbnail col-lg-12 col-md-12 col-sm-12 col-xs-12">
     <div class="caption">
-        <p>
-            @if (Model.MediaType == MediaType.Video)
-            {
-                <i class="text-primary glyphicon glyphicon-facetime-video"></i>
-                @*<img style="width: 25px;" src="@Url.Content("~/Content/images/video.png")">*@
-            }
-            else if (Model.MediaType == MediaType.Picture)
-            {
-                <i class="text-primary glyphicon glyphicon-camera"></i>
-                @*<img style="width: 25px;" src="@Url.Content("~/Content/images/camera.png")">*@
-            }
-            else if (Model.MediaType == MediaType.Comment)
-            {
-                <i class="text-primary glyphicon glyphicon-comment"></i>
-                @*<img style="width: 25px;" src="@Url.Content("~/Content/images/comment.png")">*@
-            }
-            by <a href="@Url.Action("Home", "Dancer", new { username = Model.Author.UserName })" style="text-decoration: none;">
-                <span class="text-primary" style="vertical-align: top;">
-                    <b>@Model.Author.FirstName</b>
+        <div style="display: inline-block; width: 100%;">
+            <div style="float: left; margin-right: 2px;">
+                @if (Model.MediaType == MediaType.Video)
+                {
+                    <i class="text-primary glyphicon glyphicon-facetime-video"></i>
+                    @*<img style="width: 25px;" src="@Url.Content("~/Content/images/video.png")">*@
+                }
+                else if (Model.MediaType == MediaType.Picture)
+                {
+                    <i class="text-primary glyphicon glyphicon-camera"></i>
+                    @*<img style="width: 25px;" src="@Url.Content("~/Content/images/camera.png")">*@
+                }
+                else if (Model.MediaType == MediaType.Comment)
+                {
+                    <i class="text-primary glyphicon glyphicon-comment"></i>
+                    @*<img style="width: 25px;" src="@Url.Content("~/Content/images/comment.png")">*@
+                }
+            </div>
+            <div style="float: left;">
+                @if (Model.Target == MediaTarget.User)
+                {
+                    <text>From: </text>
+                    <a href="@Url.Action("View", "Event", new { id = Model.Event.Id, eventType = (Model.Event is Class ? EventType.Class : EventType.Social) })" style="text-decoration: none;">
+                            <span class="text-primary" style="vertical-align: top;">
+                                <b>@Model.Event.Name</b>
+                            </span>
+                        </a>
+                }
+                else if (Model.Target == MediaTarget.Event)
+                {
+                    <text>Source: </text><a href="@Model.SourceLink" target="_blank">@Model.SourceName.PadRight(20, ' ').Substring(0, 20)</a>
+                    <br />
+                    <text>Posted by: </text><a href="@Url.Action("Home", "Dancer", new { username = Model.Author.UserName })" style="text-decoration: none;">
+                        <span class="text-primary" style="vertical-align: top;">
+                            <b>@Model.Author.FirstName</b>
+                        </span>
+                    </a>
+                }
+                <br />Date: <span class="text-danger" style="vertical-align: top;">@Model.MediaDate.ToString("ddd MMM dd, yyyy")</span>
+            </div>
+            <div>
+                <span class="pull-right">
+                    @if (Model.MediaSource == MediaSource.Facebook)
+                    {
+                        <img class="img-circle" style="width: 25px;" src="@Url.Content("~/Content/images/facebookSmall.png")">
+                    }
+                    else if (Model.MediaSource == MediaSource.YouTube)
+                    {
+                        <img class="img-circle" style="width: 25px;" src="@Url.Content("~/Content/images/youtube.png")">
+                    }
+                    else if (Model.MediaSource == MediaSource.Instagram)
+                    {
+                        <img class="img-circle" style="width: 25px;" src="@Url.Content("~/Content/images/instagram.png")">
+                    }
                 </span>
-            </a>
-             - <span class="text-danger" style="vertical-align: top;">@Model.MediaDate.ToShortDateString()</span>
+            </div>
             @*@Html.ActionLink(Model.Event.Name, "View", "Event", new { id = Model.Event.Id, eventType = (Model.Event is Class ? "Class" : "Social") }, new { @style = "font-weight: bold;" }) @(Model.Event is Class ? ((Class)Model.Event).ClassType.ToString() : ((Social)Model.Event).SocialType.ToString())*@
-            <span class="pull-right">
-                @if (Model.MediaSource == MediaSource.Facebook)
-                {
-                    <img class="img-circle" style="width: 25px;" src="@Url.Content("~/Content/images/facebookSmall.png")">
-                }
-                else if (Model.MediaSource == MediaSource.YouTube)
-                {
-                    <img class="img-circle" style="width: 25px;" src="@Url.Content("~/Content/images/youtube.png")">
-                }
-                else if (Model.MediaSource == MediaSource.Instagram)
-                {
-                    <img class="img-circle" style="width: 25px;" src="@Url.Content("~/Content/images/instagram.png")">
-                }
-            </span>
-        </p>
-    </div>
-    @if (Model.MediaType == MediaType.Video)
-    {
-        <div style="height: 150px;">
-            @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new EventVideo() { Event = Model.Event, PhotoUrl = Model.PhotoUrl, VideoUrl = Model.MediaUrl })
         </div>
-        @*<a target="_blank" href="https://www.youtube.com/watch?v=@video.YoutubeId&feature=player_embedded">
-                <div id="videocontainer" style="width: 240px; height: 150px;">
-                    <div id="videoimage">
-                        <img src="https://img.youtube.com/vi/@Html.DisplayFor(s => video.YoutubeId)/mqdefault.jpg" />
-                    </div>
-                    <div id="videoplaybutton">
-                        <div id="playbutton">
+    </div>
+    <div style="width: 100%;">
+        @if (Model.MediaType == MediaType.Video)
+        {
+            <div style="height: 150px;">
+                @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new EventVideo() { Event = Model.Event, PhotoUrl = Model.PhotoUrl, VideoUrl = Model.MediaUrl })
+            </div>
+            @*<a target="_blank" href="https://www.youtube.com/watch?v=@video.YoutubeId&feature=player_embedded">
+                    <div id="videocontainer" style="width: 240px; height: 150px;">
+                        <div id="videoimage">
+                            <img src="https://img.youtube.com/vi/@Html.DisplayFor(s => video.YoutubeId)/mqdefault.jpg" />
+                        </div>
+                        <div id="videoplaybutton">
+                            <div id="playbutton">
+                            </div>
                         </div>
                     </div>
-                </div>
-            </a>*@
-    }
-    else if (Model.MediaType == MediaType.Picture)
-    {
-        <a target="_blank" href="@Url.Content(Model.PhotoUrl)">
-            <img src="@Url.Content(Model.PhotoUrl)" alt="@Model.Text" />
-        </a>
-    }
-    else if (Model.MediaType == MediaType.Comment)
-    {
-        <div>
-            @Model.Text
-        </div>
-    }
+                </a>*@
+        }
+        else if (Model.MediaType == MediaType.Picture)
+        {
+            <a target="_blank" href="@Url.Content(Model.Link)">
+                <img src="@Url.Content(Model.PhotoUrl)" alt="@Model.Text" />
+            </a>
+        }
+        else if (Model.MediaType == MediaType.Comment)
+        {
+            <div style="white-space: pre-line">
+                @Model.Text
+            </div>
+        }
+    </div>
 </div>

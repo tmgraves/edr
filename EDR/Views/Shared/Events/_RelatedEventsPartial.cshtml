@@ -1,0 +1,27 @@
+﻿@model EDR.Models.ViewModels.RelatedEvents
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h4>Related @(Model.EventType == EDR.Enums.EventType.Class ? "Classes" : "Socials")</h4>
+    </div>
+    <div class="panel-body">
+        @if (Model.Events != null)
+        {
+            foreach (var e in Model.Events)
+            {
+                <div class="row" style="margin-top: 5px;">
+                    <a class="btn btn-info col-lg-10 col-md-10 col-lg-offset-1 col-md-offset-1" href="@Url.Action("View", "Event", new { id = e.Id, eventType = Model.EventType })" title="@e.Name" style="text-align: left;">
+                        <div class="col-lg-2 col-md-2 croppedpic">
+                            <img style="width:50px; padding: 2px;" src="@e.PhotoUrl" />
+                        </div>
+                        <div class="col-lg-10 col-md-10">
+                            @e.Name.PadRight(25, ' ').Substring(0, 25)<br />
+                            @e.NextDate.ToString("ddd, MMM dd, yyyy")
+                        </div>
+                    </a>
+                </div>
+
+            }
+        }
+    </div>
+</div>

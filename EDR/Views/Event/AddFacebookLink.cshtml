@@ -1,0 +1,48 @@
+﻿@model EDR.Models.ViewModels.EventViewModel
+@using EDR.Utilities
+@using EDR.Models
+@using EDR.Enums
+
+@{
+    ViewBag.Title = "Add a Facebook Link for " + Model.Event.Name;
+    Layout = "~/Views/Event/_EventLayout.cshtml";
+}
+
+<script type="text/javascript">
+    $(document).ready(function (e) {
+        //  locate each partial section
+        //  if it has a URL set, load the contents into the area.
+
+        $(".partialContents").each(function (index, item) {
+            var url = $(item).data("url");
+            if (url && url.length > 0) {
+                $(item).load(url);
+            }
+        });
+    });
+</script>
+
+<div>
+    <div class="tabbable panel panel-warning">
+        <div class="panel-heading">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+                <li class="active"><a href="#events" data-toggle="tab">Events</a></li>
+                <li><a href="#groups" data-toggle="tab">Groups</a></li>
+            </ul>
+        </div>
+        <div class="tab-content panel-body">
+            <div id="events" class="tab-pane active">
+                <div class="partialContents" data-url="/Event/@Model.Event.Id/GetAvailableFacebookEvents?eventType=@Model.EventType">
+                    <img src="~/Content/images/indicator.white.gif" />Loading...
+                </div>
+            </div>
+            <div id="groups" class="tab-pane">
+                <div class="partialContents" data-url="/Event/@Model.Event.Id/GetAvailableFacebookGroups?eventType=@Model.EventType">
+                    <img src="~/Content/images/indicator.white.gif" />Loading...
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>

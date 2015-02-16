@@ -299,7 +299,6 @@
     <Compile Include="Models\Facebook.cs" />
     <Compile Include="Models\Friend.cs" />
     <Compile Include="Models\Instagram.cs" />
-    <Compile Include="Models\ExternalEvent.cs" />
     <Compile Include="Models\OtherPlace.cs" />
     <Compile Include="Models\Picture.cs" />
     <Compile Include="Models\Playlist.cs">
@@ -378,6 +377,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Utilities\ApplicationUtility.cs" />
+    <Compile Include="Utilities\EventHelper.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Utilities\FacebookHelper.cs" />
     <Compile Include="Utilities\Geolocation.cs" />
     <Compile Include="Utilities\IdentityExtension.cs" />
@@ -393,6 +395,8 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\images\camera.png" />
     <Content Include="Content\images\comment.png" />
+    <Content Include="Content\images\dance.png" />
+    <Content Include="Content\images\dancers.png" />
     <Content Include="Content\images\email.png" />
     <Content Include="Content\images\error.png" />
     <Content Include="Content\images\facebookSmall.png" />
@@ -413,6 +417,7 @@
     <Content Include="Content\images\NoPic.png" />
     <Content Include="Content\images\Play1PressedSmall.png" />
     <Content Include="Content\images\Share.png" />
+    <Content Include="Content\images\social.jpg" />
     <Content Include="Content\images\spotify.png" />
     <Content Include="Content\images\SpotifyHelp.png" />
     <Content Include="Content\images\thumbdown.png" />
@@ -651,6 +656,9 @@
     <Content Include="Views\Dancer\MyDance.cshtml">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="Views\Event\AddFacebookLink.cshtml">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="Views\Event\PostVideo.cshtml" />
     <Content Include="Views\Teacher\_TeacherLayout.cshtml">
       <SubType>Code</SubType>
@@ -787,7 +795,10 @@
     <Content Include="Views\Dancer\SocialMedia.cshtml" />
     <Content Include="Views\Shared\Events\_AddInstagramPicturesPartial.cshtml" />
     <Content Include="Views\Dancer\ChangeSpotifyPlaylist.cshtml" />
-    <Content Include="Views\Event\AddExternalEvent.cshtml" />
+    <Content Include="Views\Shared\Events\_AddLinkedFacebookEventsPartial.cshtml" />
+    <Content Include="Views\Shared\Events\_AddLinkedFacebookGroupsPartial.cshtml" />
+    <Content Include="Views\Shared\Events\_RelatedEventsPartial.cshtml" />
+    <Content Include="Views\Shared\_MediaUpdatesPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Instagram\" />

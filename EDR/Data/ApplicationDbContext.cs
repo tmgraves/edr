@@ -61,7 +61,7 @@ namespace EDR.Data
             modelBuilder.Entity<Concert>().ToTable("Concerts");
             modelBuilder.Entity<Social>().ToTable("Socials");
             modelBuilder.Entity<Party>().ToTable("Parties");
-            modelBuilder.Entity<ExternalEvent>().ToTable("ExternalEvents");
+            modelBuilder.Entity<LinkedFacebookObject>().ToTable("LinkedFacebookObjects");
 
             // Groups
             modelBuilder.Entity<Team>().ToTable("Teams");
@@ -113,6 +113,7 @@ namespace EDR.Data
         public DbSet<ClassTeacherInvitation> ClassTeacherInvitations { get; set; }
         public DbSet<SocialPromoterInvitation> SocialPromoterInvitations { get; set; }
         public DbSet<PlaceOwnerInvitation> PlaceOwnerInvitations { get; set; }
+        public DbSet<LinkedFacebookObject> LinkedFacebookObjects { get; set; }
 
         //// TODO: REMOVE THESE DBSETS
         //public DbSet<Class> Classes { get; set; }

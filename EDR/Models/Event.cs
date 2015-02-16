@@ -1,4 +1,5 @@
-﻿using EDR.Utilities;
+﻿using EDR.Enums;
+using EDR.Utilities;
 using Microsoft.Linq.Translations;
 using System;
 using System.Collections.Generic;
@@ -78,7 +79,7 @@ namespace EDR.Models
             {
                 if (Recurring)
                 {
-                    return ApplicationUtility.GetNextDate(StartDate, Frequency, (int)Interval, Day);
+                    return ApplicationUtility.GetNextDate(StartDate, Frequency, (int)Interval, Day, null, MonthDays);
                 }
                 else
                 {
@@ -99,7 +100,7 @@ namespace EDR.Models
         public virtual Place Place { get; set; }
         public ApplicationUser Creator { get; set; }
         public ICollection<EventMember> EventMembers { get; set; }
-        public ICollection<ExternalEvent> ExternalEvents { get; set; }
+        public ICollection<LinkedFacebookObject> LinkedFacebookObjects { get; set; }
 
         public ICollection<DanceStyle> DanceStyles { get; set; }
 
@@ -112,5 +113,23 @@ namespace EDR.Models
         public ICollection<EventPicture> Pictures { get; set; }
         public ICollection<EventVideo> Videos { get; set; }
         public ICollection<EventPlaylist> Playlists { get; set; }
+    }
+
+    public class LinkedFacebookObject
+    {
+        public string Id { get; set; }
+        public MediaSource MediaSource { get; set; }
+        public string Url { get; set; }
+        public string Name { get; set; }
+        public virtual Event Event { get; set; }
+        [Required]
+        public FacebookObjectType ObjectType { get; set; }
+    }
+
+    public enum FacebookObjectType
+    {
+        Group,
+        Event,
+        Page
     }
 }

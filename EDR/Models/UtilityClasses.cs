@@ -1,6 +1,7 @@
 ﻿using EDR.Enums;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
@@ -32,6 +33,12 @@ namespace EDR.Models
         public ApplicationUser Author { get; set; }
         public string Text { get; set; }
         public MediaSource MediaSource { get; set; }
+        public string Link { get; set; }
+        [Required]
+        public string SourceName { get; set; }
+        [Required]
+        public string SourceLink { get; set; }
+        public MediaTarget Target { get; set; }
     }
 
     public class EventMedia : Media
