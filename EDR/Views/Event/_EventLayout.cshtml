@@ -39,21 +39,31 @@
                 @if (User.Identity != null && ((Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)) || (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
                     {
                     <p>
-                        <a style="font-size: small;" href="@Url.Action("ChangePicture", "Event", new { id = Model.Event.Id })">Change Picture</a>
+                        <a style="font-size: small;" href="@Url.Action("ChangeCover", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">Change Cover</a>
                     </p>
                     }
-                @if (Model.Event.PhotoUrl != null)
+                @if (Model.Event.VideoUrl != null)
+                {
+                    <div style="height: 150px;">
+                        @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new EventVideo() { Event = Model.Event, PhotoUrl = Model.Event.PhotoUrl, VideoUrl = Model.Event.VideoUrl })
+                    </div>
+                }
+                else
+                {
+                if (Model.Event.PhotoUrl != null)
                     {
-                    <a class="thumbnail" target="_blank" href="@Url.Content(Model.Event.PhotoUrl)">
-                        <div class="croppedpic" style="height: 150px;">
-                            <img src="@Url.Content(Model.Event.PhotoUrl)" />
-                        </div>
-                    </a>
+                        <a class="thumbnail" target="_blank" href="@Url.Content(Model.Event.PhotoUrl)">
+                            <div class="croppedpic" style="height: 150px;">
+                                <img src="@Url.Content(Model.Event.PhotoUrl)" />
+                            </div>
+                        </a>
                     }
                     else
                     {
-                    <img class="img-thumbnail" src="~/Content/images/MissingImage.jpg" />
+                        <img class="img-thumbnail" src="~/Content/images/MissingImage.jpg" />
                     }
+                }
+
                 <div class="row">
                     <label class="control-label col-lg-3 col-md-3 col-sm-3 col-xs-3">
                         When:

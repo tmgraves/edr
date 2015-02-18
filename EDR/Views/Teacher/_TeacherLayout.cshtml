@@ -43,11 +43,18 @@
             <div>
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <p>
-                        <a target="_blank" href="https://maps.google.com/?q=@Model.Address.Latitude,@Model.Address.Longitude">
-                            <img style="width: 100%;" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Address.Latitude,@Model.Address.Longitude&zoom=6&size=250x100&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Address.Latitude, @Model.Address.Longitude">
-                        </a>
+                        <img style="width: 100%;" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Address.Latitude,@Model.Address.Longitude&zoom=4&size=250x100&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Address.Latitude, @Model.Address.Longitude">
                     </p>
                 </div>
+                @if (User.Identity != null && User.Identity.Name == Model.Teacher.ApplicationUser.UserName)
+                {
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <a class="pull-right label btn-info" title="Edit Profile" href="@Url.Action("Edit", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })">
+                            <i class="glyphicon glyphicon-pencil" style="vertical-align: middle;"></i>
+                            <span class="sr-only">Edit Profile</span>
+                        </a>
+                    </div>
+                }
                 <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <label class="control-label col-lg-4 col-md-4 col-sm-4 col-xs-4">Exp:</label>
                     @Model.Teacher.Experience Year(s)

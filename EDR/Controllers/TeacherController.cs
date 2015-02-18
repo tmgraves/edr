@@ -12,6 +12,7 @@ using EDR.Models;
 using System.Text.RegularExpressions;
 using EDR.Utilities;
 using System.Data.Entity.Validation;
+using EDR.Enums;
 
 namespace EDR.Controllers
 {
@@ -189,6 +190,26 @@ namespace EDR.Controllers
             Session["ReturnUrl"] = Url.Action("Home", "Teacher", new { username = User.Identity.Name });
 
             return View(viewModel);
+        }
+
+        public ActionResult GetUpdates(string username)
+        {
+            var evt = DataContext.Events.OfType<Class>().Where(c => c.Teachers.Any(t => t.ApplicationUser.UserName == username))
+                    .Include("Creator")
+                    .Include("Pictures")
+                    .Include("Pictures.PostedBy")
+                    .Include("Videos")
+                    .Include("Videos.Author")
+                    .Include("Playlists")
+                    .Include("Playlists.Author")
+                    .Include("LinkedFacebookObjects")
+                    .Cast<Event>();
+
+            var lstMedia = EventHelper.BuildAllUpdates(evt, MediaTarget.User);
+
+            return PartialView("~/Views/Shared/_MediaUpdatesPartial.cshtml", lstMedia);
+            //  Media Updates
+
         }
 
         [Authorize]

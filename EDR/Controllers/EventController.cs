@@ -479,21 +479,28 @@ namespace EDR.Controllers
         
         #region pictures
         [Authorize]
-        public ActionResult ChangePicture(int id)
+        public ActionResult ChangeCover(int id, EventType eventType)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var model = new EventChangePictureViewModel();
-            model.Event = DataContext.Events.Where(x => x.Id == id).Include("Place").Include("Pictures").FirstOrDefault();
-            var userid = User.Identity.GetUserId();
-            var token = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault().FacebookToken;
-            if (token != null)
-            {
-                model.FacebookPictures = FacebookHelper.GetPhotos(token);
-            }
+            var model = new EventChangeCoverViewModel();
+            model.EventType = eventType;
+            model.Event = DataContext.Events.Where(x => x.Id == id)
+                        .Include("Creator")
+                        .Include("Pictures")
+                        .Include("Pictures.PostedBy")
+                        .Include("Videos")
+                        .Include("Videos.Author")
+                        .Include("Playlists")
+                        .Include("Playlists.Author")
+                        .Include("LinkedFacebookObjects")
+                        .FirstOrDefault();
+            var lstMedia = new List<Media>();
+            EventHelper.BuildUpdates(model.Event, MediaTarget.Event, ref lstMedia, true);
+            model.Media = lstMedia;
 
             return View(model);
         }
@@ -540,35 +547,23 @@ namespace EDR.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public ActionResult ChangePicture(ChangePictureViewModel model)
+        public ActionResult ChangeCover(ChangePictureViewModel model)
         {
             return View(model);
         }
 
         [Authorize]
-        public ActionResult MainPicture(int id, int eventId)
+        public ActionResult Cover(int eventId, string photoUrl, string videoUrl, string returnUrl )
         {
             try
             {
-                var picture = DataContext.Pictures.Where(p => p.Id == id).FirstOrDefault();
                 var ev = DataContext.Events.Where(x => x.Id == eventId).Include("Pictures").Include("Pictures.PostedBy").FirstOrDefault();
-
-                foreach(EventPicture ep in ev.Pictures)
-                {
-                    if (ep.Id == id)
-                    {
-                        ep.MainPicture = true;
-                        ev.PhotoUrl = ep.Filename;
-                    }
-                    else
-                    {
-                        ep.MainPicture = false;
-                    }
-                }
+                ev.PhotoUrl = photoUrl;
+                ev.VideoUrl = videoUrl;
                 
                 DataContext.Entry(ev).State = EntityState.Modified;
                 DataContext.SaveChanges();
-                return RedirectToAction("ChangePicture", "Event", new { id = eventId });
+                return Redirect(returnUrl);
             }
             catch (Exception ex)
             {

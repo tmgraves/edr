@@ -71,6 +71,7 @@ namespace EDR.Models
         public string MonthDays { get; set; }
 
         public string PhotoUrl { get; set; }
+        public string VideoUrl { get; set; }
 
         [Display(Name = "Next Date")]
         public DateTime NextDate

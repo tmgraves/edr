@@ -23,15 +23,25 @@ namespace EDR.Utilities
     {
         public static List<Media> BuildAllUpdates(IEnumerable<Event> events, MediaTarget target)
         {
+            return BuildAllUpdates(events, target, false);
+        }
+
+        public static List<Media> BuildAllUpdates(IEnumerable<Event> events, MediaTarget target, bool mediaOnly = false)
+        {
             var lstMedia = new List<Media>();
             foreach(var evt in events)
             {
-                BuildUpdates(evt, target, ref lstMedia);
+                BuildUpdates(evt, target, ref lstMedia, mediaOnly);
             }
             return lstMedia;
         }
 
         public static void BuildUpdates(Event evt, MediaTarget target, ref List<Media> lstMedia)
+        {
+            BuildUpdates(evt, target, ref lstMedia, false);
+        }
+
+        public static void BuildUpdates(Event evt, MediaTarget target, ref List<Media> lstMedia, bool mediaOnly = false)
         {
             foreach (var p in evt.Pictures)
             {
@@ -51,24 +61,27 @@ namespace EDR.Utilities
                 }
             }
 
-            foreach (var fbob in evt.LinkedFacebookObjects.Where(f => f.MediaSource == MediaSource.Facebook))
+            if (evt.LinkedFacebookObjects != null)
             {
-                if (evt.Creator != null && evt.Creator.FacebookToken != null)
+                foreach (var fbob in evt.LinkedFacebookObjects.Where(f => f.MediaSource == MediaSource.Facebook))
                 {
-                    var posts = FacebookHelper.GetFeed(fbob.Id, evt.Creator.FacebookToken);
-                    foreach (var post in posts)
+                    if (evt.Creator != null && evt.Creator.FacebookToken != null)
                     {
-                        if (post.Type == "video")
+                        var posts = FacebookHelper.GetFeed(fbob.Id, evt.Creator.FacebookToken);
+                        foreach (var post in posts)
                         {
-                            lstMedia.Add(new EventMedia() { Event = evt, SourceName = fbob.Name, SourceLink = fbob.Url, Author = evt.Creator, MediaDate = post.Created_Time, MediaType = Enums.MediaType.Video, PhotoUrl = post.Picture, MediaUrl = post.Source, Text = post.Description, MediaSource = MediaSource.Facebook, Link = post.Source, Target = target });
-                        }
-                        else if (post.Type == "photo")
-                        {
-                            lstMedia.Add(new EventMedia() { Event = evt, SourceName = fbob.Name, SourceLink = fbob.Url, Author = evt.Creator, MediaDate = post.Created_Time, MediaType = Enums.MediaType.Picture, PhotoUrl = post.Picture, Text = post.Description, MediaSource = MediaSource.Facebook, Link = post.Link, Target = target });
-                        }
-                        else if (post.Type == "status")
-                        {
-                            lstMedia.Add(new EventMedia() { Event = evt, SourceName = fbob.Name, SourceLink = fbob.Url, Author = evt.Creator, MediaDate = post.Created_Time, MediaType = Enums.MediaType.Comment, Title = post.Name, Text = post.Message, MediaSource = MediaSource.Facebook, Link = post.Source, Target = target });
+                            if (post.Type == "video")
+                            {
+                                lstMedia.Add(new EventMedia() { Event = evt, SourceName = fbob.Name, SourceLink = fbob.Url, Author = evt.Creator, MediaDate = post.Created_Time, MediaType = Enums.MediaType.Video, PhotoUrl = post.Picture, MediaUrl = post.Source, Text = post.Description, MediaSource = MediaSource.Facebook, Link = post.Source, Target = target });
+                            }
+                            else if (post.Type == "photo")
+                            {
+                                lstMedia.Add(new EventMedia() { Event = evt, SourceName = fbob.Name, SourceLink = fbob.Url, Author = evt.Creator, MediaDate = post.Created_Time, MediaType = Enums.MediaType.Picture, PhotoUrl = post.Picture, Text = post.Description, MediaSource = MediaSource.Facebook, Link = post.Link, Target = target });
+                            }
+                            else if (post.Type == "status" && !mediaOnly)
+                            {
+                                lstMedia.Add(new EventMedia() { Event = evt, SourceName = fbob.Name, SourceLink = fbob.Url, Author = evt.Creator, MediaDate = post.Created_Time, MediaType = Enums.MediaType.Comment, Title = post.Name, Text = post.Message, MediaSource = MediaSource.Facebook, Link = post.Source, Target = target });
+                            }
                         }
                     }
                 }

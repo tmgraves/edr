@@ -26,17 +26,17 @@
             }
         </h1>
     </div>
-    <div class="well col-lg-2 col-md-3 col-sm-4 col-xs-12">
+    <div class="well col-lg-3 col-md-3 col-sm-4 col-xs-12">
         <div class="row">
             <div style="text-align: center;">
-                <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
+                <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12 croppedpic" style="height: 250px;">
                     @if (Model.Dancer.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault() != null)
                     {
-                        <img class="img-thumbnail" src="@Url.Content(Model.Dancer.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault().ThumbnailFilename)" />
+                        <img src="@Url.Content(Model.Dancer.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault().ThumbnailFilename)" />
                     }
                     else
                     {
-                        <img class=" img-thumbnail" src="~/Content/images/NoPic.png" />
+                        <img src="~/Content/images/NoPic.png" />
                     }
                 </div>
                 @if (User.Identity != null && User.Identity.Name == Model.Dancer.UserName)
@@ -49,9 +49,7 @@
             <div>
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <p>
-                        <a target="_blank" href="https://maps.google.com/?q=@Model.Address.Latitude,@Model.Address.Longitude">
-                            <img class="img-thumbnail" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Address.Latitude,@Model.Address.Longitude&zoom=6&size=200x100&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Address.Latitude, @Model.Address.Longitude">
-                        </a>
+                        <img src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Address.Latitude,@Model.Address.Longitude&zoom=4&size=250x100&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Address.Latitude, @Model.Address.Longitude">
                     </p>
                 </div>
                 <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -96,7 +94,7 @@
         </div>
     </div>
 
-    <div class="col-lg-10 col-md-9 col-sm-8 col-xs-12">
+    <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <ul class="nav nav-pills nav-justified" role="tablist">

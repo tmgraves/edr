@@ -36,7 +36,7 @@
         <div class="panel-body text-center">
             @if (Model.Dancer.SpotifyUri != null)
             {
-                <iframe src="https://embed.spotify.com/?uri=@Model.Dancer.SpotifyUri" width="300" height="380" frameborder="0" allowtransparency="true"></iframe>
+                <iframe src="https://embed.spotify.com/?uri=@Model.Dancer.SpotifyUri" width="250" height="380" frameborder="0" allowtransparency="true"></iframe>
                 <p>
                     <a class="btn-link" href=@Url.Action("ChangeSpotifyPlaylist", "Dancer", new { username = Model.Dancer.UserName }) title="Add Your Playlist">
                         Change Your Playlist
@@ -76,11 +76,11 @@
                             <div class="col-lg-2 col-md-2 croppedpic" style="height: 50px;">
                                 @if (cls.PhotoUrl != null)
                                 {
-                                    <img style="width:50px; padding: 2px;" src="@cls.PhotoUrl" />
+                                    <img class="img-circle" style="width:50px; padding: 2px;" src="@cls.PhotoUrl" />
                                 }
                                 else
                                 {
-                                    <img style="width:40px; padding: 2px;" src="@Url.Content("~/Content/images/dance.png")" />
+                                    <img class="img-circle" style="width:40px; padding: 2px;" src="@Url.Content("~/Content/images/dance.png")" />
                                 }
                             </div>
                             <div class="col-lg-10 col-md-10">
@@ -114,11 +114,11 @@
                             <div class="col-lg-2 col-md-2 croppedpic" style="height: 50px;">
                                 @if (social.PhotoUrl != null)
                                 {
-                                    <img style="width:50px; padding: 2px;" src="@social.PhotoUrl" />
+                                    <img class="img-circle" style="width:50px; padding: 2px;" src="@social.PhotoUrl" />
                                 }
                                 else
                                 {
-                                    <img style="width:40px; padding: 2px;" src="@Url.Content("~/Content/images/social.jpg")" />
+                                    <img class="img-circle" style="width:40px; padding: 2px;" src="@Url.Content("~/Content/images/social.jpg")" />
                                 }
                             </div>
                             <div class="col-lg-10 col-md-10">

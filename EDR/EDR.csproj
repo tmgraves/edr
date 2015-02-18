@@ -766,7 +766,7 @@
     <Content Include="Views\Event\Edit.cshtml" />
     <Content Include="Views\Shared\_BasicTeacherListPartial.cshtml" />
     <Content Include="Views\Shared\_PictureListPartial.cshtml" />
-    <Content Include="Views\Event\ChangePicture.cshtml" />
+    <Content Include="Views\Event\ChangeCover.cshtml" />
     <Content Include="Views\Event\View.cshtml" />
     <Content Include="Views\Event\PostPicture.cshtml" />
     <Content Include="Views\Shared\_VideoListPartial.cshtml" />

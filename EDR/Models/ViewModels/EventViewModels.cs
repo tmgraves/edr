@@ -142,6 +142,11 @@ namespace EDR.Models.ViewModels
         public IEnumerable<FacebookPhoto> FacebookPictures { get; set; }
     }
 
+    public class EventChangeCoverViewModel : EventBaseViewModel
+    {
+        public IEnumerable<Media> Media { get; set; }
+    }
+
     public class EventPostPictureViewModel : EventBaseViewModel
     {
         public IEnumerable<FacebookPhoto> FacebookPictures { get; set; }

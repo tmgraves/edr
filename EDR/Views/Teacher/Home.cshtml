@@ -8,19 +8,25 @@
     Layout = "~/Views/Teacher/_TeacherLayout.cshtml";
 }
 
+<script type="text/javascript">
+    $(document).ready(function (e) {
+        //  locate each partial section
+        //  if it has a URL set, load the contents into the area.
+
+        $(".partialContents").each(function (index, item) {
+            var url = $(item).data("url");
+            if (url && url.length > 0) {
+                $(item).load(url);
+            }
+        });
+    });
+</script>
+
 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-    <h4>Recent Updates</h4>
-    @if (Model.MediaUpdates.Count() > 0)
-    {
-        foreach (var media in Model.MediaUpdates)
-        {
-            @Html.Partial("~/Views/Shared/_MediaPartial.cshtml", media)
-        }
-    }
-    else
-    {
-        @: No Updates
-    }
+    <h4>Recent Activity</h4>
+    <div class="partialContents" data-url="/Teacher/@Model.Teacher.ApplicationUser.UserName/GetUpdates">
+        <img src="~/Content/images/indicator.white.gif" />Loading...
+    </div>
 </div>
 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
     <div class="panel panel-success">
