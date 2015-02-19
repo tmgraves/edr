@@ -39,6 +39,7 @@ namespace EDR.Models
         [Required]
         public string SourceLink { get; set; }
         public MediaTarget Target { get; set; }
+        public Playlist Playlist { get; set; }
     }
 
     public class EventMedia : Media

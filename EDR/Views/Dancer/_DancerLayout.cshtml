@@ -32,17 +32,17 @@
                 <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12 croppedpic" style="height: 250px;">
                     @if (Model.Dancer.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault() != null)
                     {
-                        <img src="@Url.Content(Model.Dancer.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault().ThumbnailFilename)" />
+                        <img style="max-width: 100%;" src="@Url.Content(Model.Dancer.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault().ThumbnailFilename)" />
                     }
                     else
                     {
-                        <img src="~/Content/images/NoPic.png" />
+                        <img style="max-width: 100%;" src="~/Content/images/NoPic.png" />
                     }
                 </div>
                 @if (User.Identity != null && User.Identity.Name == Model.Dancer.UserName)
                 {
                     <p>
-                        <a style="font-size: small;" href="@Url.Action("ChangePicture", "Dancer")">Change Picture</a>
+                        <a style="font-size: small;" href="@Url.Action("ChangePicture", "Dancer", new { returnUrl = Request.Url.AbsolutePath } )">Change Picture</a>
                     </p>
                 }
             </div>

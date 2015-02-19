@@ -159,11 +159,12 @@ facebookvideoimage img
 
 .croppedpic
 {
+    text-align: center;
     overflow: hidden;
 }
 .croppedpic img
 {
-    width: 100%;
+    max-width: 100%;
 }
 .checkboxlist input
 {

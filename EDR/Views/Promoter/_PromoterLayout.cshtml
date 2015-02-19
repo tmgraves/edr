@@ -13,30 +13,32 @@
             @Model.Promoter.ApplicationUser.FullName
             @if (User.Identity != null && User.Identity.Name == Model.Promoter.ApplicationUser.UserName)
             {
-                <a title="Edit Profile" href="@Url.Action("Edit", "Promoter", new { username = Model.Promoter.ApplicationUser.UserName })">
-                    <i class="glyphicon glyphicon glyphicon-pencil btn-sm btn-info" style="vertical-align: middle;"></i>
-                    <span class="sr-only">Edit Profile</span>
+                <a class="btn btn-info" title="Edit Profile" href="@Url.Action("Edit", "Promoter", new { username = Model.Promoter.ApplicationUser.UserName })">
+                    <i class="glyphicon glyphicon-pencil" style="vertical-align: middle;"></i>
+                    Edit
                 </a>
             }
+            <br />
+            <small>Promoter</small>
         </h1>
     </div>
-    <div class="well col-lg-2 col-md-2 col-sm-2 col-xs-2">
+    <div class="well col-lg-3 col-md-3 col-sm-2 col-xs-2">
         <div class="row">
             <div style="text-align: center;">
-                <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
+                <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12 croppedpic" style="height: 250px;">
                     @if (Model.Promoter.ApplicationUser.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault() != null)
                     {
-                        <img class=" img-thumbnail" src="@Url.Content(Model.Promoter.ApplicationUser.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault().ThumbnailFilename)" />
+                        <img src="@Url.Content(Model.Promoter.ApplicationUser.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault().ThumbnailFilename)" />
                     }
                     else
                     {
-                        <img class=" img-thumbnail" src="~/Content/images/NoPic.png" />
+                        <img src="~/Content/images/NoPic.png" />
                     }
                 </div>
                 @if (User.Identity != null && User.Identity.Name == Model.Promoter.ApplicationUser.UserName)
                 {
                     <p>
-                        <a style="font-size: small;" href="@Url.Action("ChangePicture", "Dancer")">Change Picture</a>
+                        <a style="font-size: small;" href="@Url.Action("ChangePicture", "Dancer", new { returnUrl = Request.Url.AbsolutePath } )">Change Picture</a>
                     </p>
                 }
             </div>
@@ -44,7 +46,7 @@
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <p>
                         <a target="_blank" href="https://maps.google.com/?q=@Model.Address.Latitude,@Model.Address.Longitude">
-                            <img class="img-thumbnail" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Address.Latitude,@Model.Address.Longitude&zoom=6&size=180x100&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Address.Latitude, @Model.Address.Longitude">
+                            <img src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Address.Latitude,@Model.Address.Longitude&zoom=6&size=250x100&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Address.Latitude, @Model.Address.Longitude">
                         </a>
                     </p>
                 </div>
@@ -65,12 +67,12 @@
             </div>
         </div>
     </div>
-    <div class="col-md-10 col-lg-10 col-sm-10 col-xs-10">
+    <div class="col-lg-9 col-md-9 col-sm-10 col-xs-10">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <ul class="nav nav-pills nav-justified" role="tablist">
-                    <li @if (ctrName == "Home") { <text> class="active" </text>         }><a href="@Url.Action("Home", "Promoter", new { username = Model.Promoter.ApplicationUser.UserName })">Home</a></li>
-                    <li @if (ctrName == "MySocials") { <text> class="active" </text>        }><a href="@Url.Action("MySocials", "Promoter", new { username = Model.Promoter.ApplicationUser.UserName })">My Events</a></li>
+                    <li @if (ctrName == "Home") { <text> class="active" </text>          }><a href="@Url.Action("Home", "Promoter", new { username = Model.Promoter.ApplicationUser.UserName })">Home</a></li>
+                    <li @if (ctrName == "MySocials") { <text> class="active" </text>         }><a href="@Url.Action("MySocials", "Promoter", new { username = Model.Promoter.ApplicationUser.UserName })">My Events</a></li>
                 </ul>
             </div>
             <div class="panel-body">

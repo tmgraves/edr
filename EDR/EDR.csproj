@@ -312,7 +312,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Models\Video.cs" />
-    <Compile Include="Models\ViewModels\ChangePictureViewModel.cs" />
     <Compile Include="Models\ViewModels\DancerListViewModel.cs" />
     <Compile Include="Models\ViewModels\DancerViewModels.cs" />
     <Compile Include="Models\ViewModels\DanceStyleViewModels.cs" />
@@ -394,8 +393,11 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\images\camera.png" />
+    <Content Include="Content\images\class.jpg" />
     <Content Include="Content\images\comment.png" />
     <Content Include="Content\images\dance.png" />
+    <Content Include="Content\images\dancecollage.jpg" />
+    <Content Include="Content\images\dancer.png" />
     <Content Include="Content\images\dancers.png" />
     <Content Include="Content\images\email.png" />
     <Content Include="Content\images\error.png" />
@@ -416,10 +418,13 @@
     <Content Include="Content\images\Play1Pressed.png" />
     <Content Include="Content\images\NoPic.png" />
     <Content Include="Content\images\Play1PressedSmall.png" />
+    <Content Include="Content\images\promoter.png" />
     <Content Include="Content\images\Share.png" />
     <Content Include="Content\images\social.jpg" />
+    <Content Include="Content\images\socialdance.jpg" />
     <Content Include="Content\images\spotify.png" />
     <Content Include="Content\images\SpotifyHelp.png" />
+    <Content Include="Content\images\teacher.png" />
     <Content Include="Content\images\thumbdown.png" />
     <Content Include="Content\images\thumbdownsm.png" />
     <Content Include="Content\images\thumbup.png" />

@@ -76,6 +76,12 @@ namespace EDR.Models.ViewModels
 
     }
 
+    public class EventUpdates : EventBaseViewModel
+    {
+        public List<Media> Media { get; set; }
+        public DateTime Created { get; set; }
+    }
+
     public class EventBaseViewModel
     {
         public Event Event { get; set; }

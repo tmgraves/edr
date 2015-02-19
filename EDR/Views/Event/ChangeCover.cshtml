@@ -12,95 +12,111 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-md-2">
-            @if (Model.Event.PhotoUrl != null)
+        <div class="thumbnail col-md-2">
+            @if (Model.Event.VideoUrl != null)
             {
-                <img class="img-thumbnail" src="@Url.Content(Model.Event.PhotoUrl)" />
+                <div style="height: 150px;">
+                    @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new EventVideo() { Event = Model.Event, PhotoUrl = Model.Event.PhotoUrl, VideoUrl = Model.Event.VideoUrl })
+                </div>
             }
             else
             {
-                <img class="img-thumbnail" src="~/Content/images/MissingImage.jpg" />
+                <a target="_blank" href="@Url.Content(Model.Event.PhotoUrl)">
+                    <div class="croppedpic" style="height: 150px;">
+                        @if (Model.Event.PhotoUrl != null)
+                        {
+                            <img src="@Url.Content(Model.Event.PhotoUrl)" />
+                        }
+                        else
+                        {
+                            <img src="~/Content/images/MissingImage.jpg" />
+                        }
+                    </div>
+                </a>
             }
         </div>
     </div>
-    <div class="tabbable">
-        <ul class="nav nav-tabs nav-justified" role="tablist">
-            <li class="active"><a href="#newpic" data-toggle="tab">New Picture</a></li>
-            <li><a href="#eventmedia" data-toggle="tab">Choose an Existing Picture or Video</a></li>
-        </ul>
-        <div class="tab-content">
-            <div id="newpic" class="tab-pane active">
-                <h3>Upload a New Picture</h3>
-                @using (Html.BeginForm("UploadPicture",
+    <div class="tabbable panel panel-default">
+        <div class="panel-heading">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+                <li class="active"><a href="#newpic" data-toggle="tab">New Picture</a></li>
+                <li><a href="#eventmedia" data-toggle="tab">Choose an Existing Picture or Video</a></li>
+            </ul>
+        </div>
+        <div class="panel-body">
+            <div class="tab-content">
+                <div id="newpic" class="tab-pane active">
+                    <h3>Upload a New Picture</h3>
+                    @using (Html.BeginForm("UploadPicture",
                                 "Event",
                                 new { returnUrl = @Url.Action("ChangeCover", new { id = @Model.Event.Id }) },
                                 FormMethod.Post,
                                 new { enctype = "multipart/form-data" }))
-                {
-                    @Html.HiddenFor(x => x.Event.Id)
-                    <div class="form-group form-inline">
-                        <input type="file" name="file" id="file" class="form-control" />
-                        <input id="submit" type="submit" class="btn btn-default" value="Submit" />
-                    </div>
-                    <p>
-                        @ViewBag.Message
-                    </p>
+                    {
+                        @Html.HiddenFor(x => x.Event.Id)
+                        <div class="form-group form-inline">
+                            <input type="file" name="file" id="file" class="form-control" />
+                            <input id="submit" type="submit" class="btn btn-default" value="Submit" />
+                        </div>
+                        <p>
+                            @ViewBag.Message
+                        </p>
 
-                    <script type="text/javascript">
-                        $('#submit').click(function () {
-                            //check whether browser fully supports all File API
-                            if (window.File && window.FileReader && window.FileList && window.Blob) {
-                                //get the file size and file type from file input field
-                                var fsize = $('#file')[0].files[0].size;
+                        <script type="text/javascript">
+                            $('#submit').click(function () {
+                                //check whether browser fully supports all File API
+                                if (window.File && window.FileReader && window.FileList && window.Blob) {
+                                    //get the file size and file type from file input field
+                                    var fsize = $('#file')[0].files[0].size;
 
-                                if (fsize > 1048576) //do something if file size more than 1 mb (1048576)
-                                {
-                                    alert("File is too big.  Please try another.");
-                                    return false;
+                                    if (fsize > 1048576) //do something if file size more than 1 mb (1048576)
+                                    {
+                                        alert("File is too big.  Please try another.");
+                                        return false;
+                                    } else {
+                                        return true;
+                                    }
                                 } else {
-                                    return true;
+                                    alert("Please upgrade your browser, because your current browser lacks some new features we need!");
                                 }
-                            } else {
-                                alert("Please upgrade your browser, because your current browser lacks some new features we need!");
-                            }
-                        });
-                    </script>
-                }
-            </div>
-            <div id="eventmedia" class="tab-pane">
-                <ul class="list-inline">
-                    @if (Model.Media != null && Model.Media.Count() > 0)
-                    {
-                        foreach (var media in Model.Media)
-                        {
-                            <li style="vertical-align: top; width: 150px;">
-                                @if (media.MediaType == MediaType.Video)
-                                {
-                                    <div style="height: 150px;">
-                                        @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new EventVideo() { Event = Model.Event, PhotoUrl = media.PhotoUrl, VideoUrl = media.MediaUrl })
-                                    </div>
-                                }
-                                else
-                                {
-                                    <a class="thumbnail" target="_blank" href="@Url.Content(media.PhotoUrl)">
-                                        <div class="croppedpic" style="height: 150px;">
-                                            <img src="@Url.Content(media.PhotoUrl)" />
-                                        </div>
-                                    </a>
-                                }
-
-                                <a title="Add to Cover" href="@Url.Action("Cover", "Event", new { eventId = Model.Event.Id, photoUrl = media.PhotoUrl, videoUrl = media.MediaUrl, returnUrl = @Url.Action("View", "Event", new { id = @Model.Event.Id, eventType = Model.EventType }) })">
-                                    <i class="glyphicon glyphicon-user btn btn-primary"></i>
-                                    <span class="sr-only">Add to Cover</span>
-                                </a>
-                            </li>
-                        }
+                            });
+                        </script>
                     }
-                    else
-                    {
-                        @:There are no pictures for this event.
+                </div>
+                <div id="eventmedia" class="tab-pane">
+                    <ul class="list-inline">
+                        @if (Model.Media != null && Model.Media.Count() > 0)
+                        {
+                            foreach (var media in Model.Media)
+                            {
+                                <li class="thumbnail" style="vertical-align: top; width: 150px;">
+                                    @if (media.MediaType == MediaType.Video)
+                                    {
+                                        <div style="height: 100px;">
+                                            @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new EventVideo() { Event = Model.Event, PhotoUrl = media.PhotoUrl, VideoUrl = media.MediaUrl })
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <a target="_blank" href="@Url.Content(media.PhotoUrl)">
+                                            <div class="croppedpic" style="height: 100px;">
+                                                <img src="@Url.Content(media.PhotoUrl)" />
+                                            </div>
+                                        </a>
+                                    }
+                                    <a class="btn btn-primary" style="width: 100%;" title="Add to Cover" href="@Url.Action("Cover", "Event", new { eventId = Model.Event.Id, photoUrl = media.PhotoUrl, videoUrl = media.MediaUrl, returnUrl = @Url.Action("View", "Event", new { id = @Model.Event.Id, eventType = Model.EventType }) })">
+                                        <i class="glyphicon glyphicon-plus-sign"></i>
+                                        Set Cover
+                                    </a>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            @:There are no pictures for this event.
                 }
-                </ul>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>

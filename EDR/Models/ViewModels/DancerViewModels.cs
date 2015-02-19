@@ -39,4 +39,11 @@ namespace EDR.Models.ViewModels
         public IEnumerable<DanceStyleListItem> SelectedStyles { get; set; }
         public PostedStyles PostedStyles { get; set; }
     }
+
+    public class ChangePictureViewModel
+    {
+        public ApplicationUser Dancer { get; set; }
+        public IEnumerable<FacebookPhoto> FacebookPictures { get; set; }
+        public string ReturlUrl { get; set; }
+    }
 }

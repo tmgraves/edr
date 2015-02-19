@@ -701,9 +701,10 @@ namespace EDR.Controllers
         }
 
         [Authorize]
-        public ActionResult ChangePicture()
+        public ActionResult ChangePicture(string returnUrl)
         {
             var model = new ChangePictureViewModel();
+            model.ReturlUrl = returnUrl;
 
             var id = User.Identity.GetUserId();
             model.Dancer = DataContext.Users.Where(x => x.Id == id).Include("UserPictures").FirstOrDefault();
@@ -730,7 +731,7 @@ namespace EDR.Controllers
         }
 
         [Authorize]
-        public ActionResult ProfilePicture(int id)
+        public ActionResult ProfilePicture(int id, string returnUrl)
         {
             try
             {
@@ -752,11 +753,11 @@ namespace EDR.Controllers
 
                 DataContext.Entry(dancer).State = EntityState.Modified;
                 DataContext.SaveChanges();
-                return RedirectToAction("ChangePicture", "Dancer", new { username = User.Identity.Name });
+                return Redirect(returnUrl);
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ChangePicture", "Dancer", new { username = User.Identity.Name });
+                return RedirectToAction("ChangePicture", "Dancer", new { username = User.Identity.Name, returnUrl = returnUrl });
             }
         }
 

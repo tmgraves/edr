@@ -150,7 +150,6 @@ namespace EDR.Controllers
             var model = new EventVideos();
             model.EventType = eventType;
             model.ReturnUrl = Url.Action("Videos", new { id = id, eventType = eventType });
-            var lstVideos = new List<EventVideo>();
 
             var evt = DataContext.Events.Where(e => e.Id == id)
                     .Include("Creator")
@@ -158,47 +157,17 @@ namespace EDR.Controllers
                     .Include("Videos.Author")
                     .Include("Playlists")
                     .Include("Playlists.Author")
+                    .Include("LinkedFacebookObjects")
                     .FirstOrDefault();
 
-            lstVideos = evt.Videos.ToList();
-
-            foreach (var lst in evt.Playlists)
+            var lstMedia = new List<Media>();
+            EventHelper.BuildVideos(evt, MediaTarget.Event, ref lstMedia);
+            var lstVideos = new List<EventVideo>();
+            foreach (var m in lstMedia)
             {
-                var videos = YouTubeHelper.GetPlaylistVideos(lst.YouTubeId);
-
-                foreach (var movie in videos)
-                {
-                    lstVideos.Add(new EventVideo() { Event = lst.Event, Author = lst.Author, PublishDate = movie.PubDate, PhotoUrl = movie.Thumbnail.ToString(), VideoUrl = movie.VideoLink.ToString(), Title = movie.Title, MediaSource = lst.MediaSource, PlayList = lst });
-                }
+                    lstVideos.Add(new EventVideo() { Event = model.Event, Id = m.Id, Author = m.Author, PublishDate = m.MediaDate, PhotoUrl = m.PhotoUrl, VideoUrl = m.MediaUrl, Title = m.Title, MediaSource = m.MediaSource, PlayList = m.Playlist });
             }
-            if (evt.FacebookId != null)
-            {
-                if (evt.Creator != null && evt.Creator.FacebookToken != null)
-                {
-                    var posts = new List<FacebookPost>();
-                    if (Session["FacebookPosts"] != null)
-                    {
-                        posts = (List<FacebookPost>)Session["FacebookPosts"];
-                    }
-                    else
-                    {
-                        posts = FacebookHelper.GetFeed(evt.FacebookId, evt.Creator.FacebookToken);
-                        Session["FacebookPosts"] = posts;
-                    }
-
-                    foreach (var post in posts)
-                    {
-                        if (post.Type == "video")
-                        {
-                            lstVideos.Add(new EventVideo() { Event = evt, Author = evt.Creator, PublishDate = post.Created_Time, PhotoUrl = post.Picture, VideoUrl = post.Source, Title = post.Description, MediaSource = MediaSource.Facebook });
-                        }
-                    }
-                }
-
-            }
-
             model.Videos = lstVideos;
-
             return PartialView("~/Views/Shared/Events/_VideosPartial.cshtml", model);
         }
 
@@ -372,19 +341,42 @@ namespace EDR.Controllers
         {
             //  Media Updates
             var lstMedia = new List<Media>();
+            var updates = new EventUpdates();
+            var rebuild = false;
 
-            var evt = DataContext.Events.Where(e => e.Id == id)
-                    .Include("Creator")
-                    .Include("Pictures")
-                    .Include("Pictures.PostedBy")
-                    .Include("Videos")
-                    .Include("Videos.Author")
-                    .Include("Playlists")
-                    .Include("Playlists.Author")
-                    .Include("LinkedFacebookObjects")
-                    .FirstOrDefault();
+            if (Session["Event" + id.ToString() + "Updates"] != null)
+            {
+                updates = (EventUpdates)Session["Event" + id.ToString() + "Updates"];
+                if (updates.Created < DateTime.Now.AddMinutes(-5))
+                {
+                    rebuild = true;
+                }
+            }
+            else
+            {
+                rebuild = true;
+            }
 
-            EventHelper.BuildUpdates(evt, MediaTarget.Event, ref lstMedia);
+            if (rebuild)
+            {
+                var evt = DataContext.Events.Where(e => e.Id == id)
+                        .Include("Creator")
+                        .Include("Pictures")
+                        .Include("Pictures.PostedBy")
+                        .Include("Videos")
+                        .Include("Videos.Author")
+                        .Include("Playlists")
+                        .Include("Playlists.Author")
+                        .Include("LinkedFacebookObjects")
+                        .FirstOrDefault();
+
+                EventHelper.BuildUpdates(evt, MediaTarget.Event, ref lstMedia);
+                Session["Event" + id.ToString() + "Updates"] = new EventUpdates() { Media = lstMedia, Created = DateTime.Now };
+            }
+            updates = (EventUpdates)Session["Event" + id.ToString() + "Updates"];
+            lstMedia = updates.Media;
+
+            return PartialView("~/Views/Shared/_MediaUpdatesPartial.cshtml", lstMedia);
 
             //foreach (var p in evt.Pictures)
             //{
@@ -426,7 +418,6 @@ namespace EDR.Controllers
             //        }
             //    }
             //}
-            return PartialView("~/Views/Shared/_MediaUpdatesPartial.cshtml", lstMedia);
             //  Media Updates
 
         }
@@ -602,7 +593,7 @@ namespace EDR.Controllers
                 var picture = ((List<InstagramPicture>)Session["InstagramPictures"]).Where(p => p.InstagramId == id).FirstOrDefault();
                 var userid = User.Identity.GetUserId();
                 var postedby = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
-                ev.Pictures.Add(new EventPicture() { Title = picture.Caption, ThumbnailFilename = picture.Thumbnail, Filename = picture.Photo, PhotoDate = picture.PhotoDate, PostedBy = postedby, MediaSource = MediaSource.Instagram, InstagramId = picture.InstagramId });
+                ev.Pictures.Add(new EventPicture() { Title = picture.Caption, ThumbnailFilename = picture.Thumbnail, Filename = picture.Photo, PhotoDate = picture.PhotoDate, PostedBy = postedby, MediaSource = MediaSource.Instagram, InstagramId = picture.InstagramId, SourceLink = picture.Link });
                 DataContext.Entry(ev).State = EntityState.Modified;
                 DataContext.SaveChanges();
                 return Redirect(returnUrl);
@@ -699,7 +690,7 @@ namespace EDR.Controllers
 
             var auth = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
 
-            var eVideo = new EventVideo() { Title = video.Name, PublishDate = video.Created_Time, FacebookId = videoId, Author = auth, VideoUrl = "https://www.facebook.com/video.php?v=" + videoId, PhotoUrl = video.Picture, MediaSource = MediaSource.Facebook };
+            var eVideo = new EventVideo() { Title = video.Name != null ? video.Name : "No Title", PublishDate = video.Created_Time, FacebookId = videoId, Author = auth, VideoUrl = "https://www.facebook.com/video.php?v=" + videoId, PhotoUrl = video.Picture, MediaSource = MediaSource.Facebook };
 
             var ev = DataContext.Events.Where(e => e.Id == eventId).Include("Videos").FirstOrDefault();
             ev.Videos.Add(eVideo);

@@ -13,11 +13,13 @@
             @Model.Teacher.ApplicationUser.FullName
             @if (User.Identity != null && User.Identity.Name == Model.Teacher.ApplicationUser.UserName)
             {
-                <a title="Edit Profile" href="@Url.Action("Edit", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })">
-                    <i class="glyphicon glyphicon glyphicon-pencil btn-sm btn-info" style="vertical-align: middle;"></i>
-                    <span class="sr-only">Edit Profile</span>
+                <a class="btn btn-info" title="Edit Profile" href="@Url.Action("Edit", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })">
+                    <i class="glyphicon glyphicon-pencil" style="vertical-align: middle;"></i>
+                    Edit
                 </a>
             }
+            <br />
+            <small>Teacher</small>
         </h1>
     </div>
     <div class="well col-lg-3 col-md-3 col-sm-12 col-xs-12">
@@ -26,17 +28,17 @@
                 <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12 croppedpic" style="height: 250px;">
                     @if (Model.Teacher.ApplicationUser.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault() != null)
                     {
-                        <img style="width: 100%;" src="@Url.Content(Model.Teacher.ApplicationUser.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault().ThumbnailFilename)" />
+                        <img style="max-width: 100%;" src="@Url.Content(Model.Teacher.ApplicationUser.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault().ThumbnailFilename)" />
                     }
                     else
                     {
-                        <img style="width: 100%;" src="~/Content/images/NoPic.png" />
+                        <img style="max-width: 100%;" src="~/Content/images/NoPic.png" />
                     }
                 </div>
                 @if (User.Identity != null && User.Identity.Name == Model.Teacher.ApplicationUser.UserName)
                 {
                     <p>
-                        <a style="font-size: small;" href="@Url.Action("ChangePicture", "Dancer")">Change Picture</a>
+                        <a style="font-size: small;" href="@Url.Action("ChangePicture", "Dancer", new { returnUrl = Request.Url.AbsolutePath })">Change Picture</a>
                     </p>
                 }
             </div>

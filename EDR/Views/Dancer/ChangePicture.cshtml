@@ -70,7 +70,7 @@
                             </div>
                             @if (!photo.ProfilePicture)
                             {
-                                <a title="Make Profile Picture" href="@Url.Action("ProfilePicture", "Dancer", new { id = photo.Id })">
+                                <a title="Make Profile Picture" href="@Url.Action("ProfilePicture", "Dancer", new { id = photo.Id, returnUrl = Model.ReturlUrl })">
                                     <i class="glyphicon glyphicon-user btn btn-primary"></i>
                                     <span class="sr-only">Edit</span>
                                 </a>
@@ -122,4 +122,7 @@
         </div>
     </div>
 </div>
+
+<a class="btn btn-primary" href="@Model.ReturlUrl">Back</a>
+
 
