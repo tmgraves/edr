@@ -10,11 +10,19 @@ namespace EDR.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public string YouTubeVideoID { get; set; }
+        public string PhotoUrl { get; set; }
+        public string SpotifyPlaylist { get; set; }
 
         public ICollection<ApplicationUser> Dancers { get; set; }
         public ICollection<Event> Events { get; set; }
         public ICollection<Series> Series { get; set; }
         public ICollection<Teacher> Teachers { get; set; }
+        public ICollection<DanceStyleVideo> Videos { get; set; }
+    }
+
+    public class DanceStyleVideo : Video
+    {
+        public DanceStyle DanceStyle { get; set; }
     }
 
     public class DanceStyleListItem

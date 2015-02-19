@@ -79,6 +79,7 @@ namespace EDR.Data
             modelBuilder.Entity<Video>().ToTable("Videos");
             modelBuilder.Entity<EventVideo>().ToTable("EventVideos");
             modelBuilder.Entity<EventPlaylist>().ToTable("EventPlaylists");
+            modelBuilder.Entity<DanceStyleVideo>().ToTable("DanceStyleVideos");
 
             //Students
             modelBuilder.Entity<Student>().ToTable("Students");

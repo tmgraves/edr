@@ -1,0 +1,91 @@
+﻿@model EDR.Models.DanceStyle
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+@using (Html.BeginForm("Details", "DanceStyle", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => x.Id)
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
+            <div class="col-md-9 col-lg-9">
+                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
+            <div class="col-md-9 col-lg-9">
+                @Html.TextAreaFor(model => model.Description, htmlAttributes: new { @class = "form-control", @style = "width: 100%; max-width: 100%;", @rows = "10" })
+                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.SpotifyPlaylist, htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
+            <div class="col-md-9 col-lg-9">
+                @Html.EditorFor(model => model.SpotifyPlaylist, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.SpotifyPlaylist, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.PhotoUrl, htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
+            <div class="col-md-9 col-lg-9">
+                @if (Model.PhotoUrl != null)
+                {
+                    <img src="@Url.Content(Model.PhotoUrl)" />
+                }
+                else
+                {
+                    <img src="~/Content/images/NoImage.png" />
+                }
+                <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    @using (Html.BeginForm("UploadPicture",
+                                    "Event",
+                                    new { returnUrl = @Url.Action("Details", new { id = @Model.Id }) },
+                                    FormMethod.Post,
+                                    new { enctype = "multipart/form-data" }))
+                    {
+                        <div class="form-group form-inline col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <div style="display: inline-block;">
+                                <input type="file" name="file" id="file" class="form-control" size="20" /><br />
+                            </div>
+                            <div style="display: inline-block;">
+                                <input id="submit" type="submit" class="btn btn-success" value="Upload Picture" />
+                            </div>
+                        </div>
+                        <p>
+                            @ViewBag.Message
+                        </p>
+
+                        <script type="text/javascript">
+                            $('#submit').click(function () {
+                                //check whether browser fully supports all File API
+                                if (window.File && window.FileReader && window.FileList && window.Blob) {
+                                    //get the file size and file type from file input field
+                                    var fsize = $('#file')[0].files[0].size;
+
+                                    if (fsize > 1048576) //do something if file size more than 1 mb (1048576)
+                                    {
+                                        alert("File is too big.  Please try another.");
+                                        return false;
+                                    } else {
+                                        return true;
+                                    }
+                                } else {
+                                    alert("Please upgrade your browser, because your current browser lacks some new features we need!");
+                                }
+                            });
+                        </script>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}

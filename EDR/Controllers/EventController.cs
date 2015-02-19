@@ -9,7 +9,6 @@ using Microsoft.AspNet.Identity;
 using EDR.Models;
 using System.Data.Entity.Validation;
 using EDR.Enums;
-
 using System.Data.Entity;
 using EDR.Utilities;
 using System.IO;

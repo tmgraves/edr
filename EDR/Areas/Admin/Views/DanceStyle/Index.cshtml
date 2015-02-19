@@ -1,0 +1,13 @@
+﻿@model IEnumerable<EDR.Models.DanceStyle>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@foreach (var style in Model)
+{
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        @style.Name
+    </div>
+}
