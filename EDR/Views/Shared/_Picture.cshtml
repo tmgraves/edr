@@ -1,0 +1,10 @@
+﻿@model EDR.Models.Picture
+
+@if (Model.Filename != null)
+{
+    <img src="@Url.Content(Model.Filename)" />
+}
+else
+{
+    <img src="~/Content/images/NoImage.png" />
+}

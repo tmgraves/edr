@@ -452,6 +452,8 @@
     <Content Include="Areas\Admin\Views\Roles\Approvals.cshtml" />
     <Content Include="Areas\Admin\Views\DanceStyle\Index.cshtml" />
     <Content Include="Areas\Admin\Views\DanceStyle\Details.cshtml" />
+    <Content Include="Areas\Admin\Views\DanceStyle\TestUpload2.cshtml" />
+    <Content Include="Areas\Admin\Views\DanceStyle\TestUpload.cshtml" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Library\DayPilot.Web.Mvc.dll" />
     <Content Include="Media\elements.css" />
@@ -808,6 +810,7 @@
     <Content Include="Views\Shared\Events\_AddLinkedFacebookGroupsPartial.cshtml" />
     <Content Include="Views\Shared\Events\_RelatedEventsPartial.cshtml" />
     <Content Include="Views\Shared\_MediaUpdatesPartial.cshtml" />
+    <Content Include="Views\Shared\_Picture.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Instagram\" />

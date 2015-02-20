@@ -2,12 +2,17 @@
 
 @{
     ViewBag.Title = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@foreach (var style in Model)
+<h2 class="page-header">All Dance Styles</h2>
+@foreach (var style in Model.OrderBy(s => s.Name))
 {
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        @style.Name
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 5px;">
+        <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12">
+            <h4>@style.Name</h4>
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-12 col-xs-12">
+            @Html.ActionLink("View", "Details", "DanceStyle", new { id = style.Id }, new { @class = "btn btn-primary" })
+        </div>
     </div>
 }
