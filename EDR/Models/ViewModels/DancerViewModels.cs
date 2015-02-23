@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EDR.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -28,6 +29,7 @@ namespace EDR.Models.ViewModels
 
         public IEnumerable<EventMedia> MediaUpdates { get; set; }
         public IEnumerable<SpotifyPlaylist> SpotifyPlaylists { get; set; }
+        public List<RoleName> Roles { get; set; }
     }
 
     public class DancerEditViewModel
@@ -45,5 +47,11 @@ namespace EDR.Models.ViewModels
         public ApplicationUser Dancer { get; set; }
         public IEnumerable<FacebookPhoto> FacebookPictures { get; set; }
         public string ReturlUrl { get; set; }
+    }
+
+    public class ProfilePicture
+    {
+        public ApplicationUser User { get; set; }
+        public string ReturnUrl { get; set; }
     }
 }

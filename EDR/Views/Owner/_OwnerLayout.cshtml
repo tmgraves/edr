@@ -13,41 +13,45 @@
             @Model.Owner.ApplicationUser.FullName
             @if (User.Identity != null && User.Identity.Name == Model.Owner.ApplicationUser.UserName)
             {
-                <a title="Edit Profile" href="@Url.Action("Edit", "Owner", new { username = Model.Owner.ApplicationUser.UserName })">
-                    <i class="glyphicon glyphicon glyphicon-pencil btn-sm btn-info" style="vertical-align: middle;"></i>
-                    <span class="sr-only">Edit Profile</span>
+                <a class="btn btn-info" title="Edit Profile" href="@Url.Action("Edit", "Owner", new { username = Model.Owner.ApplicationUser.UserName })">
+                    <i class="glyphicon glyphicon-pencil" style="vertical-align: middle;"></i>
+                    Edit
                 </a>
             }
-            <br />
-            <small>Owner</small>
+            <span class="pull-right">
+                <small>Owner</small>
+                @if (Model.Roles.Count() > 0)
+                {
+                    <span class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">
+                            Switch to...
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="@Url.Action("Home", "Dancer", new { username = Model.Owner.ApplicationUser.UserName })">Dancer Page</a></li>
+                            @if (Model.Roles.Contains(EDR.Enums.RoleName.Promoter))
+                            {
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="@Url.Action("Home", "Promoter", new { username = Model.Owner.ApplicationUser.UserName })">Promoter Page</a></li>
+                            }
+                            @if (Model.Roles.Contains(EDR.Enums.RoleName.Teacher))
+                            {
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="@Url.Action("Home", "Teacher", new { username = Model.Owner.ApplicationUser.UserName })">Teacher Page</a></li>
+                            }
+                        </ul>
+                    </span>
+                }
+            </span>
         </h1>
     </div>
-    <div class="well col-lg-2 col-md-2 col-sm-2 col-xs-2">
+    <div class="well col-lg-3 col-md-3 col-sm-12 col-xs-12">
         <div class="row">
-            <div style="text-align: center;">
-                <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
-                    @if (Model.Owner.ApplicationUser.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault() != null)
-                    {
-                        <img class=" img-thumbnail" src="@Url.Content(Model.Owner.ApplicationUser.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault().ThumbnailFilename)" />
-                    }
-                    else
-                    {
-                        <img class=" img-thumbnail" src="~/Content/images/NoPic.png" />
-                    }
-                </div>
-                @if (User.Identity != null && User.Identity.Name == Model.Owner.ApplicationUser.UserName)
-                {
-                    <p>
-                        <a style="font-size: small;" href="@Url.Action("ChangePicture", "Dancer", new { returnUrl = Request.Url.AbsolutePath })">Change Picture</a>
-                    </p>
-                }
+            <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
+                @Html.Partial("~/Views/Shared/_ProfilePicturePartial.cshtml", new EDR.Models.ViewModels.ProfilePicture() { User = Model.Owner.ApplicationUser, ReturnUrl = Url.Action("Home", "Owner", new { username = Model.Owner.ApplicationUser.UserName } )})
             </div>
             <div>
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <p>
-                        <a target="_blank" href="https://maps.google.com/?q=@Model.Address.Latitude,@Model.Address.Longitude">
-                            <img class="img-thumbnail" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Address.Latitude,@Model.Address.Longitude&zoom=6&size=180x100&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Address.Latitude, @Model.Address.Longitude">
-                        </a>
+                        <img src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Address.Latitude,@Model.Address.Longitude&zoom=4&size=250x100&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Address.Latitude, @Model.Address.Longitude">
                     </p>
                 </div>
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
@@ -67,12 +71,12 @@
             </div>
         </div>
     </div>
-    <div class="col-md-10 col-lg-10 col-sm-10 col-xs-10">
+    <div class="col-md-9 col-lg-9 col-sm-12 col-xs-12">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <ul class="nav nav-pills nav-justified" role="tablist">
-                    <li @if (ctrName == "Home") { <text> class="active" </text>      }><a href="@Url.Action("Home", "Owner", new { username = Model.Owner.ApplicationUser.UserName })">Home</a></li>
-                    <li @if (ctrName == "MyPlaces") { <text> class="active" </text>     }><a href="@Url.Action("MyPlaces", "Owner", new { username = Model.Owner.ApplicationUser.UserName })">My Places</a></li>
+                    <li @if (ctrName == "Home") { <text> class="active" </text>      }><a href="@Url.Action("Home", "Owner", new { username = Model.Owner.ApplicationUser.UserName })"><i class="glyphicon glyphicon-home"></i> Home</a></li>
+                    <li @if (ctrName == "MyPlaces") { <text> class="active" </text>     }><a href="@Url.Action("MyPlaces", "Owner", new { username = Model.Owner.ApplicationUser.UserName })"><i class="glyphicon glyphicon-globe"></i> My Places</a></li>
                 </ul>
             </div>
             <div class="panel-body">

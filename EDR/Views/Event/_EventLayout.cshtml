@@ -46,7 +46,7 @@
                 @if (Model.Event.VideoUrl != null)
                 {
                     <div style="height: 150px;">
-                        @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new EventVideo() { Event = Model.Event, PhotoUrl = Model.Event.PhotoUrl, VideoUrl = Model.Event.VideoUrl })
+                        @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new Video() { PhotoUrl = Model.Event.PhotoUrl, VideoUrl = Model.Event.VideoUrl })
                     </div>
                 }
                 else

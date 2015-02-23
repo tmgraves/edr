@@ -9,6 +9,7 @@ using System.Net;
 using EDR.Models;
 using System.Data.Entity;
 using EDR.Utilities;
+using EDR.Enums;
 
 namespace EDR.Controllers
 {
@@ -34,6 +35,8 @@ namespace EDR.Controllers
                                     .Include("Socials.Videos")
                                     .Include("Socials.Pictures")
                                     .Include("Socials.Users")
+                                    .Include("ApplicationUser")
+                                    .Include("ApplicationUser.Roles")
                                     .FirstOrDefault();
             viewModel.Events = new EventListViewModel();
 
@@ -47,6 +50,18 @@ namespace EDR.Controllers
                 viewModel.Address = Geolocation.ParseAddress("90065");
                 viewModel.Events.Location = viewModel.Address;
             }
+
+            //  Load Roles
+            viewModel.Roles = new List<RoleName>();
+            if (UserManager.IsInRole(viewModel.Promoter.ApplicationUser.Id, "Teacher"))
+            {
+                viewModel.Roles.Add(RoleName.Teacher);
+            }
+            if (UserManager.IsInRole(viewModel.Promoter.ApplicationUser.Id, "Owner"))
+            {
+                viewModel.Roles.Add(RoleName.Owner);
+            }
+            //  Load Roles
 
             // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE PromoterViewModel)
             viewModel.Events.EventType = Enums.EventType.Social;
@@ -125,32 +140,32 @@ namespace EDR.Controllers
 
             var viewModel = LoadPromoter(username);
 
-            //  Media Updates
-            var lstMedia = new List<EventMedia>();
-            var events = DataContext.Events.OfType<Social>().Where(e => e.Promoters.Any(t => t.Id == viewModel.Promoter.Id));
-            var newPictures = DataContext.Pictures.OfType<EventPicture>()
-                                .Include("Event")
-                                .Include("PostedBy")
-                                .Where(p => events.Any(e => e.Id == p.Event.Id))
-                                .OrderByDescending(p => p.PhotoDate)
-                                .Take(20);
-            foreach (var p in newPictures)
-            {
-                lstMedia.Add(new EventMedia() { Event = p.Event, Id = p.Id, Author = p.PostedBy, MediaDate = p.PhotoDate, MediaType = Enums.MediaType.Picture, PhotoUrl = p.Filename, Title = p.Title });
-            }
-            var newVideos = DataContext.Videos.OfType<EventVideo>()
-                                .Include("Event")
-                                .Include("Author")
-                                .Where(v => events.Any(e => e.Id == v.Event.Id))
-                                .OrderByDescending(v => v.PublishDate)
-                                .Take(20);
-            foreach (var v in newVideos)
-            {
-                lstMedia.Add(new EventMedia() { Event = v.Event, Id = v.Id, Author = v.Author, MediaDate = v.PublishDate, MediaType = Enums.MediaType.Video, PhotoUrl = v.PhotoUrl, MediaUrl = v.VideoUrl, Title = v.Title });
-            }
+            ////  Media Updates
+            //var lstMedia = new List<EventMedia>();
+            //var events = DataContext.Events.OfType<Social>().Where(e => e.Promoters.Any(t => t.Id == viewModel.Promoter.Id));
+            //var newPictures = DataContext.Pictures.OfType<EventPicture>()
+            //                    .Include("Event")
+            //                    .Include("PostedBy")
+            //                    .Where(p => events.Any(e => e.Id == p.Event.Id))
+            //                    .OrderByDescending(p => p.PhotoDate)
+            //                    .Take(20);
+            //foreach (var p in newPictures)
+            //{
+            //    lstMedia.Add(new EventMedia() { Event = p.Event, Id = p.Id, Author = p.PostedBy, MediaDate = p.PhotoDate, MediaType = Enums.MediaType.Picture, PhotoUrl = p.Filename, Title = p.Title });
+            //}
+            //var newVideos = DataContext.Videos.OfType<EventVideo>()
+            //                    .Include("Event")
+            //                    .Include("Author")
+            //                    .Where(v => events.Any(e => e.Id == v.Event.Id))
+            //                    .OrderByDescending(v => v.PublishDate)
+            //                    .Take(20);
+            //foreach (var v in newVideos)
+            //{
+            //    lstMedia.Add(new EventMedia() { Event = v.Event, Id = v.Id, Author = v.Author, MediaDate = v.PublishDate, MediaType = Enums.MediaType.Video, PhotoUrl = v.PhotoUrl, MediaUrl = v.VideoUrl, Title = v.Title });
+            //}
 
-            viewModel.MediaUpdates = lstMedia;
-            //  Media Updates
+            //viewModel.MediaUpdates = lstMedia;
+            ////  Media Updates
 
             viewModel.NewSocials = new EventListViewModel();
             viewModel.NewSocials.EventType = Enums.EventType.Social;
@@ -160,7 +175,7 @@ namespace EDR.Controllers
 
             viewModel.NewDancers = new List<ApplicationUser>();
             var socialArray = viewModel.Promoter.Socials.Select(c => c.Id).ToArray();
-            viewModel.NewDancers = DataContext.Users.Include("Events").Where(u => u.Events.Any(e => socialArray.Contains(e.Id)));
+            viewModel.NewDancers = DataContext.Users.Include("EventMembers").Where(u => u.EventMembers.Any(m => socialArray.Contains(m.Event.Id)));
 
             return View(viewModel);
         }
@@ -259,6 +274,26 @@ namespace EDR.Controllers
             DataContext.Promoters.Add(new Promoter { ApplicationUser = DataContext.Users.Find(User.Identity.GetUserId()) });
             DataContext.SaveChanges();
             return RedirectToAction("Manage", "Account");
+        }
+
+        public ActionResult GetUpdates(string username)
+        {
+            var evts = DataContext.Events.OfType<Social>().Where(s => s.Promoters.Any(p => p.ApplicationUser.UserName == username))
+                    .Include("Creator")
+                    .Include("Pictures")
+                    .Include("Pictures.PostedBy")
+                    .Include("Videos")
+                    .Include("Videos.Author")
+                    .Include("Playlists")
+                    .Include("Playlists.Author")
+                    .Include("LinkedFacebookObjects")
+                    .Cast<Event>();
+
+            var lstMedia = EventHelper.BuildAllUpdates(evts, MediaTarget.User);
+
+            return PartialView("~/Views/Shared/_MediaUpdatesPartial.cshtml", lstMedia);
+            //  Media Updates
+
         }
     }
 }

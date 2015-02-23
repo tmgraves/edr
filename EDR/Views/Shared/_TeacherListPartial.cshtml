@@ -3,9 +3,9 @@
 
 @foreach (var t in Model.OrderBy(x => x.ApplicationUser.FullName))
 {
-    <a class="btn btn-default col-lg-3 col-md-3 col-sm-3 col-xs-3 top" href="@Url.Action("MyTeach", "Teacher", new { username = t.ApplicationUser.UserName }) " style="text-align: left; vertical-align: top;">
-        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 thumbnail">
-            <div class="captionpic">
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" style="padding:1px;">
+        <a class="btn btn-info top" href="@Url.Action("MyTeach", "Teacher", new { username = t.ApplicationUser.UserName }) " style="text-align: left; vertical-align: top; width: 100%;">
+            <div class="captionpic" style="display: inline-block;">
                 @if (t.ApplicationUser.UserPictures != null && t.ApplicationUser.UserPictures.Count > 0)
                 {
                     <img src="@Url.Content(t.ApplicationUser.UserPictures.First().Filename)" />
@@ -15,11 +15,11 @@
                     <img src="@Url.Content("~/Content/images/NoPic.png")" />
                 }
             </div>
-        </div>
-        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
-            <span class="text-primary" style="vertical-align: top;">@t.ApplicationUser.FullName</span>
-        </div>
-    </a>
+            <div style="display: inline-block; vertical-align: top;">
+                <span>@t.ApplicationUser.FullName</span>
+            </div>
+        </a>
+    </div>
     @*@Html.ActionLink(t.ApplicationUser.FullName, "View", "Teacher", new { username = t.ApplicationUser.UserName }, htmlAttributes: new { @style = "padding: 5px" })*@
 }
 @*<ul class="list-inline col-lg-12 col-md-12 col-sm-12 col-xs-12">

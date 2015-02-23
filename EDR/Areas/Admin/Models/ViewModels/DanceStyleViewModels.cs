@@ -10,4 +10,9 @@ namespace EDR.Areas.Admin.Models.ViewModels
     {
         public DanceStyle DanceStyle { get; set; }
     }
+
+    public class DanceStyleFacebookVideosViewModel : DanceStyleBaseViewModels
+    {
+        public IEnumerable<FacebookVideo> Videos { get; set; }
+    }
 }

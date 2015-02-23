@@ -41,6 +41,7 @@ namespace EDR.Controllers
                                     .Include("DanceStyles")
                                     .Include("ApplicationUser")
                                     .Include("ApplicationUser.UserPictures")
+                                    .Include("ApplicationUser.Roles")
                                     .Include("Students.Dancer")
                                     .Include("Students.Dancer.UserPictures")
                                     .Include("Classes.Playlists")
@@ -65,6 +66,18 @@ namespace EDR.Controllers
             viewModel.Events.EventType = Enums.EventType.Class;
             viewModel.Events.Events = new List<Event>();
             viewModel.Events.Events = viewModel.Teacher.Classes;
+
+            //  Load Roles
+            viewModel.Roles = new List<RoleName>();
+            if (UserManager.IsInRole(viewModel.Teacher.ApplicationUser.Id, "Owner"))
+            {
+                viewModel.Roles.Add(RoleName.Owner);
+            }
+            if (UserManager.IsInRole(viewModel.Teacher.ApplicationUser.Id, "Promoter"))
+            {
+                viewModel.Roles.Add(RoleName.Promoter);
+            }
+            //  Load Roles
 
             return viewModel;
         }

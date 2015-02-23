@@ -1,0 +1,8 @@
+﻿@model IEnumerable<EDR.Models.DanceStyle>
+
+<ul class="list-inline col-lg-8 col-md-8 col-sm-8 col-xs-8">
+    @foreach (var item in Model.OrderBy(s => s.Name))
+    {
+        <li>@Html.ActionLink(item.Name, "Details", "DanceStyle", new { styleName = item.Name }, new { @class = "label label-info" })</li>
+    }
+</ul>

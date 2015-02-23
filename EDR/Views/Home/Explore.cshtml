@@ -7,22 +7,29 @@
 <h1 class="page-header">Pick a Dance Style...</h1>
 
 <div class="row list-group">
-    @foreach (var item in Model.DanceStyles)
+    @foreach (var item in Model.DanceStyles.OrderBy(x => x.Name))
     {
-        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
             <div class="thumbnail">
-                <img src="https://img.youtube.com/vi/@Html.DisplayFor(s => item.YouTubeVideoID)/mqdefault.jpg" />
-                <div class="caption">
-                    <h4 class="group inner list-group-item-heading">
-                        @Html.DisplayFor(n => item.Name)
-                    </h4>
-                    <p class="group inner list-group-item-text">
-                        @Html.DisplayFor(d => item.Description)
-                    </p>
-                    <p>
-                        <a href="@Url.Action("Learn", "Home", new { danceStyle = item.Id }, null)" class="btn btn-primary">Find a @item.Name Class</a>
-                        <a href="@Url.Action("Details", "DanceStyle", new { id = item.Id }, null)" class="btn btn-primary">Explore @item.Name</a>
-                    </p>
+                <div class="row">
+                    <div class="croppedpic col-lg-4 col-md-4 col-sm-12 col-xs-12" style="height: 100px;">
+                        @if (item.PhotoUrl != null)
+                        {
+                            <img style="max-width: 100%;" src="@Url.Content(item.PhotoUrl)" />
+                        }
+                        else
+                        {
+                            <img style="max-width: 100%;" src="~/Content/images/NoImage.png" />
+                        }
+                    </div>
+                    <div class="caption col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                        <h3 class="group inner list-group-item-heading">
+                            @Html.DisplayFor(n => item.Name)
+                        </h3>
+                        <a href="@Url.Action("Details", "DanceStyle", new { styleName = item.Name }, null)" class="btn btn-primary">
+                            Explore @item.Name
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

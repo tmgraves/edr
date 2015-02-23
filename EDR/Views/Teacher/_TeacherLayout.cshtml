@@ -18,29 +18,35 @@
                     Edit
                 </a>
             }
-            <br />
-            <small>Teacher</small>
+            <span class="pull-right">
+                <small>Teacher</small>
+                @if (Model.Roles.Count() > 0)
+                {
+                    <span class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">
+                            Switch to...
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="@Url.Action("Home", "Dancer", new { username = Model.Teacher.ApplicationUser.UserName })">Dancer Page</a></li>
+                            @if (Model.Roles.Contains(EDR.Enums.RoleName.Promoter))
+                            {
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="@Url.Action("Home", "Promoter", new { username = Model.Teacher.ApplicationUser.UserName })">Promoter Page</a></li>
+                            }
+                            @if (Model.Roles.Contains(EDR.Enums.RoleName.Owner))
+                            {
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="@Url.Action("Home", "Owner", new { username = Model.Teacher.ApplicationUser.UserName })">Studio Owner Page</a></li>
+                            }
+                        </ul>
+                    </span>
+                }
+            </span>
         </h1>
     </div>
     <div class="well col-lg-3 col-md-3 col-sm-12 col-xs-12">
         <div class="row">
-            <div style="text-align: center;">
-                <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12 croppedpic" style="height: 250px;">
-                    @if (Model.Teacher.ApplicationUser.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault() != null)
-                    {
-                        <img style="max-width: 100%;" src="@Url.Content(Model.Teacher.ApplicationUser.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault().ThumbnailFilename)" />
-                    }
-                    else
-                    {
-                        <img style="max-width: 100%;" src="~/Content/images/NoPic.png" />
-                    }
-                </div>
-                @if (User.Identity != null && User.Identity.Name == Model.Teacher.ApplicationUser.UserName)
-                {
-                    <p>
-                        <a style="font-size: small;" href="@Url.Action("ChangePicture", "Dancer", new { returnUrl = Request.Url.AbsolutePath })">Change Picture</a>
-                    </p>
-                }
+            <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
+                @Html.Partial("~/Views/Shared/_ProfilePicturePartial.cshtml", new EDR.Models.ViewModels.ProfilePicture() { User = Model.Teacher.ApplicationUser, ReturnUrl = Url.Action("Home", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName }) })
             </div>
             <div>
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -66,12 +72,7 @@
                     <div>
                         @if (Model.Teacher.DanceStyles.Count > 0)
                         {
-                            <ul class="list-inline col-lg-8 col-md-8 col-sm-8 col-xs-8">
-                                @foreach (var item in Model.Teacher.DanceStyles.OrderBy(s => s.Name))
-                                {
-                                        <li>@Html.ActionLink(item.Name, "Details", "DanceStyle", new { id = item.Id }, new { @class = "label label-info" })</li>
-                                }
-                            </ul>
+                            @Html.Partial("~/Views/Shared/_DanceStyleLabelPartial.cshtml", Model.Teacher.DanceStyles)
                         }
                         else
                         {
@@ -100,10 +101,10 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <ul class="nav nav-pills nav-justified" role="tablist">
-                    <li @if (ctrName == "Home") { <text> class="active" </text>     }><a href="@Url.Action("Home", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })">Home</a></li>
-                    <li @if (ctrName == "MyTeach") { <text> class="active" </text>    }><a href="@Url.Action("MyTeach", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })">My Classes/Workshops</a></li>
-                    <li @if (ctrName == "Resume") { <text> class="active" </text>     }><a href="@Url.Action("Resume", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })">My Resume</a></li>
-                    <li><a href="#myperformance" role="tab" data-toggle="tab">Where I Perform</a></li>
+                    <li @if (ctrName == "Home") { <text> class="active" </text>     }><a href="@Url.Action("Home", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })"><i class="glyphicon glyphicon-home"></i> Home</a></li>
+                    <li @if (ctrName == "MyTeach") { <text> class="active" </text>    }><a href="@Url.Action("MyTeach", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })"><i class="glyphicon glyphicon-briefcase"></i> My Classes/Workshops</a></li>
+                    <li @if (ctrName == "Resume") { <text> class="active" </text>     }><a href="@Url.Action("Resume", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })"><i class="glyphicon glyphicon-file"></i> My Resume</a></li>
+                    <li><a href="#myperformance" role="tab" data-toggle="tab"><i class="glyphicon glyphicon-map-marker"></i> Where I Perform</a></li>
                 </ul>
             </div>
             <div class="panel-body">

@@ -148,13 +148,11 @@ facebookvideoimage img
 
 .captionpic
 {
-    height: 40px;
-    width: 40px;
     overflow: hidden;
 }
 .captionpic img
 {
-    width: 40px;
+    max-width: 100%;
 }
 
 .croppedpic

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EDR.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -13,7 +14,7 @@ namespace EDR.Models.ViewModels
         public ClassNewViewModel NewClassModel { get; set; }
         public EventListViewModel NewClasses { get; set; }
         public IEnumerable<ApplicationUser> NewStudents { get; set; }
-
         public IEnumerable<EventMedia> MediaUpdates { get; set; }
+        public List<RoleName> Roles { get; set; }
     }
 }

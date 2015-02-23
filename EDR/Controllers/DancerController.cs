@@ -68,6 +68,22 @@ namespace EDR.Controllers
                 }
             }
 
+            //  Load Roles
+            viewModel.Roles = new List<RoleName>();
+            if (UserManager.IsInRole(viewModel.Dancer.Id, "Owner"))
+            {
+                viewModel.Roles.Add(RoleName.Owner);
+            }
+            if (UserManager.IsInRole(viewModel.Dancer.Id, "Promoter"))
+            {
+                viewModel.Roles.Add(RoleName.Promoter);
+            }
+            if (UserManager.IsInRole(viewModel.Dancer.Id, "Teacher"))
+            {
+                viewModel.Roles.Add(RoleName.Teacher);
+            }
+            //  Load Roles
+            
             return viewModel;
         }
 

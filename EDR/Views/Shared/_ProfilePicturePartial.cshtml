@@ -1,0 +1,18 @@
+﻿@model EDR.Models.ViewModels.ProfilePicture
+
+<div style="text-align: center;">
+    @if (Model.User.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault() != null)
+    {
+        <img class=" img-thumbnail" src="@Url.Content(Model.User.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault().Filename)" />
+    }
+    else
+    {
+        <img class=" img-thumbnail" src="~/Content/images/NoPic.png" />
+    }
+    @if (User.Identity != null && User.Identity.Name == Model.User.UserName)
+    {
+        <p>
+            <a style="font-size: small;" href="@Url.Action("ChangePicture", "Dancer", new { returnUrl = Model.ReturnUrl })">Change Picture</a>
+        </p>
+    }
+</div>

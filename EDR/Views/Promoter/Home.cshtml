@@ -7,71 +7,66 @@
     Layout = "~/Views/Promoter/_PromoterLayout.cshtml";
 }
 
+<script type="text/javascript">
+    $(document).ready(function (e) {
+        //  locate each partial section
+        //  if it has a URL set, load the contents into the area.
+
+        $(".partialContents").each(function (index, item) {
+            var url = $(item).data("url");
+            if (url && url.length > 0) {
+                $(item).load(url);
+            }
+        });
+    });
+</script>
+
 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-    <div class="panel panel-danger">
-        <div class="panel-heading">
-            New Videos/Pictures
-        </div>
-        <div class="panel-body">
-            @if (Model.MediaUpdates.Count() > 0)
-            {
-                foreach (var media in Model.MediaUpdates)
-                {
-                    @Html.Partial("~/Views/Shared/_MediaPartial.cshtml", media)
-                }
-            }
-            else
-            {
-                @: No Updates
-            }
-        </div>
+    <h4>Recent Activity</h4>
+    <div class="partialContents" data-url="/Promoter/@Model.Promoter.ApplicationUser.UserName/GetUpdates">
+        <img src="~/Content/images/indicator.white.gif" />Loading...
     </div>
+
 </div>
 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
     <div class="panel panel-success">
         <div class="panel-heading">
-            New Socials...
+            <h4>Latest Social Dances...</h4>
         </div>
-        <div class="panel-body" style="height: 300px; overflow: auto;">
+        <div class="panel-body">
             @if (Model.NewSocials.Events.Count() > 0)
             {
-                foreach (var social in Model.NewSocials.Events.OfType<Social>().OrderBy(c => c.NextDate))
+                foreach (var social in Model.NewSocials.Events.OrderBy(c => c.NextDate))
                 {
-                    <a class="btn btn-default" style="width: 100%; text-align: left; white-space: normal;" href="@Url.Action("View", "Event", new { id = social.Id, eventType = "Social" })">
-                        <div style="width: 100%;">
-                            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 thumbnail text-center">
-                                <span class="text-primary">@social.NextDate.ToString("ddd").ToUpper()</span><br /><span class="text-success">@social.NextDate.ToString("MMM").ToUpper() @social.NextDate.Day.ToString()</span><br /><span class="text-success">@social.NextDate.Year.ToString()</span>
-                            </div>
-                            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
-                                <strong>@social.Name<br />@@@social.Place.Name</strong> in <span class="text-warning">@social.Place.City</span><br />
-                                @social.StartDate.ToString("%h:mm tt")~@social.StartDate.AddMinutes(social.Duration).ToString("%h:mm tt")
-                                @if (social.Recurring)
+                    <div class="row" style="margin-top: 5px;">
+                        <a class="btn btn-warning col-lg-10 col-md-10 col-lg-offset-1 col-md-offset-1" href="@Url.Action("View", "Event", new { id = social.Id, eventType = EDR.Enums.EventType.Class })" title="@social.Name" style="text-align: left;">
+                            <div class="col-lg-2 col-md-2 croppedpic" style="height: 50px;">
+                                @if (social.PhotoUrl != null)
                                 {
-                                    ApplicationUtility.FrequencyTranslate(social.Frequency, social.Interval == null ? 0 : (int)social.Interval);
+                                    <img class="img-circle" style="width:50px; padding: 2px;" src="@social.PhotoUrl" />
                                 }
-                                @if (social.DanceStyles != null && social.DanceStyles.Count > 0)
+                                else
                                 {
-                                    var styles = "";
-                                    foreach (DanceStyle s in social.DanceStyles)
-                                    {
-                                        styles += (styles == "" ? "" : ", ") + s.Name;
-                                    }
-                                    <br /><span class="text-warning" style="white-space: normal;">@styles</span>
+                                    <img class="img-circle" style="width:40px; padding: 2px;" src="@Url.Content("~/Content/images/social.jpg")" />
                                 }
                             </div>
-                        </div>
-                    </a>
+                            <div class="col-lg-10 col-md-10">
+                                @social.Name.PadRight(20, ' ').Substring(0, 20) <i class="glyphicon glyphicon-chevron-right"></i> @social.Place.City<br />
+                                @social.NextDate.ToString("ddd, MMM dd, yyyy")
+                            </div>
+                        </a>
+                    </div>
                 }
             }
             else
             {
                 @: No New Socials
             }
+            <a class="btn btn-link pull-right" href="@Url.Action("Dance", "Home")" title="Find More Socials">
+                <h4>More...</h4>
+            </a>
         </div>
     </div>
-</div>
-
-<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
     <div class="panel panel-warning">
         <div class="panel-heading">
             New Dancers

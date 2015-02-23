@@ -1,22 +1,18 @@
 ﻿@model IEnumerable<EDR.Models.ApplicationUser>
 @using EDR.Utilities;
 
-@foreach (var t in Model.OrderBy(x => x.FullName))
+@foreach (var u in Model.OrderBy(x => x.FullName))
 {
-    <a class="btn btn-default thumbnail" href="@Url.Action("Home", "Dancer", new { username = t.UserName }) " style="text-decoration: none; width: 75px;">
+    <a href="@Url.Action("Home", "Dancer", new { username = u.UserName }) " style="text-align: left; text-decoration: none; vertical-align: top;" title="@u.FirstName">
         <div class="captionpic" style="display: inline-block;">
-            @if (t.UserPictures != null && t.UserPictures.Count > 0)
+            @if (u.UserPictures != null && u.UserPictures.Count > 0)
             {
-                <img class="pull-left" src="@Url.Content(t.UserPictures.First().ThumbnailFilename)" />
+                <img src="@Url.Content(u.UserPictures.First().Filename)" />
             }
             else
             {
-                <img class="pull-left" src="@Url.Content("~/Content/images/NoPic.png")" />
+                <img src="@Url.Content("~/Content/images/NoPic.png")" />
             }
         </div>
-        <div class="caption">
-            <span style="vertical-align: top;"><b>@t.FirstName</b></span>
-        </div>
     </a>
-    @*@Html.ActionLink(t.ApplicationUser.FullName, "View", "Teacher", new { username = t.ApplicationUser.UserName }, htmlAttributes: new { @style = "padding: 5px" })*@
 }

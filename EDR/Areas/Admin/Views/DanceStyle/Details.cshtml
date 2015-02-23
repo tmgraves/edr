@@ -27,6 +27,19 @@
     });
 </script>
 
+<script type="text/javascript">
+    $(document).ready(function (e) {
+        //  locate each partial section
+        //  if it has a URL set, load the contents into the area.
+
+        $(".partialContents").each(function (index, item) {
+            var url = $(item).data("url");
+            if (url && url.length > 0) {
+                $(item).load(url);
+            }
+        });
+    });
+</script>
 
 <div class="form-horizontal">
     <div class="form-group">
@@ -102,8 +115,15 @@
         <div class="form-group">
             @Html.LabelFor(model => model.SpotifyPlaylist, htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
             <div class="col-md-9 col-lg-9">
-                @Html.EditorFor(model => model.SpotifyPlaylist, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.SpotifyPlaylist, "", new { @class = "text-danger" })
+                <div style="display: inline-block;">
+                    @Html.EditorFor(model => model.SpotifyPlaylist, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.SpotifyPlaylist, "", new { @class = "text-danger" })
+                </div>
+                <div style="display: inline-block;">
+                    <a class="btn btn-link" href="~/Content/images/SpotifyHelp.png" target="_blank">
+                        <span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
+                    </a>
+                </div>
             </div>
         </div>
     <div class="form-group">
@@ -115,7 +135,56 @@
         </div>
     </div>
     }
-</div>
-<a>
 
-</a>
+    <h4 class="page-header">Videos</h4>
+    <div class="row">
+        <div class="col-lg-6 col-md-6">
+            @foreach (var video in Model.Videos)
+            {
+                <div class="col-lg-4 col-md-4 thumbnail" style="height: 150px;">
+                    <a class="btn btn-link pull-right" href="@Url.Action("DeleteVideo", new { id = Model.Id, videoId = video.Id })" title="Delete Video">
+                        <span class="glyphicon glyphicon-remove-circle text-danger" aria-hidden="true"></span>
+                    </a>
+                    <div style="height: 100px;">
+                        @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new Video() { PhotoUrl = video.PhotoUrl, VideoUrl = video.VideoUrl, Title = video.Title, PublishDate = video.PublishDate })
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="col-lg-6 col-md-6">
+            <div class="tabbable panel panel-info">
+                <div class="panel-heading">
+                    <ul class="nav nav-tabs nav-justified" role="tablist">
+                        <li class="active"><a href="#youtubevideos" data-toggle="tab">From <img class="img-circle" style="width: 30px;" src="@Url.Content("~/Content/images/youtube.png")" /></a></li>
+                        <li><a href="#facebookvideos" data-toggle="tab">From <img class="img-circle" style="width: 30px;" src="@Url.Content("~/Content/images/facebookSmall.png")" /></a></li>
+                    </ul>
+                </div>
+                <div class="tab-content panel-body">
+                    <div id="youtubevideos" class="tab-pane active">
+                        @using (Html.BeginForm("ImportYouTubeVideoUrl",
+                                            "DanceStyle",
+                                            new { id = Model.Id },
+                                            FormMethod.Post,
+                                            new { enctype = "multipart/form-data" }))
+                        {
+                            <div class="form-group form-inline" style="padding: 10px;">
+                                <p>
+                                    <label for="videoUrl">Video Url:</label>
+                                    <input type="text" name="videoUrl" id="videoUrl" class="form-control" size="200" />
+                                </p>
+                                <p>
+                                    <input id="submit" type="submit" class="btn btn-success" value="Import Video" />
+                                </p>
+                            </div>
+                        }
+                    </div>
+                    <div id="facebookvideos" class="tab-pane">
+                        <div class="partialContents" data-url="/Admin/DanceStyle/GetFacebookVideos/@Model.Id">
+                            <img src="~/Content/images/indicator.white.gif" />Loading...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

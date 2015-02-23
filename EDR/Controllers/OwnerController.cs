@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 using EDR.Models;
 using System.Data.Entity;
 using EDR.Utilities;
+using EDR.Enums;
 
 namespace EDR.Controllers
 {
@@ -30,6 +31,7 @@ namespace EDR.Controllers
                                 .Where(x => x.ApplicationUser.UserName == username)
                                 .Include("ApplicationUser")
                                 .Include("Places")
+                                .Include("ApplicationUser.Roles")
                                 .FirstOrDefault();
 
             if (viewModel.Owner.ApplicationUser.ZipCode != null)
@@ -40,6 +42,18 @@ namespace EDR.Controllers
             {
                 viewModel.Address = Geolocation.ParseAddress("90065");
             }
+
+            //  Load Roles
+            viewModel.Roles = new List<RoleName>();
+            if (UserManager.IsInRole(viewModel.Owner.ApplicationUser.Id, "Teacher"))
+            {
+                viewModel.Roles.Add(RoleName.Teacher);
+            }
+            if (UserManager.IsInRole(viewModel.Owner.ApplicationUser.Id, "Promoter"))
+            {
+                viewModel.Roles.Add(RoleName.Promoter);
+            }
+            //  Load Roles
 
             return viewModel;
         }

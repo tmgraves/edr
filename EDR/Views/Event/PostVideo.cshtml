@@ -315,4 +315,4 @@
     </div>
 </div>
 
-@Html.ActionLink("Back to Videos", "Videos", "Event", new { id = Model.Event.Id }, htmlAttributes: new { @class = "btn btn-primary" })
+@Html.ActionLink("Back to Videos", "Videos", "Event", new { id = Model.Event.Id, eventType = Model.EventType }, htmlAttributes: new { @class = "btn btn-primary" })

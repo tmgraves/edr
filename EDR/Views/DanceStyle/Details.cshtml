@@ -1,5 +1,6 @@
 ﻿@model EDR.Models.DanceStyle
 @using EDR.Utilities
+@using EDR.Models
 
 @{
     ViewBag.Title = "Details";
@@ -8,44 +9,69 @@
 
 <h1 class="page-header">@Model.Name</h1>
 
-<div>
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
+<div class="row">
+    <div class="col-lg-12 col-md-12 well">
+        <div class="col-lg-4 col-md-4">
+            <div class="thumbnail">
+                <div class="croppedpic" style="height: 200px;">
+                    <img src="@Url.Content(Model.PhotoUrl)" />
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8 col-md-8">
+            <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <a href="@Url.Action("Learn", "Home", new { danceStyle = Model.Id }, null)" class="btn btn-primary col-lg-12 col-md-12 col-sm-12 col-xs-12" style="text-align: center;">
+                        <div class="croppedpic col-lg-12 col-md-12 col-sm-12 col-xs-12" style="height:100px;">
+                            <img src="~/Content/images/danceclass.jpg" />
+                        </div>
+                        <h4 class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            Find a Class or Workshop
+                        </h4>
+                    </a>
+                </div>
+                <div class="col-lg-6 col-md-6">
+                    <a href="@Url.Action("Social", "Home", new { danceStyle = Model.Id }, null)" class="btn btn-warning col-lg-12 col-md-12 col-sm-12 col-xs-12" style="text-align: center;">
+                        <div class="croppedpic col-lg-12 col-md-12 col-sm-12 col-xs-12" style="height:100px;">
+                            <img src="~/Content/images/socialdance.jpg" />
+                        </div>
+                        <h4 class="col-lg-12 col-md-12 col-sm-12 col-xs-12">Find a Place to Dance</h4>
+                    </a>
+                </div>
+            </div>
+            <div class="row well-lg">
+                @Html.DisplayFor(model => model.Description)
+            </div>
+        </div>
+    </div>
 
-        <dd>
-            @Html.DisplayFor(model => model.Description)
-        </dd>
+    <div class="col-lg-4 col-md-4">
+        <div class="col-lg-12 col-md-12">
+            <h4>The Teachers...</h4>
+            @Html.Partial("~/Views/Shared/_TeacherListPartial.cshtml", Model.Teachers)
+        </div>
+        <div class="col-lg-12 col-md-12">
+            <h4>The Music...</h4>
+            <iframe src="https://embed.spotify.com/?uri=@Model.SpotifyPlaylist" width="300" height="380" frameborder="0" allowtransparency="true"></iframe>
+        </div>
+    </div>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Teachers)
-        </dt>
-
-        <dd>
-            <ul class="list-inline">
-                @if (Model.Teachers != null)
+    <div class="col-lg-8 col-md-8">
+        <h4>And The Dance...</h4>
+            @if (Model.Videos != null)
+            {
+                foreach (var video in Model.Videos)
                 {
-                    foreach (var t in Model.Teachers)
-                    {
-                        <li>@Html.ActionLink(t.ApplicationUser.FullName, "View", "Teacher", new { username = t.ApplicationUser.UserName }, null)</li>
-                    }
+                    <div class="thumbnail col-lg-6 col-md-6 col-sm-12 col-xs-12" style="height: 200px;">
+                        @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new Video() { PhotoUrl = video.PhotoUrl, VideoUrl = video.VideoUrl, Title = video.Title, PublishDate = video.PublishDate })
+                    </div>
                 }
-            </ul>
-        </dd>
+            }
+    </div>
 
-        <dt>
-            Video
-        </dt>
-
-        <dd>
-            <iframe width=" 500" height="300" src="//www.youtube.com/embed/@Html.DisplayFor(model => model.YouTubeVideoID)" frameborder="0" allowfullscreen></iframe>
-        </dd>
-    </dl>
 </div>
-<a href="@Url.Action("Learn", "Home", new { danceStyle = Model.Id }, null)" class="btn btn-primary">Find a Class or Workshop</a>
-<a href="@Url.Action("Social", "Home", new { danceStyle = Model.Id }, null)" class="btn btn-primary">Find a Place to Dance</a>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Explore", "Home")
-</p>
+<div class="row">
+    <p>
+        @Html.ActionLink("Back to Dance Styles", "Explore", "Home", null, new { @class = "btn btn-primary" } )
+    </p>
+</div>

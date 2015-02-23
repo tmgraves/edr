@@ -18,29 +18,35 @@
                     Edit
                 </a>
             }
-            <br />
-            <small>Promoter</small>
+            <span class="pull-right">
+                <small>Promoter</small>
+                @if (Model.Roles.Count() > 0)
+                {
+                    <span class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">
+                            Switch to...
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="@Url.Action("Home", "Dancer", new { username = Model.Promoter.ApplicationUser.UserName })">Dancer Page</a></li>
+                            @if (Model.Roles.Contains(EDR.Enums.RoleName.Owner))
+                            {
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="@Url.Action("Home", "Owner", new { username = Model.Promoter.ApplicationUser.UserName })">Studio Owner Page</a></li>
+                            }
+                            @if (Model.Roles.Contains(EDR.Enums.RoleName.Teacher))
+                            {
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="@Url.Action("Home", "Teacher", new { username = Model.Promoter.ApplicationUser.UserName })">Teacher Page</a></li>
+                            }
+                        </ul>
+                    </span>
+                }
+            </span>
         </h1>
     </div>
     <div class="well col-lg-3 col-md-3 col-sm-2 col-xs-2">
         <div class="row">
-            <div style="text-align: center;">
-                <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12 croppedpic" style="height: 250px;">
-                    @if (Model.Promoter.ApplicationUser.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault() != null)
-                    {
-                        <img src="@Url.Content(Model.Promoter.ApplicationUser.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault().ThumbnailFilename)" />
-                    }
-                    else
-                    {
-                        <img src="~/Content/images/NoPic.png" />
-                    }
-                </div>
-                @if (User.Identity != null && User.Identity.Name == Model.Promoter.ApplicationUser.UserName)
-                {
-                    <p>
-                        <a style="font-size: small;" href="@Url.Action("ChangePicture", "Dancer", new { returnUrl = Request.Url.AbsolutePath } )">Change Picture</a>
-                    </p>
-                }
+            <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
+                @Html.Partial("~/Views/Shared/_ProfilePicturePartial.cshtml", new EDR.Models.ViewModels.ProfilePicture() { User = Model.Promoter.ApplicationUser, ReturnUrl = Url.Action("Home", "Promoter", new { username = Model.Promoter.ApplicationUser.UserName }) })
             </div>
             <div>
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -71,8 +77,8 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <ul class="nav nav-pills nav-justified" role="tablist">
-                    <li @if (ctrName == "Home") { <text> class="active" </text>          }><a href="@Url.Action("Home", "Promoter", new { username = Model.Promoter.ApplicationUser.UserName })">Home</a></li>
-                    <li @if (ctrName == "MySocials") { <text> class="active" </text>         }><a href="@Url.Action("MySocials", "Promoter", new { username = Model.Promoter.ApplicationUser.UserName })">My Events</a></li>
+                    <li @if (ctrName == "Home") { <text> class="active" </text>          }><a href="@Url.Action("Home", "Promoter", new { username = Model.Promoter.ApplicationUser.UserName })"><i class="glyphicon glyphicon-home"></i> Home</a></li>
+                    <li @if (ctrName == "MySocials") { <text> class="active" </text>         }><a href="@Url.Action("MySocials", "Promoter", new { username = Model.Promoter.ApplicationUser.UserName })"><i class="glyphicon glyphicon-calendar"></i> @(Model.Promoter.ApplicationUser.FirstName)'s Dance Socials</a></li>
                 </ul>
             </div>
             <div class="panel-body">

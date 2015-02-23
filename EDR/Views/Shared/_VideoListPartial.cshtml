@@ -1,7 +1,8 @@
 ﻿@model IEnumerable<EDR.Models.EventVideo>
+@using EDR.Models
 
 <ul class="list-inline">
-    @foreach (var video in Model)
+    @foreach (var video in Model.Cast<Video>())
     {
         <li>
             <div class="row">

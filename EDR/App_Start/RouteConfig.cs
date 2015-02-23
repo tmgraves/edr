@@ -29,12 +29,20 @@ namespace EDR
             routes.MapRoute(
                 name: "StyleIndex",
                 url: "DanceStyle/Index",
-                defaults: new { controller = "DanceStyle", action = "Index" }
+                defaults: new { controller = "DanceStyle", action = "Index" },
+                namespaces: new[] { "EDR.Controllers" }
+            );
+            routes.MapRoute(
+                name: "StyleView",
+                url: "DanceStyle/{styleName}",
+                defaults: new { controller = "DanceStyle", action = "Details", styleName = UrlParameter.Optional },
+                namespaces: new[] { "EDR.Controllers" }
             );
             routes.MapRoute(
                 name: "StyleIndexAdd",
                 url: "DanceStyle/Index_AddItem",
-                defaults: new { controller = "DanceStyle", action = "Index_AddItem" }
+                defaults: new { controller = "DanceStyle", action = "Index_AddItem" },
+                namespaces: new[] { "EDR.Controllers" }
             );
 
             routes.MapRoute(
@@ -196,7 +204,7 @@ namespace EDR
             routes.MapRoute(
                 name: "SocialActions",
                 url: "Social/{id}/{action}",
-                defaults: new { controller = "Event", action = UrlParameter.Optional, eventType = EventType.Class }
+                defaults: new { controller = "Event", action = UrlParameter.Optional, eventType = EventType.Social }
             );
 
             routes.MapRoute(
@@ -396,7 +404,8 @@ namespace EDR
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional },
+                namespaces: new[] { "EDR.Controllers" }
             );
         }
     }

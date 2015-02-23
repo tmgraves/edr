@@ -1,4 +1,5 @@
 ﻿@model EDR.Models.ViewModels.EventVideos
+@using EDR.Models
 @using EDR.Enums
 
 @if (Model.Videos != null && Model.Videos.Count() > 0)
@@ -41,7 +42,7 @@
                         </div>
                     </div>
                     <div style="height: 100px;">
-                        @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", video)
+                        @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new Video() { PhotoUrl = video.PhotoUrl, VideoUrl = video.VideoUrl, Title = video.Title, PublishDate = video.PublishDate })
                     </div>
                 </div>
             </li>

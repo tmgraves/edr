@@ -398,6 +398,8 @@
     <Content Include="Content\images\class.jpg" />
     <Content Include="Content\images\comment.png" />
     <Content Include="Content\images\dance.png" />
+    <Content Include="Content\images\dancebanner.jpg" />
+    <Content Include="Content\images\danceclass.jpg" />
     <Content Include="Content\images\dancecollage.jpg" />
     <Content Include="Content\images\dancer.png" />
     <Content Include="Content\images\dancers.png" />
@@ -424,6 +426,7 @@
     <Content Include="Content\images\Share.png" />
     <Content Include="Content\images\social.jpg" />
     <Content Include="Content\images\socialdance.jpg" />
+    <Content Include="Content\images\socialdance2.jpg" />
     <Content Include="Content\images\spotify.png" />
     <Content Include="Content\images\SpotifyHelp.png" />
     <Content Include="Content\images\teacher.png" />
@@ -454,6 +457,7 @@
     <Content Include="Areas\Admin\Views\DanceStyle\Details.cshtml" />
     <Content Include="Areas\Admin\Views\DanceStyle\TestUpload2.cshtml" />
     <Content Include="Areas\Admin\Views\DanceStyle\TestUpload.cshtml" />
+    <Content Include="Areas\Admin\Views\DanceStyle\_FacebookVideosPartial.cshtml" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Library\DayPilot.Web.Mvc.dll" />
     <Content Include="Media\elements.css" />
@@ -780,7 +784,6 @@
     <Content Include="Views\Event\ChangeCover.cshtml" />
     <Content Include="Views\Event\View.cshtml" />
     <Content Include="Views\Event\PostPicture.cshtml" />
-    <Content Include="Views\Shared\_VideoListPartial.cshtml" />
     <Content Include="Views\Shared\_VideoPlayerPartial.cshtml" />
     <Content Include="Views\Dancer\Home.cshtml" />
     <Content Include="Views\Owner\Home.cshtml" />
@@ -811,6 +814,8 @@
     <Content Include="Views\Shared\Events\_RelatedEventsPartial.cshtml" />
     <Content Include="Views\Shared\_MediaUpdatesPartial.cshtml" />
     <Content Include="Views\Shared\_Picture.cshtml" />
+    <Content Include="Views\Shared\_DanceStyleLabelPartial.cshtml" />
+    <Content Include="Views\Shared\_ProfilePicturePartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Instagram\" />

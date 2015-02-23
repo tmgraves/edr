@@ -24,27 +24,37 @@
                     Add Accounts
                 </a>
             }
+            <span class="pull-right">
+                @if (Model.Roles.Count() > 0)
+                {
+                    <span class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">
+                            Switch to...
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+                            @if (Model.Roles.Contains(EDR.Enums.RoleName.Promoter))
+                            {
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="@Url.Action("Home", "Promoter", new { username = Model.Dancer.UserName })">Promoter Page</a></li>
+                            }
+                            @if (Model.Roles.Contains(EDR.Enums.RoleName.Owner))
+                            {
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="@Url.Action("Home", "Owner", new { username = Model.Dancer.UserName })">Studio Owner Page</a></li>
+                            }
+                            @if (Model.Roles.Contains(EDR.Enums.RoleName.Teacher))
+                            {
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="@Url.Action("Home", "Promoter", new { username = Model.Dancer.UserName })">Teacher Page</a></li>
+                            }
+                        </ul>
+                    </span>
+                }
+            </span>
         </h1>
     </div>
     <div class="well col-lg-3 col-md-3 col-sm-4 col-xs-12">
         <div class="row">
-            <div style="text-align: center;">
-                <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12 croppedpic" style="height: 250px;">
-                    @if (Model.Dancer.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault() != null)
-                    {
-                        <img style="max-width: 100%;" src="@Url.Content(Model.Dancer.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault().ThumbnailFilename)" />
-                    }
-                    else
-                    {
-                        <img style="max-width: 100%;" src="~/Content/images/NoPic.png" />
-                    }
-                </div>
-                @if (User.Identity != null && User.Identity.Name == Model.Dancer.UserName)
-                {
-                    <p>
-                        <a style="font-size: small;" href="@Url.Action("ChangePicture", "Dancer", new { returnUrl = Request.Url.AbsolutePath } )">Change Picture</a>
-                    </p>
-                }
+            <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
+                @Html.Partial("~/Views/Shared/_ProfilePicturePartial.cshtml", new EDR.Models.ViewModels.ProfilePicture() { User = Model.Dancer, ReturnUrl = Url.Action("Home", "Dancer", new { username = Model.Dancer.UserName }) })
             </div>
             <div>
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -61,14 +71,9 @@
                 <div class="row">
                     <label class="control-label col-lg-3 col-md-3 col-sm-3 col-xs-3">Styles:</label>
                     <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9" style="display: inline-block;">
-                        @if(Model.Dancer.DanceStyles.Count > 0)
+                        @if (Model.Dancer.DanceStyles.Count > 0)
                         {
-                            <ul class="list-inline col-lg-8 col-md-8 col-sm-8 col-xs-8">
-                                @foreach (var item in Model.Dancer.DanceStyles.OrderBy(s => s.Name))
-                                {
-                                    <li>@Html.ActionLink(item.Name, "Details", "DanceStyle", new { id = item.Id }, new { @class = "label label-info" })</li>
-                                }
-                            </ul>
+                            @Html.Partial("~/Views/Shared/_DanceStyleLabelPartial.cshtml", Model.Dancer.DanceStyles)
                         }
                         else
                         {
@@ -98,11 +103,11 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <ul class="nav nav-pills nav-justified" role="tablist">
-                    <li @if (ctrName == "Home") { <text> class="active" </text>          }><a href="@Url.Action("Home", "Dancer", new { username = Model.Dancer.UserName })">Home</a></li>
-                    <li @if (ctrName == "MyDance") { <text> class="active" </text>         }><a href="@Url.Action("MyDance", "Dancer", new { username = Model.Dancer.UserName })">Where I Dance</a></li>
-                    <li @if (ctrName == "MyLearn") { <text> class="active" </text>          }><a href="@Url.Action("MyLearn", "Dancer", new { username = Model.Dancer.UserName })">Where I Learn</a></li>
-                    <li @if (ctrName == "MyFriends") { <text> class="active" </text>           }><a href="@Url.Action("MyFriends", "Dancer", new { username = Model.Dancer.UserName })">My Friends</a></li>
-                    <li><a href="#myperformance" role="tab" data-toggle="tab">Where I Perform</a></li>
+                    <li @if (ctrName == "Home") { <text> class="active" </text>          }><a href="@Url.Action("Home", "Dancer", new { username = Model.Dancer.UserName })"><i class="glyphicon glyphicon-home"></i> Home</a></li>
+                    <li @if (ctrName == "MyDance") { <text> class="active" </text>         }><a href="@Url.Action("MyDance", "Dancer", new { username = Model.Dancer.UserName })"><i class="glyphicon glyphicon-globe"></i> Where I Dance</a></li>
+                    <li @if (ctrName == "MyLearn") { <text> class="active" </text>          }><a href="@Url.Action("MyLearn", "Dancer", new { username = Model.Dancer.UserName })"><i class="glyphicon glyphicon-book"></i> Where I Learn</a></li>
+                    <li @if (ctrName == "MyFriends") { <text> class="active" </text>           }><a href="@Url.Action("MyFriends", "Dancer", new { username = Model.Dancer.UserName })"><i class="glyphicon glyphicon-user"></i> My Friends</a></li>
+                    <li><a href="#myperformance" role="tab" data-toggle="tab"><i class="glyphicon glyphicon-map-marker"></i> Where I Perform</a></li>
                 </ul>
             </div>
             <div class="panel-body">

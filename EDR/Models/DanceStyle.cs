@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
@@ -7,9 +9,13 @@ namespace EDR.Models
 {
     public class DanceStyle : Entity
     {
+        [Index("NameIndex", IsUnique = true)]
+        [StringLength(100)]
+        [Required]
         public string Name { get; set; }
         public string Description { get; set; }
         public string YouTubeVideoID { get; set; }
+        [Display(Name = "Cover Photo")]
         public string PhotoUrl { get; set; }
         public string SpotifyPlaylist { get; set; }
 

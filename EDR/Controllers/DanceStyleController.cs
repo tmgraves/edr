@@ -15,14 +15,16 @@ namespace EDR.Controllers
     public class DanceStyleController : BaseController
     {
         // GET: DanceStyle/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult Details(string styleName)
         {
-            if (id == null)
+            styleName = styleName.Replace('_', ' ');
+
+            var viewModel = DataContext.DanceStyles.Include("Teachers").Include("Videos").Where(x => x.Name == styleName).FirstOrDefault();
+
+            if (viewModel == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-
-            var viewModel = DataContext.DanceStyles.Include("Teachers").Where(x => x.Id == id).FirstOrDefault();
 
             return View(viewModel);
         }
