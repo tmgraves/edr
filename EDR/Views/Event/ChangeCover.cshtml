@@ -21,18 +21,20 @@
             }
             else
             {
-                <a target="_blank" href="@Url.Content(Model.Event.PhotoUrl)">
-                    <div class="croppedpic" style="height: 150px;">
-                        @if (Model.Event.PhotoUrl != null)
-                        {
+                if (Model.Event.PhotoUrl != null)
+                {
+                    <a target="_blank" href="@Url.Content(Model.Event.PhotoUrl)">
+                        <div class="croppedpic" style="height: 150px;">
                             <img src="@Url.Content(Model.Event.PhotoUrl)" />
-                        }
-                        else
-                        {
-                            <img src="~/Content/images/MissingImage.jpg" />
-                        }
+                        </div>
+                    </a>
+                }
+                else
+                {
+                    <div class="croppedpic" style="height: 150px;">
+                        <img src="~/Content/images/MissingImage.jpg" />
                     </div>
-                </a>
+                }
             }
         </div>
     </div>

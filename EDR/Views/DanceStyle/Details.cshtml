@@ -14,7 +14,14 @@
         <div class="col-lg-4 col-md-4">
             <div class="thumbnail">
                 <div class="croppedpic" style="height: 200px;">
-                    <img src="@Url.Content(Model.PhotoUrl)" />
+                    @if (Model.PhotoUrl != null)
+                    {
+                        <img style="max-width: 100%;" src="@Url.Content(Model.PhotoUrl)" />
+                    }
+                    else
+                    {
+                        <img style="max-width: 100%;" src="~/Content/images/NoImage.png" />
+                    }
                 </div>
             </div>
         </div>

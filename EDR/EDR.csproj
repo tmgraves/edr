@@ -292,6 +292,10 @@
     <Compile Include="Migrations\201502120039436_SpotifyFields.Designer.cs">
       <DependentUpon>201502120039436_SpotifyFields.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201502250241345_MoreUsers.cs" />
+    <Compile Include="Migrations\201502250241345_MoreUsers.Designer.cs">
+      <DependentUpon>201502250241345_MoreUsers.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Address.cs" />
     <Compile Include="Models\EventInviations.cs" />
@@ -827,6 +831,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201502120039436_SpotifyFields.resx">
       <DependentUpon>201502120039436_SpotifyFields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502250241345_MoreUsers.resx">
+      <DependentUpon>201502250241345_MoreUsers.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -24,7 +24,7 @@
         @if (User.Identity != null && ((Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)) || (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
         {
             @*<a style="font-size: medium;" href="@Url.Action("Edit", "Dancer")">Edit Profile</a>*@
-            <a class="btn btn-info" title="Edit" href="@Url.Action("Edit", "Event", new { id = Model.Event.Id })">
+            <a class="btn btn-info" title="Edit" href="@Url.Action("Edit", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">
                 <i class="glyphicon glyphicon-pencil" style="vertical-align: middle;"></i>
                 <span class="sr-only">Edit</span>
             </a>
@@ -37,12 +37,6 @@
     <div class="well col-lg-3 col-md-3 col-sm-12 col-xs-12">
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
-                @if (User.Identity != null && ((Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)) || (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
-                    {
-                    <p>
-                        <a style="font-size: small;" href="@Url.Action("ChangeCover", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">Change Cover</a>
-                    </p>
-                    }
                 @if (Model.Event.VideoUrl != null)
                 {
                     <div style="height: 150px;">
@@ -64,6 +58,13 @@
                         <img class="img-thumbnail" src="~/Content/images/MissingImage.jpg" />
                     }
                 }
+                @if (User.Identity != null && ((Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)) || (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
+                {
+                    <p>
+                        <a style="font-size: small;" href="@Url.Action("ChangeCover", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">Change Cover</a>
+                    </p>
+                }
+
 
                 <div class="row">
                     <label class="control-label col-lg-3 col-md-3 col-sm-3 col-xs-3">
@@ -110,9 +111,12 @@
                         @if (!Model.Event.AllDay)
                         {
                             <br />
-                            @(((DateTime)Model.Event.StartTime).ToString("%h:mm tt"))
-                            @:~
-                            @(((DateTime)Model.Event.EndTime).ToString("%h:mm tt"))
+                            if (Model.Event.StartTime != null && Model.Event.EndTime != null)
+                            {
+                                @(((DateTime)Model.Event.StartTime).ToString("%h:mm tt"))
+                                @:~
+                                @(((DateTime)Model.Event.EndTime).ToString("%h:mm tt"))
+                            }
                         }
                     </div>
                 </div>
@@ -173,7 +177,7 @@
                         if (Model.Event.EventMembers.Where(m => m.Member.UserName == User.Identity.Name).Count() == 0)
                         {
                             <p>
-                                <a class="btn btn btn-primary col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 5px;" title="Signup" href="@Url.Action("Signup", "Event", new { id = Model.Event.Id, returnUrl = Request.Url.AbsolutePath })">
+                                <a class="btn btn btn-primary col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 5px;" title="Signup" href="@Url.Action("Signup", "Event", new { id = Model.Event.Id, eventType = Model.EventType, returnUrl = Request.Url.AbsolutePath })">
                                     <i class="glyphicon glyphicon-calendar"></i>
                                     Add to Your Calendar
                                 </a>
@@ -182,14 +186,14 @@
                         else
                         {
                             <p>
-                                <a class="btn btn btn-primary col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 5px;" title="Signup" href="@Url.Action("LeaveEvent", "Event", new { id = Model.Event.Id, returnUrl = Request.Url.AbsolutePath })">
+                                <a class="btn btn btn-primary col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 5px;" title="Remove" href="@Url.Action("LeaveEvent", "Event", new { id = Model.Event.Id, eventType = Model.EventType, returnUrl = Request.Url.AbsolutePath })">
                                     <i class="glyphicon glyphicon-calendar"></i>
                                     Remove from Your Calendar
                                 </a>
                             </p>
                         }
                     }
-                @if (Model.Event is Class)
+                @if (Model.EventType == EventType.Class)
                     {
                         if (User.Identity.IsAuthenticated && User.IsInRole("Teacher") && Model.ClassTeacherInvitations.Where(i => i.Teacher.ApplicationUser.UserName == User.Identity.Name).Count() == 0 && Model.Class.Teachers.Where(t => t.ApplicationUser.UserName == User.Identity.Name).Count() == 0)
                         {
@@ -214,7 +218,7 @@
                 @if (User.Identity != null && ((Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)) || (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
                 {
                     <p>
-                        <a class="btn btn btn-danger col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 5px;" title="Delete" href="@Url.Action("Delete", "Event", new { id = Model.Event.Id, returnUrl = Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this Event?')">
+                        <a class="btn btn btn-danger col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 5px;" title="Delete" href="@Url.Action("Delete", "Event", new { id = Model.Event.Id, eventType = Model.EventType, returnUrl = Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this Event?')">
                             <i class="glyphicon glyphicon-remove"></i>
                             Delete Event
                         </a>

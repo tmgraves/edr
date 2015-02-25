@@ -979,18 +979,40 @@ namespace EDR.Controllers
         public ActionResult Delete(int id)
         {
             var evt = DataContext.Events.Where(e => e.Id == id).Include("Videos").Include("Pictures").Include("Playlists").FirstOrDefault();
+
+            var returnUrl = "";
+            //  Set Return
+            if (evt is Class)
+            {
+                var userid = User.Identity.GetUserId();
+                var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+                if (DataContext.Events.OfType<Class>().Where(c => c.Id == id).FirstOrDefault().Teachers.Where(t => t.ApplicationUser.Id == userid).Count() == 1)
+                {
+                    returnUrl = Url.Action("Home", "Teacher", new { username = User.Identity.Name });
+                }
+            }
+            if (evt is Social)
+            {
+                var userid = User.Identity.GetUserId();
+                var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+                if (DataContext.Events.OfType<Social>().Where(c => c.Id == id).FirstOrDefault().Promoters.Where(p => p.ApplicationUser.Id == userid).Count() == 1)
+                {
+                    returnUrl = Url.Action("Home", "Promoter", new { username = User.Identity.Name });
+                }
+            }
+            if (returnUrl == "")
+            {
+                returnUrl = Url.Action("Home", "Dancer", new { username = User.Identity.Name });
+            }
+            //  Set Return
+            
             evt.Videos.Clear();
             evt.Pictures.Clear();
             evt.Playlists.Clear();
             DataContext.Events.Remove(evt);
             DataContext.SaveChanges();
-            if (Session["ReturnUrl"] != null)
-            {
-                return Redirect(Session["ReturnUrl"].ToString());
-            }
-            {
-                return View();
-            }
+
+            return Redirect(returnUrl);
         }
 
         [Authorize]

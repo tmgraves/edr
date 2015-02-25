@@ -207,18 +207,18 @@
                     <div class="col-lg-12 col-md-12">
                         @Html.LabelFor(model => model.Event.AllDay, htmlAttributes: new { @class = "control-label" })
                         <label>
-                            @Html.RadioButtonFor(model => model.Event.AllDay, false, htmlAttributes: new { @checked = (!Model.Event.AllDay) })
+                            @Html.RadioButtonFor(model => model.Event.AllDay, false, (!Model.Event.AllDay) ? new { @checked = "checked" } : null)
                             No
                         </label>
                         <label>
-                            @Html.RadioButtonFor(model => model.Event.AllDay, true, htmlAttributes: new { @checked = Model.Event.AllDay })
+                            @Html.RadioButtonFor(model => model.Event.AllDay, true, (Model.Event.AllDay) ? new { @checked = "checked" } : null)
                             Yes
                         </label>
                     </div>
                     <div class="row col-lg-12 col-md-12">
                         <div class="col-lg-3 col-md-3"></div>
                         <div class="col-md-9 col-lg-9">
-                            <div id="eventtime" @(Model.Event.AllDay == false ? "" : "hidden='hidden'")>
+                            <div id="eventtime" @(Model.Event.AllDay ? "hidden" : "")>
                                 <div class="row col-lg-12 col-md-12">
                                     <span class="control-label col-lg-3 col-md-3 text-warning">From</span>
                                     <div class="col-lg-6 col-md-6">
@@ -248,18 +248,18 @@
                     <div class="col-lg-12 col-md-12">
                         @Html.LabelFor(model => model.Event.Recurring, htmlAttributes: new { @class = "control-label" })
                         <label>
-                            @Html.RadioButtonFor(model => model.Event.Recurring, false, htmlAttributes: new { @checked = (!Model.Event.Recurring) })
+                            @Html.RadioButtonFor(model => model.Event.Recurring, false, (!Model.Event.Recurring) ? new { @checked = "checked" } : null)
                             No
                         </label>
                         <label>
-                            @Html.RadioButtonFor(model => model.Event.Recurring, true, htmlAttributes: new { @checked = Model.Event.Recurring })
+                            @Html.RadioButtonFor(model => model.Event.Recurring, true, (Model.Event.Recurring) ? new { @checked="checked" } : null)
                             Yes
                         </label>
                     </div>
                     <div class="row col-lg-12 col-md-12">
                         <div class="col-lg-3 col-md-3"></div>
                         <div class="col-md-9 col-lg-9">
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="recurring" style="margin-top: 5px;" @(Model.Event.Recurring == true ? "" : "hidden='hidden'")>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="recurring" style="margin-top: 5px;" @(Model.Event.Recurring ? "" : "hidden")>
                                 <div class="row">
                                     <span class="control-label col-lg-3 col-md-3 text-warning">Repeats</span>
                                     <div class="col-md-4 col-lg-4">
@@ -335,8 +335,10 @@
                 </div>
             </div>
             <div class="col-lg-4 col-md-4">
-                <div class="col-lg-12 col-md-12 croppedpic" style="height: 250px;">
-                    <a href="@Model.Event.PhotoUrl" target="_blank"><img class="img-thumbnail" src="@(Model.Event.PhotoUrl != null ? Model.Event.PhotoUrl : Url.Content("~/Content/images/MissingImage.jpg"))" /></a>
+                <div class="col-lg-12 col-md-12 croppedpic" style="height: 300px;">
+                    <a href="@Model.Event.PhotoUrl" target="_blank">
+                        <img src="@(Model.Event.PhotoUrl != null ? Model.Event.PhotoUrl : Url.Content("~/Content/images/MissingImage.jpg"))" />
+                    </a>
                 </div>
             </div>
             <div class="col-lg-12 col-md-12 radio-list">
