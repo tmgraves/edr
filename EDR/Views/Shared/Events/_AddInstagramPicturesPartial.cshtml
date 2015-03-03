@@ -2,28 +2,40 @@
 
 @if (Model.InstagramPictures != null && Model.InstagramPictures.Count() > 0)
 {
-    <ul class="list-inline">
-        @foreach (var photo in Model.InstagramPictures.OrderByDescending(photo => photo.PhotoDate))
-        {
-            <li>
-                <div class="thumbnail text-center">
-                    <a href="@photo.Photo" target="_blank">
-                        @if (photo.Photo != null)
-                        {
-                            <img src="@photo.Thumbnail" />
-                        }
-                    </a>
-                    <div class="caption">
-                        @Html.ActionLink("Import this Picture", "AddInstagramPicture", "Event", new { eventId = Model.Event.Id, id = photo.InstagramId, returnUrl = @Url.Action("Pictures", new { id = Model.Event.Id, eventType = Model.EventType }) }, htmlAttributes: new { @class = "btn btn-primary" })
+    using (Html.BeginForm("AddInstagramPictures",
+                                    "Event",
+                                    new { eventId = Model.Event.Id },
+                                    FormMethod.Post,
+                                    new { enctype = "multipart/form-data" }))
+    {
+        <p>
+            <button type="submit" name="Import" value="Import Pictures" class="btn btn-warning">
+                <i class="glyphicon glyphicon glyphicon-plus"></i>
+                Import Pictures
+            </button>
+        </p>
+        <ul class="list-inline">
+            @foreach (var photo in Model.InstagramPictures.OrderByDescending(photo => photo.PhotoDate))
+            {
+                <li class="col-lg-2 col-md-2 col-sm-12 col-xs-12" style="vertical-align: top;">
+                    <div class="thumbnail text-left">
+                        <div>
+                            <label style="display: block; width: 100%;"><input type="checkbox" name="pictureids" id="pictureids" value="@photo.InstagramId" /></label>
+                        </div>
+                        <a href="@photo.Photo" target="_blank">
+                            <div class="croppedpic" style="height: 100px;">
+                                <img src="@photo.Thumbnail" />
+                            </div>
+                        </a>
                     </div>
-                </div>
-            </li>
-        }
-    </ul>
+                </li>
+            }
+        </ul>
+    }
 }
 else
 {
-    @:No Facebook pictures found.
+    @:No Instagram pictures found.
 }
 
 

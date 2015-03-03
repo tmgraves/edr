@@ -4,24 +4,36 @@
 
 @if (Model.FacebookVideos != null && Model.FacebookVideos.Count() > 0)
 {
-    <ul class="list-inline">
-        @foreach (var video in Model.FacebookVideos)
-        {
-            <li class="col-lg-2 col-md-2 col-sm-12 col-xs-12" style="vertical-align: top;">
-                <div>
-                    <div class="thumbnail">
-                        <div style="height: 100px;">
-                            @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new Video() { FacebookId = video.Id, MediaSource = MediaSource.Facebook, PhotoUrl = video.Picture, VideoUrl = video.Source, PublishDate = video.Created_Time, Title = video.Name })
+    using (Html.BeginForm("ImportFacebookVideos",
+                                    "Event",
+                                    new { eventId = Model.Event.Id },
+                                    FormMethod.Post,
+                                    new { enctype = "multipart/form-data" }))
+    {
+        <p>
+            <button type="submit" name="Import" value="Import Videos" class="btn btn-warning">
+                <i class="glyphicon glyphicon glyphicon-plus"></i>
+                Import Videos
+            </button>
+        </p>
+        <ul class="list-inline">
+            @foreach (var video in Model.FacebookVideos)
+            {
+                <li class="col-lg-2 col-md-2 col-sm-12 col-xs-12" style="vertical-align: top;">
+                    <div>
+                        <div class="thumbnail">
+                            <div>
+                                <label style="display: block; width: 100%;"><input type="checkbox" name="videoIds" id="videoIds" value="@video.Id" /></label>
+                            </div>
+                            <div style="height: 100px;">
+                                @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new Video() { FacebookId = video.Id, MediaSource = MediaSource.Facebook, PhotoUrl = video.Picture, VideoUrl = video.Source, PublishDate = video.Created_Time, Title = video.Name })
+                            </div>
                         </div>
-                        <a class="btn btn-warning" title="Import Video" style="vertical-align: top; width: 100%;" href="@Url.Action("ImportFacebookVideo", "Event", new { videoId = video.Id, eventId = Model.Event.Id, returnUrl = @Url.Action("Videos", new { id = @Model.Event.Id, eventType = @Model.EventType }) })">
-                            <i class="glyphicon glyphicon glyphicon-plus"></i>
-                            Import Video
-                        </a>
                     </div>
-                </div>
-            </li>
-        }
-    </ul>
+                </li>
+            }
+        </ul>
+    }
 }
 else
 {

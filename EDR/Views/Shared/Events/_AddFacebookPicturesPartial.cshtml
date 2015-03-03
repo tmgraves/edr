@@ -2,24 +2,36 @@
 
 @if (Model.FacebookPictures != null && Model.FacebookPictures.Count() > 0)
 {
-    <ul class="list-inline">
-        @foreach (var photo in Model.FacebookPictures.OrderByDescending(photo => photo.PhotoDate))
-        {
-            <li>
-                <div class="thumbnail text-center">
-                    <a href="@photo.Link" target="_blank">
-                        @if (photo.Source != null)
-                        {
-                            <img src="@photo.Source" />
-                        }
-                    </a>
-                    <div class="caption">
-                        @Html.ActionLink("Import this Picture", "AddFacebookPicture", "Event", new { eventId = Model.Event.Id, id = photo.Id, returnUrl = @Url.Action("Pictures", new { id = Model.Event.Id, eventType = Model.EventType }) }, htmlAttributes: new { @class = "btn btn-primary" })
+    using (Html.BeginForm("AddFacebookPictures",
+                                    "Event",
+                                    new { eventId = Model.Event.Id },
+                                    FormMethod.Post,
+                                    new { enctype = "multipart/form-data" }))
+    {
+        <p>
+            <button type="submit" name="Import" value="Import Pictures" class="btn btn-warning">
+                <i class="glyphicon glyphicon glyphicon-plus"></i>
+                Import Pictures
+            </button>
+        </p>
+        <ul class="list-inline">
+            @foreach (var photo in Model.FacebookPictures.OrderByDescending(photo => photo.PhotoDate))
+            {
+                <li class="col-lg-2 col-md-2 col-sm-12 col-xs-12" style="vertical-align: top;">
+                    <div class="thumbnail text-left">
+                        <div>
+                            <label style="display: block; width: 100%;"><input type="checkbox" name="photoIds" id="photoIds" value="@photo.Id" /></label>
+                        </div>
+                        <a href="@photo.Link" target="_blank">
+                            <div class="croppedpic" style="height: 100px;">
+                                <img src="@photo.Source" />
+                            </div>
+                        </a>
                     </div>
-                </div>
-            </li>
-        }
-    </ul>
+                </li>
+            }
+        </ul>
+    }
 }
 else
 {

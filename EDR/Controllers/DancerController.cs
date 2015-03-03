@@ -83,7 +83,7 @@ namespace EDR.Controllers
                 viewModel.Roles.Add(RoleName.Teacher);
             }
             //  Load Roles
-            
+
             return viewModel;
         }
 

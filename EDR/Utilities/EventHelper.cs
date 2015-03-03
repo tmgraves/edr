@@ -78,8 +78,8 @@ namespace EDR.Utilities
                 {
                     if (evt.Creator != null && evt.Creator.FacebookToken != null)
                     {
-                        var posts = FacebookHelper.GetFeed(fbob.Id, evt.Creator.FacebookToken);
-                        foreach (var post in posts)
+                        var posts = FacebookHelper.GetFeed(fbob.FacebookId, evt.Creator.FacebookToken);
+                        foreach (var post in posts.Where(p => !p.Is_Hidden))
                         {
                             if (post.Type == "video")
                             {
@@ -95,7 +95,7 @@ namespace EDR.Utilities
                                     lstMedia.Add(new EventMedia() { Event = evt, SourceName = fbob.Name, SourceLink = fbob.Url, Author = evt.Creator, MediaDate = post.Created_Time, MediaType = Enums.MediaType.Picture, PhotoUrl = post.Picture, Text = post.Description, MediaSource = MediaSource.Facebook, Link = post.Link, Target = target });
                                 }
                             }
-                            else if (post.Type == "status" && !mediaOnly)
+                            else if (post.Type == "status" && !mediaOnly && post.Message != null)
                             {
                                 if (!videosOnly && !picturesOnly)
                                 {

@@ -43,7 +43,7 @@
                             }
                             @if (Model.Roles.Contains(EDR.Enums.RoleName.Teacher))
                             {
-                                <li role="presentation"><a role="menuitem" tabindex="-1" href="@Url.Action("Home", "Promoter", new { username = Model.Dancer.UserName })">Teacher Page</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="@Url.Action("Home", "Teacher", new { username = Model.Dancer.UserName })">Teacher Page</a></li>
                             }
                         </ul>
                     </span>

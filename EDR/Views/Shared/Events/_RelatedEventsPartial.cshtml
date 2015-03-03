@@ -1,4 +1,5 @@
 ﻿@model EDR.Models.ViewModels.RelatedEvents
+@using EDR.Models
 
 <div class="panel panel-default">
     <div class="panel-heading">
@@ -9,18 +10,38 @@
         {
             foreach (var e in Model.Events)
             {
-                <div class="row" style="margin-top: 5px;">
-                    <a class="btn btn-info col-lg-10 col-md-10 col-lg-offset-1 col-md-offset-1" href="@Url.Action("View", "Event", new { id = e.Id, eventType = Model.EventType })" title="@e.Name" style="text-align: left;">
-                        <div class="col-lg-2 col-md-2 croppedpic">
-                            <img style="width:50px; padding: 2px;" src="@e.PhotoUrl" />
+                    <div class="col-lg-12 col-md-12 row" style="margin-top: 5px; ">
+                        <div class="col-lg-4 col-md-4" style="height: 75px;">
+                            @if (e.VideoUrl != null)
+                            {
+                                @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new Video() { PhotoUrl = e.PhotoUrl, VideoUrl = e.VideoUrl })
+                            }
+                            else
+                            {
+                                if (e.PhotoUrl != null)
+                                {
+                                    <a target="_blank" href="@Url.Content(e.PhotoUrl)">
+                                        <div class="croppedpic" style="display: block; max-height: 100%; max-width: 100%;">
+                                            <img src="@Url.Content(e.PhotoUrl)" />
+                                        </div>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <div class="croppedpic" style="display: block; max-height: 100%; max-width: 100%;">
+                                        <img src="~/Content/images/class.jpg" />
+                                    </div>
+                                }
+                            }
                         </div>
-                        <div class="col-lg-10 col-md-10">
-                            @e.Name.PadRight(25, ' ').Substring(0, 25)<br />
-                            @e.NextDate.ToString("ddd, MMM dd, yyyy")
+                        <div class="col-lg-8 col-md-8">
+                            <a class="btn btn-info" href="@Url.Action("View", "Event", new { id = e.Id, eventType = Model.EventType })" title="@e.Name" style="text-align: left; width: 100%;">
+                                @e.Name.PadRight(20, ' ').Substring(0, 20)<br />
+                                @e.Place.City<br />
+                                @e.NextDate.ToString("ddd, MMM dd, yyyy")
+                            </a>
                         </div>
-                    </a>
-                </div>
-
+                    </div>
             }
         }
     </div>

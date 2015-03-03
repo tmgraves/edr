@@ -79,6 +79,13 @@ namespace EDR.Controllers
             }
             //  Load Roles
 
+            //  Set Role
+            if (User.Identity.IsAuthenticated)
+            {
+                Session["MyRole"] = RoleName.Teacher;
+            }
+            //  Set Role
+
             return viewModel;
         }
 

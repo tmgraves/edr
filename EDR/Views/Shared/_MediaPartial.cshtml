@@ -28,7 +28,7 @@
                     <text>From: </text>
                     <a href="@Url.Action("View", "Event", new { id = Model.Event.Id, eventType = (Model.Event is Class ? EventType.Class : EventType.Social) })" style="text-decoration: none;">
                             <span class="text-primary" style="vertical-align: top;">
-                                <b>@Model.Event.Name</b>
+                                <b>@Model.Event.Name.PadRight(30, ' ').Substring(0, 30)</b>
                             </span>
                         </a>
                 }

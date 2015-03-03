@@ -34,12 +34,14 @@
         </div>
         <div class="tab-content panel-body">
             <div id="youtubevideos" class="tab-pane active">
-                <ul class="nav nav-pills text-center" role="tablist">
-                    <li class="active"><a href="#ytvideos" data-toggle="tab">My Videos</a></li>
-                    <li><a href="#ytplaylists" data-toggle="tab">My Playlists</a></li>
-                    <li><a href="#ytvideourl" data-toggle="tab">Video Url</a></li>
-                    <li><a href="#ytplaylisturl" data-toggle="tab">Playlist Url</a></li>
-                </ul>
+                <p>
+                    <ul class="nav nav-pills text-center" role="tablist">
+                        <li class="active"><a href="#ytvideos" data-toggle="tab">My Videos</a></li>
+                        <li><a href="#ytplaylists" data-toggle="tab">My Playlists</a></li>
+                        <li><a href="#ytvideourl" data-toggle="tab">Video Url</a></li>
+                        <li><a href="#ytplaylisturl" data-toggle="tab">Playlist Url</a></li>
+                    </ul>
+                </p>
                 <div class="tab-content">
                     <div id="ytvideos" class="tab-pane active">
                         <div class="partialContents" data-url="/Event/@Model.Event.Id/GetYouTubeVideos?eventType=@Model.EventType">

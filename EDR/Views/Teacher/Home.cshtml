@@ -38,23 +38,37 @@
             {
                 foreach (var cls in Model.NewClasses.Events.OfType<Class>().OrderBy(c => c.NextDate))
                 {
-                    <div class="row" style="margin-top: 5px;">
-                        <a class="btn btn-info col-lg-10 col-md-10 col-lg-offset-1 col-md-offset-1" href="@Url.Action("View", "Event", new { id = cls.Id, eventType = EventType.Class })" title="@cls.Name" style="text-align: left;">
-                            <div class="col-lg-2 col-md-2 croppedpic" style="height: 40px;">
-                                @if (cls.PhotoUrl != null)
+                    <div class="col-lg-12 col-md-12 row" style="margin-top: 5px; ">
+                        <div class="col-lg-4 col-md-4" style="height: 75px;">
+                            @if (cls.VideoUrl != null)
+                            {
+                                @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new Video() { PhotoUrl = cls.PhotoUrl, VideoUrl = cls.VideoUrl })
+                            }
+                            else
+                            {
+                                if (cls.PhotoUrl != null)
                                 {
-                                    <img style="width:50px; padding: 2px;" src="@cls.PhotoUrl" />
+                                    <a target="_blank" href="@Url.Content(cls.PhotoUrl)">
+                                        <div class="croppedpic" style="display: block; max-height: 100%; max-width: 100%;">
+                                            <img src="@Url.Content(cls.PhotoUrl)" />
+                                        </div>
+                                    </a>
                                 }
                                 else
                                 {
-                                    <img style="width:40px; padding: 2px;" src="@Url.Content("~/Content/images/dance.png")" />
+                                    <div class="croppedpic" style="display: block; max-height: 100%; max-width: 100%;">
+                                        <img src="~/Content/images/class.jpg" />
+                                    </div>
                                 }
-                            </div>
-                            <div class="col-lg-10 col-md-10">
-                                @cls.Name.PadRight(20, ' ').Substring(0, 20) <i class="glyphicon glyphicon-chevron-right"></i> @cls.Place.City<br />
+                            }
+                        </div>
+                        <div class="col-lg-8 col-md-8">
+                            <a class="btn btn-info" href="@Url.Action("View", "Event", new { id = cls.Id, eventType = EventType.Class })" title="@cls.Name" style="text-align: left; width: 100%;">
+                                @cls.Name.PadRight(20, ' ').Substring(0, 20)<br />
+                                @cls.Place.City<br />
                                 @cls.NextDate.ToString("ddd, MMM dd, yyyy")
-                            </div>
-                        </a>
+                            </a>
+                        </div>
                     </div>
                 }
             }

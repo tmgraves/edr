@@ -116,9 +116,9 @@ namespace EDR.Models
         public ICollection<EventPlaylist> Playlists { get; set; }
     }
 
-    public class LinkedFacebookObject
+    public class LinkedFacebookObject : Entity
     {
-        public string Id { get; set; }
+        public string FacebookId { get; set; }
         public MediaSource MediaSource { get; set; }
         public string Url { get; set; }
         public string Name { get; set; }

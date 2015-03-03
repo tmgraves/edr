@@ -63,6 +63,13 @@ namespace EDR.Controllers
             }
             //  Load Roles
 
+            //  Set Role
+            if (User.Identity.IsAuthenticated)
+            {
+                Session["MyRole"] = RoleName.Promoter;
+            }
+            //  Set Role
+
             // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE PromoterViewModel)
             viewModel.Events.EventType = Enums.EventType.Social;
             viewModel.Events.Events = new List<Event>();

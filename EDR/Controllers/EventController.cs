@@ -583,6 +583,42 @@ namespace EDR.Controllers
         }
 
         [Authorize]
+        [HttpPost]
+        public ActionResult AddFacebookPictures(int eventId, string[] photoIds)
+        {
+            var ev = DataContext.Events.Where(e => e.Id == eventId).Include("Pictures").FirstOrDefault();
+            var returnUrl = "";
+            if (ev is Class)
+            {
+                returnUrl = Url.Action("Pictures", "Event", new { id = eventId, eventType = EventType.Class });
+            }
+            else
+            {
+                returnUrl = Url.Action("Pictures", "Event", new { id = eventId, eventType = EventType.Social });
+            }
+
+            try
+            {
+                foreach (var id in photoIds)
+                {
+                    string userId = User.Identity.GetUserId();
+                    var picture = ((List<FacebookPhoto>)Session["FacebookPictures"]).Where(p => p.Id == id).FirstOrDefault();
+                    var userid = User.Identity.GetUserId();
+                    var postedby = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+                    ev.Pictures.Add(new EventPicture() { Title = picture.Name == null ? "No Title" : picture.Name, ThumbnailFilename = picture.Source, Filename = picture.LargeSource, PhotoDate = picture.PhotoDate, PostedBy = postedby, MediaSource = MediaSource.Facebook, FacebookId = picture.Id, SourceLink = picture.Link });
+                }
+
+                DataContext.Entry(ev).State = EntityState.Modified;
+                DataContext.SaveChanges();
+                return Redirect(returnUrl);
+            }
+            catch (Exception ex)
+            {
+                return Redirect(returnUrl);
+            }
+        }
+
+        [Authorize]
         public ActionResult AddInstagramPicture(int eventId, string id, string returnUrl)
         {
             try
@@ -593,6 +629,41 @@ namespace EDR.Controllers
                 var userid = User.Identity.GetUserId();
                 var postedby = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
                 ev.Pictures.Add(new EventPicture() { Title = picture.Caption, ThumbnailFilename = picture.Thumbnail, Filename = picture.Photo, PhotoDate = picture.PhotoDate, PostedBy = postedby, MediaSource = MediaSource.Instagram, InstagramId = picture.InstagramId, SourceLink = picture.Link });
+                DataContext.Entry(ev).State = EntityState.Modified;
+                DataContext.SaveChanges();
+                return Redirect(returnUrl);
+            }
+            catch (Exception ex)
+            {
+                return Redirect(returnUrl);
+            }
+        }
+
+        [Authorize]
+        [HttpPost]
+        public ActionResult AddInstagramPictures(int eventId, string[] pictureids)
+        {
+            var ev = DataContext.Events.Where(e => e.Id == eventId).Include("Pictures").FirstOrDefault();
+            var returnUrl = "";
+            if (ev is Class)
+            {
+                returnUrl = Url.Action("Pictures", "Event", new { id = eventId, eventType = EventType.Class });
+            }
+            else
+            {
+                returnUrl = Url.Action("Pictures", "Event", new { id = eventId, eventType = EventType.Social });
+            }
+
+            try
+            {
+                foreach(var id in pictureids)
+                {
+                    string userId = User.Identity.GetUserId();
+                    var picture = ((List<InstagramPicture>)Session["InstagramPictures"]).Where(p => p.InstagramId == id).FirstOrDefault();
+                    var userid = User.Identity.GetUserId();
+                    var postedby = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+                    ev.Pictures.Add(new EventPicture() { Title = picture.Caption == null ? "No Title" : picture.Caption, ThumbnailFilename = picture.Thumbnail, Filename = picture.Photo, PhotoDate = picture.PhotoDate, PostedBy = postedby, MediaSource = MediaSource.Instagram, InstagramId = picture.InstagramId, SourceLink = picture.Link });
+                }
                 DataContext.Entry(ev).State = EntityState.Modified;
                 DataContext.SaveChanges();
                 return Redirect(returnUrl);
@@ -682,6 +753,39 @@ namespace EDR.Controllers
             return Redirect(returnUrl);
         }
         [Authorize]
+        [HttpPost]
+        public ActionResult ImportYouTubeVideos(string[] videoIds, int eventId, string returnUrl)
+        {
+            var ev = DataContext.Events.Where(e => e.Id == eventId).Include("Videos").FirstOrDefault();
+            if (videoIds != null)
+            {
+                foreach (var videoId in videoIds)
+                {
+                    var ytVideo = ((List<YouTubeVideo>)Session["YouTubeVideos"]).Where(x => x.Id == videoId).FirstOrDefault();
+                    var userid = User.Identity.GetUserId();
+
+                    var auth = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+
+                    var eVideo = new EventVideo() { Title = ytVideo.Title, PublishDate = ytVideo.PubDate, YoutubeId = videoId, Author = auth, VideoUrl = "https://www.youtube.com/watch?v=" + videoId + "&feature=player_embedded", PhotoUrl = "https://img.youtube.com/vi/" + videoId + "/mqdefault.jpg", MediaSource = MediaSource.YouTube };
+
+                    ev.Videos.Add(eVideo);
+
+                }
+                DataContext.Entry(ev).State = EntityState.Modified;
+                DataContext.SaveChanges();
+                ViewBag.Message = "Video was imported";
+            }
+
+            if (ev is Class)
+            {
+                return RedirectToAction("Videos", "Event", new { id = eventId, eventType = EventType.Class });
+            }
+            else
+            {
+                return RedirectToAction("Videos", "Event", new { id = eventId, eventType = EventType.Social });
+            }
+        }
+        [Authorize]
         public ActionResult ImportFacebookVideo(string videoId, int eventId, string returnUrl)
         {
             var video = ((List<FacebookVideo>)Session["FacebookVideos"]).Where(x => x.Id == videoId).FirstOrDefault();
@@ -698,6 +802,39 @@ namespace EDR.Controllers
             ViewBag.Message = "Video was imported";
             return Redirect(returnUrl);
         }
+
+        [Authorize]
+        [HttpPost]
+        public ActionResult ImportFacebookVideos(string[] videoIds, int eventId)
+        {
+            var ev = DataContext.Events.Where(e => e.Id == eventId).Include("Videos").FirstOrDefault();
+            if (videoIds != null)
+            {
+                foreach (var videoId in videoIds)
+                {
+                    var video = ((List<FacebookVideo>)Session["FacebookVideos"]).Where(x => x.Id == videoId).FirstOrDefault();
+                    var userid = User.Identity.GetUserId();
+
+                    var auth = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+
+                    var eVideo = new EventVideo() { Title = video.Name != null ? video.Name : "No Title", PublishDate = video.Created_Time, FacebookId = videoId, Author = auth, VideoUrl = "https://www.facebook.com/video.php?v=" + videoId, PhotoUrl = video.Picture, MediaSource = MediaSource.Facebook };
+
+                    ev.Videos.Add(eVideo);
+                }
+                DataContext.Entry(ev).State = EntityState.Modified;
+                DataContext.SaveChanges();
+                ViewBag.Message = "Videos were imported";
+            }
+            if (ev is Class)
+            {
+                return RedirectToAction("Videos", "Event", new { id = eventId, eventType = EventType.Class });
+            }
+            else
+            {
+                return RedirectToAction("Videos", "Event", new { id = eventId, eventType = EventType.Social });
+            }
+        }
+        
         [Authorize]
         public ActionResult ImportYouTubeList(string Id, int eventId, string returnUrl)
         {
@@ -978,41 +1115,45 @@ namespace EDR.Controllers
         [Authorize]
         public ActionResult Delete(int id)
         {
-            var evt = DataContext.Events.Where(e => e.Id == id).Include("Videos").Include("Pictures").Include("Playlists").FirstOrDefault();
+            var evt = DataContext.Events.Where(e => e.Id == id)
+                    .Include("Videos")
+                    .Include("Pictures")
+                    .Include("Playlists")
+                    .Include("LinkedFacebookObjects")
+                    .FirstOrDefault();
 
-            var returnUrl = "";
-            //  Set Return
-            if (evt is Class)
-            {
-                var userid = User.Identity.GetUserId();
-                var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
-                if (DataContext.Events.OfType<Class>().Where(c => c.Id == id).FirstOrDefault().Teachers.Where(t => t.ApplicationUser.Id == userid).Count() == 1)
-                {
-                    returnUrl = Url.Action("Home", "Teacher", new { username = User.Identity.Name });
-                }
-            }
-            if (evt is Social)
-            {
-                var userid = User.Identity.GetUserId();
-                var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
-                if (DataContext.Events.OfType<Social>().Where(c => c.Id == id).FirstOrDefault().Promoters.Where(p => p.ApplicationUser.Id == userid).Count() == 1)
-                {
-                    returnUrl = Url.Action("Home", "Promoter", new { username = User.Identity.Name });
-                }
-            }
-            if (returnUrl == "")
-            {
-                returnUrl = Url.Action("Home", "Dancer", new { username = User.Identity.Name });
-            }
-            //  Set Return
-            
             evt.Videos.Clear();
             evt.Pictures.Clear();
             evt.Playlists.Clear();
+            evt.LinkedFacebookObjects.Clear();
             DataContext.Events.Remove(evt);
             DataContext.SaveChanges();
 
-            return Redirect(returnUrl);
+            //  Set Return
+            if (Session["MyRole"] != null)
+            {
+                if ((RoleName)Session["MyRole"] == RoleName.Owner)
+                {
+                    return Redirect(Url.Action("Home", "Owner", new { username = User.Identity.Name }));
+                }
+                else if ((RoleName)Session["MyRole"] == RoleName.Promoter)
+                {
+                    return Redirect(Url.Action("Home", "Promoter", new { username = User.Identity.Name }));
+                }
+                else if ((RoleName)Session["MyRole"] == RoleName.Teacher)
+                {
+                    return Redirect(Url.Action("Home", "Teacher", new { username = User.Identity.Name }));
+                }
+                else
+                {
+                    return Redirect(Url.Action("Home", "Dancer", new { username = User.Identity.Name }));
+                }
+            }
+            else
+            {
+                return Redirect(Url.Action("Home", "Dancer", new { username = User.Identity.Name }));
+            }
+            //  Set Return
         }
 
         [Authorize]
@@ -1143,6 +1284,12 @@ namespace EDR.Controllers
                     var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
                     int eventId;
 
+                    if (model.PostedStyles == null)
+                    {
+                        model.PostedStyles = new PostedStyles();
+                        model.PostedStyles.DanceStyleIds = new string[0];
+                    }
+
                     Place pl = new Place();
                     if (model.PlaceId == 0)
                     {
@@ -1167,7 +1314,7 @@ namespace EDR.Controllers
                     }
                     model.NewEvent.Place = pl;
 
-                    var obj = new LinkedFacebookObject() { MediaSource = MediaSource.Facebook, Name = model.NewEvent.Name, Id = model.NewEvent.FacebookId, Url = model.NewEvent.FacebookLink, ObjectType = FacebookObjectType.Event };
+                    var obj = new LinkedFacebookObject() { MediaSource = MediaSource.Facebook, Name = model.NewEvent.Name, FacebookId = model.NewEvent.FacebookId, Url = model.NewEvent.FacebookLink, ObjectType = FacebookObjectType.Event };
                     if (model.EventType == EventType.Class)
                     {
                         var cls = new Class() { Name = model.NewEvent.Name, Description = model.NewEvent.Description, FacebookId = model.NewEvent.FacebookId, PhotoUrl = model.NewEvent.PhotoUrl, StartDate = model.NewEvent.StartDate, EndDate = model.NewEvent.EndDate, ClassType = model.ClassType, Place = pl, FacebookLink = model.NewEvent.FacebookLink, Creator = user, DanceStyles = DataContext.DanceStyles.Where(s => model.PostedStyles.DanceStyleIds.Any(ps => ps == s.Id.ToString())).ToList(), Interval = 1, LinkedFacebookObjects = new List<LinkedFacebookObject>() { obj } };
@@ -1468,7 +1615,7 @@ namespace EDR.Controllers
             if (facebookToken != null)
             {
                 //  Get Facebook Events
-                var eventIds = DataContext.Events.Where(e => e.Id == id).Include("LinkedFacebookObjects").FirstOrDefault().LinkedFacebookObjects.Where(fo => fo.ObjectType == FacebookObjectType.Event).Select(ee => ee.Id).ToArray();
+                var eventIds = DataContext.Events.Where(e => e.Id == id).Include("LinkedFacebookObjects").FirstOrDefault().LinkedFacebookObjects.Where(fo => fo.ObjectType == FacebookObjectType.Event).Select(ee => ee.FacebookId).ToArray();
                 if (Session["ExternalFacebookEvents"] == null)
                 {
                     Session["ExternalFacebookEvents"] = FacebookHelper.GetEvents(facebookToken).Where(f => !eventIds.Any(e => e.Contains(f.Id))).ToList();
@@ -1498,7 +1645,7 @@ namespace EDR.Controllers
             if (facebookToken != null)
             {
                 //  Get Facebook Groups
-                var groupIds = DataContext.Events.Where(e => e.Id == id).Include("LinkedFacebookObjects").FirstOrDefault().LinkedFacebookObjects.Where(fo => fo.ObjectType == FacebookObjectType.Group).Select(ee => ee.Id).ToArray();
+                var groupIds = DataContext.Events.Where(e => e.Id == id).Include("LinkedFacebookObjects").FirstOrDefault().LinkedFacebookObjects.Where(fo => fo.ObjectType == FacebookObjectType.Group).Select(ee => ee.FacebookId).ToArray();
                 if (Session["ExternalFacebookGroups"] == null)
                 {
                     Session["ExternalFacebookGroups"] = FacebookHelper.GetGroups(facebookToken).Where(f => !groupIds.Any(e => e.Contains(f.Id))).ToList();
@@ -1517,7 +1664,7 @@ namespace EDR.Controllers
         [Authorize]
         public ActionResult RemoveLinkedFacebookObject(string id, string returnUrl)
         {
-            DataContext.LinkedFacebookObjects.Remove(DataContext.LinkedFacebookObjects.Where(o => o.Id == id).FirstOrDefault());
+            DataContext.LinkedFacebookObjects.Remove(DataContext.LinkedFacebookObjects.Where(o => o.FacebookId == id).FirstOrDefault());
             DataContext.SaveChanges();
             return Redirect(returnUrl);
         }
@@ -1526,7 +1673,7 @@ namespace EDR.Controllers
         public ActionResult LinkFacebookEvent(string id, int eventId, string returnUrl)
         {
             var fbEvent = ((List<FacebookEvent>)Session["ExternalFacebookEvents"]).Where(f => f.Id == id).FirstOrDefault();
-            DataContext.Events.Where(e => e.Id == eventId).Include("LinkedFacebookObjects").FirstOrDefault().LinkedFacebookObjects.Add(new LinkedFacebookObject { Id = id, MediaSource = MediaSource.Facebook, Name = fbEvent.Name, Url = fbEvent.EventLink, ObjectType = FacebookObjectType.Event });
+            DataContext.Events.Where(e => e.Id == eventId).Include("LinkedFacebookObjects").FirstOrDefault().LinkedFacebookObjects.Add(new LinkedFacebookObject { FacebookId = id, MediaSource = MediaSource.Facebook, Name = fbEvent.Name, Url = fbEvent.EventLink, ObjectType = FacebookObjectType.Event });
             DataContext.SaveChanges();
             return Redirect(returnUrl);
         }
@@ -1535,7 +1682,7 @@ namespace EDR.Controllers
         public ActionResult LinkFacebookGroup(string id, int eventId, string returnUrl)
         {
             var fbGroup = ((List<FacebookGroup>)Session["ExternalFacebookGroups"]).Where(f => f.Id == id).FirstOrDefault();
-            DataContext.Events.Where(e => e.Id == eventId).Include("LinkedFacebookObjects").FirstOrDefault().LinkedFacebookObjects.Add(new LinkedFacebookObject { Id = id, MediaSource = MediaSource.Facebook, Name = fbGroup.Name, Url = "https://www.facebook.com/groups/" + fbGroup.Id, ObjectType = FacebookObjectType.Group });
+            DataContext.Events.Where(e => e.Id == eventId).Include("LinkedFacebookObjects").FirstOrDefault().LinkedFacebookObjects.Add(new LinkedFacebookObject { FacebookId = id, MediaSource = MediaSource.Facebook, Name = fbGroup.Name, Url = "https://www.facebook.com/groups/" + fbGroup.Id, ObjectType = FacebookObjectType.Group });
             DataContext.SaveChanges();
             return Redirect(returnUrl);
         }
@@ -1548,11 +1695,11 @@ namespace EDR.Controllers
 
             if (eventType == EventType.Class)
             {
-                model.Events = DataContext.Events.OfType<Class>().Where(c => (c.Teachers.Any(t => t.Classes.Any(cl => cl.Id == id)) || c.Owners.Any(t => t.Classes.Any(cl => cl.Id == id))) && c.Id != id).Cast<Event>();
+                model.Events = DataContext.Events.OfType<Class>().Include("Place").Where(c => (c.Teachers.Any(t => t.Classes.Any(cl => cl.Id == id)) || c.Owners.Any(t => t.Classes.Any(cl => cl.Id == id))) && c.Id != id).Cast<Event>();
             }
             else
             {
-                model.Events = DataContext.Events.OfType<Social>().Where(c => (c.Promoters.Any(t => t.Socials.Any(cl => cl.Id == id)) || c.Owners.Any(t => t.Socials.Any(cl => cl.Id == id))) && c.Id != id).Cast<Event>();
+                model.Events = DataContext.Events.OfType<Social>().Include("Place").Where(c => (c.Promoters.Any(t => t.Socials.Any(cl => cl.Id == id)) || c.Owners.Any(t => t.Socials.Any(cl => cl.Id == id))) && c.Id != id).Cast<Event>();
             }
 
             return PartialView("~/Views/Shared/Events/_RelatedEventsPartial.cshtml", model);

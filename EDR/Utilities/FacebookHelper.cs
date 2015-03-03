@@ -104,7 +104,7 @@ namespace EDR.Utilities
         public static List<FacebookEvent> GetEvents(string token)
         {
             var fb = new FacebookClient(token);
-            dynamic myInfo = fb.Get("/me/events?fields=id,cover,description,end_time,is_date_only,location,name,owner,privacy,start_time,ticket_uri,timezone,updated_time,venue,parent_group,feed");
+            dynamic myInfo = fb.Get("/me/events?fields=id,cover,description,end_time,is_date_only,location,name,owner,privacy,start_time,ticket_uri,timezone,updated_time,venue,parent_group");
             var eventList = new List<FacebookEvent>();
             dynamic paging;
             dynamic next;

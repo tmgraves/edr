@@ -68,8 +68,6 @@
         </ul>
         <div class="tab-content">
             <div id="classes" class="tab-pane active">
-                <h4>
-                </h4>
                 @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", Model.Teacher.Classes)
                 @if (User.Identity != null && User.Identity.Name == Model.Teacher.ApplicationUser.UserName)
                 {

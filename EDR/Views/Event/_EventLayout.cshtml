@@ -30,7 +30,7 @@
             </a>
         }
         <br />
-        <small>at @Html.ActionLink(@Model.Event.Place.Name, "Details", "Place", new { id = Model.Event.Place.Id }, null)</small>
+        <small>@@ @Html.ActionLink(@Model.Event.Place.Name, "Details", "Place", new { id = Model.Event.Place.Id }, null)</small>
     </h1>
 </div>
 <div class="row">
@@ -106,7 +106,7 @@
                             }
                         else
                         {
-                            @Model.Event.StartDate.ToLongDateString()
+                            @Model.Event.StartDate.ToString("ddd, MMM dd, yyyy")
                         }
                         @if (!Model.Event.AllDay)
                         {
@@ -205,16 +205,6 @@
                             </p>
                         }
                     }
-                @if (User.Identity != null && ((Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)) || (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
-                {
-                    <p>
-                        <a class="btn btn btn-info col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 5px;" title="Delete" href="@Url.Action("AddFacebookLink", "Event", new { id = Model.Event.Id, eventType = Model.EventType })" >
-                            <i class="glyphicon glyphicon-link"></i>
-                            Link to Facebook
-                            <img class="img-rounded" style="height: 20px;" src="@Url.Content("~/Content/images/facebookSmall.png")" />
-                        </a>
-                    </p>
-                }
                 @if (User.Identity != null && ((Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)) || (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
                 {
                     <p>

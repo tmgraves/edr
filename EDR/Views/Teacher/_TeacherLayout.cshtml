@@ -20,26 +20,23 @@
             }
             <span class="pull-right">
                 <small>Teacher</small>
-                @if (Model.Roles.Count() > 0)
-                {
-                    <span class="dropdown">
-                        <button class="btn btn-default dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">
-                            Switch to...
-                            <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
-                            <li role="presentation"><a role="menuitem" tabindex="-1" href="@Url.Action("Home", "Dancer", new { username = Model.Teacher.ApplicationUser.UserName })">Dancer Page</a></li>
-                            @if (Model.Roles.Contains(EDR.Enums.RoleName.Promoter))
-                            {
-                                <li role="presentation"><a role="menuitem" tabindex="-1" href="@Url.Action("Home", "Promoter", new { username = Model.Teacher.ApplicationUser.UserName })">Promoter Page</a></li>
-                            }
-                            @if (Model.Roles.Contains(EDR.Enums.RoleName.Owner))
-                            {
-                                <li role="presentation"><a role="menuitem" tabindex="-1" href="@Url.Action("Home", "Owner", new { username = Model.Teacher.ApplicationUser.UserName })">Studio Owner Page</a></li>
-                            }
-                        </ul>
-                    </span>
-                }
+                <span class="dropdown">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">
+                        Switch to...
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="@Url.Action("Home", "Dancer", new { username = Model.Teacher.ApplicationUser.UserName })">Dancer Page</a></li>
+                        @if (Model.Roles.Contains(EDR.Enums.RoleName.Promoter))
+                        {
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="@Url.Action("Home", "Promoter", new { username = Model.Teacher.ApplicationUser.UserName })">Promoter Page</a></li>
+                        }
+                        @if (Model.Roles.Contains(EDR.Enums.RoleName.Owner))
+                        {
+                            <li role="presentation"><a role="menuitem" tabindex="-1" href="@Url.Action("Home", "Owner", new { username = Model.Teacher.ApplicationUser.UserName })">Studio Owner Page</a></li>
+                        }
+                    </ul>
+                </span>
             </span>
         </h1>
     </div>

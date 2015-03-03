@@ -71,7 +71,16 @@
         </div>
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h4>Linked Facebook Events/Groups</h4>
+                <h4 style="width: 100%; vertical-align: bottom;">
+                    <img class="img-rounded" style="height: 20px;" src="@Url.Content("~/Content/images/facebookSmall.png")" />
+                    Linked Events/Groups
+                    @if (User.Identity != null && ((Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)) || (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
+                    {
+                        <a class="btn btn-info" style="float: right;" title="Link Facebook Event/Group" href="@Url.Action("AddFacebookLink", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">
+                            <i class="glyphicon glyphicon-plus-sign"></i>
+                        </a>
+                    }
+                </h4>
             </div>
             <div class="panel-body">
                 @foreach (var ee in Model.LinkedFacebookObjects)
