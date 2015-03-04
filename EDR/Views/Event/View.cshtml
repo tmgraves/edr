@@ -63,7 +63,7 @@
         </div>
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h4>Students</h4>
+                <h4>@(Model.EventType == EventType.Class ? "Students" : "Dancers")</h4>
             </div>
             <div class="panel-body">
                 @Html.Partial("~/Views/Shared/Events/_EventMembersPartial.cshtml", Model.Event.EventMembers)

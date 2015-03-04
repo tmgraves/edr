@@ -134,6 +134,16 @@ namespace EDR.Controllers
 
             var viewModel = LoadOwner(username);
 
+            //  Load Events
+            viewModel.NewClasses = DataContext.Events.OfType<Class>().Where(c => c.Place.Owners.Any(o => o.ApplicationUser.UserName == username)).Include("Place").OrderBy(c => c.StartDate).Take(5);
+            viewModel.NewSocials = DataContext.Events.OfType<Social>().Where(c => c.Place.Owners.Any(o => o.ApplicationUser.UserName == username)).Include("Place").OrderBy(c => c.StartDate).Take(5);
+            //  Load Events
+
+            //  Load Users
+            viewModel.Teachers = DataContext.Teachers.Where(t => t.Classes.Any(c => c.Place.Owners.Any(o => o.ApplicationUser.UserName == username))).Include("ApplicationUser").Include("ApplicationUser.UserPictures");
+            viewModel.Dancers = DataContext.Users.Where(u => u.EventMembers.Any(m => m.Event.Place.Owners.Any(o => o.ApplicationUser.UserName == username))).Include("UserPictures");
+            //  Load Users
+            
             return View(viewModel);
         }
 
@@ -232,6 +242,25 @@ namespace EDR.Controllers
             DataContext.Owners.Add(new Owner { ApplicationUser = DataContext.Users.Find(User.Identity.GetUserId()) });
             DataContext.SaveChanges();
             return RedirectToAction("Manage", "Account");
+        }
+
+        public ActionResult GetUpdates(string username)
+        {
+            var evt = DataContext.Events.Where(e => e.Place.Owners.Any(o => o.ApplicationUser.UserName == username))
+                    .Include("Creator")
+                    .Include("Pictures")
+                    .Include("Pictures.PostedBy")
+                    .Include("Videos")
+                    .Include("Videos.Author")
+                    .Include("Playlists")
+                    .Include("Playlists.Author")
+                    .Include("LinkedFacebookObjects");
+
+            var lstMedia = EventHelper.BuildAllUpdates(evt, MediaTarget.User);
+
+            return PartialView("~/Views/Shared/_MediaUpdatesPartial.cshtml", lstMedia);
+            //  Media Updates
+
         }
     }
 }

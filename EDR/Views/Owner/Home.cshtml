@@ -1,67 +1,152 @@
 ﻿@model EDR.Models.ViewModels.OwnerViewViewModel
 @using EDR.Models
 @using EDR.Utilities
+@using EDR.Enums
 
 @{
     ViewBag.Title = "Home";
     Layout = "~/Views/Owner/_OwnerLayout.cshtml";
 }
 
-<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            New Videos/Pictures
-        </div>
-        <div class="panel-body">
-            Updates
-        </div>
-    </div>
+<script type="text/javascript">
+    $(document).ready(function (e) {
+        //  locate each partial section
+        //  if it has a URL set, load the contents into the area.
 
+        $(".partialContents").each(function (index, item) {
+            var url = $(item).data("url");
+            if (url && url.length > 0) {
+                $(item).load(url);
+            }
+        });
+    });
+</script>
+
+<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+    <h4>Recent Activity</h4>
+    <div class="partialContents" data-url="/Owner/@Model.Owner.ApplicationUser.UserName/GetUpdates">
+        <img src="~/Content/images/indicator.white.gif" />Loading...
+    </div>
 </div>
-<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-    <div class="panel panel-primary">
+<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+    <div class="panel panel-success">
         <div class="panel-heading">
-            New Socials
+            Latest Classes/Workshops...
         </div>
         <div class="panel-body">
-            Updates
+            @if (Model.NewClasses.Count() > 0)
+            {
+                foreach (var cls in Model.NewClasses.OrderBy(c => c.NextDate))
+                {
+                    <div class="col-lg-12 col-md-12 row" style="margin-top: 5px; ">
+                        <div class="col-lg-4 col-md-4" style="height: 75px;">
+                            @if (cls.VideoUrl != null)
+                            {
+                                @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new Video() { PhotoUrl = cls.PhotoUrl, VideoUrl = cls.VideoUrl })
+                            }
+                            else
+                            {
+                                if (cls.PhotoUrl != null)
+                                {
+                                    <a target="_blank" href="@Url.Content(cls.PhotoUrl)">
+                                        <div class="croppedpic" style="display: block; max-height: 100%; max-width: 100%;">
+                                            <img src="@Url.Content(cls.PhotoUrl)" />
+                                        </div>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <div class="croppedpic" style="display: block; max-height: 100%; max-width: 100%;">
+                                        <img src="~/Content/images/class.jpg" />
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <div class="col-lg-8 col-md-8">
+                            <a class="btn btn-info" href="@Url.Action("View", "Event", new { id = cls.Id, eventType = EventType.Class })" title="@cls.Name" style="text-align: left; width: 100%;">
+                                @cls.Name.PadRight(20, ' ').Substring(0, 20)<br />
+                                @cls.Place.City<br />
+                                @cls.NextDate.ToString("ddd, MMM dd, yyyy")
+                            </a>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                @: No New Classes/Workshops
+            }
+            <a class="btn btn-link pull-right" href="@Url.Action("MyPlaces", "Owner", new { username = User.Identity.Name })" title="Find More Classes/Workshops">
+                <h4>More...</h4>
+            </a>
         </div>
     </div>
-
-</div>
-
-<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-    <div class="panel panel-primary">
+    <div class="panel panel-warning">
         <div class="panel-heading">
-            New Classes
+            Latest Socials...
         </div>
         <div class="panel-body">
-            Updates
+            @if (Model.NewSocials.Count() > 0)
+            {
+                foreach (var social in Model.NewSocials.OrderBy(c => c.NextDate))
+                {
+                    <div class="col-lg-12 col-md-12 row" style="margin-top: 5px; ">
+                        <div class="col-lg-4 col-md-4" style="height: 75px;">
+                            @if (social.VideoUrl != null)
+                            {
+                                @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new Video() { PhotoUrl = social.PhotoUrl, VideoUrl = social.VideoUrl })
+                            }
+                            else
+                            {
+                                if (social.PhotoUrl != null)
+                                {
+                                    <a target="_blank" href="@Url.Content(social.PhotoUrl)">
+                                        <div class="croppedpic" style="display: block; max-height: 100%;">
+                                            <img src="@Url.Content(social.PhotoUrl)" />
+                                        </div>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <div class="croppedpic" style="display: block; max-height: 100%;">
+                                        <img src="~/Content/images/social.jpg" />
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <div class="col-lg-8 col-md-8">
+                            <a class="btn btn-warning" href="@Url.Action("View", "Event", new { id = social.Id, eventType = EventType.Social })" title="@social.Name" style="text-align: left; width: 100%;">
+                                @social.Name.PadRight(20, ' ').Substring(0, 20)<br />
+                                @social.Place.City<br />
+                                @social.NextDate.ToString("ddd, MMM dd, yyyy")
+                            </a>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                @: No New Socials
+            }
+            <a class="btn btn-link pull-right" href="@Url.Action("MyPlaces", "Owner")" title="Find More Socials">
+                <h4>More...</h4>
+            </a>
         </div>
     </div>
-
-</div>
-
-<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-    <div class="panel panel-primary">
+    <div class="panel panel-info">
         <div class="panel-heading">
-            New Teachers
+            Teachers
         </div>
         <div class="panel-body">
-            Updates
+            @Html.Partial("~/Views/Shared/_TeacherListPartial.cshtml", Model.Teachers)
         </div>
     </div>
-
-</div>
-
-<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-    <div class="panel panel-primary">
+    <div class="panel panel-danger">
         <div class="panel-heading">
-            New Users
+            Students/Dancers
         </div>
         <div class="panel-body">
-            Updates
+            @Html.Partial("~/Views/Shared/Events/_UserListPartial.cshtml", Model.Dancers)
         </div>
     </div>
-
 </div>

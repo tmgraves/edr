@@ -36,7 +36,10 @@ namespace EDR.Models
             }
         }
 
+        [Required]
+        [DataType(DataType.Date)]
         [Display(Name = "Started Dancing")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? StartDate { get; set; }
 
         public string FacebookUsername { get; set; }
