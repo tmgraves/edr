@@ -345,7 +345,7 @@ namespace EDR.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(TeacherEditViewModel model)
         {
-            if (ModelState.IsValid)
+            try
             {
                 var teacher = DataContext.Teachers.Where(x => x.ApplicationUser.Id == model.Teacher.ApplicationUser.Id).Include("ApplicationUser").Include("DanceStyles").FirstOrDefault();
                 teacher.StartDate = model.Teacher.StartDate;
@@ -354,21 +354,27 @@ namespace EDR.Controllers
                 teacher.Website = model.Teacher.Website;
                 teacher.ContactEmail = model.Teacher.ContactEmail;
 
-                var styles = DataContext.DanceStyles.Where(x => model.PostedStyles.DanceStyleIds.Contains(x.Id.ToString())).ToList();
-
-                teacher.DanceStyles.Clear();
-
-                foreach (DanceStyle s in styles)
+                if (model.PostedStyles != null)
                 {
-                    teacher.DanceStyles.Add(s);
+                    var styles = DataContext.DanceStyles.Where(x => model.PostedStyles.DanceStyleIds.Contains(x.Id.ToString())).ToList();
+
+                    teacher.DanceStyles.Clear();
+
+                    foreach (DanceStyle s in styles)
+                    {
+                        teacher.DanceStyles.Add(s);
+                    }
                 }
 
                 DataContext.Entry(teacher).State = EntityState.Modified;
                 DataContext.SaveChanges();
                 return RedirectToAction("MyTeach", "Teacher", new { username = teacher.ApplicationUser.UserName });
             }
-            LoadStyles(model);
-            return View(model);
+            catch(Exception ex)
+            {
+                LoadStyles(model);
+                return View(model);
+            }
         }
 
         [Authorize]

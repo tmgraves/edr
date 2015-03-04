@@ -8,7 +8,9 @@ namespace EDR.Models
 {
     public class Teacher : Entity
     {
+        [DataType(DataType.Date)]
         [Display(Name = "Started Teaching")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? StartDate { get; set; }
         public int Experience
         {

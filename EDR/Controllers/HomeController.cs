@@ -32,7 +32,7 @@ namespace EDR.Controllers
         public ActionResult Explore()
         {
             var viewModel = new HomeExploreViewModel();
-            viewModel.DanceStyles = DataContext.DanceStyles.ToList();
+            viewModel.DanceStyles = DataContext.DanceStyles.Include("Dancers").ToList();
             return View(viewModel);
         }
 

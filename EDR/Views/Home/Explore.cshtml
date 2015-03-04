@@ -24,9 +24,12 @@
                     </div>
                     <div class="caption col-lg-8 col-md-8 col-sm-12 col-xs-12">
                         <h3 class="group inner list-group-item-heading">
-                            @Html.DisplayFor(n => item.Name)
+                            @Html.DisplayFor(n => item.Name)<br />
+                            <span class="small">@item.Dancers.Count() Dancer(s)</span>
                         </h3>
-                        <a href="@Url.Action("Details", "DanceStyle", new { styleName = item.Name }, null)" class="btn btn-primary">
+                        <p>
+                        </p>
+                        <a href="@Url.Action("Details", "DanceStyle", new { styleName = item.Name }, null)" class="btn btn-primary col-lg-10 col-md-10">
                             Explore @item.Name
                         </a>
                     </div>
