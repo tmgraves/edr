@@ -10,7 +10,7 @@ namespace EDR.Models
     public class DanceStyle : Entity
     {
         [Index("NameIndex", IsUnique = true)]
-        [StringLength(100)]
+        [StringLength(50)]
         [Required]
         public string Name { get; set; }
         public string Description { get; set; }
