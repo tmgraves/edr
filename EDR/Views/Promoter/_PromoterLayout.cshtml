@@ -40,7 +40,7 @@
             </span>
         </h1>
     </div>
-    <div class="well col-lg-3 col-md-3 col-sm-2 col-xs-2">
+    <div class="well col-lg-3 col-md-3 col-sm-12 col-xs-12">
         <div class="row">
             <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
                 @Html.Partial("~/Views/Shared/_ProfilePicturePartial.cshtml", new EDR.Models.ViewModels.ProfilePicture() { User = Model.Promoter.ApplicationUser, ReturnUrl = Url.Action("Home", "Promoter", new { username = Model.Promoter.ApplicationUser.UserName }) })
@@ -70,7 +70,7 @@
             </div>
         </div>
     </div>
-    <div class="col-lg-9 col-md-9 col-sm-10 col-xs-10">
+    <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <ul class="nav nav-pills nav-justified" role="tablist">

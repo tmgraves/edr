@@ -1,4 +1,4 @@
-﻿@model EDR.Models.ViewModels.HomeLearnViewModel
+﻿@model EDR.Models.ViewModels.LearnViewModel
 @using EDR.Models
 @using EDR.Utilities
 
@@ -10,30 +10,71 @@
 
 @using (Html.BeginForm("Learn", "Home", FormMethod.Get))
 {
-    <p>
-        Choose a Dance Style: @Html.DropDownList("danceStyle", "All")
-        Choose a Teacher: @Html.DropDownList("teacher", "All")
-        Choose a Place: @Html.DropDownList("place", "All")
-        Choose Skill Level: @Html.DropDownList("skillLevel", "All")
-        <input type="submit" value="Search" class="btn btn-primary" />
-    </p>
+    <div class="row col-lg-12 col-md-12">
+        <div class="col-lg-6 col-md-6">
+            <div class="row">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.DanceStyles, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                    <div class="col-md-8 col-lg-8">
+                        @Html.DropDownList("danceStyle", new SelectList(Model.DanceStyles.OrderBy(s => s.Name), "Id", "Name", Model.DanceStyleId), "All", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.DanceStyles, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 5px;">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Teachers, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                    <div class="col-md-8 col-lg-8">
+                        @Html.DropDownList("teacher", new SelectList(Model.Teachers.OrderBy(t => t.ApplicationUser.FullName), "ApplicationUser.Id", "ApplicationUser.FullName", Model.TeacherId), "All", new { @class = "form-control col-lg-6 col-md-6" })
+                        @Html.ValidationMessageFor(model => model.Teachers, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 5px;">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.SkillLevel, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                    <div class="col-md-8 col-lg-8">
+                        @Html.DropDownList("skillLevel", new SelectList(new List<int> { 1, 2, 3, 4, 5 }, Model.SkillLevel), "All", new { @class = "form-control col-lg-6 col-md-6" })
+                        @Html.ValidationMessageFor(model => model.SkillLevel, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-6">
+            <div class="row">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Places, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                    <div class="col-md-8 col-lg-8">
+                        @Html.DropDownList("place", new SelectList(Model.Places.OrderBy(p => p.Name), "Id", "Name", Model.PlaceId), "All", new { @class = "form-control col-lg-6 col-md-6" })
+                        @Html.ValidationMessageFor(model => model.Places, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row col-lg-12 col-md-12" style="margin: 5px;">
+        <input type="submit" value="Search Classes" class="btn btn-warning" />
+    </div>
 }
-<div class="tabbable">
+<div class="row">
+    @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", new EDR.Models.ViewModels.EventsViewModel() { Events = Model.Classes, Location = Geolocation.ParseAddress("90065"), EventType = EDR.Enums.EventType.Class })
+</div>
+
+@*<div class="tabbable">
     <ul class="nav nav-tabs nav-justified" role="tablist">
         <li class="active"><a href="#classes" data-toggle="tab">Classes (@Model.Classes.Count().ToString())</a></li>
         <li><a href="#workshops" data-toggle="tab">Workshops (@Model.Workshops.Count().ToString())</a></li>
     </ul>
     <div class="tab-content">
         <div id="classes" class="tab-pane active">
-            @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", Model.Classes)
         </div>
         <div id="workshops" class="tab-pane">
-            @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", Model.Workshops)
+            @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", new EDR.Models.ViewModels.EventsViewModel() { Events = Model.Workshops, Location = Geolocation.ParseAddress("90065"), EventType = EDR.Enums.EventType.Class })
         </div>
     </div><!-- /.tab-content -->
-</div><!-- /.tabbable -->
+</div><!-- /.tabbable -->*@
 
-<a href="@Request.UrlReferrer.ToString()">Back</a>
+<a class="btn btn-primary" href="@Request.UrlReferrer.ToString()">Back</a>
 
 @*<h4>Available Classes</h4>
     <table class="table table-striped table-bordered table-hover">

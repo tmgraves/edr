@@ -36,41 +36,7 @@
         <div class="panel-body">
             @if (Model.NewClasses.Count() > 0)
             {
-                foreach (var cls in Model.NewClasses.OrderBy(c => c.NextDate))
-                {
-                    <div class="col-lg-12 col-md-12 row" style="margin-top: 5px; ">
-                        <div class="col-lg-4 col-md-4" style="height: 75px;">
-                            @if (cls.VideoUrl != null)
-                            {
-                                @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new Video() { PhotoUrl = cls.PhotoUrl, VideoUrl = cls.VideoUrl })
-                            }
-                            else
-                            {
-                                if (cls.PhotoUrl != null)
-                                {
-                                    <a target="_blank" href="@Url.Content(cls.PhotoUrl)">
-                                        <div class="croppedpic" style="display: block; max-height: 100%; max-width: 100%;">
-                                            <img src="@Url.Content(cls.PhotoUrl)" />
-                                        </div>
-                                    </a>
-                                }
-                                else
-                                {
-                                    <div class="croppedpic" style="display: block; max-height: 100%; max-width: 100%;">
-                                        <img src="~/Content/images/class.jpg" />
-                                    </div>
-                                }
-                            }
-                        </div>
-                        <div class="col-lg-8 col-md-8">
-                            <a class="btn btn-info" href="@Url.Action("View", "Event", new { id = cls.Id, eventType = EventType.Class })" title="@cls.Name" style="text-align: left; width: 100%;">
-                                @cls.Name.PadRight(20, ' ').Substring(0, 20)<br />
-                                @cls.Place.City<br />
-                                @cls.NextDate.ToString("ddd, MMM dd, yyyy")
-                            </a>
-                        </div>
-                    </div>
-                }
+                @Html.Partial("~/Views/Shared/_EventsPartial.cshtml", Model.NewClasses)
             }
             else
             {
@@ -88,41 +54,7 @@
         <div class="panel-body">
             @if (Model.NewSocials.Count() > 0)
             {
-                foreach (var social in Model.NewSocials.OrderBy(c => c.NextDate))
-                {
-                    <div class="col-lg-12 col-md-12 row" style="margin-top: 5px; ">
-                        <div class="col-lg-4 col-md-4" style="height: 75px;">
-                            @if (social.VideoUrl != null)
-                            {
-                                @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new Video() { PhotoUrl = social.PhotoUrl, VideoUrl = social.VideoUrl })
-                            }
-                            else
-                            {
-                                if (social.PhotoUrl != null)
-                                {
-                                    <a target="_blank" href="@Url.Content(social.PhotoUrl)">
-                                        <div class="croppedpic" style="display: block; max-height: 100%;">
-                                            <img src="@Url.Content(social.PhotoUrl)" />
-                                        </div>
-                                    </a>
-                                }
-                                else
-                                {
-                                    <div class="croppedpic" style="display: block; max-height: 100%;">
-                                        <img src="~/Content/images/social.jpg" />
-                                    </div>
-                                }
-                            }
-                        </div>
-                        <div class="col-lg-8 col-md-8">
-                            <a class="btn btn-warning" href="@Url.Action("View", "Event", new { id = social.Id, eventType = EventType.Social })" title="@social.Name" style="text-align: left; width: 100%;">
-                                @social.Name.PadRight(20, ' ').Substring(0, 20)<br />
-                                @social.Place.City<br />
-                                @social.NextDate.ToString("ddd, MMM dd, yyyy")
-                            </a>
-                        </div>
-                    </div>
-                }
+                @Html.Partial("~/Views/Shared/_EventsPartial.cshtml", Model.NewSocials)
             }
             else
             {

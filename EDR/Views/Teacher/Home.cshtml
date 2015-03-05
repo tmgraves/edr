@@ -36,39 +36,7 @@
         <div class="panel-body">
             @if (Model.NewClasses.Events.Count() > 0)
             {
-                foreach (var cls in Model.NewClasses.Events.OfType<Class>().OrderBy(c => c.NextDate))
-                {
-                    <div class="col-lg-12 col-md-12 row" style="margin-top: 5px;">
-                        <div class="croppedpic col-lg-5 col-md-5" style="height: 75px;">
-                            @if (cls.VideoUrl != null)
-                            {
-                                @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new Video() { PhotoUrl = cls.PhotoUrl, VideoUrl = cls.VideoUrl })
-                            }
-                            else
-                            {
-                                if (cls.PhotoUrl != null)
-                                {
-                                    <a target="_blank" href="@Url.Content(cls.PhotoUrl)">
-                                        <div class="croppedpic" style="display: block; max-height: 100%; max-width: 100%;">
-                                            <img src="@Url.Content(cls.PhotoUrl)" />
-                                        </div>
-                                    </a>
-                                }
-                                else
-                                {
-                                    <div class="croppedpic" style="display: block; max-height: 100%; max-width: 100%;">
-                                        <img src="~/Content/images/class.jpg" />
-                                    </div>
-                                }
-                            }
-                        </div>
-                        <a class="btn btn-info col-lg-7 col-md-7" href="@Url.Action("View", "Event", new { id = cls.Id, eventType = EventType.Class })" title="@cls.Name" style="text-align: left;">
-                            @cls.Name.PadRight(20, ' ').Substring(0, 20)<br />
-                            @cls.Place.City, @cls.Place.State<br />
-                            @cls.NextDate.ToString("ddd, MMM dd, yyyy")
-                        </a>
-                    </div>
-                }
+                @Html.Partial("~/Views/Shared/_EventsPartial.cshtml", Model.NewClasses.Events)
             }
             else
             {

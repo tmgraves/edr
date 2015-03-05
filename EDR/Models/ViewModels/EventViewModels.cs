@@ -206,4 +206,11 @@ namespace EDR.Models.ViewModels
     {
         public bool Selected { get; set; }
     }
+
+    public class EventsViewModel
+    {
+        public EventType EventType { get; set; }
+        public Address Location { get; set; }
+        public IEnumerable<Event> Events { get; set; }
+    }
 }

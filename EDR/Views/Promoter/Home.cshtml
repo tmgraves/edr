@@ -36,27 +36,7 @@
         <div class="panel-body">
             @if (Model.NewSocials.Events.Count() > 0)
             {
-                foreach (var social in Model.NewSocials.Events.OrderBy(c => c.NextDate))
-                {
-                    <div class="row" style="margin-top: 5px;">
-                        <a class="btn btn-warning col-lg-10 col-md-10 col-lg-offset-1 col-md-offset-1" href="@Url.Action("View", "Event", new { id = social.Id, eventType = EDR.Enums.EventType.Class })" title="@social.Name" style="text-align: left;">
-                            <div class="col-lg-2 col-md-2 croppedpic" style="height: 50px;">
-                                @if (social.PhotoUrl != null)
-                                {
-                                    <img class="img-circle" style="width:50px; padding: 2px;" src="@social.PhotoUrl" />
-                                }
-                                else
-                                {
-                                    <img class="img-circle" style="width:40px; padding: 2px;" src="@Url.Content("~/Content/images/social.jpg")" />
-                                }
-                            </div>
-                            <div class="col-lg-10 col-md-10">
-                                @social.Name.PadRight(20, ' ').Substring(0, 20) <i class="glyphicon glyphicon-chevron-right"></i> @social.Place.City<br />
-                                @social.NextDate.ToString("ddd, MMM dd, yyyy")
-                            </div>
-                        </a>
-                    </div>
-                }
+                @Html.Partial("~/Views/Shared/_EventsPartial.cshtml", Model.NewSocials.Events)
             }
             else
             {

@@ -67,17 +67,14 @@
         var message = marker.title;
         var infowindow = new google.maps.InfoWindow({
             disableAutoPan: true,
-            content: '<div id="content" style="width: 250px;">' +
+            content: '<div id="content">' +
             '<div id="siteNotice">'+
             '</div>'+
             '<h4 id="firstHeading" class="firstHeading">' + link + '</h4>'+
             '<div id="bodyContent">'+
             '<p>' +
-            '<b>@@' + placeName + '</b><br/>' +
             address + '<br/>' +
             '</p>' +
-            '<label title="Students"><span class="badge">' + students + '</span> Students</label>' +
-            ' <label title="Classes"><span class="badge">' + classes + '</span> Classes</label>' +
             '</div>' +
             '</div>'
             });

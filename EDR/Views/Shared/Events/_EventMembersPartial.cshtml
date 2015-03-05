@@ -1,24 +1,20 @@
 ﻿@model IEnumerable<EDR.Models.EventMember>
 @using EDR.Utilities;
 
-@foreach (var t in Model.OrderBy(x => x.Member.FullName))
+@foreach (var u in Model.OrderBy(x => x.Member.FullName))
 {
-    <a class="btn btn-default thumbnail" href="@Url.Action("Home", "Dancer", new { username = t.Member.UserName }) " style="text-decoration: none; width: 75px;">
+    <a href="@Url.Action("Home", "Dancer", new { username = u.Member.UserName }) " style="text-align: left; text-decoration: none; vertical-align: top;" title="@u.Member.FirstName">
         <div class="captionpic" style="display: inline-block;">
-            @if (t.Member.UserPictures != null && t.Member.UserPictures.Count > 0)
+            @if (u.Member.UserPictures != null && u.Member.UserPictures.Count > 0)
             {
-                <img class="pull-left" src="@Url.Content(t.Member.UserPictures.First().ThumbnailFilename)" />
+                <img src="@Url.Content(u.Member.UserPictures.First().Filename)" />
             }
             else
             {
-                <img class="pull-left" src="@Url.Content("~/Content/images/NoPic.png")" />
+                <img src="@Url.Content("~/Content/images/NoPic.png")" />
             }
         </div>
-        <div class="caption">
-            <span style="vertical-align: top;"><b>@t.Member.FirstName</b></span>
-        </div>
     </a>
-    @*@Html.ActionLink(t.ApplicationUser.FullName, "View", "Teacher", new { username = t.ApplicationUser.UserName }, htmlAttributes: new { @style = "padding: 5px" })*@
 }
 
 

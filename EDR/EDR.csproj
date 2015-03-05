@@ -322,6 +322,7 @@
     <Compile Include="Models\ViewModels\DancerViewModels.cs" />
     <Compile Include="Models\ViewModels\DanceStyleViewModels.cs" />
     <Compile Include="Models\ViewModels\EventViewModels.cs" />
+    <Compile Include="Models\ViewModels\HomeViewModels.cs" />
     <Compile Include="Models\ViewModels\OwnerListViewModel.cs" />
     <Compile Include="Models\ViewModels\PlaceCreateViewModel.cs" />
     <Compile Include="Models\ViewModels\PlaceEditViewModel.cs" />
@@ -820,6 +821,7 @@
     <Content Include="Views\Shared\_Picture.cshtml" />
     <Content Include="Views\Shared\_DanceStyleLabelPartial.cshtml" />
     <Content Include="Views\Shared\_ProfilePicturePartial.cshtml" />
+    <Content Include="Views\Shared\_EventsPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Instagram\" />
