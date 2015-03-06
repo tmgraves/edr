@@ -79,7 +79,15 @@ namespace EDR.Controllers
             viewModel.DanceStyles = DataContext.DanceStyles;
             viewModel.Places = DataContext.Places;
             viewModel.Teachers = DataContext.Teachers.Include("ApplicationUser");
-            viewModel.Days = days;
+            var dayslist = new List<DayOfWeek>();
+            if (days != null)
+            {
+                foreach (var s in days)
+                {
+                    dayslist.Add((DayOfWeek)Enum.Parse(typeof(DayOfWeek), s));
+                }
+            }
+            viewModel.Days = dayslist;
             viewModel.DaysOfWeek = new List<DayOfWeek>() { DayOfWeek.Sunday, DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday };
             //  viewModel.DanceStyles = new SelectList(DanceStyleLst, "Id", "Name", danceStyle);
 
@@ -116,6 +124,11 @@ namespace EDR.Controllers
             if (skillLevel != null)
             {
                 viewModel.Classes = viewModel.Classes.Where(x => x.SkillLevel == skillLevel);
+            }
+
+            if (days != null)
+            {
+                viewModel.Classes = viewModel.Classes.Where(x => viewModel.Days.Contains(x.Day));
             }
 
             var address = new Address();

@@ -1,12 +1,13 @@
 ﻿@model EDR.Models.ViewModels.LearnViewModel
 @using EDR.Models
 @using EDR.Utilities
+@using MvcCheckBoxList.Model
 
 @{
     ViewBag.Title = "Learn to Dance";
 }
 
-<h1 class="page-header">Pick a Class...</h1>
+<h1 class="page-header">Find a Class/Workshop</h1>
 
 @using (Html.BeginForm("Learn", "Home", FormMethod.Get))
 {
@@ -14,24 +15,15 @@
         <div class="col-lg-12 col-md-12" style="margin-bottom: 5px;">
             <div class="row">
                 <div class="form-group">
-                    @Html.LabelFor(model => model.Location, htmlAttributes: new { @class = "control-label col-md-2 col-lg-2" })
+                    @Html.LabelFor(model => model.Location, htmlAttributes: new { @class = "control-label col-md-2 col-lg-2 input-lg" })
                     <div class="col-md-10 col-lg-10">
-                        @Html.TextBox("location", null, new { @class = "form-control", placeholder = "Enter your location (Los Angeles, CA, 90065, etc)" })
+                        @Html.TextBox("location", null, new { @class = "form-control input-lg", @placeholder = "Enter your location (Los Angeles, CA, 90065, etc)" })
                         @Html.ValidationMessageFor(model => model.Location, "", new { @class = "text-danger" })
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-lg-6 col-md-6">
-            @*<div class="row">
-                <div class="form-group">
-                    @Html.Label("daysLabel", "Days of Week", htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
-                    <div class="col-md-8 col-lg-8">
-                        @Html.CheckBoxList("days", x => x.DaysOfWeek, Model.Days, null, Model.Days)
-                        @Html.ValidationMessageFor(model => model.DanceStyles, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-            </div>*@
             <div class="row">
                 <div class="form-group">
                     @Html.LabelFor(model => model.DanceStyles, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
@@ -50,9 +42,7 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-lg-6 col-md-6">
-            <div class="row">
+            <div class="row" style="margin-top: 5px;">
                 <div class="form-group">
                     @Html.LabelFor(model => model.Places, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
                     <div class="col-md-8 col-lg-8">
@@ -67,6 +57,22 @@
                     <div class="col-md-8 col-lg-8">
                         @Html.DropDownList("teacher", new SelectList(Model.Teachers.OrderBy(t => t.ApplicationUser.FullName), "ApplicationUser.Id", "ApplicationUser.FullName", Model.TeacherId), "All", new { @class = "form-control col-lg-6 col-md-6" })
                         @Html.ValidationMessageFor(model => model.Teachers, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-6">
+            <div class="row">
+                <div class="form-group">
+                    @Html.Label("daysLabel", "Day(s) of Week:", htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                    <div class="col-md-8 col-lg-8">
+                        @Html.CheckBoxList("days",
+                                            x => x.DaysOfWeek,
+                                            x => x,
+                                            x => x,
+                                            x => Model.Days,
+                                            new HtmlListInfo(HtmlTag.table, 2, new { @class = "checkboxlist" }, TextLayout.Default, TemplateIsUsed.No))
+                        @Html.ValidationMessageFor(model => model.DanceStyles, "", new { @class = "text-danger" })
                     </div>
                 </div>
             </div>
