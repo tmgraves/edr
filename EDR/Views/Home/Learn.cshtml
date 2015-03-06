@@ -11,22 +11,33 @@
 @using (Html.BeginForm("Learn", "Home", FormMethod.Get))
 {
     <div class="row col-lg-12 col-md-12">
+        <div class="col-lg-12 col-md-12" style="margin-bottom: 5px;">
+            <div class="row">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Location, htmlAttributes: new { @class = "control-label col-md-2 col-lg-2" })
+                    <div class="col-md-10 col-lg-10">
+                        @Html.TextBox("location", null, new { @class = "form-control", placeholder = "Enter your location (Los Angeles, CA, 90065, etc)" })
+                        @Html.ValidationMessageFor(model => model.Location, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="col-lg-6 col-md-6">
+            @*<div class="row">
+                <div class="form-group">
+                    @Html.Label("daysLabel", "Days of Week", htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                    <div class="col-md-8 col-lg-8">
+                        @Html.CheckBoxList("days", x => x.DaysOfWeek, Model.Days, null, Model.Days)
+                        @Html.ValidationMessageFor(model => model.DanceStyles, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>*@
             <div class="row">
                 <div class="form-group">
                     @Html.LabelFor(model => model.DanceStyles, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
                     <div class="col-md-8 col-lg-8">
                         @Html.DropDownList("danceStyle", new SelectList(Model.DanceStyles.OrderBy(s => s.Name), "Id", "Name", Model.DanceStyleId), "All", new { @class = "form-control" })
                         @Html.ValidationMessageFor(model => model.DanceStyles, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-            </div>
-            <div class="row" style="margin-top: 5px;">
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Teachers, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
-                    <div class="col-md-8 col-lg-8">
-                        @Html.DropDownList("teacher", new SelectList(Model.Teachers.OrderBy(t => t.ApplicationUser.FullName), "ApplicationUser.Id", "ApplicationUser.FullName", Model.TeacherId), "All", new { @class = "form-control col-lg-6 col-md-6" })
-                        @Html.ValidationMessageFor(model => model.Teachers, "", new { @class = "text-danger" })
                     </div>
                 </div>
             </div>
@@ -50,6 +61,15 @@
                     </div>
                 </div>
             </div>
+            <div class="row" style="margin-top: 5px;">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Teachers, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                    <div class="col-md-8 col-lg-8">
+                        @Html.DropDownList("teacher", new SelectList(Model.Teachers.OrderBy(t => t.ApplicationUser.FullName), "ApplicationUser.Id", "ApplicationUser.FullName", Model.TeacherId), "All", new { @class = "form-control col-lg-6 col-md-6" })
+                        @Html.ValidationMessageFor(model => model.Teachers, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="row col-lg-12 col-md-12" style="margin: 5px;">
@@ -57,7 +77,7 @@
     </div>
 }
 <div class="row">
-    @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", new EDR.Models.ViewModels.EventsViewModel() { Events = Model.Classes, Location = Geolocation.ParseAddress("90065"), EventType = EDR.Enums.EventType.Class })
+    @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", new EDR.Models.ViewModels.EventsViewModel() { Events = Model.Classes, Location = Model.SearchAddress, EventType = EDR.Enums.EventType.Class })
 </div>
 
 @*<div class="tabbable">

@@ -5,7 +5,7 @@
     ViewBag.Title = "Social";
 }
 
-<h1 class="page-header">Go Dance!</h1>
+<h1 class="page-header">Find a Place to Dance</h1>
 
 @using (Html.BeginForm("Social", "Home", FormMethod.Get))
 {
@@ -15,31 +15,8 @@
         <input type="submit" value="Search" />
     </p>
 }
-<div class="tabbable">
-    <ul class="nav nav-tabs nav-justified" role="tablist">
-        <li class="active"><a href="#socials" data-toggle="tab">Socials (@Model.Socials.Count().ToString())</a></li>
-        <li><a href="#concerts" data-toggle="tab">Concerts (@Model.Concerts.Count().ToString())</a></li>
-        <li><a href="#conferences" data-toggle="tab">Conferences (@Model.Conferences.Count().ToString())</a></li>
-        <li><a href="#parties" data-toggle="tab">Parties (@Model.Parties.Count().ToString())</a></li>
-        <li><a href="#openhouses" data-toggle="tab">OpenHouses (@Model.OpenHouses.Count().ToString())</a></li>
-    </ul>
-    <div class="tab-content">
-        <div id="socials" class="tab-pane active">
-            @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", Model.Socials)
-        </div>
-        <div id="concerts" class="tab-pane">
-            @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", Model.Concerts)
-        </div>
-        <div id="conferences" class="tab-pane">
-            @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", Model.Conferences)
-        </div>
-        <div id="openhouses" class="tab-pane">
-            @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", Model.OpenHouses)
-        </div>
-        <div id="parties" class="tab-pane">
-            @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", Model.Parties)
-        </div>
-    </div>
+<div class="row">
+    @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", new EDR.Models.ViewModels.EventsViewModel() { Events = Model.Socials, Location = Geolocation.ParseAddress("90065"), EventType = EDR.Enums.EventType.Social })
 </div>
 
 <a href="@Request.UrlReferrer.ToString()">Back</a>

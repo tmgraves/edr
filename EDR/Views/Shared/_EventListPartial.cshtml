@@ -36,30 +36,12 @@
             icon: "http://maps.google.com/mapfiles/kml/paddle/" + @idx + "-lv.png"
         });
 
-        attachMessage(marker, '@ev.Id', '@ev.Place.Name', '@ev.Place.Address <br/> @ev.Place.City , @ev.Place.State  @ev.Place.Zip', '<a href="@Url.Action("View", "Event", new { id = ev.Id, eventType = Model.EventType })">' + marker.title + '</a>', '@(ev.EventMembers != null ? ev.EventMembers.Count : 0)', '@(ev.Videos != null ? ev.Videos.Count : 0)', '@(ev.Pictures != null ? ev.Pictures.Count : 0)', '@Model.EventType.ToString()');
-                markers.push(marker);
-
-                </text>
-                idx += 1;
-            }
-
-            foreach (var ev in Model.Events.Where(x => x.EndDate < DateTime.Today).OrderBy(x => x.NextDate))
-            {
-                <text>
-        var marker = new google.maps.Marker({
-            position: new google.maps.LatLng('@ev.Place.Latitude', '@ev.Place.Longitude'),
-            map: map,
-            title: '@ev.Name',
-            icon: "http://maps.google.com/mapfiles/kml/paddle/" + @idx + "-lv.png"
-        });
-
-        attachMessage(marker, '@ev.Id', '@ev.Place.Name', '@ev.Place.Address <br/> @ev.Place.City , @ev.Place.State  @ev.Place.Zip', '<a href="@Url.Action("View", "Event", new { id = ev.Id, eventType = Model.EventType })">' + marker.title + '</a>', '@(ev.EventMembers != null ? ev.EventMembers.Count : 0)', '@(ev.Videos != null ? ev.Videos.Count : 0)', '@(ev.Pictures != null ? ev.Videos.Count : 0)', '@Model.EventType.ToString()');
+        attachMessage(marker, '@ev.Id', '@(ev.Place.Name) (@(ev.Place.PlaceType))', '@ev.Place.Address <br/> @ev.Place.City , @ev.Place.State  @ev.Place.Zip', '<a href="@Url.Action("View", "Event", new { id = ev.Id, eventType = Model.EventType })">' + marker.title + '</a>', '@(ev.EventMembers != null ? ev.EventMembers.Count : 0)', '@(ev.Videos != null ? ev.Videos.Count : 0)', '@(ev.Pictures != null ? ev.Pictures.Count : 0)', '@Model.EventType.ToString()', '@(Url.Content(ev.PhotoUrl == null ? "~/Content/images/class.jpg" : ev.PhotoUrl))');
         markers.push(marker);
 
         </text>
                 idx += 1;
             }
-
         }
 
         clearMarkers();
@@ -77,17 +59,21 @@
 
     // The five markers show a secret message when clicked
     // but that message is not within the marker's instance data
-    function attachMessage(marker, num, placeName, address, link, users, videos, pictures, eventtype) {
+    function attachMessage(marker, num, placeName, address, link, users, videos, pictures, eventtype, photourl) {
         var message = marker.title;
         var infowindow = new google.maps.InfoWindow({
             disableAutoPan: true,
             content: '<div id="content">' +
             '<div id="siteNotice">' +
             '</div>' +
-            '<h4 id="firstHeading" class="firstHeading">' + link + '</h4>' +
+            '<div style="display: block;">' +
+            '<img style="max-width: 50px; max-height: 50px; display: inline-block; padding-right: 5px;" src="' + photourl + '"/>' +
+            '<h4 style="display: inline-block;" id="firstHeading" class="firstHeading">' + link + '</h4>' +
+            '</div>' +
+            '<strong>' + placeName + '</strong>' +
             '<div id="bodyContent">' +
             '<p>' +
-            address + '<br/>' +
+            address +
             '</p>' +
             '</div>' +
             '</div>'
@@ -120,40 +106,70 @@
     {
         foreach (var item in Model.Events.Where(x => x.EndDate >= DateTime.Today || x.EndDate == null).OrderBy(x => x.NextDate))
         {
-            <a class="btn btn-default" style="width: 100%; text-align: left; white-space: normal;" onclick="openEvent(@rowNo, @item.Place.Latitude, @item.Place.Longitude); return false;" href="#">
-                <div style="width: 100%;">
-                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 thumbnail text-center">
-                        <span class="text-primary">@item.NextDate.ToString("ddd").ToUpper()</span><br /><span class="text-success">@item.NextDate.ToString("MMM").ToUpper() @item.NextDate.Day.ToString()</span><br /><span class="text-success">@item.NextDate.Year.ToString()</span>
-                    </div>
-                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
-                        <strong>@(rowNo += 1). @item.Name<br />@@@item.Place.Name</strong><br />
-                        @item.StartDate.ToString("%h:mm tt")~@item.StartDate.AddMinutes(item.Duration).ToString("%h:mm tt")
-                        @if (item.Recurring)
+            <a class="btn btn-default" style="text-align: left; width: 100%; white-space: normal; display: inline-block;" onclick="openEvent(@rowNo, @item.Place.Latitude, @item.Place.Longitude); return false;" href="#">
+                <div class="col-lg-2 col-md-2 col-sm-3 col-xs-3 text-center img-thumbnail">
+                    <span class="text-primary">@item.NextDate.ToString("ddd").ToUpper()</span><br /><span class="text-success">@item.NextDate.ToString("MMM").ToUpper() @item.NextDate.Day.ToString()</span>
+                    @if (!item.AllDay)
+                    {
+                        @(Convert.ToDateTime(item.StartTime).ToString("%h:mm tt"))
+                    }
+                </div>
+                <div class="col-lg-7 col-md-7 col-sm-9 col-xs-9">
+                    <strong>@(rowNo += 1). @item.Name</strong>
+                    <br />
+                    <span class="text-success">@@@item.Place.Name</span>
+                    @if (item is Class)
+                    {
+                        if(((Class)item).Teachers != null)
                         {
-                            ApplicationUtility.FrequencyTranslate(item.Frequency, item.Interval == null ? 0 : (int)item.Interval);
-                        }
-                        @if (Model.EventType == EDR.Enums.EventType.Class)
-                        {
-                            if (((Class)item).Teachers != null && ((Class)item).Teachers.Count > 0)
+                            var teacherset = ((Class)item).Teachers;
+
+                            if (teacherset.Count() > 0)
                             {
                                 var teachers = "";
-                                foreach (Teacher t in ((Class)item).Teachers)
+                                <br /><text>w/</text><span class="text-primary">
+                                @foreach (var t in teacherset)
                                 {
-                                    teachers += (teachers == "" ? "" : ", ") + t.ApplicationUser.FullName;
+                                    if (teachers != "")
+                                    {
+                                        teachers += ", ";
+                                    }
+                                    teachers += t.ApplicationUser.FirstName;
                                 }
-                                <br /><span class="text-primary">with @teachers</span>
+                                @teachers
+                                </span>
                             }
                         }
-                        @if (item.DanceStyles != null && item.DanceStyles.Count > 0)
+                    }
+                    @if (item.Recurring)
+                    {
+                        ApplicationUtility.FrequencyTranslate(item.Frequency, item.Interval == null ? 0 : (int)item.Interval);
+                    }
+                    @if (item.Price != null)
+                    {
+                        <br />
+                        @(item.Price == 0 ? "FREE" : ((decimal)item.Price).ToString("C"))
+                    }
+                    @if (item.DanceStyles != null)
+                    {
+                        <br />
+                        foreach (var s in item.DanceStyles)
                         {
-                            var styles = "";
-                            foreach (DanceStyle s in item.DanceStyles)
-                            {
-                                styles += (styles == "" ? "" : ", ") + s.Name;
-                            }
-                            <br /><span class="text-warning" style="white-space: normal;">@styles</span>
+                            <span class="label label-info">@s.Name</span>
                         }
-                    </div>
+                    }
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-9 col-xs-9">
+                    <strong><span class="text-danger bold">@item.Reviews.Where(r => r.Like).Count() <i class="glyphicon glyphicon-thumbs-up"></i> | @item.Reviews.Where(r => !r.Like).Count() <i class="glyphicon glyphicon-thumbs-down"></i></span></strong>
+                    @if (item is Class)
+                    {
+                        <br />
+                        <span class="label label-warning">
+                            Skill Level: @(((Class)item).SkillLevel)
+                        </span>
+                    }
+                    <br />
+                    <span class="text-info"><span class="badge">@item.EventMembers.Count()</span> Dancer(s)</span>
                 </div>
             </a>
         }

@@ -20,6 +20,11 @@ namespace EDR.Models.ViewModels
         public int? TeacherId { get; set; }
         [Display(Name = "Skill Level:")]
         public int? SkillLevel { get; set; }
+        [Display(Name = "Your Location:", Prompt = "Enter your location here")]
+        public string Location { get; set; }
+        public Address SearchAddress { get; set; }
+        public string[] Days { get; set; }
+        public List<DayOfWeek> DaysOfWeek { get; set; }
         public IEnumerable<ClassSeries> ClassSeries { get; set; }
         public IEnumerable<Class> Classes { get; set; }
         public IEnumerable<Workshop> Workshops { get; set; }
