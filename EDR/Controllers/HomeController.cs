@@ -73,12 +73,13 @@ namespace EDR.Controllers
             return View(viewModel);
         }
 
-        public ActionResult Learn(int? danceStyle, string teacher, int? place, int? skillLevel, string location, string[] days)
+        public ActionResult Learn(int? danceStyle, string teacher, int? place, int? skillLevel, string location, string[] days, double? CenterLat, double? CenterLng, int? Zoom, double? NELat, double? NELng, double? SWLat, double? SWLng)
         {
             var viewModel = new LearnViewModel();
             viewModel.DanceStyles = DataContext.DanceStyles;
             viewModel.Places = DataContext.Places;
             viewModel.Teachers = DataContext.Teachers.Include("ApplicationUser");
+            viewModel.Zoom = Zoom == null ? 10 : (int)Zoom;
             var dayslist = new List<DayOfWeek>();
             if (days != null)
             {
@@ -132,14 +133,15 @@ namespace EDR.Controllers
             }
 
             var address = new Address();
-            if (location != null && location != "")
+            if (CenterLat != null && CenterLng != null)
             {
                 address = Geolocation.ParseAddress(location);
-                var myLocation = DbGeography.FromText("POINT(" + address.Longitude.ToString() + " " + address.Latitude.ToString() + ")");
-                viewModel.Classes = viewModel.Classes.Where(c => DbGeography.FromText("POINT(" + c.Place.Longitude.ToString() + " " + c.Place.Latitude.ToString() + ")").Distance(myLocation) * .00062 < 50);
+                //  var myLocation = DbGeography.FromText("POINT(" + address.Longitude.ToString() + " " + address.Latitude.ToString() + ")");
+                //  viewModel.Classes = viewModel.Classes.Where(c => DbGeography.FromText("POINT(" + c.Place.Longitude.ToString() + " " + c.Place.Latitude.ToString() + ")").Distance(myLocation) * .00062 < 50);
+                viewModel.Classes = viewModel.Classes.Where(c => c.Place.Longitude >= SWLng && c.Place.Longitude <= NELng && c.Place.Latitude >= SWLat && c.Place.Latitude <= NELat);
 
                 //  Set Map Location
-                viewModel.SearchAddress = address;
+                viewModel.SearchAddress = new Address() { Latitude = (double)CenterLat, Longitude = (double)CenterLng };
                 //  Set Map Location
             }
             else if (User.Identity.IsAuthenticated)
@@ -156,6 +158,8 @@ namespace EDR.Controllers
             {
                 viewModel.SearchAddress = Geolocation.ParseAddress("90065");
             }
+
+            viewModel.Classes = viewModel.Classes.Take(25);
 
             return View(viewModel);
         }

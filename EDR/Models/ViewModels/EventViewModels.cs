@@ -211,6 +211,7 @@ namespace EDR.Models.ViewModels
     {
         public EventType EventType { get; set; }
         public Address Location { get; set; }
+        public int Zoom { get; set; }
         public IEnumerable<Event> Events { get; set; }
     }
 }

@@ -12,10 +12,11 @@
 <script>
     var map;
     var markers = [];
+    var infowindows = [];
 
     function initialize() {
         var mapOptions = {
-            zoom: 14,
+            zoom: @(Model.Zoom),
             zoomControl: false,
             center: new google.maps.LatLng('@Model.Location.Latitude', '@Model.Location.Longitude')
         };
@@ -44,7 +45,21 @@
             }
         }
 
-        clearMarkers();
+        //  clearMarkers();
+
+        google.maps.event.addListener(map, 'idle', function () {
+            var bounds = map.getBounds();
+            var ne = bounds.getNorthEast(); // LatLng of the north-east corner
+            var sw = bounds.getSouthWest(); // LatLng of the south-west corder
+            var center = map.getCenter();
+            $("#NELat").val(ne.lat());
+            $("#NELng").val(ne.lng());
+            $("#SWLat").val(sw.lat());
+            $("#SWLng").val(sw.lng());
+            $("#CenterLat").val(center.lat());
+            $("#CenterLng").val(center.lng());
+            $("#Zoom").val(map.getZoom());
+        });
     }
 
     function clearMarkers() {
@@ -54,6 +69,12 @@
     function setAllMap(map) {
         for (var i = 0; i < markers.length; i++) {
             markers[i].setMap(map);
+        }
+    }
+
+    function clearWindows() {
+        for (var i = 0; i < infowindows.length; i++) {
+            infowindows[i].close();
         }
     }
 
@@ -78,8 +99,9 @@
             '</div>' +
             '</div>'
         });
+        infowindows.push(infowindow);
 
-        infowindow.open(map, marker);
+        //  infowindow.open(map, marker);
 
         google.maps.event.addListener(marker, 'click', function () {
             infowindow.open(map, marker);
@@ -90,8 +112,10 @@
         var latLng = new google.maps.LatLng(lati, long); //Makes a latlng
         map.panTo(latLng); //Make map global
         map.setZoom(14);
-        clearMarkers();
+        //  clearMarkers();
         markers[id].setMap(map);
+        clearWindows();
+        infowindows[id].open(map, markers[id]);
         return false;
     }
 
@@ -108,16 +132,22 @@
         {
             <a class="btn btn-default" style="text-align: left; width: 100%; white-space: normal; display: inline-block;" onclick="openEvent(@rowNo, @item.Place.Latitude, @item.Place.Longitude); return false;" href="#">
                 <div class="col-lg-2 col-md-2 col-sm-3 col-xs-3 text-center img-thumbnail">
-                    <span class="text-primary">@item.NextDate.ToString("ddd").ToUpper()</span><br /><span class="text-success">@item.NextDate.ToString("MMM").ToUpper() @item.NextDate.Day.ToString()</span>
-                    @if (!item.AllDay)
-                    {
-                        @(Convert.ToDateTime(item.StartTime).ToString("%h:mm tt"))
-                    }
+                    <span class="text-primary">@item.NextDate.ToString("ddd").ToUpper()</span><br />
+                    <span class="text-success">@item.NextDate.ToString("MMM").ToUpper() @item.NextDate.Day.ToString()</span><br />
+                    <span class="small text-danger">
+                        @if (!item.AllDay)
+                        {
+                            @(Convert.ToDateTime(item.StartTime).ToString("%h:mm tt"))
+                        }
+                        else
+                        {
+                            @:All Day
+                        }
+                    </span>
                 </div>
                 <div class="col-lg-7 col-md-7 col-sm-9 col-xs-9">
-                    <strong>@(rowNo += 1). @item.Name</strong>
-                    <br />
-                    <span class="text-success">@@@item.Place.Name</span>
+                    <strong>@(rowNo += 1). @item.Name</strong><br />
+                    <span class="text-success"> @@@item.Place.Name</span>
                     @if (item is Class)
                     {
                         if(((Class)item).Teachers != null)

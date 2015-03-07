@@ -23,6 +23,7 @@ namespace EDR.Models.ViewModels
         [Display(Name = "Your Location:", Prompt = "Enter your location here")]
         public string Location { get; set; }
         public Address SearchAddress { get; set; }
+        public int Zoom { get; set; }
         public List<DayOfWeek> Days { get; set; }
         public List<DayOfWeek> DaysOfWeek { get; set; }
         public IEnumerable<ClassSeries> ClassSeries { get; set; }
