@@ -30,4 +30,21 @@ namespace EDR.Models.ViewModels
         public IEnumerable<Class> Classes { get; set; }
         public IEnumerable<Workshop> Workshops { get; set; }
     }
+
+    public class SocialViewModel
+    {
+        [Display(Name = "Dance Style:")]
+        public IEnumerable<DanceStyle> DanceStyles { get; set; }
+        public int? DanceStyleId { get; set; }
+        [Display(Name = "Place:")]
+        public IEnumerable<Place> Places { get; set; }
+        public int? PlaceId { get; set; }
+        [Display(Name = "Your Location:", Prompt = "Enter your location here")]
+        public string Location { get; set; }
+        public Address SearchAddress { get; set; }
+        public int Zoom { get; set; }
+        public List<DayOfWeek> Days { get; set; }
+        public List<DayOfWeek> DaysOfWeek { get; set; }
+        public IEnumerable<Social> Socials { get; set; }
+    }
 }

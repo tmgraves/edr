@@ -1,5 +1,7 @@
 ﻿@model EDR.Models.ViewModels.SocialViewModel
+@using EDR.Models
 @using EDR.Utilities
+@using MvcCheckBoxList.Model
 
 @{
     ViewBag.Title = "Social";
@@ -9,14 +11,68 @@
 
 @using (Html.BeginForm("Social", "Home", FormMethod.Get))
 {
-    <p>
-        Choose a Dance Style: @Html.DropDownList("danceStyle", "All")
-        Choose a Place: @Html.DropDownList("place", "All")
-        <input type="submit" value="Search" />
-    </p>
+    @Html.Hidden("NELat", 0)
+    @Html.Hidden("NELng", 0)
+    @Html.Hidden("SWLat", 0)
+    @Html.Hidden("SWLng", 0)
+    @Html.Hidden("CenterLat", 0)
+    @Html.Hidden("CenterLng", 0)
+    @Html.Hidden("Zoom", 0)
+    <div class="row col-lg-12 col-md-12">
+        <div class="col-lg-12 col-md-12" style="margin-bottom: 5px;">
+            <div class="row">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Location, htmlAttributes: new { @class = "control-label col-md-2 col-lg-2 input-lg" })
+                    <div class="col-md-10 col-lg-10">
+                        @Html.TextBox("location", null, new { @class = "form-control input-lg", @placeholder = "Enter your location (Los Angeles, CA, 90065, etc)" })
+                        @Html.ValidationMessageFor(model => model.Location, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-6">
+            <div class="row">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.DanceStyles, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                    <div class="col-md-8 col-lg-8">
+                        @Html.DropDownList("danceStyle", new SelectList(Model.DanceStyles.OrderBy(s => s.Name), "Id", "Name", Model.DanceStyleId), "All", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.DanceStyles, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 5px;">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Places, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                    <div class="col-md-8 col-lg-8">
+                        @Html.DropDownList("place", new SelectList(Model.Places.OrderBy(p => p.Name), "Id", "Name", Model.PlaceId), "All", new { @class = "form-control col-lg-6 col-md-6" })
+                        @Html.ValidationMessageFor(model => model.Places, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-6">
+            <div class="row">
+                <div class="form-group">
+                    @Html.Label("daysLabel", "Day(s) of Week:", htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                    <div class="col-md-8 col-lg-8">
+                        @Html.CheckBoxList("days",
+                                            x => x.DaysOfWeek,
+                                            x => x,
+                                            x => x,
+                                            x => Model.Days,
+                                            new HtmlListInfo(HtmlTag.table, 2, new { @class = "checkboxlist" }, TextLayout.Default, TemplateIsUsed.No))
+                        @Html.ValidationMessageFor(model => model.DanceStyles, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row col-lg-12 col-md-12" style="margin: 5px;">
+        <input type="submit" value="Search Socials" class="btn btn-warning" />
+    </div>
 }
 <div class="row">
-    @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", new EDR.Models.ViewModels.EventsViewModel() { Events = Model.Socials, Location = Geolocation.ParseAddress("90065"), EventType = EDR.Enums.EventType.Social })
+    @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", new EDR.Models.ViewModels.EventsViewModel() { Events = Model.Socials, Location = Model.SearchAddress, EventType = EDR.Enums.EventType.Social, Zoom = Model.Zoom })
 </div>
 
 <a href="@Request.UrlReferrer.ToString()">Back</a>

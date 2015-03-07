@@ -375,7 +375,6 @@
     <Compile Include="Models\ViewModels\PromoterApplyViewModel.cs" />
     <Compile Include="Models\ViewModels\PromoterEditViewModel.cs" />
     <Compile Include="Models\ViewModels\PromoterViewViewModel.cs" />
-    <Compile Include="Models\ViewModels\SocialViewModel.cs" />
     <Compile Include="Models\ViewModels\TeacherApplyViewModel.cs" />
     <Compile Include="Models\ViewModels\TeacherEditViewModel.cs" />
     <Compile Include="Models\ViewModels\TeacherListViewModel.cs" />
