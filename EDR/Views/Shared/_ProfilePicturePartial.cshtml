@@ -12,7 +12,7 @@
     @if (User.Identity != null && User.Identity.Name == Model.User.UserName)
     {
         <p>
-            <a style="font-size: small;" href="@Url.Action("ChangePicture", "Dancer", new { returnUrl = Model.ReturnUrl })">Change Picture</a>
+            <a style="font-size: small;" href="@Url.Action("ChangePicture", "Dancer")">Change Picture</a>
         </p>
     }
 </div>

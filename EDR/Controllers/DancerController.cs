@@ -521,8 +521,13 @@ namespace EDR.Controllers
 
             var today = DateTime.Today;
 
-            var viewModel = new DancerViewViewModel();
-            viewModel.Dancer = dancer;
+            var viewModel = LoadDancerModel(username);
+
+            if (viewModel.Dancer == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             var location = Geolocation.ParseAddress(dancer.ZipCode);
 
             if (dancer.ZipCode != null)
@@ -585,9 +590,12 @@ namespace EDR.Controllers
             model.Dancer = DataContext.Users.Where(x => x.Id == id).Include("DanceStyles").FirstOrDefault();
 
             var selectedStyles = new List<DanceStyleListItem>();
-            foreach (DanceStyle ss in model.Dancer.DanceStyles)
+            if (model.Dancer.DanceStyles != null)
             {
-                selectedStyles.Add(new DanceStyleListItem { Id = ss.Id, Name = ss.Name });
+                foreach (DanceStyle ss in model.Dancer.DanceStyles)
+                {
+                    selectedStyles.Add(new DanceStyleListItem { Id = ss.Id, Name = ss.Name });
+                }
             }
             model.SelectedStyles = selectedStyles;
 
@@ -677,6 +685,7 @@ namespace EDR.Controllers
         public ActionResult UploadPicture(HttpPostedFileBase file)
         {
             UploadFile newFile = ApplicationUtility.LoadPicture(file);
+            string message;
 
             if (newFile.UploadStatus == "Success")
             {
@@ -685,12 +694,13 @@ namespace EDR.Controllers
                 dancer.UserPictures.Add(new UserPicture() { Title = newFile.FileName, Filename = newFile.FilePath, ThumbnailFilename = newFile.ThumbnailFilePath, PhotoDate = today });
                 DataContext.Entry(dancer).State = EntityState.Modified;
                 DataContext.SaveChanges();
+                message = "File was uploaded";
             }
             else
             {
-                ViewBag.Message = newFile.UploadStatus;
+                message = newFile.UploadStatus;
             }
-            return RedirectToAction("ChangePicture", "Dancer", new { username = User.Identity.Name });
+            return RedirectToAction("ChangePicture", "Dancer", new { message = message });
         }
 
         public ActionResult DeletePicture(int pictureId)
@@ -717,10 +727,10 @@ namespace EDR.Controllers
         }
 
         [Authorize]
-        public ActionResult ChangePicture(string returnUrl)
+        public ActionResult ChangePicture(string message)
         {
             var model = new ChangePictureViewModel();
-            model.ReturlUrl = returnUrl;
+            ViewBag.Message = message;
 
             var id = User.Identity.GetUserId();
             model.Dancer = DataContext.Users.Where(x => x.Id == id).Include("UserPictures").FirstOrDefault();
@@ -747,7 +757,7 @@ namespace EDR.Controllers
         }
 
         [Authorize]
-        public ActionResult ProfilePicture(int id, string returnUrl)
+        public ActionResult ProfilePicture(int id)
         {
             try
             {
@@ -769,11 +779,36 @@ namespace EDR.Controllers
 
                 DataContext.Entry(dancer).State = EntityState.Modified;
                 DataContext.SaveChanges();
-                return Redirect(returnUrl);
+
+                //  Set Return
+                if (Session["MyRole"] != null)
+                {
+                    if ((RoleName)Session["MyRole"] == RoleName.Owner)
+                    {
+                        return Redirect(Url.Action("Home", "Owner", new { username = User.Identity.Name }));
+                    }
+                    else if ((RoleName)Session["MyRole"] == RoleName.Promoter)
+                    {
+                        return Redirect(Url.Action("Home", "Promoter", new { username = User.Identity.Name }));
+                    }
+                    else if ((RoleName)Session["MyRole"] == RoleName.Teacher)
+                    {
+                        return Redirect(Url.Action("Home", "Teacher", new { username = User.Identity.Name }));
+                    }
+                    else
+                    {
+                        return Redirect(Url.Action("Home", "Dancer", new { username = User.Identity.Name }));
+                    }
+                }
+                else
+                {
+                    return Redirect(Url.Action("Home", "Dancer", new { username = User.Identity.Name }));
+                }
+                //  Set Return
             }
             catch (Exception ex)
             {
-                return RedirectToAction("ChangePicture", "Dancer", new { username = User.Identity.Name, returnUrl = returnUrl });
+                return RedirectToAction("ChangePicture", "Dancer", new { username = User.Identity.Name });
             }
         }
 

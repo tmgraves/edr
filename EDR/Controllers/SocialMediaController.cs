@@ -11,6 +11,7 @@ using Microsoft.AspNet.Identity;
 using System.Data.Entity;
 using System.Text;
 using EDR.Utilities;
+using System.Configuration;
 
 namespace EDR.Controllers
 {
@@ -26,17 +27,17 @@ namespace EDR.Controllers
         [Authorize]
         public ActionResult AddInstagram()
         {
-            var client_id = "56c5b09843504985b032bd76c8657a16";
-            var redirect_uri = "https://localhost:44302/SocialMedia/Authenticate";
+            var client_id = ConfigurationManager.AppSettings["InstagramClientId"];
+            var redirect_uri = ConfigurationManager.AppSettings["InstagramRedirectUri"];
             return Redirect("https://api.instagram.com/oauth/authorize/?client_id=" + client_id + "&redirect_uri=" + redirect_uri + "&response_type=code");  
         }
 
         [Authorize]
         public ActionResult Authenticate(string code)
         {
-            var client_id = "56c5b09843504985b032bd76c8657a16";
-            var client_secret = "2d6f838d229a4b45af5d54750cbeacb0";
-            var redirect_uri = "https://localhost:44302/SocialMedia/Authenticate";
+            var client_id = ConfigurationManager.AppSettings["InstagramClientId"];
+            var client_secret = ConfigurationManager.AppSettings["InstagramClientSecret"];
+            var redirect_uri = ConfigurationManager.AppSettings["InstagramRedirectUri"];
             NameValueCollection parameters = new NameValueCollection();
             parameters.Add("client_id", client_id);
             parameters.Add("client_secret", client_secret);
@@ -68,9 +69,9 @@ namespace EDR.Controllers
         public ActionResult AddSpotify()
         {
             //  https://accounts.spotify.com/en/authorize?response_type=code&client_id=8897482848704f2a8f8d7c79726a70d4&redirect_uri=https:%2F%2Fdeveloper.spotify.com%2Fweb-api%2Fconsole%2Fcallback&scope=playlist-read-private%20playlist-modify-public
-            var client_id = "44d7c94dd6c847ff93d25447c09d37ca";
+            var client_id = ConfigurationManager.AppSettings["SpotifyClientId"];
             //  var client_secret = "03b18ba62015498bb19d45fb1898dd55";
-            var redirect_uri = "https://localhost:44302/SocialMedia/AuthenticateSpotify";
+            var redirect_uri = ConfigurationManager.AppSettings["SpotifyRedirectUri"];
             return Redirect("https://accounts.spotify.com/en/authorize/?client_id=" + client_id + "&redirect_uri=" + redirect_uri + "&response_type=code&scope=playlist-read-private%20playlist-modify-public");
         }
 

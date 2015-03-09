@@ -162,6 +162,7 @@ namespace EDR.Data
             context.Events.AddRange(salsaclasses);
             context.Events.AddRange(events);
             context.Groups.AddRange(groups);
+            var errors = context.GetValidationErrors();
             context.SaveChanges();
         }
     }

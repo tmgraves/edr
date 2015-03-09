@@ -8,7 +8,7 @@
 @if (Model.Owner != null)
 {
     <h5>You've already applied to be an Owner.  Your application is under review.</h5>
-    @Html.ActionLink("Back to Account", "Manage", "Account")
+    @Html.ActionLink("Back to Dancer Page", "Home", "Dancer", new { username = User.Identity.Name }, new { @class = "btn btn-info" })
 }
 else
 {

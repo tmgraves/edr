@@ -12,6 +12,12 @@ namespace EDR.Models
 {
     public class Event : Entity
     {
+        //  Default Constructor
+        public Event()
+        {
+            Interval = 1;
+        }
+
         [Required]
         public string Name { get; set; }
         [DataType(DataType.MultilineText)]
@@ -58,7 +64,7 @@ namespace EDR.Models
         [Display(Name = "Does This Event Repeat?")]
         public bool Recurring { get; set; }
         public Frequency Frequency { get; set; }
-        [DefaultValue(0)]
+        [DefaultValue(1)]
         [Range(1, 100)]
         public int Interval { get; set; }
         public DayOfWeek Day 

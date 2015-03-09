@@ -70,22 +70,7 @@
                     }
                 }
             </h4>
-            @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", Model.Classes)
-            <h4>
-                Available Workshops
-                @if (User.Identity != null)
-                {
-                    if (Model.Place.Teachers.Any(x => x.ApplicationUser.UserName == User.Identity.Name))
-                    {
-                        <a style="font-size: small;" href="@Url.Action("Create", "Event", new { role = "Teacher", eventType = "Workshop", placeId = Model.Place.Id }, null)">Add a Workshop</a>
-                    }
-                    else if (Model.Place.Owners.Any(x => x.ApplicationUser.UserName == User.Identity.Name))
-                    {
-                        <a style="font-size: small;" href="@Url.Action("Create", "Event", new { role = "Owner", eventType = "Workshop", placeId = Model.Place.Id }, null)">Add a Workshop</a>
-                    }
-                }
-            </h4>
-            @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", Model.Workshops)
+            @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", new EDR.Models.ViewModels.EventsViewModel() { Events = Model.Classes, EventType = EDR.Enums.EventType.Class, Location = Geolocation.ParseAddress("90065"), Zoom = 10 })
         </div>
         <div id="dance" class="tab-pane">
             <h4>
@@ -98,48 +83,7 @@
                     }
                 }
             </h4>
-            @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", Model.Socials)
-            <h4>
-                Concerts
-                @if (User.Identity != null)
-                {
-                    if (Model.Place.Owners.Any(x => x.ApplicationUser.UserName == User.Identity.Name))
-                    {
-                        <a style="font-size: small;" href="@Url.Action("Create", "Event", new { role = "Owner", eventType = "Concert" }, null)">Add a Concert</a>
-                    }
-                }
-            </h4>
-            @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", Model.Concerts)
-            <h4>
-                Conferences
-                @if (User.Identity != null)
-                {
-                    if (Model.Place.Owners.Any(x => x.ApplicationUser.UserName == User.Identity.Name))
-                    {
-                        <a style="font-size: small;" href="@Url.Action("Create", "Event", new { role = "Owner", eventType = "Conference" }, null)">Add a Conference</a>
-                    }
-                }
-            </h4>
-            @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", Model.Conferences)
-            <h4>
-                Open Houses
-                @if (User.Identity != null)
-                {
-                    if (Model.Place.Owners.Any(x => x.ApplicationUser.UserName == User.Identity.Name))
-                    {
-                        <a style="font-size: small;" href="@Url.Action("Create", "Event", new { role = "Owner", eventType = "OpenHouse" }, null)">Add a Open House</a>
-                    }
-                }
-            </h4>
-            @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", Model.OpenHouses)
-            <h4>
-                Parties
-                @if (User.Identity != null && User.Identity.IsAuthenticated)
-                {
-                    <a style="font-size: small;" href="@Url.Action("Create", "Event", new { role = "Dancer", eventType = "Party" }, null)">Add a Party</a>
-                }
-            </h4>
-            @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", Model.Parties)
+            @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", new EDR.Models.ViewModels.EventsViewModel() { Events = Model.Socials, EventType = EDR.Enums.EventType.Social, Location = Geolocation.ParseAddress("90065"), Zoom = 10 })
         </div>
     </div>
 </div>

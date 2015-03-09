@@ -89,41 +89,41 @@ namespace EDR.Controllers
             return viewModel;
         }
 
-        [Authorize]
-        public ActionResult View(string username)
-        {
-            if (String.IsNullOrWhiteSpace(username))
-            {
-                if (User != null)
-                {
-                    username = User.Identity.GetUserName();
-                }
-                else
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
-            }
+        //[Authorize]
+        //public ActionResult View(string username)
+        //{
+        //    if (String.IsNullOrWhiteSpace(username))
+        //    {
+        //        if (User != null)
+        //        {
+        //            username = User.Identity.GetUserName();
+        //        }
+        //        else
+        //        {
+        //            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //        }
+        //    }
 
-            var teacher = DataContext.Teachers.Include("Classes")
-                .Where(x => x.ApplicationUser.UserName == username)
-                .FirstOrDefault();
+        //    var teacher = DataContext.Teachers.Include("Classes")
+        //        .Where(x => x.ApplicationUser.UserName == username)
+        //        .FirstOrDefault();
 
-            if (teacher == null)
-            {
-                if (username == User.Identity.Name && !User.IsInRole("Teacher"))
-                {
-                    return RedirectToAction("Apply", "Teacher");
-                }
-                else
-                {
-                    return HttpNotFound();
-                }
-            }
+        //    if (teacher == null)
+        //    {
+        //        if (username == User.Identity.Name && !User.IsInRole("Teacher"))
+        //        {
+        //            return RedirectToAction("Apply", "Teacher");
+        //        }
+        //        else
+        //        {
+        //            return HttpNotFound();
+        //        }
+        //    }
 
-            var viewModel = LoadTeacher(username);
+        //    var viewModel = LoadTeacher(username);
 
-            return View(viewModel);
-        }
+        //    return View(viewModel);
+        //}
 
         [Authorize]
         public ActionResult Home(string username)
@@ -144,7 +144,7 @@ namespace EDR.Controllers
                 .Where(x => x.ApplicationUser.UserName == username)
                 .FirstOrDefault();
 
-            if (teacher == null)
+            if (teacher == null || teacher.Approved == null)
             {
                 if (username == User.Identity.Name && !User.IsInRole("Teacher"))
                 {
@@ -252,7 +252,7 @@ namespace EDR.Controllers
                 .Where(x => x.ApplicationUser.UserName == username)
                 .FirstOrDefault();
 
-            if (teacher == null)
+            if (teacher == null || teacher.Approved == null)
             {
                 if (username == User.Identity.Name && !User.IsInRole("Teacher"))
                 {
@@ -290,7 +290,7 @@ namespace EDR.Controllers
                 .Where(x => x.ApplicationUser.UserName == username)
                 .FirstOrDefault();
 
-            if (teacher == null)
+            if (teacher == null || teacher.Approved == null)
             {
                 if (username == User.Identity.Name && !User.IsInRole("Teacher"))
                 {
@@ -397,7 +397,7 @@ namespace EDR.Controllers
         {
             DataContext.Teachers.Add(new Teacher { ApplicationUser = DataContext.Users.Find(User.Identity.GetUserId()) });
             DataContext.SaveChanges();
-            return RedirectToAction("Manage", "Account");
+            return RedirectToAction("Home", "Dancer", new { username = User.Identity.Name } );
         }
     }
 }

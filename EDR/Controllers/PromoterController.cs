@@ -97,7 +97,7 @@ namespace EDR.Controllers
                 .Where(x => x.ApplicationUser.UserName == username)
                 .FirstOrDefault();
 
-            if (promoter == null)
+            if (promoter == null || promoter.Approved == null)
             {
                 if (username == User.Identity.Name && !User.IsInRole("Promoter"))
                 {
@@ -133,7 +133,7 @@ namespace EDR.Controllers
                 .Where(x => x.ApplicationUser.UserName == username)
                 .FirstOrDefault();
 
-            if (promoter == null)
+            if (promoter == null || promoter.Approved == null)
             {
                 if (username == User.Identity.Name && !User.IsInRole("Promoter"))
                 {
@@ -206,7 +206,7 @@ namespace EDR.Controllers
                 .Where(x => x.ApplicationUser.UserName == username)
                 .FirstOrDefault();
 
-            if (promoter == null)
+            if (promoter == null || promoter.Approved == null)
             {
                 if (username == User.Identity.Name && !User.IsInRole("Promoter"))
                 {
@@ -280,7 +280,7 @@ namespace EDR.Controllers
         {
             DataContext.Promoters.Add(new Promoter { ApplicationUser = DataContext.Users.Find(User.Identity.GetUserId()) });
             DataContext.SaveChanges();
-            return RedirectToAction("Manage", "Account");
+            return RedirectToAction("Home", "Dancer", new { username = User.Identity.Name });
         }
 
         public ActionResult GetUpdates(string username)

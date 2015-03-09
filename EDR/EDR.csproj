@@ -288,13 +288,9 @@
     <Compile Include="Controllers\VisitorController.cs" />
     <Compile Include="Data\ApplicationDbContext.cs" />
     <Compile Include="Data\ApplicationDbInitializer.cs" />
-    <Compile Include="Migrations\201502120039436_SpotifyFields.cs" />
-    <Compile Include="Migrations\201502120039436_SpotifyFields.Designer.cs">
-      <DependentUpon>201502120039436_SpotifyFields.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201502250241345_MoreUsers.cs" />
-    <Compile Include="Migrations\201502250241345_MoreUsers.Designer.cs">
-      <DependentUpon>201502250241345_MoreUsers.cs</DependentUpon>
+    <Compile Include="Migrations\201503081306360_initial.cs" />
+    <Compile Include="Migrations\201503081306360_initial.Designer.cs">
+      <DependentUpon>201503081306360_initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Address.cs" />
@@ -462,6 +458,7 @@
     <Content Include="Areas\Admin\Views\DanceStyle\TestUpload2.cshtml" />
     <Content Include="Areas\Admin\Views\DanceStyle\TestUpload.cshtml" />
     <Content Include="Areas\Admin\Views\DanceStyle\_FacebookVideosPartial.cshtml" />
+    <None Include="Properties\PublishProfiles\SmarterASP.pubxml" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Library\DayPilot.Web.Mvc.dll" />
     <Content Include="Media\elements.css" />
@@ -830,11 +827,8 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201502120039436_SpotifyFields.resx">
-      <DependentUpon>201502120039436_SpotifyFields.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201502250241345_MoreUsers.resx">
-      <DependentUpon>201502250241345_MoreUsers.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201503081306360_initial.resx">
+      <DependentUpon>201503081306360_initial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

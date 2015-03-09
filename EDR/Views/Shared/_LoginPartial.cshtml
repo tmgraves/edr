@@ -1,4 +1,6 @@
 ﻿@using Microsoft.AspNet.Identity
+@using EDR.Enums
+
 @if (Request.IsAuthenticated)
 {
     using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
@@ -7,7 +9,29 @@
 
     <ul class="nav navbar-nav navbar-right">
         <li>
-            @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage" })
+            @if (Session["MyRole"] != null)
+            {
+                if (Session["MyRole"].ToString() == RoleName.Owner.ToString())
+                {
+                    @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Home", "Owner", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
+                }
+                else if (Session["MyRole"].ToString() == RoleName.Teacher.ToString())
+                {
+                    @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Home", "Teacher", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
+                }
+                else if (Session["MyRole"].ToString() == RoleName.Promoter.ToString())
+                {
+                    @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Home", "Promoter", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
+                }
+                else
+                {
+                    @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Home", "Dancer", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
+                }
+            }
+            else
+            {
+                @Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Home", "Dancer", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
+            }
         </li>
         <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
     </ul>

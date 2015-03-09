@@ -7,6 +7,7 @@ using System.Collections.Specialized;
 using System.Net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Configuration;
 
 namespace EDR.Utilities
 {
@@ -44,9 +45,9 @@ namespace EDR.Utilities
 
         public static SpotifyAccessToken GetAccessToken(string code, SpotifyGrantType grant_type = SpotifyGrantType.authorization_code)
         {
-            var client_id = "44d7c94dd6c847ff93d25447c09d37ca";
-            var client_secret = "03b18ba62015498bb19d45fb1898dd55";
-            var redirect_uri = "https://localhost:44302/SocialMedia/AuthenticateSpotify";
+            var client_id = ConfigurationManager.AppSettings["SpotifyClientId"];
+            var client_secret = ConfigurationManager.AppSettings["SpotifyAppSecret"];
+            var redirect_uri = ConfigurationManager.AppSettings["SpotifyRedirectUri"];
 
             NameValueCollection parameters = new NameValueCollection();
 

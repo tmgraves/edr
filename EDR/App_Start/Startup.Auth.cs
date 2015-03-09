@@ -10,6 +10,7 @@ using System;
 using EDR.Models;
 using EDR.Data;
 using Microsoft.Owin.Security.Facebook;
+using System.Configuration;
 
 namespace EDR
 {
@@ -59,8 +60,8 @@ namespace EDR
             //x.Scope.Add("first_name");
             //x.Scope.Add("last_name");
             //  x.Scope.Add("link");
-            x.AppId = "1634016200156058";
-            x.AppSecret = "17e338c89fc606e10ab6ec541671f58c";
+            x.AppId = ConfigurationManager.AppSettings["FacebookAppId"];
+            x.AppSecret = ConfigurationManager.AppSettings["FacebookAppSecret"];
             x.Provider = new FacebookAuthenticationProvider()
             {
                 OnAuthenticated = async context =>

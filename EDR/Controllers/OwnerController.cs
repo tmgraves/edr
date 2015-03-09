@@ -65,41 +65,41 @@ namespace EDR.Controllers
             return viewModel;
         }
 
-        [Authorize]
-        public ActionResult View(string username)
-        {
-            if (String.IsNullOrWhiteSpace(username))
-            {
-                if (User != null)
-                {
-                    username = User.Identity.GetUserName();
-                }
-                else
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
-            }
+        //[Authorize]
+        //public ActionResult View(string username)
+        //{
+        //    if (String.IsNullOrWhiteSpace(username))
+        //    {
+        //        if (User != null)
+        //        {
+        //            username = User.Identity.GetUserName();
+        //        }
+        //        else
+        //        {
+        //            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //        }
+        //    }
 
-            var owner = DataContext.Owners
-                .Where(x => x.ApplicationUser.UserName == username)
-                .FirstOrDefault();
+        //    var owner = DataContext.Owners
+        //        .Where(x => x.ApplicationUser.UserName == username)
+        //        .FirstOrDefault();
 
-            if (owner == null)
-            {
-                if (username == User.Identity.Name && !User.IsInRole("Owner"))
-                {
-                    return RedirectToAction("Apply", "Owner");
-                }
-                else
-                {
-                    return HttpNotFound();
-                }
-            }
+        //    if (owner == null || owner.Approved == null)
+        //    {
+        //        if (username == User.Identity.Name && !User.IsInRole("Owner"))
+        //        {
+        //            return RedirectToAction("Apply", "Owner");
+        //        }
+        //        else
+        //        {
+        //            return HttpNotFound();
+        //        }
+        //    }
 
-            var viewModel = LoadOwner(username);
+        //    var viewModel = LoadOwner(username);
 
-            return View(viewModel);
-        }
+        //    return View(viewModel);
+        //}
 
         [Authorize]
         public ActionResult Home(string username)
@@ -120,7 +120,7 @@ namespace EDR.Controllers
                 .Where(x => x.ApplicationUser.UserName == username)
                 .FirstOrDefault();
 
-            if (owner == null)
+            if (owner == null || owner.Approved == null)
             {
                 if (username == User.Identity.Name && !User.IsInRole("Owner"))
                 {
@@ -166,7 +166,7 @@ namespace EDR.Controllers
                 .Where(x => x.ApplicationUser.UserName == username)
                 .FirstOrDefault();
 
-            if (owner == null)
+            if (owner == null || owner.Approved == null)
             {
                 if (username == User.Identity.Name && !User.IsInRole("Owner"))
                 {
@@ -241,7 +241,7 @@ namespace EDR.Controllers
         {
             DataContext.Owners.Add(new Owner { ApplicationUser = DataContext.Users.Find(User.Identity.GetUserId()) });
             DataContext.SaveChanges();
-            return RedirectToAction("Manage", "Account");
+            return RedirectToAction("Home", "Dancer", new { username = User.Identity.Name });
         }
 
         public ActionResult GetUpdates(string username)

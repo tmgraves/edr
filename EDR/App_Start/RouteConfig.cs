@@ -279,19 +279,9 @@ namespace EDR
             );
 
             routes.MapRoute(
-                name: "DancerEdit",
-                url: "Dancer/Edit",
-                defaults: new { controller = "Dancer", action = "Edit" }
-            );
-            routes.MapRoute(
                 name: "DancerList",
                 url: "Dancer/List",
                 defaults: new { controller = "Dancer", action = "List" }
-            );
-            routes.MapRoute(
-                name: "DancerPicture",
-                url: "Dancer/ChangePicture",
-                defaults: new { controller = "Dancer", action = "ChangePicture" }
             );
             routes.MapRoute(
                 name: "DancerProfilePic",
@@ -299,19 +289,29 @@ namespace EDR
                 defaults: new { controller = "Dancer", action = "ProfilePicture" }
             );
             routes.MapRoute(
+                name: "DancerPicture",
+                url: "Dancer/ChangePicture",
+                defaults: new { controller = "Dancer", action = "ChangePicture" }
+            );
+            routes.MapRoute(
                 name: "DancerUpload",
                 url: "Dancer/UploadPicture",
                 defaults: new { controller = "Dancer", action = "UploadPicture" }
             );
             routes.MapRoute(
-                name: "DancerDeletePic",
-                url: "Dancer/DeletePicture",
-                defaults: new { controller = "Dancer", action = "DeletePicture" }
-            );
-            routes.MapRoute(
                 name: "DancerDetail",
                 url: "{username}/{action}",
                 defaults: new { controller = "Dancer", action = UrlParameter.Optional }
+            );
+            routes.MapRoute(
+                name: "DancerEdit",
+                url: "Dancer/Edit",
+                defaults: new { controller = "Dancer", action = "Edit" }
+            );
+            routes.MapRoute(
+                name: "DancerDeletePic",
+                url: "Dancer/DeletePicture",
+                defaults: new { controller = "Dancer", action = "DeletePicture" }
             );
             routes.MapRoute(
                 name: "DancerMapEvents",
