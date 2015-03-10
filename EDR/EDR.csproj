@@ -288,10 +288,6 @@
     <Compile Include="Controllers\VisitorController.cs" />
     <Compile Include="Data\ApplicationDbContext.cs" />
     <Compile Include="Data\ApplicationDbInitializer.cs" />
-    <Compile Include="Migrations\201503081306360_initial.cs" />
-    <Compile Include="Migrations\201503081306360_initial.Designer.cs">
-      <DependentUpon>201503081306360_initial.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Address.cs" />
     <Compile Include="Models\EventInviations.cs" />
@@ -825,11 +821,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201503081306360_initial.resx">
-      <DependentUpon>201503081306360_initial.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -10,7 +10,7 @@ using EDR.Enums;
 
 namespace EDR.Data
 {
-    public class ApplicationDbInitializer : CreateDatabaseIfNotExists<ApplicationDbContext>
+    public class ApplicationDbInitializer : DropCreateDatabaseIfModelChanges<ApplicationDbContext>
     {
         protected override void Seed(ApplicationDbContext context)
         {
