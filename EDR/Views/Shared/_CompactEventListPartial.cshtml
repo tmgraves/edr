@@ -112,15 +112,15 @@
     google.maps.event.addDomListener(window, 'load', initialize);
 </script>
 
-<div class="col-sm-12 col-md-6 col-lg-6 col-xs-12" style="height: 400px; overflow-x: auto;">
+<div class="col-sm-12 col-md-6 col-lg-6 col-xs-12">
 @if (Model.Events.Count() != 0)
 {
     int rowNo = 0;
     <div class="tabbable with-nav-tabs">
         <div style="margin: 5px;">
             <ul class="nav nav-pills" role="tablist">
-                <li class="active"><a href="#current" data-toggle="tab">Current Events</a></li>
-                <li><a href="#past" data-toggle="tab">Past Events</a></li>
+                <li class="active"><a href="#current" data-toggle="tab">Current</a></li>
+                <li><a href="#past" data-toggle="tab">Past</a></li>
             </ul>
         </div>
         <div class="tab-content">
@@ -131,36 +131,48 @@
                     {
                         <a class="btn btn-default" style="width: 100%; text-align: left; white-space: normal;" onclick="openEvent(@rowNo, @item.Place.Latitude, @item.Place.Longitude); return false;" href="#">
                             <div style="width: 100%;">
-                                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 thumbnail text-center">
-                                    <span class="text-primary">@item.NextDate.ToString("ddd").ToUpper()</span><br /><span class="text-success">@item.NextDate.ToString("MMM").ToUpper() @item.NextDate.Day.ToString()</span><br /><span class="text-success">@item.NextDate.Year.ToString()</span>
+                                <div class="col-lg-3 col-md-3 col-sm-2 col-xs-2 thumbnail text-center">
+                                    <span class="text-primary">@item.NextDate.ToString("ddd").ToUpper()</span><br />
+                                    <span class="text-success">@item.NextDate.ToString("MMM").ToUpper() @item.NextDate.Day.ToString()</span><br />
+                                    <span class="small text-danger">
+                                        @if (!item.AllDay)
+                                        {
+                                            @(Convert.ToDateTime(item.StartTime).ToString("%h:mm tt"))
+                                        }
+                                        else
+                                        {
+                                            @:All Day
+                                        }
+                                    </span>
                                 </div>
-                                <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
-                                    <strong>@(rowNo += 1). @item.Name<br />@@@item.Place.Name</strong><br />
-                                    @item.StartDate.ToString("%h:mm tt")~@item.StartDate.AddMinutes(item.Duration).ToString("%h:mm tt")
-                                    @if (item.Recurring)
-                                    {
-                                        ApplicationUtility.FrequencyTranslate(item.Frequency, item.Interval == null ? 0 : (int)item.Interval);
-                                    }
+                                <div class="col-lg-9 col-md-9 col-sm-10 col-xs-10">
+                                    <strong>@(rowNo += 1). @item.Name<br />
+                                    <span class="text-success"> @@@item.Place.Name</span></strong><br />
                                     @if (Model.EventType == EDR.Enums.EventType.Class)
                                     {
                                         if (((Class)item).Teachers != null && ((Class)item).Teachers.Count > 0)
                                         {
-                                            var teachers = "";
-                                            foreach (Teacher t in ((Class)item).Teachers)
-                                            {
-                                                teachers += (teachers == "" ? "" : ", ") + t.ApplicationUser.FullName;
-                                            }
-                                            <br /><span class="text-primary">with @teachers</span>
+                                            <p>
+                                                @foreach (Teacher t in ((Class)item).Teachers)
+                                                {
+                                                    <span class="label label-warning">@t.ApplicationUser.FullName</span>
+                                                }
+                                            </p>
                                         }
+                                    }
+                                    <strong><span class="text-danger bold">@item.Reviews.Where(r => r.Like).Count() <i class="glyphicon glyphicon-thumbs-up"></i> | @item.Reviews.Where(r => !r.Like).Count() <i class="glyphicon glyphicon-thumbs-down"></i></span></strong><br />
+                                    @if (item.Recurring)
+                                    {
+                                        ApplicationUtility.FrequencyTranslate(item.Frequency, item.Interval == null ? 0 : (int)item.Interval);
                                     }
                                     @if (item.DanceStyles != null && item.DanceStyles.Count > 0)
                                     {
-                                        var styles = "";
-                                        foreach (DanceStyle s in item.DanceStyles)
-                                        {
-                                            styles += (styles == "" ? "" : ", ") + s.Name;
-                                        }
-                                        <br /><span class="text-warning" style="white-space: normal;">@styles</span>
+                                        <p>
+                                            @foreach (DanceStyle s in item.DanceStyles)
+                                            {
+                                            <span class="label label-info">@s.Name</span>
+                                            }
+                                        </p>
                                     }
                                 </div>
                             </div>
@@ -179,12 +191,26 @@
                 {
                     <a class="btn btn-default" style="width: 100%; text-align: left; white-space: normal;" onclick="openEvent(@rowNo, @item.Place.Latitude, @item.Place.Longitude); return false;" href="#" @*href="@Url.Action("Details", "Event", new { id = item.Id, eventType = "Class" } )"*@>
                         <div style="width: 100%;">
-                            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 thumbnail text-center">
-                                <span class="text-primary">@item.NextDate.ToString("ddd").ToUpper()</span><br /><span class="text-success">@item.NextDate.ToString("MMM").ToUpper() @item.NextDate.Day.ToString()</span><br /><span class="text-success">@item.NextDate.Year.ToString()</span>
+                            <div class="col-lg-3 col-md-3 col-sm-2 col-xs-2 thumbnail text-center">
+                                <span class="text-primary">@item.NextDate.ToString("ddd").ToUpper()</span><br />
+                                <span class="text-success">@item.NextDate.ToString("MMM").ToUpper() @item.NextDate.Day.ToString()</span><br />
+                                <span class="small text-danger">
+                                    @if (!item.AllDay)
+                                    {
+                                        @(Convert.ToDateTime(item.StartTime).ToString("%h:mm tt"))
+                                    }
+                                    else
+                                    {
+                                        @:All Day
+                                        }
+                                </span>
                             </div>
-                            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
-                                <strong>@(rowNo += 1). @item.Name<br />@@@item.Place.Name</strong><br />
-                                @item.StartDate.ToString("%h:mm tt")~@item.StartDate.AddMinutes(item.Duration).ToString("%h:mm tt")
+                            <div class="col-lg-9 col-md-9 col-sm-10 col-xs-10">
+                                <strong>
+                                    @(rowNo += 1). @item.Name<br />
+                                    <span class="text-success"> @@@item.Place.Name</span>
+                                </strong><br />
+                                <strong><span class="text-danger bold">@item.Reviews.Where(r => r.Like).Count() <i class="glyphicon glyphicon-thumbs-up"></i> | @item.Reviews.Where(r => !r.Like).Count() <i class="glyphicon glyphicon-thumbs-down"></i></span></strong><br />
                                 @if (item.Recurring)
                                 {
                                     ApplicationUtility.FrequencyTranslate(item.Frequency, item.Interval == null ? 0 : (int)item.Interval);
@@ -203,12 +229,12 @@
                                 }
                                 @if (item.DanceStyles != null && item.DanceStyles.Count > 0)
                                 {
-                                    var styles = "";
-                                    foreach (DanceStyle s in item.DanceStyles)
-                                    {
-                                        styles += (styles == "" ? "" : ", ") + s.Name;
-                                    }
-                                    <br /><span class="text-warning" style="white-space: normal;">@styles</span>
+                                    <p>
+                                        @foreach (DanceStyle s in item.DanceStyles)
+                                        {
+                                            <span class="label label-info">@s.Name</span>
+                                        }
+                                    </p>
                                 }
                             </div>
                         </div>

@@ -135,8 +135,10 @@ namespace EDR.Controllers
             var viewModel = LoadOwner(username);
 
             //  Load Events
-            viewModel.NewClasses = DataContext.Events.OfType<Class>().Where(c => c.Place.Owners.Any(o => o.ApplicationUser.UserName == username)).Include("Place").OrderBy(c => c.StartDate).Take(5);
-            viewModel.NewSocials = DataContext.Events.OfType<Social>().Where(c => c.Place.Owners.Any(o => o.ApplicationUser.UserName == username)).Include("Place").OrderBy(c => c.StartDate).Take(5);
+            viewModel.NewClasses = DataContext.Events.OfType<Class>().Where(c => c.Place.Owners.Any(o => o.ApplicationUser.UserName == username)).Include("Place").OrderBy(c => c.StartDate);
+            viewModel.NewSocials = DataContext.Events.OfType<Social>().Where(c => c.Place.Owners.Any(o => o.ApplicationUser.UserName == username)).Include("Place").OrderBy(c => c.StartDate);
+            viewModel.NewClasses = viewModel.NewClasses.Where(e => e.NextDate >= DateTime.Today).Take(5);
+            viewModel.NewSocials = viewModel.NewSocials.Where(e => e.NextDate >= DateTime.Today).Take(5);
             //  Load Events
 
             //  Load Users

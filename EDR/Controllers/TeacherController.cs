@@ -38,6 +38,7 @@ namespace EDR.Controllers
             viewModel.Teacher = DataContext.Teachers
                                     .Include("Classes")
                                     .Include("Classes.Users")
+                                    .Include("Classes.Reviews")
                                     .Include("DanceStyles")
                                     .Include("ApplicationUser")
                                     .Include("ApplicationUser.UserPictures")
@@ -201,7 +202,7 @@ namespace EDR.Controllers
             viewModel.NewClasses.EventType = Enums.EventType.Class;
             viewModel.NewClasses.Location = viewModel.Address;
             viewModel.NewClasses.Events = new List<Event>();
-            viewModel.NewClasses.Events = viewModel.Teacher.Classes.OrderByDescending(e => e.NextDate).Take(5);
+            viewModel.NewClasses.Events = viewModel.Teacher.Classes.Where(s => s.NextDate >= DateTime.Today).OrderByDescending(e => e.NextDate).Take(5);
 
             viewModel.NewStudents = new List<ApplicationUser>();
             var classArray = viewModel.Teacher.Classes.Select(c => c.Id).ToArray();

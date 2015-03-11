@@ -12,22 +12,12 @@
         @if (User.Identity != null && User.Identity.Name == Model.Promoter.ApplicationUser.UserName)
         {
             <p>
-                <a class="btn btn-link" title="Create a New Social" style="vertical-align: top;" href="@Url.Action("Create", "Event", new { role = "Promoter", eventType = "Social" }, null)">
+                <a class="btn btn-warning" title="Create a New Social" style="vertical-align: top;" href="@Url.Action("Create", "Event", new { role = "Promoter", eventType = "Social" }, null)">
                     <i class="glyphicon glyphicon glyphicon-plus"></i>
                     Add a New Social
                 </a>
             </p>
         }
         @Html.Partial("~/Views/Shared/_CompactEventListPartial.cshtml", Model.Events)
-    </div>
-</div>
-<div class="row">
-    <div class="col-sm-12 col-md-12 col-lg-12 col-xs-12">
-        <h4 class="page-header">
-            My Places
-        </h4>
-        <div>
-            @Html.Partial("~/Views/Shared/_PlaceListPartial.cshtml", Model.Promoter.Places)
-        </div>
     </div>
 </div>

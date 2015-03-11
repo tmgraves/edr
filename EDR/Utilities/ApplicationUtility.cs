@@ -31,7 +31,7 @@ namespace EDR.Utilities
                         date = start.AddDays(Convert.ToInt32(diff.TotalDays));
                         break;
                     case Frequency.Weekly:
-                        var weekdiff = Convert.ToInt32(diff.TotalDays / 7 * interval);
+                        var weekdiff = Convert.ToInt32(diff.TotalDays) / 7 * interval;
                         if ((diff.TotalDays % (7 * interval)) > 0)
                         {
                             weekdiff += 1;

@@ -35,6 +35,7 @@ namespace EDR.Controllers
                                     .Include("Socials.Videos")
                                     .Include("Socials.Pictures")
                                     .Include("Socials.Users")
+                                    .Include("Socials.Reviews")
                                     .Include("ApplicationUser")
                                     .Include("ApplicationUser.Roles")
                                     .FirstOrDefault();
@@ -178,7 +179,7 @@ namespace EDR.Controllers
             viewModel.NewSocials.EventType = Enums.EventType.Social;
             viewModel.NewSocials.Location = viewModel.Address;
             viewModel.NewSocials.Events = new List<Event>();
-            viewModel.NewSocials.Events = viewModel.Promoter.Socials.OrderByDescending(e => e.NextDate).Take(5);
+            viewModel.NewSocials.Events = viewModel.Promoter.Socials.Where(s => s.NextDate >= DateTime.Today).OrderByDescending(e => e.NextDate).Take(5);
 
             viewModel.NewDancers = new List<ApplicationUser>();
             var socialArray = viewModel.Promoter.Socials.Select(c => c.Id).ToArray();
