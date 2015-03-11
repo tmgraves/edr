@@ -142,7 +142,7 @@ namespace EDR.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await UserManager.FindByNameAsync(model.Email);
+                var user = await UserManager.FindByEmailAsync(model.Email);
                 if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
                 {
                     ModelState.AddModelError("", "The user either does not exist or is not confirmed.");
@@ -428,11 +428,12 @@ namespace EDR.Controllers
                     user.FacebookUsername = username;
                     user.StartDate = model.StartDate;
                     user.ZipCode = model.Zipcode;
+                    user.EmailConfirmed = true;
                     DataContext.SaveChanges();
                 }
                 else
                 {
-                    user = new ApplicationUser() { UserName = model.UserName, Email = email, FirstName = firstName, LastName = lastName, FacebookToken = token, FacebookUsername = username, StartDate = model.StartDate, ZipCode = model.Zipcode };
+                    user = new ApplicationUser() { UserName = model.UserName, Email = email, FirstName = firstName, LastName = lastName, FacebookToken = token, FacebookUsername = username, StartDate = model.StartDate, ZipCode = model.Zipcode, EmailConfirmed = true };
                     result = await UserManager.CreateAsync(user);
                     if (!result.Succeeded)
                     {
