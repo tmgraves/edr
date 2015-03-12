@@ -1,4 +1,4 @@
-﻿@model EDR.Models.ViewModels.PlaceDetailViewModel
+﻿@model EDR.Models.ViewModels.PlaceViewModel
 @using EDR.Models
 @using EDR.Utilities
 @using Microsoft.AspNet.Identity
@@ -41,7 +41,7 @@
     }<br />
 </p>
 <p>
-    @using (Html.BeginForm("Details", "Place", FormMethod.Get))
+    @using (Html.BeginForm("Home", "Place", FormMethod.Get))
     {
         @Html.Label("Choose a Dance Style:", htmlAttributes: new { @class = "control-label col-md-2" })@Html.DropDownListFor(x => x.DanceStyleId, Model.DanceStyleList, "All", new { @class = "form-control" })
         @Html.Label("Choose a Teacher:", htmlAttributes: new { @class = "control-label col-md-2" })@Html.DropDownListFor(x => x.TeacherId, Model.TeacherList, "All", new { @class = "form-control" })

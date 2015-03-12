@@ -19,6 +19,7 @@ using System.Web.Security;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Facebook;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace EDR.Controllers
 {
@@ -149,6 +150,19 @@ namespace EDR.Controllers
                     return View();
                 }
 
+                System.Net.Mail.MailMessage message = new System.Net.Mail.MailMessage();
+
+                message.From = new System.Net.Mail.MailAddress("info@eatdancerepeat.com");
+                message.To.Add(new System.Net.Mail.MailAddress("tadashigraves@gmail.com"));
+
+                message.IsBodyHtml = true;
+                message.BodyEncoding = Encoding.UTF8;
+                message.Subject = "this is a test subject";
+                message.Body = "Here is the test email message";
+
+                System.Net.Mail.SmtpClient client = new System.Net.Mail.SmtpClient();
+                client.Send(message);
+                
                 // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                 // Send an email with this link
                 // string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);

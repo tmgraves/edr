@@ -3,25 +3,26 @@
 @using EDR.Models
 
 <style>
-    #classMap-canvas {
+    #map-canvas {
         width: 100%;
         height: 300px;
     }
 </style>
 <script src="https://maps.googleapis.com/maps/api/js"></script>
 <script>
-    var classmap;
+    var map;
     var markers = [];
+    var infowindows = [];
 
     function initialize() {
-        var classMapOptions = {
-            zoom: 14,
+        var mapOptions = {
+            zoom: 8,
             zoomControl: false,
             center: new google.maps.LatLng('@Model.Location.Latitude', '@Model.Location.Longitude')
         };
 
-        classmap = new google.maps.Map(document.getElementById('classMap-canvas'),
-            classMapOptions);
+        map = new google.maps.Map(document.getElementById('map-canvas'),
+            mapOptions);
 
         @{
             int idx = 1;
@@ -31,7 +32,7 @@
                 <text>
         var marker = new google.maps.Marker({
             position: new google.maps.LatLng('@ev.Place.Latitude', '@ev.Place.Longitude'),
-            map: classmap,
+            map: map,
             title: '@ev.Name',
             icon: "http://maps.google.com/mapfiles/kml/paddle/" + @idx + "-lv.png"
         });
@@ -48,7 +49,7 @@
                 <text>
         var marker = new google.maps.Marker({
             position: new google.maps.LatLng('@ev.Place.Latitude', '@ev.Place.Longitude'),
-            map: classmap,
+            map: map,
             title: '@ev.Name',
             icon: "http://maps.google.com/mapfiles/kml/paddle/" + @idx + "-lv.png"
         });
@@ -62,7 +63,7 @@
 
         }
 
-        clearMarkers();
+        //  clearMarkers();
     }
 
     function clearMarkers() {
@@ -72,6 +73,11 @@
     function setAllMap(map) {
         for (var i = 0; i < markers.length; i++) {
             markers[i].setMap(map);
+        }
+    }
+    function clearWindows() {
+        for (var i = 0; i < infowindows.length; i++) {
+            infowindows[i].close();
         }
     }
 
@@ -92,20 +98,24 @@
             '</div>' +
             '</div>'
         });
+        infowindows.push(infowindow);
 
-        infowindow.open(classmap, marker);
+        //  infowindow.open(map, marker);
 
         google.maps.event.addListener(marker, 'click', function () {
-            infowindow.open(classmap, marker);
+            clearWindows();
+            infowindow.open(map, marker);
         });
     }
 
     function openEvent(id, lati, long) {
         var latLng = new google.maps.LatLng(lati, long); //Makes a latlng
-        classmap.panTo(latLng); //Make map global
-        classmap.setZoom(14);
-        clearMarkers();
-        markers[id].setMap(classmap);
+        map.panTo(latLng); //Make map global
+        //  map.setZoom(14);
+        //  clearMarkers();
+        markers[id].setMap(map);
+        clearWindows();
+        infowindows[id].open(map, markers[id]);
         return false;
     }
 
@@ -250,5 +260,5 @@ else
 }
 </div>
 <div class="col-sm-12 col-md-6 col-lg-6 col-xs-12">
-    <div class="container" id="classMap-canvas"></div>
+    <div class="container" id="map-canvas"></div>
 </div>

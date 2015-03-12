@@ -1,16 +1,20 @@
 ﻿@model EDR.Models.ViewModels.RelatedEvents
 @using EDR.Models
+@using EDR.Enums
 
 <div class="panel panel-default">
-    <div class="panel-heading">
-        <h4>Related @(Model.EventType == EDR.Enums.EventType.Class ? "Classes" : "Socials")</h4>
-    </div>
+    <h4 class="col-lg-12 col-md-12 col-sm-12 col-xs-12">Related @(Model.EventType == EDR.Enums.EventType.Class ? "Classes" : "Socials")</h4>
     <div class="panel-body">
         @if (Model.Events != null)
         {
-            foreach (var e in Model.Events)
+            foreach (var evt in Model.Events)
             {
-                    <div class="col-lg-12 col-md-12 row" style="margin-top: 5px; ">
+                <a class="btn btn-default" href="@Url.Action("View", "Event", new { id = evt.Id, eventType = evt is Class ? EventType.Class : EventType.Social })" title="@evt.Name" style="text-align: left; width: 100%; display: inline-block; margin-top: 2px;">
+                    <span class="label label-primary">@evt.NextDate.ToString("ddd, M/d")</span>
+                    <span class="text-primary">@evt.Name.PadRight(20, ' ').Substring(0, 20)</span>
+                    <span class="text-danger">@@@evt.Place.City</span>
+                </a>
+                    @*<div class="col-lg-12 col-md-12 row" style="margin-top: 5px; ">
                         <div class="col-lg-4 col-md-4" style="height: 75px;">
                             @if (e.VideoUrl != null)
                             {
@@ -41,7 +45,7 @@
                                 @e.NextDate.ToString("ddd, MMM dd, yyyy")
                             </a>
                         </div>
-                    </div>
+                    </div>*@
             }
         }
     </div>

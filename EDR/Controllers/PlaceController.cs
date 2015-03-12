@@ -23,14 +23,36 @@ namespace EDR.Controllers
             return View(model);
         }
 
-        public ActionResult Details(int id, PlaceDetailViewModel model)
+        private PlaceViewModel LoadPlace(int id)
+        {
+            var viewModel = new PlaceViewModel();
+            viewModel.Place = DataContext.Places.Include("Owners").Where(x => x.Id == id).FirstOrDefault();
+            var date = DateTime.Now.AddDays(21);
+            viewModel.Classes = DataContext.Events.Include("Teachers").Include("Teachers.ApplicationUser").Include("DanceStyles").Include("EventMembers.Member").Include("Reviews").OfType<Class>().Where(c => c.Place.Id == id).Where(x => x.IsAvailable == true).Where(y => !y.Recurring ? (y.StartDate >= DateTime.Now) : (y.StartDate <= date && (y.EndDate == null || y.EndDate >= DateTime.Now))).OrderBy(z => z.StartDate).ToList();
+            var Events = DataContext.Events.Include("DanceStyles").Include("EventMembers.Member").Include("Reviews").Where(c => c.Place.Id == id).Where(x => x.IsAvailable == true).Where(y => !y.Recurring ? (y.StartDate >= DateTime.Now) : (y.StartDate <= date && (y.EndDate == null || y.EndDate >= DateTime.Now))).OrderBy(z => z.StartDate).ToList();
+            viewModel.Socials = Events.OfType<Social>();
+            return viewModel;
+        }
+
+        public ActionResult Home(int id, PlaceViewModel model)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var viewModel = new PlaceDetailViewModel();
+            var viewModel = LoadPlace(id);
+            return View(viewModel);
+        }
+
+        public ActionResult Details(int id, PlaceViewModel model)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var viewModel = new PlaceViewModel();
             viewModel.Place = DataContext.Places.Include("Teachers").Include("Owners").Where(x => x.Id == id).FirstOrDefault();
             viewModel.DanceStyleList = DataContext.DanceStyles.Select(d => new SelectListItem() { Text = d.Name, Value = d.Id.ToString() }).ToList();
             viewModel.Owners = DataContext.Owners.Where(y => y.Places.Any(x => x.Id == id)).ToList();
@@ -161,7 +183,7 @@ namespace EDR.Controllers
             DataContext.Entry(place).State = EntityState.Modified;
             DataContext.SaveChanges();
 
-            return RedirectToAction("Details", "Place", new { id = model.Place.Id });
+            return RedirectToAction("Home", "Place", new { id = model.Place.Id });
         }
     }
 }

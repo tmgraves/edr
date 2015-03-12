@@ -112,6 +112,7 @@
         //  infowindow.open(map, marker);
 
         google.maps.event.addListener(marker, 'click', function () {
+            clearWindows();
             infowindow.open(map, marker);
         });
     }
@@ -119,7 +120,7 @@
     function openEvent(id, lati, long) {
         var latLng = new google.maps.LatLng(lati, long); //Makes a latlng
         map.panTo(latLng); //Make map global
-        map.setZoom(14);
+        //  map.setZoom(14);
         //  clearMarkers();
         markers[id].setMap(map);
         clearWindows();

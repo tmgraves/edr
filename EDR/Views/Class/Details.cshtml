@@ -5,7 +5,7 @@
     ViewBag.Title = "Class Details";
 }
 
-<h1 class="page-header">@Model.Name <small>at @Html.ActionLink(@Model.Place.Name, "Details", "Place", new { id = Model.Place.Id }, null)</small></h1>
+<h1 class="page-header">@Model.Name <small>at @Html.ActionLink(@Model.Place.Name, "Home", "Place", new { id = Model.Place.Id }, null)</small></h1>
 
 <p class="lead">@Model.Description</p>
 

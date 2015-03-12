@@ -318,6 +318,7 @@
     <Compile Include="Models\ViewModels\OwnerListViewModel.cs" />
     <Compile Include="Models\ViewModels\PlaceCreateViewModel.cs" />
     <Compile Include="Models\ViewModels\PlaceEditViewModel.cs" />
+    <Compile Include="Models\ViewModels\PlaceViewModels.cs" />
     <Compile Include="Models\ViewModels\PromoterListViewModel.cs" />
     <Compile Include="Models\ViewModels\TeacherViewModels.cs" />
     <Compile Include="Models\ViewModels\VisitorViewViewModel.cs" />
@@ -675,9 +676,12 @@
     <Content Include="Views\Teacher\_TeacherLayout.cshtml">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="Web.config">
+    <Content Include="Views\Place\_PlaceLayout.cshtml" />
+    <Content Include="Views\Place\ChangePicture.cshtml" />
+    <Content Include="Views\Place\Home.cshtml" />
+    <None Include="Web.config">
       <SubType>Designer</SubType>
-    </Content>
+    </None>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
