@@ -16,74 +16,119 @@
     }
     <a style="font-size: medium;" href="@Url.Action("List", "Place")">View all Places</a>
 </h1>
-<p class="lead">
-    <a target="_blank" href='https://www.google.com/maps/place/@Url.Encode(Model.Place.Address + " " + Model.Place.Address2 + " " + Model.Place.City + " " + Model.Place.State + " " + Model.Place.Zip)'>
-        @Model.Place.Address,
-        @Model.Place.City,
-        @Model.Place.State
-        @Model.Place.Zip
-    </a>
-</p>
-<p>
-    @Html.Label("Facebook:", htmlAttributes: new { @class = "control-label col-md-2" })<a href='@Model.Place.FacebookLink' target="_blank">@Model.Place.FacebookLink</a><br />
-</p>
-<p>
-    @Html.Label("Website:", htmlAttributes: new { @class = "control-label col-md-2" })<a href='@Model.Place.Website' target="_blank">@Model.Place.Website</a><br />
-</p>
-<p>
-    @Html.Label("Owners:", htmlAttributes: new { @class = "control-label col-md-2" })
-    @if (Model.Owners != null)
-    {
-        foreach (var t in Model.Owners)
-        {
-            @Html.ActionLink(t.ApplicationUser.FullName, "MyPlaces", "Owner", new { username = t.ApplicationUser.UserName }, null)
-        }
-    }<br />
-</p>
-<p>
-    @using (Html.BeginForm("Home", "Place", FormMethod.Get))
-    {
-        @Html.Label("Choose a Dance Style:", htmlAttributes: new { @class = "control-label col-md-2" })@Html.DropDownListFor(x => x.DanceStyleId, Model.DanceStyleList, "All", new { @class = "form-control" })
-        @Html.Label("Choose a Teacher:", htmlAttributes: new { @class = "control-label col-md-2" })@Html.DropDownListFor(x => x.TeacherId, Model.TeacherList, "All", new { @class = "form-control" })
-        @Html.Label("Choose Skill Level:", htmlAttributes: new { @class = "control-label col-md-2" })@Html.EnumDropDownListFor(x => x.SkillLevel, "All", new { @class = "form-control" })
-        <input type="submit" value="Search" class="btn btn-primary" />
-    }
-</p>
-<div class="tabbable">
-    <ul class="nav nav-tabs nav-justified" role="tablist">
-        <li class="active"><a href="#learn" data-toggle="tab">Learn</a></li>
-        <li><a href="#dance" data-toggle="tab">Dance</a></li>
-    </ul>
-    <div class="tab-content">
-        <div id="learn" class="tab-pane active">
-            <h4>
-                Available Classes
-                @if (User.Identity != null)
+<div class="well col-lg-3 col-md-3 col-sm-4 col-xs-12">
+    <div class="row">
+        <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
+            <div style="text-align: center;">
+                @if (Model.Place.Filename != null)
                 {
-                    if (Model.Place.Teachers.Any(x => x.ApplicationUser.UserName == User.Identity.Name))
-                    {
-                        <a style="font-size: small;" href="@Url.Action("Create", "Event", new { role = "Teacher", eventType = "Class", placeId = Model.Place.Id }, null)">Add a Class</a>
-                    }
-                    else if (Model.Place.Owners.Any(x => x.ApplicationUser.UserName == User.Identity.Name))
-                    {
-                        <a style="font-size: small;" href="@Url.Action("Create", "Event", new { role = "Owner", eventType = "Class", placeId = Model.Place.Id }, null)">Add a Class</a>
-                    }
+                    <img class=" img-thumbnail" src="@Url.Content(Model.Place.Filename)" />
                 }
-            </h4>
-            @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", new EDR.Models.ViewModels.EventsViewModel() { Events = Model.Classes, EventType = EDR.Enums.EventType.Class, Location = Geolocation.ParseAddress("90065"), Zoom = 10 })
+                else
+                {
+                    <img class=" img-thumbnail" src="~/Content/images/NoImage.png" />
+                }
+                @if (User.Identity != null && Model.Place.Owners.Where(o => o.ApplicationUser.UserName == User.Identity.Name).Count() == 1)
+                {
+                    <p>
+                        <a style="font-size: small;" href="@Url.Action("ChangePicture", "Place")">Change Picture</a>
+                    </p>
+                }
+            </div>
         </div>
-        <div id="dance" class="tab-pane">
-            <h4>
-                Socials
-                @if (User.Identity != null)
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            @Html.Label("Owners:", htmlAttributes: new { @class = "control-label col-md-3 col-lg-3 col-sm-12 col-xs-12" })
+            <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+                @if (Model.Owners != null)
                 {
-                    if (Model.Place.Owners.Any(x => x.ApplicationUser.UserName == User.Identity.Name))
+                    foreach (var t in Model.Owners)
                     {
-                        <a style="font-size: small;" href="@Url.Action("Create", "Event", new { role = "Owner", eventType = "Social" }, null)">Add a Social</a>
+                        @Html.ActionLink(t.ApplicationUser.FullName, "MyPlaces", "Owner", new { username = t.ApplicationUser.UserName }, new { @class = "label label-warning" })
                     }
                 }
-            </h4>
-            @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", new EDR.Models.ViewModels.EventsViewModel() { Events = Model.Socials, EventType = EDR.Enums.EventType.Social, Location = Geolocation.ParseAddress("90065"), Zoom = 10 })
+            </div>
+        </div>
+        <div>
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <label class="control-label col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                    Where:
+                </label>
+                <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12 text-left text-primary" style="white-space: normal;">
+                    @Model.Place.Address
+                    @Model.Place.Address2 <br />
+                    @Model.Place.City,
+                    @Model.Place.State
+                    @Model.Place.Zip
+                </div>
+                <p>
+                    <a href='https://www.google.com/maps/place/@Url.Encode(Model.Place.Address + " " + Model.Place.Address2 + " " + Model.Place.City + " " + Model.Place.State + " " + Model.Place.Zip)' target="_blank">
+                        <img style="max-width: 100%;" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Place.Latitude,@Model.Place.Longitude&zoom=10&size=250x100&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Place.Latitude, @Model.Place.Longitude">
+                    </a>
+                </p>
+            </div>
+            <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="row text-center">
+                    @if (Model.Place.FacebookLink != null)
+                    {
+                        <a class="img-thumbnail" href='@Model.Place.FacebookLink' target="_blank" title="Visit On Facebook"><img src="@Url.Content("~/Content/images/facebookSmall.png")" /></a>
+                    }
+                    @if (Model.Place.Website != null)
+                    {
+                        <a class="img-thumbnail" href='@Model.Place.Website' target="_blank" title="Visit On the Web"><img src="@Url.Content("~/Content/images/web.png")" /></a>
+                    }
+                </div>
+            </div>
         </div>
     </div>
 </div>
+<div class="col-lg-9 col-md-9 col-sm-8 col-xs-12">
+    <p>
+        @using (Html.BeginForm("Details", "Place", FormMethod.Get))
+        {
+            @Html.Label("Choose a Dance Style:", htmlAttributes: new { @class = "control-label col-md-2" })@Html.DropDownListFor(x => x.DanceStyleId, Model.DanceStyleList, "All", new { @class = "form-control" })
+            @Html.Label("Choose a Teacher:", htmlAttributes: new { @class = "control-label col-md-2" })@Html.DropDownListFor(x => x.TeacherId, Model.TeacherList, "All", new { @class = "form-control" })
+            @Html.Label("Choose Skill Level:", htmlAttributes: new { @class = "control-label col-md-2" })@Html.EnumDropDownListFor(x => x.SkillLevel, "All", new { @class = "form-control" })
+            <input type="submit" value="Search" class="btn btn-primary" />
+        }
+    </p>
+    <div class="tabbable">
+        <ul class="nav nav-tabs nav-justified" role="tablist">
+            <li class="active"><a href="#learn" data-toggle="tab">Learn</a></li>
+            <li><a href="#dance" data-toggle="tab">Dance</a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="learn" class="tab-pane active">
+                <h4>
+                    Available Classes
+                    @if (User.Identity != null)
+                    {
+                        if (Model.Place.Teachers.Any(x => x.ApplicationUser.UserName == User.Identity.Name))
+                        {
+                            <a style="font-size: small;" href="@Url.Action("Create", "Event", new { role = "Teacher", eventType = "Class", placeId = Model.Place.Id }, null)">Add a Class</a>
+                        }
+                        else if (Model.Place.Owners.Any(x => x.ApplicationUser.UserName == User.Identity.Name))
+                        {
+                            <a style="font-size: small;" href="@Url.Action("Create", "Event", new { role = "Owner", eventType = "Class", placeId = Model.Place.Id }, null)">Add a Class</a>
+                        }
+                    }
+                </h4>
+                @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", new EDR.Models.ViewModels.EventsViewModel() { Events = Model.Classes, EventType = EDR.Enums.EventType.Class, Location = Geolocation.ParseAddress("90065"), Zoom = 10 })
+            </div>
+            <div id="dance" class="tab-pane">
+                <h4>
+                    Socials
+                    @if (User.Identity != null)
+                    {
+                        if (Model.Place.Owners.Any(x => x.ApplicationUser.UserName == User.Identity.Name))
+                        {
+                            <a style="font-size: small;" href="@Url.Action("Create", "Event", new { role = "Owner", eventType = "Social" }, null)">Add a Social</a>
+                        }
+                    }
+                </h4>
+                @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", new EDR.Models.ViewModels.EventsViewModel() { Events = Model.Socials, EventType = EDR.Enums.EventType.Social, Location = Geolocation.ParseAddress("90065"), Zoom = 10 })
+            </div>
+        </div>
+    </div>
+</div>
+
+

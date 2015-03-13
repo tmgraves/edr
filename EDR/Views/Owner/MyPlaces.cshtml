@@ -40,7 +40,7 @@
                         icon: "http://maps.google.com/mapfiles/kml/paddle/" + @idx + "-lv.png"
                     });
 
-                    attachSecretMessage(marker, '@pl.Id', '@pl.Name', '@pl.Address <br/> @pl.City , @pl.State  @pl.Zip', '<a href="@Url.Action("Home", "Place", new { id = pl.Id })">' + marker.title + '</a>', 5, 5);
+                    attachSecretMessage(marker, '@pl.Id', '@pl.Name', '@pl.Address <br/> @pl.City , @pl.State  @pl.Zip', '<a href="@Url.Action("Details", "Place", new { id = pl.Id })">' + marker.title + '</a>', 5, 5);
                     markers.push(marker);
 
         </text>

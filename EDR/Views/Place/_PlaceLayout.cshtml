@@ -13,7 +13,7 @@
 <div class="container" style="padding: 10px;">
     <div class="row">
         <h1 class="page-header">
-            @Model.Place.Name
+            @Model.Place.Name <span class="small">(@Model.Place.PlaceType)</span>
             @if (User.Identity != null && Model.Place.Owners.Where(o => o.ApplicationUser.UserName == User.Identity.Name).Count() == 1)
             {
                 @*<a style="font-size: medium;" href="@Url.Action("Edit", "Dancer")">Edit Profile</a>*@
@@ -34,7 +34,7 @@
                     }
                     else
                     {
-                        <img class=" img-thumbnail" src="~/Content/images/NoPic.png" />
+                        <img class=" img-thumbnail" src="~/Content/images/NoImage.png" />
                     }
                     @if (User.Identity != null && Model.Place.Owners.Where(o => o.ApplicationUser.UserName == User.Identity.Name).Count() == 1)
                     {
@@ -47,12 +47,13 @@
             <div>
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <p>
-                        <img src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Place.Latitude,@Model.Place.Longitude&zoom=4&size=250x100&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Place.Latitude, @Model.Place.Longitude">
+                        <a href="https://www.google.com/maps/place/3rd+Street+Dance/@("@" + Model.Place.Latitude),@Model.Place.Longitude,17z" target="_blank">
+                            <img src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Place.Latitude,@Model.Place.Longitude&zoom=10&size=250x100&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Place.Latitude, @Model.Place.Longitude">
+                        </a>
                     </p>
                 </div>
                 <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
-                        @Model.Place.PlaceType
                     </div>
                 </div>
                 <div class="row text-center">

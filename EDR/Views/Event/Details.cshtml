@@ -6,7 +6,7 @@
     ViewBag.Title = Model.EventType.ToString() + " Details";
 }
 
-<h1 class="page-header">@Model.Event.Name <small>at @Html.ActionLink(@Model.Event.Place.Name, "Home", "Place", new { id = Model.Event.Place.Id }, null)</small></h1>
+<h1 class="page-header">@Model.Event.Name <small>at @Html.ActionLink(@Model.Event.Place.Name, "Details", "Place", new { id = Model.Event.Place.Id }, null)</small></h1>
 
 <p class="lead">@Model.Event.Description</p>
 

@@ -13,12 +13,28 @@
     var map;
     var markers = [];
     var infowindows = [];
+    var lat = 0;
+    var lon = 0;
 
+    $(function () {
+        navigator.geolocation.getCurrentPosition(showPosition, positionError);
+
+        function showPosition(position) {
+            var coordinates = position.coords;
+            lat = coordinates.latitude;
+            lon = coordinates.longitude;
+        }
+
+        function positionError(position) {
+            alert("Error " + position.code);
+        }
+    });
+   
     function initialize() {
         var mapOptions = {
             zoom: @(Model.Zoom),
             //  zoomControl: false,
-            center: new google.maps.LatLng('@Model.Location.Latitude', '@Model.Location.Longitude')
+            center: new google.maps.LatLng(lat, lon)
         };
 
         map = new google.maps.Map(document.getElementById('map-canvas'),

@@ -679,6 +679,8 @@
     <Content Include="Views\Place\_PlaceLayout.cshtml" />
     <Content Include="Views\Place\ChangePicture.cshtml" />
     <Content Include="Views\Place\Home.cshtml" />
+    <Content Include="Views\Place\Socials.cshtml" />
+    <Content Include="Views\Place\Classes.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

@@ -1,0 +1,15 @@
+﻿@model EDR.Models.ViewModels.PlaceViewModel
+@using EDR.Models
+@using EDR.Utilities
+@using Microsoft.AspNet.Identity
+
+@{
+    ViewBag.Title = "Classes";
+    Layout = "~/Views/Place/_PlaceLayout.cshtml";
+}
+
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        @Html.Partial("~/Views/Shared/_CompactEventListPartial.cshtml", new EDR.Models.ViewModels.EventListViewModel() { EventType = EDR.Enums.EventType.Class, Location = Geolocation.ParseAddress("90065"), Events = Model.Classes })
+    </div>
+</div>

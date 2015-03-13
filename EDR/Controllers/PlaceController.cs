@@ -45,6 +45,42 @@ namespace EDR.Controllers
             return View(viewModel);
         }
 
+        public ActionResult Socials(int id, PlaceViewModel model)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var viewModel = LoadPlace(id);
+            viewModel.Socials = DataContext.Events.OfType<Social>()
+                                    .Where(e => e.Place.Id == id)
+                                    .Include("Place")
+                                    .Include("Reviews")
+                                    .Include("DanceStyles")
+                                    .Include("Promoters")
+                                    .Include("Promoters.ApplicationUser");
+            return View(viewModel);
+        }
+
+        public ActionResult Classes(int id, PlaceViewModel model)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var viewModel = LoadPlace(id);
+            viewModel.Classes = DataContext.Events.OfType<Class>()
+                                    .Where(e => e.Place.Id == id)
+                                    .Include("Place")
+                                    .Include("Reviews")
+                                    .Include("DanceStyles")
+                                    .Include("Teachers")
+                                    .Include("Teachers.ApplicationUser");
+            return View(viewModel);
+        }
+
         public ActionResult Details(int id, PlaceViewModel model)
         {
             if (id == null)
@@ -183,7 +219,7 @@ namespace EDR.Controllers
             DataContext.Entry(place).State = EntityState.Modified;
             DataContext.SaveChanges();
 
-            return RedirectToAction("Home", "Place", new { id = model.Place.Id });
+            return RedirectToAction("Details", "Place", new { id = model.Place.Id });
         }
     }
 }
