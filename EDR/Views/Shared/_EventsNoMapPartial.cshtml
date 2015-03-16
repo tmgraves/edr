@@ -1,0 +1,102 @@
+﻿@model EDR.Models.ViewModels.PlaceEventSearchViewModel
+@using EDR.Models
+@using EDR.Utilities
+
+<div class="col-sm-12 col-md-8 col-lg-8 col-xs-12">
+    @if (Model.Events.Count() != 0)
+    {
+        int rowNo = 0;
+        if (Model.Events.Where(x => x.EndDate >= DateTime.Today || x.EndDate == null).Count() != 0)
+        {
+            foreach (var item in Model.Events.Where(x => x.EndDate >= DateTime.Today || x.EndDate == null).OrderBy(x => x.NextDate))
+            {
+                <a class="btn btn-default" style="text-align: left; width: 100%; white-space: normal; display: inline-block;" onclick="openEvent(@rowNo, @item.Place.Latitude, @item.Place.Longitude); return false;" href="#">
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 text-center img-thumbnail">
+                        <span class="text-primary">@item.NextDate.ToString("ddd").ToUpper()</span><br />
+                        <span class="text-success">@item.NextDate.ToString("MMM").ToUpper() @item.NextDate.Day.ToString()</span><br />
+                        <span class="small text-danger">
+                            @if (!item.AllDay)
+                            {
+                                @(Convert.ToDateTime(item.StartTime).ToString("%h:mm tt"))
+                            }
+                            else
+                            {
+                                @:All Day
+                        }
+                        </span>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-9 col-xs-9">
+                        <strong>@(rowNo += 1). @item.Name</strong><br />
+                        <span class="text-success"> @@@item.Place.Name</span>
+                        @if (item is Class)
+                        {
+                            if (((Class)item).Teachers != null)
+                            {
+                                var teacherset = ((Class)item).Teachers;
+
+                                if (teacherset.Count() > 0)
+                                {
+                                    var teachers = "";
+                                    <br /><text>w/</text><span class="text-primary">
+                                        @foreach (var t in teacherset)
+                                        {
+                                            if (teachers != "")
+                                            {
+                                                teachers += ", ";
+                                            }
+                                            teachers += t.ApplicationUser.FirstName;
+                                        }
+                                        @teachers
+                                    </span>
+                                }
+                            }
+                        }
+                        @if (item.Recurring)
+                        {
+                            ApplicationUtility.FrequencyTranslate(item.Frequency, item.Interval == null ? 0 : (int)item.Interval);
+                        }
+                        @if (item.Price != null)
+                        {
+                            <br />
+                            @(item.Price == 0 ? "FREE" : ((decimal)item.Price).ToString("C"))
+                        }
+                        @if (item.DanceStyles != null)
+                        {
+                            <br />
+                            foreach (var s in item.DanceStyles)
+                            {
+                                <span class="label label-info">@s.Name</span>
+                            }
+                        }
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-9 col-xs-9">
+                        <strong><span class="text-danger bold">@item.Reviews.Where(r => r.Like).Count() <i class="glyphicon glyphicon-thumbs-up"></i> | @item.Reviews.Where(r => !r.Like).Count() <i class="glyphicon glyphicon-thumbs-down"></i></span></strong>
+                        @if (item is Class)
+                        {
+                            <br />
+                            <span class="label label-warning">
+                                Skill Level: @(((Class)item).SkillLevel)
+                            </span>
+                        }
+                        <br />
+                        <span class="text-info"><span class="badge">@item.EventMembers.Count()</span> Dancer(s)</span>
+                    </div>
+                </a>
+            }
+        }
+        else
+        {
+            <p style="margin: 10px;">
+                No Events
+            </p>
+        }
+    }
+    else
+    {
+        @:No Events
+}
+</div>
+<div class="col-sm-12 col-md-4 col-lg-4 col-xs-12">
+    @Html.Partial("~/Views/Shared/_MediaUpdatesPartial.cshtml", Model.MediaUpdates)
+</div>
+

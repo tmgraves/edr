@@ -126,7 +126,77 @@ namespace EDR.Controllers
             return View(viewModel);
         }
 
-        [Authorize(Roles="Owner")]
+        public PartialViewResult SearchClasses(int id, PlaceViewModel model)
+        {
+            var viewModel = new PlaceEventSearchViewModel();
+            var date = DateTime.Now.AddDays(21);
+            var classes = DataContext.Events
+                            .Include("Teachers")
+                            .Include("Teachers.ApplicationUser")
+                            .Include("DanceStyles")
+                            .Include("EventMembers.Member")
+                            .Include("Reviews")
+                            .Include("Creator")
+                            .Include("Pictures")
+                            .Include("Pictures.PostedBy")
+                            .Include("Videos")
+                            .Include("Videos.Author")
+                            .Include("Playlists")
+                            .Include("Playlists.Author")
+                            .Include("LinkedFacebookObjects")
+                            .OfType<Class>().Where(c => c.Place.Id == id).Where(x => x.IsAvailable == true).Where(y => !y.Recurring ? (y.StartDate >= DateTime.Now) : (y.StartDate <= date && (y.EndDate == null || y.EndDate >= DateTime.Now))).OrderBy(z => z.StartDate).ToList();
+            if (model.DanceStyleId != null)
+            {
+                classes = classes.Where(x => x.DanceStyles.Any(s => s.Id == model.DanceStyleId)).ToList();
+            }
+
+            if (model.TeacherId != null && model.TeacherId != "")
+            {
+                classes = classes.Where(x => x.Teachers.Any(t => t.ApplicationUser.Id == model.TeacherId)).ToList();
+            }
+
+            if (model.SkillLevel != null && model.SkillLevel != 0)
+            {
+                classes = classes.Where(x => x.SkillLevel == (int)model.SkillLevel).ToList();
+            }
+
+            viewModel.Events = classes;
+            viewModel.MediaUpdates = EventHelper.BuildAllUpdates(classes, MediaTarget.Place);
+
+            return PartialView("~/Views/Shared/_EventsNoMapPartial.cshtml", classes);
+        }
+
+        public PartialViewResult SearchSocials(int id, PlaceViewModel model)
+        {
+            var viewModel = new PlaceEventSearchViewModel();
+
+            var date = DateTime.Now.AddDays(21);
+            var socials = DataContext.Events
+                                .Include("Promoters")
+                                .Include("Promoters.ApplicationUser")
+                                .Include("DanceStyles")
+                                .Include("EventMembers.Member")
+                                .Include("Reviews")
+                                .Include("Creator")
+                                .Include("Pictures")
+                                .Include("Pictures.PostedBy")
+                                .Include("Videos")
+                                .Include("Videos.Author")
+                                .Include("Playlists")
+                                .Include("Playlists.Author")
+                                .Include("LinkedFacebookObjects")
+                                .OfType<Social>().Where(c => c.Place.Id == id).Where(x => x.IsAvailable == true).Where(y => !y.Recurring ? (y.StartDate >= DateTime.Now) : (y.StartDate <= date && (y.EndDate == null || y.EndDate >= DateTime.Now))).OrderBy(z => z.StartDate).ToList();
+            if (model.DanceStyleId != null)
+            {
+                socials = socials.Where(x => x.DanceStyles.Any(s => s.Id == model.DanceStyleId)).ToList();
+            }
+
+            viewModel.Events = socials;
+            viewModel.MediaUpdates = EventHelper.BuildAllUpdates(socials, MediaTarget.Place);
+            return PartialView("~/Views/Shared/_EventsNoMapPartial.cshtml", socials);
+        }
+
+        [Authorize(Roles = "Owner")]
         public ActionResult Create(PlaceType placeType)
         {
             var model = new PlaceCreateViewModel();

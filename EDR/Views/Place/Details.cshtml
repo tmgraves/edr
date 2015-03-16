@@ -6,7 +6,26 @@
 @{
     ViewBag.Title = Model.Place.Name;
 }
+
+<script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
+
 @Html.HiddenFor(model => model.Place.Id)
+<script type="text/javascript">
+    function done(form) {
+    }
+
+    function OnSuccess(response) {
+        alert(response);
+        var y = document.getElementById("Review_ReviewText");
+        alert(y.innerHTML)
+        document.getElementByName('Review_ReviewText').value = '';
+    }
+
+    function OnFailure(response) {
+        alert("Whoops! That didn't go so well did it?");
+    }
+
+</script>
 
 <h1 class="page-header">
     @Model.Place.Name
@@ -82,24 +101,16 @@
     </div>
 </div>
 <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12">
-    <p>
-        @using (Html.BeginForm("Details", "Place", FormMethod.Get))
-        {
-            @Html.Label("Choose a Dance Style:", htmlAttributes: new { @class = "control-label col-md-2" })@Html.DropDownListFor(x => x.DanceStyleId, Model.DanceStyleList, "All", new { @class = "form-control" })
-            @Html.Label("Choose a Teacher:", htmlAttributes: new { @class = "control-label col-md-2" })@Html.DropDownListFor(x => x.TeacherId, Model.TeacherList, "All", new { @class = "form-control" })
-            @Html.Label("Choose Skill Level:", htmlAttributes: new { @class = "control-label col-md-2" })@Html.EnumDropDownListFor(x => x.SkillLevel, "All", new { @class = "form-control" })
-            <input type="submit" value="Search" class="btn btn-primary" />
-        }
-    </p>
-    <div class="tabbable">
-        <ul class="nav nav-tabs nav-justified" role="tablist">
-            <li class="active"><a href="#learn" data-toggle="tab">Learn</a></li>
-            <li><a href="#dance" data-toggle="tab">Dance</a></li>
-        </ul>
-        <div class="tab-content">
-            <div id="learn" class="tab-pane active">
-                <h4>
-                    Available Classes
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <ul class="nav nav-pills" role="tablist">
+                <li class="active"><a href="#learn" data-toggle="tab">Classes\Workshops</a></li>
+                <li><a href="#dance" data-toggle="tab">Social Dance Events</a></li>
+            </ul>
+        </div>
+        <div class="panel-body">
+            <div class="tab-content">
+                <div id="learn" class="tab-pane active">
                     @if (User.Identity != null)
                     {
                         if (Model.Place.Teachers.Any(x => x.ApplicationUser.UserName == User.Identity.Name))
@@ -111,21 +122,79 @@
                             <a style="font-size: small;" href="@Url.Action("Create", "Event", new { role = "Owner", eventType = "Class", placeId = Model.Place.Id }, null)">Add a Class</a>
                         }
                     }
-                </h4>
-                @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", new EDR.Models.ViewModels.EventsViewModel() { Events = Model.Classes, EventType = EDR.Enums.EventType.Class, Location = Geolocation.ParseAddress("90065"), Zoom = 10 })
-            </div>
-            <div id="dance" class="tab-pane">
-                <h4>
-                    Socials
-                    @if (User.Identity != null)
-                    {
-                        if (Model.Place.Owners.Any(x => x.ApplicationUser.UserName == User.Identity.Name))
+                    <div class="row">
+                        @using (Ajax.BeginForm("SearchClasses",
+                                "Place",
+                                new AjaxOptions()
+                                {
+                                    UpdateTargetId = "classes",
+                                    OnSuccess = "done(this)",
+                                    LoadingElementId = "classloader"
+                                },
+                                new { @id = "searchform" }
+                                ))
                         {
-                            <a style="font-size: small;" href="@Url.Action("Create", "Event", new { role = "Owner", eventType = "Social" }, null)">Add a Social</a>
+                            @Html.AntiForgeryToken()
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-md-12">
+                                @Html.DropDownListFor(x => x.DanceStyleId, Model.DanceStyleList, "-- Pick a Dance Style --", new { @class = "form-control" })
+                                @Html.DropDownListFor(x => x.TeacherId, Model.TeacherList, "-- Pick a Teacher", new { @class = "form-control" })
+                                @Html.EnumDropDownListFor(x => x.SkillLevel, "-- Pick a Skill Level", new { @class = "form-control" })
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-md-12">
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-md-12">
+                                <input type="submit" value="Search" class="btn btn-primary" />
+                            </div>
                         }
-                    }
-                </h4>
-                @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", new EDR.Models.ViewModels.EventsViewModel() { Events = Model.Socials, EventType = EDR.Enums.EventType.Social, Location = Geolocation.ParseAddress("90065"), Zoom = 10 })
+                    </div>
+                    <div id="classloader" class=" aletr" style="display:none">
+                        Loading...<img src="~/Content/Images/indicator.white.gif" />
+                    </div>
+                    <div id="classes">
+                        @Html.Partial("~/Views/Shared/_EventsNoMapPartial.cshtml", Model.Classes)
+                    </div>
+                </div>
+                <div id="dance" class="tab-pane">
+                    <h4>
+                        Socials
+                        @if (User.Identity != null)
+                        {
+                            if (Model.Place.Owners.Any(x => x.ApplicationUser.UserName == User.Identity.Name))
+                            {
+                                <a style="font-size: small;" href="@Url.Action("Create", "Event", new { role = "Owner", eventType = "Social" }, null)">Add a Social</a>
+                            }
+                        }
+                    </h4>
+                    <div class="row">
+                        @using (Ajax.BeginForm("SearchSocials",
+                                "Place",
+                                new AjaxOptions()
+                                {
+                                    UpdateTargetId = "socials",
+                                    OnSuccess = "done(this)",
+                                    LoadingElementId = "socialloader"
+                                },
+                                new { @id = "socialsearchform" }
+                                ))
+                        {
+                            @Html.AntiForgeryToken()
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-md-12">
+                                @Html.DropDownListFor(x => x.DanceStyleId, Model.DanceStyleList, "-- Pick a Dance Style --", new { @class = "form-control" })
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-md-12">
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-md-12">
+                                <input type="submit" value="Search" class="btn btn-primary" />
+                            </div>
+                        }
+                    </div>
+                    <div id="socialloader" class=" aletr" style="display:none">
+                        Loading...<img src="~/Content/Images/indicator.white.gif" />
+                    </div>
+                    <div id="socials">
+                        @Html.Partial("~/Views/Shared/_EventsNoMapPartial.cshtml", Model.Socials)
+                    </div>
+                </div>
             </div>
         </div>
     </div>

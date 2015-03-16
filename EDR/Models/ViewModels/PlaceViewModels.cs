@@ -26,4 +26,10 @@ namespace EDR.Models.ViewModels
         [Range(1, int.MaxValue, ErrorMessage = "Select a skill level")]
         public SkillLevel SkillLevel { get; set; }
     }
+
+    public class PlaceEventSearchViewModel
+    {
+        public IEnumerable<Event> Events { get; set; }
+        public List<Media> MediaUpdates { get; set; }
+    }
 }

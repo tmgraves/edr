@@ -681,6 +681,7 @@
     <Content Include="Views\Place\Home.cshtml" />
     <Content Include="Views\Place\Socials.cshtml" />
     <Content Include="Views\Place\Classes.cshtml" />
+    <Content Include="Views\Shared\_EventsNoMapPartial.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>
