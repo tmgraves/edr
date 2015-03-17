@@ -54,7 +54,7 @@ namespace EDR
             routes.MapRoute(
                 name: "PlaceAction",
                 url: "Place/{id}/{action}",
-                defaults: new { controller = "Place", id = UrlParameter.Optional, action = UrlParameter.Optional }
+                defaults: new { controller = "Place", id = UrlParameter.Optional, action = "Details" }
             );
 
             routes.MapRoute(
@@ -324,82 +324,82 @@ namespace EDR
                 defaults: new { controller = "Dancer", action = "Backend" }
             );
 
-            routes.MapRoute(
-                name: "ClassDetail",
-                url: "Class/Details/{id}",
-                defaults: new { controller = "Event", action = "Details", eventType = "Class", id = UrlParameter.Optional }
-            );
-            routes.MapRoute(
-                name: "WorkshopDetail",
-                url: "Workshop/Details/{id}",
-                defaults: new { controller = "Event", action = "Details", eventType = "Workshop", id = UrlParameter.Optional }
-            );
-            routes.MapRoute(
-                name: "SocialDetail",
-                url: "Social/Details/{id}",
-                defaults: new { controller = "Event", action = "Details", eventType = "Social", id = UrlParameter.Optional }
-            );
-            routes.MapRoute(
-                name: "ConcertDetail",
-                url: "Concert/Details/{id}",
-                defaults: new { controller = "Event", action = "Details", eventType = "Concert", id = UrlParameter.Optional }
-            );
-            routes.MapRoute(
-                name: "ConferenceDetail",
-                url: "Conference/Details/{id}",
-                defaults: new { controller = "Event", action = "Details", eventType = "Conference", id = UrlParameter.Optional }
-            );
-            routes.MapRoute(
-                name: "OpenHouseDetail",
-                url: "OpenHouse/Details/{id}",
-                defaults: new { controller = "Event", action = "Details", eventType = "OpenHouse", id = UrlParameter.Optional }
-            );
-            routes.MapRoute(
-                name: "PartyDetail",
-                url: "Party/Details/{id}",
-                defaults: new { controller = "Event", action = "Details", eventType = "Party", id = UrlParameter.Optional }
-            );
-            routes.MapRoute(
-                name: "RehearsalDetail",
-                url: "Rehearsal/Details/{id}",
-                defaults: new { controller = "Event", action = "Details", eventType = "Rehearsal", id = UrlParameter.Optional }
-            );
+            //routes.MapRoute(
+            //    name: "ClassDetail",
+            //    url: "Class/Details/{id}",
+            //    defaults: new { controller = "Event", action = "Details", eventType = "Class", id = UrlParameter.Optional }
+            //);
+            //routes.MapRoute(
+            //    name: "WorkshopDetail",
+            //    url: "Workshop/Details/{id}",
+            //    defaults: new { controller = "Event", action = "Details", eventType = "Workshop", id = UrlParameter.Optional }
+            //);
+            //routes.MapRoute(
+            //    name: "SocialDetail",
+            //    url: "Social/Details/{id}",
+            //    defaults: new { controller = "Event", action = "Details", eventType = "Social", id = UrlParameter.Optional }
+            //);
+            //routes.MapRoute(
+            //    name: "ConcertDetail",
+            //    url: "Concert/Details/{id}",
+            //    defaults: new { controller = "Event", action = "Details", eventType = "Concert", id = UrlParameter.Optional }
+            //);
+            //routes.MapRoute(
+            //    name: "ConferenceDetail",
+            //    url: "Conference/Details/{id}",
+            //    defaults: new { controller = "Event", action = "Details", eventType = "Conference", id = UrlParameter.Optional }
+            //);
+            //routes.MapRoute(
+            //    name: "OpenHouseDetail",
+            //    url: "OpenHouse/Details/{id}",
+            //    defaults: new { controller = "Event", action = "Details", eventType = "OpenHouse", id = UrlParameter.Optional }
+            //);
+            //routes.MapRoute(
+            //    name: "PartyDetail",
+            //    url: "Party/Details/{id}",
+            //    defaults: new { controller = "Event", action = "Details", eventType = "Party", id = UrlParameter.Optional }
+            //);
+            //routes.MapRoute(
+            //    name: "RehearsalDetail",
+            //    url: "Rehearsal/Details/{id}",
+            //    defaults: new { controller = "Event", action = "Details", eventType = "Rehearsal", id = UrlParameter.Optional }
+            //);
 
-            routes.MapRoute(
-                name: "ConferenceCenterCreate",
-                url: "ConferenceCenter/Create",
-                defaults: new { controller = "Place", action = "Create", placeType = "ConferenceCenter" }
-            );
-            routes.MapRoute(
-                name: "HotelCreate",
-                url: "Hotel/Create",
-                defaults: new { controller = "Place", action = "Create", placeType = "Hotel" }
-            );
-            routes.MapRoute(
-                name: "NightclubCreate",
-                url: "Nightclub/Create",
-                defaults: new { controller = "Place", action = "Create", placeType = "Nightclub" }
-            );
-            routes.MapRoute(
-                name: "OtherPlaceCreate",
-                url: "Other/Create",
-                defaults: new { controller = "Place", action = "Create", placeType = "OtherPlace" }
-            );
-            routes.MapRoute(
-                name: "StudioCreate",
-                url: "Studio/Create",
-                defaults: new { controller = "Place", action = "Create", placeType = "Studio" }
-            );
-            routes.MapRoute(
-                name: "RestaurantCreate",
-                url: "Restaurant/Create",
-                defaults: new { controller = "Place", action = "Create", placeType = "Restaurant" }
-            );
-            routes.MapRoute(
-                name: "TheaterCreate",
-                url: "Theater/Create",
-                defaults: new { controller = "Place", action = "Create", placeType = "Theater" }
-            );
+            //routes.MapRoute(
+            //    name: "ConferenceCenterCreate",
+            //    url: "ConferenceCenter/Create",
+            //    defaults: new { controller = "Place", action = "Create", placeType = "ConferenceCenter" }
+            //);
+            //routes.MapRoute(
+            //    name: "HotelCreate",
+            //    url: "Hotel/Create",
+            //    defaults: new { controller = "Place", action = "Create", placeType = "Hotel" }
+            //);
+            //routes.MapRoute(
+            //    name: "NightclubCreate",
+            //    url: "Nightclub/Create",
+            //    defaults: new { controller = "Place", action = "Create", placeType = "Nightclub" }
+            //);
+            //routes.MapRoute(
+            //    name: "OtherPlaceCreate",
+            //    url: "Other/Create",
+            //    defaults: new { controller = "Place", action = "Create", placeType = "OtherPlace" }
+            //);
+            //routes.MapRoute(
+            //    name: "StudioCreate",
+            //    url: "Studio/Create",
+            //    defaults: new { controller = "Place", action = "Create", placeType = "Studio" }
+            //);
+            //routes.MapRoute(
+            //    name: "RestaurantCreate",
+            //    url: "Restaurant/Create",
+            //    defaults: new { controller = "Place", action = "Create", placeType = "Restaurant" }
+            //);
+            //routes.MapRoute(
+            //    name: "TheaterCreate",
+            //    url: "Theater/Create",
+            //    defaults: new { controller = "Place", action = "Create", placeType = "Theater" }
+            //);
 
             routes.MapRoute(
                 name: "Default",

@@ -73,10 +73,10 @@
                         @Html.HiddenFor(x => x.Event.Id)
                         <div class="form-group form-inline">
                             <p>
-                                <input type="file" name="file" id="file" class="form-control" size="20" /><br />
+                                <input type="file" name="file" id="file" class="form-control" size="20" accept="image/*" /><br />
                             </p>
                             <p>
-                                <input id="submit" type="submit" class="btn btn-success" value="Upload Picture" />
+                                <input id="submit" type="submit" class="btn btn-success" value="Upload Picture" onsubmit="return checkFile();" />
                             </p>
                         </div>
                         <p>
@@ -85,6 +85,17 @@
 
                         <script type="text/javascript">
                             $('#submit').click(function () {
+                                //  Check file type is image
+                                var fupload = document.getElementById("file");
+                                if (fupload.files[0].type.match('image/*')) {
+                                    return true;
+                                }
+                                else {
+                                    alert("You must select an image file for upload");
+                                    return false;
+                                }
+                                //  Check file type is image
+
                                 //check whether browser fully supports all File API
                                 if (window.File && window.FileReader && window.FileList && window.Blob) {
                                     //get the file size and file type from file input field

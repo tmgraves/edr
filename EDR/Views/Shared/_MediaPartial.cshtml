@@ -42,6 +42,15 @@
                         </span>
                     </a>
                 }
+                else if (Model.Target == MediaTarget.Place)
+                {
+                    <text>From: </text>
+                    <a href="@Url.Action("View", "Event", new { id = Model.Event.Id, eventType = (Model.Event is Class ? EventType.Class : EventType.Social) })" style="text-decoration: none;">
+                        <span class="text-primary" style="vertical-align: top;">
+                            <b>@Model.Event.Name.PadRight(30, ' ').Substring(0, 30)</b>
+                        </span>
+                    </a>
+                }
                 <br />Date: <span class="text-danger" style="vertical-align: top;">@Model.MediaDate.ToString("ddd MMM dd, yyyy")</span>
             </div>
             <div>

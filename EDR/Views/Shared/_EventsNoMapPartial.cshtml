@@ -10,7 +10,7 @@
         {
             foreach (var item in Model.Events.Where(x => x.EndDate >= DateTime.Today || x.EndDate == null).OrderBy(x => x.NextDate))
             {
-                <a class="btn btn-default" style="text-align: left; width: 100%; white-space: normal; display: inline-block;" onclick="openEvent(@rowNo, @item.Place.Latitude, @item.Place.Longitude); return false;" href="#">
+                <a class="btn btn-default" style="text-align: left; width: 100%; white-space: normal; display: inline-block;" href="@Url.Action("View", "Event", new { id = item.Id, eventType = item is Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social } )">
                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 text-center img-thumbnail">
                         <span class="text-primary">@item.NextDate.ToString("ddd").ToUpper()</span><br />
                         <span class="text-success">@item.NextDate.ToString("MMM").ToUpper() @item.NextDate.Day.ToString()</span><br />

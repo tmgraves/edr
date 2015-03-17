@@ -35,164 +35,181 @@
     }
     <a style="font-size: medium;" href="@Url.Action("List", "Place")">View all Places</a>
 </h1>
-<div class="well col-lg-3 col-md-3 col-sm-4 col-xs-12">
-    <div class="row">
-        <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
-            <div style="text-align: center;">
-                @if (Model.Place.Filename != null)
-                {
-                    <img class=" img-thumbnail" src="@Url.Content(Model.Place.Filename)" />
-                }
-                else
-                {
-                    <img class=" img-thumbnail" src="~/Content/images/NoImage.png" />
-                }
-                @if (User.Identity != null && Model.Place.Owners.Where(o => o.ApplicationUser.UserName == User.Identity.Name).Count() == 1)
-                {
-                    <p>
-                        <a style="font-size: small;" href="@Url.Action("ChangePicture", "Place")">Change Picture</a>
-                    </p>
-                }
-            </div>
-        </div>
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            @Html.Label("Owners:", htmlAttributes: new { @class = "control-label col-md-3 col-lg-3 col-sm-12 col-xs-12" })
-            <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
-                @if (Model.Owners != null)
-                {
-                    foreach (var t in Model.Owners)
+<div class="row">
+    <div class="well col-lg-3 col-md-3 col-sm-4 col-xs-12">
+        <div class="row">
+            <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
+                <div style="text-align: center;">
+                    @if (Model.Place.Filename != null)
                     {
-                        @Html.ActionLink(t.ApplicationUser.FullName, "MyPlaces", "Owner", new { username = t.ApplicationUser.UserName }, new { @class = "label label-warning" })
+                        <img class=" img-thumbnail" src="@Url.Content(Model.Place.Filename)" />
                     }
-                }
-            </div>
-        </div>
-        <div>
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <label class="control-label col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                    Where:
-                </label>
-                <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12 text-left text-primary" style="white-space: normal;">
-                    @Model.Place.Address
-                    @Model.Place.Address2 <br />
-                    @Model.Place.City,
-                    @Model.Place.State
-                    @Model.Place.Zip
+                    else
+                    {
+                        <img class=" img-thumbnail" src="~/Content/images/NoImage.png" />
+                    }
+                    @if (User.Identity != null && Model.Place.Owners.Where(o => o.ApplicationUser.UserName == User.Identity.Name).Count() == 1)
+                    {
+                        <p>
+                            <a style="font-size: small;" href="@Url.Action("ChangePicture", "Place")">Change Picture</a>
+                        </p>
+                    }
                 </div>
-                <p>
-                    <a href='https://www.google.com/maps/place/@Url.Encode(Model.Place.Address + " " + Model.Place.Address2 + " " + Model.Place.City + " " + Model.Place.State + " " + Model.Place.Zip)' target="_blank">
-                        <img style="max-width: 100%;" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Place.Latitude,@Model.Place.Longitude&zoom=10&size=250x100&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Place.Latitude, @Model.Place.Longitude">
-                    </a>
-                </p>
             </div>
-            <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <div class="row text-center">
-                    @if (Model.Place.FacebookLink != null)
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                @Html.Label("Owners:", htmlAttributes: new { @class = "control-label col-md-3 col-lg-3 col-sm-12 col-xs-12" })
+                <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+                    @if (Model.Owners != null)
                     {
-                        <a class="img-thumbnail" href='@Model.Place.FacebookLink' target="_blank" title="Visit On Facebook"><img src="@Url.Content("~/Content/images/facebookSmall.png")" /></a>
+                        foreach (var t in Model.Owners)
+                        {
+                            @Html.ActionLink(t.ApplicationUser.FullName, "MyPlaces", "Owner", new { username = t.ApplicationUser.UserName }, new { @class = "label label-warning" })
+                        }
                     }
-                    @if (Model.Place.Website != null)
-                    {
-                        <a class="img-thumbnail" href='@Model.Place.Website' target="_blank" title="Visit On the Web"><img src="@Url.Content("~/Content/images/web.png")" /></a>
-                    }
+                </div>
+            </div>
+            <div>
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <label class="control-label col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                        Where:
+                    </label>
+                    <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12 text-left text-primary" style="white-space: normal;">
+                        @Model.Place.Address
+                        @Model.Place.Address2 <br />
+                        @Model.Place.City,
+                        @Model.Place.State
+                        @Model.Place.Zip
+                    </div>
+                    <p>
+                        <a href='https://www.google.com/maps/place/@Url.Encode(Model.Place.Address + " " + Model.Place.Address2 + " " + Model.Place.City + " " + Model.Place.State + " " + Model.Place.Zip)' target="_blank">
+                            <img style="max-width: 100%;" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Place.Latitude,@Model.Place.Longitude&zoom=10&size=250x100&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Place.Latitude, @Model.Place.Longitude">
+                        </a>
+                    </p>
+                </div>
+                <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="row text-center">
+                        @if (Model.Place.FacebookLink != null)
+                        {
+                            <a class="img-thumbnail" href='@Model.Place.FacebookLink' target="_blank" title="Visit On Facebook"><img src="@Url.Content("~/Content/images/facebookSmall.png")" /></a>
+                        }
+                        @if (Model.Place.Website != null)
+                        {
+                            <a class="img-thumbnail" href='@Model.Place.Website' target="_blank" title="Visit On the Web"><img src="@Url.Content("~/Content/images/web.png")" /></a>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<div class="col-lg-9 col-md-9 col-sm-8 col-xs-12">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <ul class="nav nav-pills" role="tablist">
-                <li class="active"><a href="#learn" data-toggle="tab">Classes\Workshops</a></li>
-                <li><a href="#dance" data-toggle="tab">Social Dance Events</a></li>
-            </ul>
-        </div>
-        <div class="panel-body">
-            <div class="tab-content">
-                <div id="learn" class="tab-pane active">
-                    @if (User.Identity != null)
-                    {
-                        if (Model.Place.Teachers.Any(x => x.ApplicationUser.UserName == User.Identity.Name))
+    <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <ul class="nav nav-pills" role="tablist">
+                    <li class="active"><a href="#learn" data-toggle="tab">Classes\Workshops</a></li>
+                    <li><a href="#dance" data-toggle="tab">Social Dance Events</a></li>
+                </ul>
+            </div>
+            <div class="panel-body">
+                <div class="tab-content">
+                    <div id="learn" class="tab-pane active">
+                        @if (User.Identity != null)
                         {
-                            <a style="font-size: small;" href="@Url.Action("Create", "Event", new { role = "Teacher", eventType = "Class", placeId = Model.Place.Id }, null)">Add a Class</a>
+                            if (Model.Place.Teachers.Any(x => x.ApplicationUser.UserName == User.Identity.Name))
+                            {
+                                <a class="btn btn-warning" href="@Url.Action("Create", "Event", new { role = "Teacher", eventType = EDR.Enums.EventType.Class, placeId = Model.Place.Id }, null)">Add a Class</a>
+                            }
+                            else if (Model.Place.Owners.Any(x => x.ApplicationUser.UserName == User.Identity.Name))
+                            {
+                                <a class="btn btn-warning" href="@Url.Action("Create", "Event", new { role = "Owner", eventType = EDR.Enums.EventType.Class, placeId = Model.Place.Id }, null)">Add a Class</a>
+                            }
                         }
-                        else if (Model.Place.Owners.Any(x => x.ApplicationUser.UserName == User.Identity.Name))
-                        {
-                            <a style="font-size: small;" href="@Url.Action("Create", "Event", new { role = "Owner", eventType = "Class", placeId = Model.Place.Id }, null)">Add a Class</a>
-                        }
-                    }
-                    <div class="row">
-                        @using (Ajax.BeginForm("SearchClasses",
+                        <div class="row">
+                            @using (Ajax.BeginForm("SearchClasses",
                                 "Place",
                                 new AjaxOptions()
                                 {
                                     UpdateTargetId = "classes",
                                     OnSuccess = "done(this)",
-                                    LoadingElementId = "classloader"
+                                    LoadingElementId = "classloader",
+                                    InsertionMode = InsertionMode.Replace
                                 },
                                 new { @id = "searchform" }
                                 ))
-                        {
-                            @Html.AntiForgeryToken()
-                            <div class="col-lg-6 col-md-6 col-sm-12 col-md-12">
-                                @Html.DropDownListFor(x => x.DanceStyleId, Model.DanceStyleList, "-- Pick a Dance Style --", new { @class = "form-control" })
-                                @Html.DropDownListFor(x => x.TeacherId, Model.TeacherList, "-- Pick a Teacher", new { @class = "form-control" })
-                                @Html.EnumDropDownListFor(x => x.SkillLevel, "-- Pick a Skill Level", new { @class = "form-control" })
-                            </div>
-                            <div class="col-lg-6 col-md-6 col-sm-12 col-md-12">
-                            </div>
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-md-12">
-                                <input type="submit" value="Search" class="btn btn-primary" />
-                            </div>
-                        }
-                    </div>
-                    <div id="classloader" class=" aletr" style="display:none">
-                        Loading...<img src="~/Content/Images/indicator.white.gif" />
-                    </div>
-                    <div id="classes">
-                        @Html.Partial("~/Views/Shared/_EventsNoMapPartial.cshtml", Model.Classes)
-                    </div>
-                </div>
-                <div id="dance" class="tab-pane">
-                    <h4>
-                        Socials
-                        @if (User.Identity != null)
-                        {
-                            if (Model.Place.Owners.Any(x => x.ApplicationUser.UserName == User.Identity.Name))
                             {
-                                <a style="font-size: small;" href="@Url.Action("Create", "Event", new { role = "Owner", eventType = "Social" }, null)">Add a Social</a>
+                                @Html.AntiForgeryToken()
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-md-12" style="margin-top: 5px;">
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-md-12">
+                                        @Html.DropDownListFor(x => x.DanceStyleId, Model.DanceStyleList, "-- Pick a Dance Style --", new { @class = "form-control" })
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-md-12">
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-md-12" style="margin-top: 5px;">
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-md-12">
+                                        @Html.DropDownListFor(x => x.TeacherId, Model.TeacherList, "-- Pick a Teacher", new { @class = "form-control" })
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-md-12">
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-md-12" style="margin-top: 5px;">
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-md-12">
+                                        @Html.EnumDropDownListFor(x => x.SkillLevel, "-- Pick a Skill Level", new { @class = "form-control" })
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-md-12">
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-md-12" style="margin: 5px;">
+                                    <input type="submit" value="Search" class="btn btn-primary" />
+                                </div>
                             }
-                        }
-                    </h4>
-                    <div class="row">
-                        @using (Ajax.BeginForm("SearchSocials",
+                        </div>
+                        <div id="classloader" style="display:none">
+                            Loading...<img src="~/Content/Images/indicator.white.gif" />
+                        </div>
+                        <div id="classes">
+                            @Html.Partial("~/Views/Shared/_EventsNoMapPartial.cshtml", Model.Classes)
+                        </div>
+                    </div>
+                    <div id="dance" class="tab-pane">
+                        <h4>
+                            @if (User.Identity != null)
+                            {
+                                if (Model.Place.Owners.Any(x => x.ApplicationUser.UserName == User.Identity.Name))
+                                {
+                                    <a class="btn btn-warning" style="font-size: small;" href="@Url.Action("Create", "Event", new { role = "Owner", eventType = EDR.Enums.EventType.Social }, null)">Add a Social</a>
+                                }
+                            }
+                        </h4>
+                        <div class="row">
+                            @using (Ajax.BeginForm("SearchSocials",
                                 "Place",
                                 new AjaxOptions()
                                 {
                                     UpdateTargetId = "socials",
                                     OnSuccess = "done(this)",
-                                    LoadingElementId = "socialloader"
+                                    LoadingElementId = "socialloader",
+                                    InsertionMode = InsertionMode.Replace
                                 },
                                 new { @id = "socialsearchform" }
                                 ))
-                        {
-                            @Html.AntiForgeryToken()
-                            <div class="col-lg-6 col-md-6 col-sm-12 col-md-12">
-                                @Html.DropDownListFor(x => x.DanceStyleId, Model.DanceStyleList, "-- Pick a Dance Style --", new { @class = "form-control" })
-                            </div>
-                            <div class="col-lg-6 col-md-6 col-sm-12 col-md-12">
-                            </div>
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-md-12">
-                                <input type="submit" value="Search" class="btn btn-primary" />
-                            </div>
-                        }
-                    </div>
-                    <div id="socialloader" class=" aletr" style="display:none">
-                        Loading...<img src="~/Content/Images/indicator.white.gif" />
-                    </div>
-                    <div id="socials">
-                        @Html.Partial("~/Views/Shared/_EventsNoMapPartial.cshtml", Model.Socials)
+                            {
+                                @Html.AntiForgeryToken()
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-md-12">
+                                    @Html.DropDownListFor(x => x.DanceStyleId, Model.DanceStyleList, "-- Pick a Dance Style --", new { @class = "form-control" })
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-md-12">
+                                </div>
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-md-12">
+                                    <input type="submit" value="Search" class="btn btn-primary" />
+                                </div>
+                            }
+                        </div>
+                        <div id="socialloader" class=" aletr" style="display:none">
+                            Loading...<img src="~/Content/Images/indicator.white.gif" />
+                        </div>
+                        <div id="socials">
+                            @Html.Partial("~/Views/Shared/_EventsNoMapPartial.cshtml", Model.Socials)
+                        </div>
                     </div>
                 </div>
             </div>
