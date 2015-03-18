@@ -155,25 +155,18 @@
                                 @Html.AntiForgeryToken()
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-md-12" style="margin-top: 5px;">
                                     <div class="col-lg-6 col-md-6 col-sm-12 col-md-12">
-                                        @Html.DropDownListFor(x => x.DanceStyleId, Model.DanceStyleList, "-- Pick a Dance Style --", new { @class = "form-control" })
+                                        <div class="row">
+                                            @Html.DropDownListFor(x => x.DanceStyleId, Model.DanceStyleList, "-- Pick a Dance Style --", new { @class = "form-control" })
+                                        </div>
+                                        <div class="row" style="margin-top: 5px;">
+                                            @Html.DropDownListFor(x => x.TeacherId, Model.TeacherList, "-- Pick a Teacher", new { @class = "form-control" })
+                                        </div>
+                                        <div class="row" style="margin-top: 5px;">
+                                            @Html.EnumDropDownListFor(x => x.SkillLevel, "-- Pick a Skill Level", new { @class = "form-control" })
+                                        </div>
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-sm-12 col-md-12">
-                                    </div>
-                                </div>
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-md-12" style="margin-top: 5px;">
-                                    <div class="col-lg-6 col-md-6 col-sm-12 col-md-12">
-                                        @Html.DropDownListFor(x => x.TeacherId, Model.TeacherList, "-- Pick a Teacher", new { @class = "form-control" })
-                                    </div>
-                                    <div class="col-lg-6 col-md-6 col-sm-12 col-md-12">
-                                    </div>
-                                </div>
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-md-12" style="margin-top: 5px;">
-                                    <div class="col-lg-6 col-md-6 col-sm-12 col-md-12">
-                                        @Html.EnumDropDownListFor(x => x.SkillLevel, "-- Pick a Skill Level", new { @class = "form-control" })
-                                    </div>
-                                    <div class="col-lg-6 col-md-6 col-sm-12 col-md-12">
-                                        @Html.Label("daysLabel", "Day(s) of Week:", htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
-                                        <div class="col-md-8 col-lg-8">
+                                        <div class="row">
                                             @Html.CheckBoxList("classdays",
                                             x => x.ClassDaysOfWeek,
                                             x => x,
@@ -227,11 +220,12 @@
                                 @Html.AntiForgeryToken()
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-md-12" style="margin-top: 5px;">
                                     <div class="col-lg-6 col-md-6 col-sm-12 col-md-12">
-                                        @Html.DropDownListFor(x => x.DanceStyleId, Model.DanceStyleList, "-- Pick a Dance Style --", new { @class = "form-control" })
+                                        <div class="row">
+                                            @Html.DropDownListFor(x => x.DanceStyleId, Model.DanceStyleList, "-- Pick a Dance Style --", new { @class = "form-control" })
+                                        </div>
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-sm-12 col-md-12">
-                                        @Html.Label("daysLabel", "Day(s) of Week:", htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
-                                        <div class="col-md-8 col-lg-8">
+                                        <div class="row">
                                             @Html.CheckBoxList("socialdays",
                                             x => x.SocialDaysOfWeek,
                                             x => x,

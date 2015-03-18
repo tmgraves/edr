@@ -89,6 +89,10 @@ namespace EDR.Controllers
             }
 
             var viewModel = new PlaceViewModel();
+            viewModel.ClassDaysOfWeek = new List<DayOfWeek>() { DayOfWeek.Sunday, DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday };
+            viewModel.SocialDaysOfWeek = new List<DayOfWeek>() { DayOfWeek.Sunday, DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday };
+            viewModel.ClassDays = new List<DayOfWeek>();
+            viewModel.SocialDays = new List<DayOfWeek>();
             viewModel.Place = DataContext.Places.Include("Teachers").Include("Owners").Where(x => x.Id == id).FirstOrDefault();
             viewModel.DanceStyleList = DataContext.DanceStyles.Select(d => new SelectListItem() { Text = d.Name, Value = d.Id.ToString() }).ToList();
             viewModel.Owners = DataContext.Owners.Where(y => y.Places.Any(x => x.Id == id)).ToList();
@@ -182,7 +186,6 @@ namespace EDR.Controllers
                     dayslist.Add((DayOfWeek)Enum.Parse(typeof(DayOfWeek), s));
                 }
             }
-            model.ClassDays = dayslist;
 
             var classes = DataContext.Events
                             .Include("Teachers")
@@ -240,7 +243,6 @@ namespace EDR.Controllers
                     dayslist.Add((DayOfWeek)Enum.Parse(typeof(DayOfWeek), s));
                 }
             }
-            model.SocialDays = dayslist;
 
             var socials = DataContext.Events
                                 .Include("Promoters")

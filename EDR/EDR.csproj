@@ -748,14 +748,12 @@
     <Content Include="Views\Visitor\View.cshtml" />
     <Content Include="Views\Dancer\ChangePicture.cshtml" />
     <Content Include="Views\Dancer\UploadPicture.cshtml" />
-    <Content Include="Views\Home\Index2.cshtml" />
     <Content Include="Views\Place\Edit.cshtml" />
     <Content Include="Views\Shared\_CompactEventListPartial.cshtml" />
     <Content Include="Views\Dancer\_DancerLayout.cshtml" />
     <Content Include="Views\Dancer\Learn-old.cshtml" />
     <Content Include="Views\Dancer\Dance.cshtml" />
     <Content Include="Views\Scheduler\GoogleMap.cshtml" />
-    <Content Include="Views\Home\MapTest.cshtml" />
     <Content Include="Views\Shared\_TeacherListPartial.cshtml" />
     <Content Include="Views\Dancer\MyLearn.cshtml" />
     <Content Include="Views\Dancer\MyFriends.cshtml" />
