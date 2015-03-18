@@ -112,7 +112,7 @@ namespace EDR.Controllers
                                     .Include("LinkedFacebookObjects")
                                     .Where(c => c.Place.Id == id)
                                     .Where(x => x.IsAvailable == true)
-                                    .Where(y => !y.Recurring ? (y.StartDate >= DateTime.Now) : (y.StartDate <= date && (y.EndDate == null || y.EndDate >= DateTime.Now)))
+                                    .Where(y => !y.Recurring ? (y.StartDate >= DateTime.Now) : (y.EndDate == null || y.EndDate >= DateTime.Now))
                                     .OrderBy(z => z.StartDate)
                                     .ToList();
             viewModel.Classes.MediaUpdates = EventHelper.BuildAllUpdates(viewModel.Classes.Events, MediaTarget.Place);
@@ -134,7 +134,7 @@ namespace EDR.Controllers
                                     .Include("LinkedFacebookObjects")
                                     .Where(c => c.Place.Id == id)
                                     .Where(x => x.IsAvailable == true)
-                                    .Where(y => !y.Recurring ? (y.StartDate >= DateTime.Now) : (y.StartDate <= date && (y.EndDate == null || y.EndDate >= DateTime.Now)))
+                                    .Where(y => !y.Recurring ? (y.StartDate >= DateTime.Now) : (y.EndDate == null || y.EndDate >= DateTime.Now))
                                     .OrderBy(z => z.StartDate)
                                     .ToList();
             viewModel.Socials.MediaUpdates = EventHelper.BuildAllUpdates(viewModel.Socials.Events, MediaTarget.Place);
@@ -170,10 +170,20 @@ namespace EDR.Controllers
             return View(viewModel);
         }
 
-        public PartialViewResult SearchClasses(int id, PlaceViewModel model)
+        public PartialViewResult SearchClasses(int id, PlaceViewModel model, string[] classdays)
         {
             var viewModel = new PlaceEventSearchViewModel();
-            var date = DateTime.Now.AddDays(21);
+
+            var dayslist = new List<DayOfWeek>();
+            if (classdays != null)
+            {
+                foreach (var s in classdays)
+                {
+                    dayslist.Add((DayOfWeek)Enum.Parse(typeof(DayOfWeek), s));
+                }
+            }
+            model.ClassDays = dayslist;
+
             var classes = DataContext.Events
                             .Include("Teachers")
                             .Include("Teachers.ApplicationUser")
@@ -188,7 +198,10 @@ namespace EDR.Controllers
                             .Include("Playlists")
                             .Include("Playlists.Author")
                             .Include("LinkedFacebookObjects")
-                            .OfType<Class>().Where(c => c.Place.Id == id).Where(x => x.IsAvailable == true).Where(y => !y.Recurring ? (y.StartDate >= DateTime.Now) : (y.StartDate <= date && (y.EndDate == null || y.EndDate >= DateTime.Now))).OrderBy(z => z.StartDate).ToList();
+                            .OfType<Class>().Where(c => c.Place.Id == id)
+                                            .Where(x => x.IsAvailable == true)
+                                            .Where(y => !y.Recurring ? (y.StartDate >= DateTime.Now) : (y.EndDate == null || y.EndDate >= DateTime.Now))
+                                            .OrderBy(z => z.StartDate).ToList();
             if (model.DanceStyleId != null)
             {
                 classes = classes.Where(x => x.DanceStyles.Any(s => s.Id == model.DanceStyleId)).ToList();
@@ -204,17 +217,31 @@ namespace EDR.Controllers
                 classes = classes.Where(x => x.SkillLevel == (int)model.SkillLevel).ToList();
             }
 
+            if (classdays != null)
+            {
+                classes = classes.Where(x => dayslist.Contains(x.Day)).ToList();
+            }
+
             viewModel.Events = classes;
             viewModel.MediaUpdates = EventHelper.BuildAllUpdates(classes, MediaTarget.Place);
 
             return PartialView("~/Views/Shared/_EventsNoMapPartial.cshtml", viewModel);
         }
 
-        public PartialViewResult SearchSocials(int id, PlaceViewModel model)
+        public PartialViewResult SearchSocials(int id, PlaceViewModel model, string[] socialdays)
         {
             var viewModel = new PlaceEventSearchViewModel();
 
-            var date = DateTime.Now.AddDays(21);
+            var dayslist = new List<DayOfWeek>();
+            if (socialdays != null)
+            {
+                foreach (var s in socialdays)
+                {
+                    dayslist.Add((DayOfWeek)Enum.Parse(typeof(DayOfWeek), s));
+                }
+            }
+            model.SocialDays = dayslist;
+
             var socials = DataContext.Events
                                 .Include("Promoters")
                                 .Include("Promoters.ApplicationUser")
@@ -229,10 +256,18 @@ namespace EDR.Controllers
                                 .Include("Playlists")
                                 .Include("Playlists.Author")
                                 .Include("LinkedFacebookObjects")
-                                .OfType<Social>().Where(c => c.Place.Id == id).Where(x => x.IsAvailable == true).Where(y => !y.Recurring ? (y.StartDate >= DateTime.Now) : (y.StartDate <= date && (y.EndDate == null || y.EndDate >= DateTime.Now))).OrderBy(z => z.StartDate).ToList();
+                                .OfType<Social>().Where(c => c.Place.Id == id)
+                                                .Where(x => x.IsAvailable == true)
+                                                .Where(y => !y.Recurring ? (y.StartDate >= DateTime.Now) : (y.EndDate == null || y.EndDate >= DateTime.Now))
+                                                .OrderBy(z => z.StartDate).ToList();
             if (model.DanceStyleId != null)
             {
                 socials = socials.Where(x => x.DanceStyles.Any(s => s.Id == model.DanceStyleId)).ToList();
+            }
+
+            if (socialdays != null)
+            {
+                socials = socials.Where(x => dayslist.Contains(x.Day)).ToList();
             }
 
             viewModel.Events = socials;

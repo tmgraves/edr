@@ -2,6 +2,7 @@
 @using EDR.Models
 @using EDR.Utilities
 @using Microsoft.AspNet.Identity
+@using MvcCheckBoxList.Model
 
 @{
     ViewBag.Title = Model.Place.Name;
@@ -29,11 +30,23 @@
 
 <h1 class="page-header">
     @Model.Place.Name
-    @if (User.Identity != null && Model.Place.Owners.Where(x => x.ApplicationUser.UserName == User.Identity.Name).FirstOrDefault() != null)
+    @if (User.Identity != null)
     {
-        <a style="font-size: medium;" href="@Url.Action("Edit", "Place", new { id = Model.Place.Id })">Edit @Model.Place.Name</a>
+        if (Session["MyRole"] != null)
+        {
+            if ((EDR.Enums.RoleName)Session["MyRole"] == EDR.Enums.RoleName.Owner && Model.Place.Owners.Where(x => x.ApplicationUser.UserName == User.Identity.Name).FirstOrDefault() != null)
+            {
+                <a class="btn btn-info" title="Edit @Model.Place.Name" href="@Url.Action("Edit", "Place", new { id = Model.Place.Id } )">
+                    <i class="glyphicon glyphicon-pencil" style="vertical-align: middle;"></i>
+                    Edit
+                </a>
+            }
+        }
     }
-    <a style="font-size: medium;" href="@Url.Action("List", "Place")">View all Places</a>
+    <a class="btn btn-info" title="View All Places" href="@Url.Action("List", "Place")">
+        <i class="glyphicon glyphicon-search" style="vertical-align: middle;"></i>
+        All Places
+    </a>
 </h1>
 <div class="row">
     <div class="well col-lg-3 col-md-3 col-sm-4 col-xs-12">
@@ -114,13 +127,16 @@
                     <div id="learn" class="tab-pane active">
                         @if (User.Identity != null)
                         {
-                            if (Model.Place.Teachers.Any(x => x.ApplicationUser.UserName == User.Identity.Name))
+                            if (Session["MyRole"] != null)
                             {
-                                <a class="btn btn-warning" href="@Url.Action("Create", "Event", new { role = "Teacher", eventType = EDR.Enums.EventType.Class, placeId = Model.Place.Id }, null)">Add a Class</a>
-                            }
-                            else if (Model.Place.Owners.Any(x => x.ApplicationUser.UserName == User.Identity.Name))
-                            {
-                                <a class="btn btn-warning" href="@Url.Action("Create", "Event", new { role = "Owner", eventType = EDR.Enums.EventType.Class, placeId = Model.Place.Id }, null)">Add a Class</a>
+                                if ((EDR.Enums.RoleName)Session["MyRole"] == EDR.Enums.RoleName.Teacher && Model.Place.Teachers.Any(x => x.ApplicationUser.UserName == User.Identity.Name))
+                                {
+                                    <a class="btn btn-warning" href="@Url.Action("CreateClass", "Event", new { placeId = Model.Place.Id }, null)">Add a Class</a>
+                                }
+                                else if ((EDR.Enums.RoleName)Session["MyRole"] == EDR.Enums.RoleName.Owner && Model.Place.Owners.Any(x => x.ApplicationUser.UserName == User.Identity.Name))
+                                {
+                                    <a class="btn btn-warning" href="@Url.Action("CreateClass", "Event", new { placeId = Model.Place.Id }, null)">Add a Class</a>
+                                }
                             }
                         }
                         <div class="row">
@@ -156,6 +172,16 @@
                                         @Html.EnumDropDownListFor(x => x.SkillLevel, "-- Pick a Skill Level", new { @class = "form-control" })
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-sm-12 col-md-12">
+                                        @Html.Label("daysLabel", "Day(s) of Week:", htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                                        <div class="col-md-8 col-lg-8">
+                                            @Html.CheckBoxList("classdays",
+                                            x => x.ClassDaysOfWeek,
+                                            x => x,
+                                            x => x,
+                                            x => Model.ClassDays,
+                                            new HtmlListInfo(HtmlTag.table, 2, new { @class = "checkboxlist" }, TextLayout.Default, TemplateIsUsed.No))
+                                            @Html.ValidationMessageFor(model => model.ClassDays, "", new { @class = "text-danger" })
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-md-12" style="margin: 5px;">
@@ -171,15 +197,20 @@
                         </div>
                     </div>
                     <div id="dance" class="tab-pane">
-                        <h4>
-                            @if (User.Identity != null)
+                        @if (User.Identity != null)
+                        {
+                            if (Session["MyRole"] != null)
                             {
-                                if (Model.Place.Owners.Any(x => x.ApplicationUser.UserName == User.Identity.Name))
+                                if ((EDR.Enums.RoleName)Session["MyRole"] == EDR.Enums.RoleName.Promoter && Model.Place.Promoters.Any(x => x.ApplicationUser.UserName == User.Identity.Name))
                                 {
-                                    <a class="btn btn-warning" style="font-size: small;" href="@Url.Action("Create", "Event", new { role = "Owner", eventType = EDR.Enums.EventType.Social }, null)">Add a Social</a>
+                                    <a class="btn btn-warning" href="@Url.Action("CreateSocial", "Event", new { placeId = Model.Place.Id }, null)">Add a Social</a>
+                                }
+                                else if ((EDR.Enums.RoleName)Session["MyRole"] == EDR.Enums.RoleName.Owner && Model.Place.Owners.Any(x => x.ApplicationUser.UserName == User.Identity.Name))
+                                {
+                                    <a class="btn btn-warning" href="@Url.Action("CreateSocial", "Event", new { placeId = Model.Place.Id }, null)">Add a Social</a>
                                 }
                             }
-                        </h4>
+                        }
                         <div class="row">
                             @using (Ajax.BeginForm("SearchSocials",
                                 "Place",
@@ -194,12 +225,24 @@
                                 ))
                             {
                                 @Html.AntiForgeryToken()
-                                <div class="col-lg-6 col-md-6 col-sm-12 col-md-12">
-                                    @Html.DropDownListFor(x => x.DanceStyleId, Model.DanceStyleList, "-- Pick a Dance Style --", new { @class = "form-control" })
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-md-12" style="margin-top: 5px;">
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-md-12">
+                                        @Html.DropDownListFor(x => x.DanceStyleId, Model.DanceStyleList, "-- Pick a Dance Style --", new { @class = "form-control" })
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-md-12">
+                                        @Html.Label("daysLabel", "Day(s) of Week:", htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                                        <div class="col-md-8 col-lg-8">
+                                            @Html.CheckBoxList("socialdays",
+                                            x => x.SocialDaysOfWeek,
+                                            x => x,
+                                            x => x,
+                                            x => Model.SocialDays,
+                                            new HtmlListInfo(HtmlTag.table, 2, new { @class = "checkboxlist" }, TextLayout.Default, TemplateIsUsed.No))
+                                            @Html.ValidationMessageFor(model => model.SocialDays, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col-lg-6 col-md-6 col-sm-12 col-md-12">
-                                </div>
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-md-12">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-md-12" style="margin: 5px;">
                                     <input type="submit" value="Search" class="btn btn-primary" />
                                 </div>
                             }

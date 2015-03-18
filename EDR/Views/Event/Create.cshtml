@@ -42,7 +42,16 @@
                     <div class="form-group">
                         @Html.LabelFor(model => model.Event.Place, htmlAttributes: new { @class = "control-label col-md-2" })
                         <div class="col-md-10">
-                            @Html.DropDownList("PlaceId", Model.PlaceList, "- Select a Place -", new { @class = "form-control" })
+                            @if (Model.PlaceId != 0)
+                            {
+                                @Html.DropDownListFor(m => m.PlaceId, Model.PlaceList, "- Select a Place -", new { @class = "form-control", @disabled = "disabled" } )
+                                @Html.HiddenFor(m => m.PlaceId)
+                            }
+                            else
+                            {
+                                @Html.DropDownListFor(m => m.PlaceId, Model.PlaceList, "- Select a Place -", new { @class = "form-control" })
+                            }
+                            
                             @Html.ValidationMessageFor(model => model.Event.Place, "", new { @class = "text-danger" })
                         </div>
                     </div>
@@ -310,5 +319,30 @@
 </div>
 
 <div>
-    <a class="btn btn-primary" href="@Model.ReturnUrl">Cancel</a>
+@if (Model.PlaceId != 0)
+{
+    <a class="btn btn-primary" href="@Url.Action("Details", "Place", new { id = Model.PlaceId } )">Cancel</a>
+}
+else
+{
+    if (Session["MyRole"] != null)
+    {
+        if ((EDR.Enums.RoleName)Session["MyRole"] == EDR.Enums.RoleName.Teacher)
+        {
+            <a class="btn btn-primary" href="@Url.Action("Home", "Teacher", new { username = User.Identity.Name } )">Cancel</a>
+        }
+        else if ((EDR.Enums.RoleName)Session["MyRole"] == EDR.Enums.RoleName.Promoter)
+        {
+            <a class="btn btn-primary" href="@Url.Action("Home", "Promoter", new { username = User.Identity.Name } )">Cancel</a>
+        }
+        else if ((EDR.Enums.RoleName)Session["MyRole"] == EDR.Enums.RoleName.Owner)
+        {
+            <a class="btn btn-primary" href="@Url.Action("Home", "Owner", new { username = User.Identity.Name })">Cancel</a>
+        }
+    }
+    else
+    {
+        <a class="btn btn-primary" href="@Url.Action("Home", "Dancer", new { username = User.Identity.Name })">Cancel</a>
+    }
+}
 </div>

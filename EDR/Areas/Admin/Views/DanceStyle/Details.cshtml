@@ -62,8 +62,9 @@
                                     FormMethod.Post,
                                     new { enctype = "multipart/form-data" }))
                 {
-                    <div class="form-group form-inline" style="margin-top: 5px;">
-                        <input type="file" name="file" id="file" class="form-control" size="20" style="display: inline-block;" />
+                    @Html.Partial("~/Views/Shared/_FileUploadPartial.cshtml")
+                    @*<div class="form-group form-inline" style="margin-top: 5px;">
+                        <input type="file" name="file" id="file" class="form-control" size="20" style="display: inline-block;" accept="image/*" />
                         <input id="submit" type="submit" class="btn btn-success" value="Upload New Picture" style="display: inline-block;" />
                     </div>
                     <p>
@@ -72,6 +73,17 @@
 
                     <script type="text/javascript">
                         $('#submit').click(function () {
+                            //  Check file type is image
+                            var fupload = document.getElementById("file");
+                            if (fupload.files[0].type.match('image/*')) {
+                                return true;
+                            }
+                            else {
+                                alert("You must select an image file for upload");
+                                return false;
+                            }
+                            //  Check file type is image
+
                             //check whether browser fully supports all File API
                             if (window.File && window.FileReader && window.FileList && window.Blob) {
                                 //get the file size and file type from file input field
@@ -88,7 +100,7 @@
                                 alert("Please upgrade your browser, because your current browser lacks some new features we need!");
                             }
                         });
-                    </script>
+                    </script>*@
                 }
             </div>
         </div>

@@ -21,6 +21,10 @@ namespace EDR.Models.ViewModels
         public List<SelectListItem> DanceStyleList { get; set; }
         [Range(1, int.MaxValue, ErrorMessage = "Select a skill level")]
         public SkillLevel SkillLevel { get; set; }
+        public List<DayOfWeek> ClassDays { get; set; }
+        public List<DayOfWeek> ClassDaysOfWeek { get; set; }
+        public List<DayOfWeek> SocialDays { get; set; }
+        public List<DayOfWeek> SocialDaysOfWeek { get; set; }
     }
 
     public class PlaceEventSearchViewModel

@@ -56,7 +56,8 @@
                                 new { enctype = "multipart/form-data" }))
                     {
                         @Html.HiddenFor(x => x.Event.Id)
-                        <div class="form-group form-inline">
+                        @Html.Partial("~/Views/Shared/_FileUploadPartial.cshtml")
+                        @*<div class="form-group form-inline">
                             <input type="file" name="file" id="file" class="form-control" />
                             <input id="submit" type="submit" class="btn btn-default" value="Submit" />
                         </div>
@@ -82,7 +83,7 @@
                                     alert("Please upgrade your browser, because your current browser lacks some new features we need!");
                                 }
                             });
-                        </script>
+                        </script>*@
                     }
                 </div>
                 <div id="eventmedia" class="tab-pane">

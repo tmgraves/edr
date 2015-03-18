@@ -71,14 +71,14 @@
                 @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", Model.Teacher.Classes)
                 @if (User.Identity != null && User.Identity.Name == Model.Teacher.ApplicationUser.UserName)
                 {
-                    <a class="btn btn-link" href="@Url.Action("Create", "Event", new { role = "Teacher", eventType = "Class" }, null)">Add a Class</a>
+                    <a class="btn btn-link" href="@Url.Action("Create", "Event", new { eventType = "Class" }, null)">Add a Class</a>
                 }
             </div>
             <div id="workshops" class="tab-pane">
                 @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", Model.Teacher.Workshops)
                 @if (User.Identity != null && User.Identity.Name == Model.Teacher.ApplicationUser.UserName)
                 {
-                    <a class="btn btn-link" href="@Url.Action("Create", "Event", new { role = "Teacher", eventType = "Workshop" }, null)">Add a Workshop</a>
+                    <a class="btn btn-link" href="@Url.Action("Create", "Event", new { eventType = "Workshop" }, null)">Add a Workshop</a>
                 }
             </div>
         </div>

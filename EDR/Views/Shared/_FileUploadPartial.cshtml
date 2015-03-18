@@ -1,0 +1,43 @@
+﻿<div class="form-group form-inline">
+    <p>
+        <input type="file" name="file" id="file" class="form-control" size="20" accept="image/*" /><br />
+    </p>
+    <p>
+        <input id="submit" type="submit" class="btn btn-success" value="Upload Picture" />
+    </p>
+</div>
+<p>
+    @ViewBag.Message
+</p>
+
+<script type="text/javascript">
+    $('#submit').click(function () {
+        //  Check file type is image
+        var fupload = document.getElementById("file");
+        if (fupload.files[0].type.match('image/*')) {
+            return true;
+        }
+        else {
+            alert("You must select an image file for upload");
+            return false;
+        }
+        //  Check file type is image
+
+        //check whether browser fully supports all File API
+        if (window.File && window.FileReader && window.FileList && window.Blob) {
+            //get the file size and file type from file input field
+            var fsize = $('#file')[0].files[0].size;
+
+            if (fsize > 1048576) //do something if file size more than 1 mb (1048576)
+            {
+                alert("File is too big.  Please try another.");
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            alert("Please upgrade your browser, because your current browser lacks some new features we need!");
+        }
+    });
+</script>
+
