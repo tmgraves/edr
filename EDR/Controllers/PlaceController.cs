@@ -15,12 +15,96 @@ namespace EDR.Controllers
 {
     public class PlaceController : BaseController
     {
-        public ActionResult List()
+        public ActionResult List(PlaceListViewModel model)
         {
-            var model = new PlaceListViewModel();
-            model.Places = DataContext.Places.ToList();
+            model.Places = DataContext.Places.Include("Events").Include("Events.DanceStyles").Where(p => p.PlaceType != PlaceType.OtherPlace).ToList();
+            model.DanceStyles = DataContext.DanceStyles;
+            model.Zoom = model.Zoom == 0 ? 10 : model.Zoom;
+
+            if (model.Location != "" && model.Location != null)
+            {
+                var address = new Address();
+                address = Geolocation.ParseAddress(model.Location);
+                model.CenterLat = address.Latitude;
+                model.CenterLng = address.Longitude;
+                model.NELat = model.CenterLat + .5;
+                model.SWLat = model.CenterLat - .5;
+                model.NELng = model.CenterLng + .5;
+                model.SWLng = model.CenterLng - .5;
+            }
+
+            if (model.NELat != null && model.NELng != null)
+            {
+                model.Places = model.Places.Where(c => c.Longitude >= model.SWLng && c.Longitude <= model.NELng && c.Latitude >= model.SWLat && c.Latitude <= model.NELat);
+            }
+
+            if (model.DanceStyleId != null)
+            {
+                model.Places = model.Places.Where(p => p.Events.Any(e => e.DanceStyles != null && e.DanceStyles.Any(s => s.Id == model.DanceStyleId)));
+            }
+
+            if (model.PlaceType != null)
+            {
+                model.Places = model.Places.Where(p => p.PlaceType == model.PlaceType);
+            }
 
             return View(model);
+        }
+
+        [Authorize(Roles="Owner")]
+        public ActionResult ChangePicture(int id, string message)
+        {
+            var model = new ChangePlacePictureViewModel();
+            model.Place = DataContext.Places.Where(p => p.Id == id).FirstOrDefault();
+            var userid = User.Identity.GetUserId();
+            var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+            if (user.FacebookToken != null)
+            {
+                model.FacebookPictures = FacebookHelper.GetPhotos(user.FacebookToken);
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult UploadPicture(int id, HttpPostedFileBase file)
+        {
+            UploadFile newFile = ApplicationUtility.LoadPicture(file);
+            string message;
+
+            if (newFile.UploadStatus == "Success")
+            {
+                var place = DataContext.Places.Where(p => p.Id == id).FirstOrDefault();
+                place.Filename = newFile.FilePath;
+                place.ThumbnailFilename = newFile.ThumbnailFilePath;
+                DataContext.Entry(place).State = EntityState.Modified;
+                DataContext.SaveChanges();
+                return RedirectToAction("Details", "Place", new { id = id});
+            }
+            else
+            {
+                message = newFile.UploadStatus;
+                return RedirectToAction("ChangePicture", "Place", new { id = id, message = message });
+            }
+        }
+
+        [Authorize]
+        public ActionResult SetFacebookPicture(int id, string largeSource, string source)
+        {
+            try
+            {
+                var place = DataContext.Places.Where(p => p.Id == id).FirstOrDefault();
+                place.Filename = largeSource;
+                place.ThumbnailFilename = source;
+                DataContext.Entry(place).State = EntityState.Modified;
+                DataContext.SaveChanges();
+                return RedirectToAction("Details", "Place", new { id = id });
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction("Details", "Place", new { id = id });
+            }
         }
 
         //private PlaceViewModel LoadPlace(int id)

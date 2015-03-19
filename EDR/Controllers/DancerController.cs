@@ -622,6 +622,15 @@ namespace EDR.Controllers
                 dancer.SpotifyUri = model.Dancer.SpotifyUri;
                 dancer.ZipCode = model.Dancer.ZipCode;
 
+                if (model.Dancer.ZipCode != null)
+                {
+                    var address = Geolocation.ParseAddress(model.Dancer.ZipCode);
+                    dancer.City = address.City;
+                    dancer.State = address.State;
+                    dancer.Longitude = address.Longitude;
+                    dancer.Latitude = address.Latitude;
+                }
+
                 if (model.PostedStyles != null)
                 {
                     var styles = DataContext.DanceStyles.Where(x => model.PostedStyles.DanceStyleIds.Contains(x.Id.ToString())).ToList();

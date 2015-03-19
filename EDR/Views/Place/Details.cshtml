@@ -55,11 +55,11 @@
                 <div style="text-align: center;">
                     @if (Model.Place.Filename != null)
                     {
-                        <img class=" img-thumbnail" src="@Url.Content(Model.Place.Filename)" />
+                        <img style="max-width: 100%;" src="@Url.Content(Model.Place.Filename)" />
                     }
                     else
                     {
-                        <img class=" img-thumbnail" src="~/Content/images/NoImage.png" />
+                        <img style="max-width: 100%;" src="~/Content/images/NoImage.png" />
                     }
                     @if (User.Identity != null && Model.Place.Owners.Where(o => o.ApplicationUser.UserName == User.Identity.Name).Count() == 1)
                     {

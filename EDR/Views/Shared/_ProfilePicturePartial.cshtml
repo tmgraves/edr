@@ -1,14 +1,16 @@
 ﻿@model EDR.Models.ViewModels.ProfilePicture
 
 <div style="text-align: center;">
-    @if (Model.User.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault() != null)
-    {
-        <img class=" img-thumbnail" src="@Url.Content(Model.User.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault().Filename)" />
-    }
-    else
-    {
-        <img class=" img-thumbnail" src="~/Content/images/NoPic.png" />
-    }
+    <div class="croppedpic" style="height: 200px;">
+        @if (Model.User.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault() != null)
+        {
+            <img style="max-width: 100%;" src="@Url.Content(Model.User.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault().Filename)" />
+        }
+        else
+        {
+            <img style="max-width: 100%;" src="~/Content/images/NoPic.png" />
+        }
+    </div>
     @if (User.Identity != null && User.Identity.Name == Model.User.UserName)
     {
         <p>

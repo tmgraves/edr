@@ -44,7 +44,7 @@
                 @if (Session["MyRole"] != null)
                 {
                     <li>
-                        @Html.ActionLink("Dancer Profile", "Home", "Promoter", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
+                        @Html.ActionLink("Dancer Profile", "Home", "Dancer", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
                     </li>
                 }
                 @if (User.IsInRole("Teacher"))

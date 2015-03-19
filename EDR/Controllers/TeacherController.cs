@@ -18,16 +18,34 @@ namespace EDR.Controllers
 {
     public class TeacherController : BaseController
     {
-        public ActionResult List(int? danceStyle)
+        public ActionResult List(TeacherListViewModel model)
         {
-            var model = new TeacherListViewModel();
-            model.Teachers = DataContext.Teachers.Include("ApplicationUser").Include("DanceStyles");
-            model.DanceStyleList = DataContext.DanceStyles.Select(d => new SelectListItem() { Text = d.Name, Value = d.Id.ToString() }).ToList();
+            model.Teachers = DataContext.Teachers.Include("ApplicationUser").Include("DanceStyles").Include("ApplicationUser.UserPictures").Include("Classes").Include("Classes.Reviews");
+            model.DanceStyles = DataContext.DanceStyles;
+            model.Zoom = model.Zoom == 0 ? 10 : model.Zoom;
 
-            if (danceStyle != null)
+            if (model.Location != "" && model.Location != null)
             {
-                model.Teachers = model.Teachers.Where(x => x.DanceStyles.Any(s => s.Id == danceStyle));
+                var address = new Address();
+                address = Geolocation.ParseAddress(model.Location);
+                model.CenterLat = address.Latitude;
+                model.CenterLng = address.Longitude;
+                model.NELat = model.CenterLat + .5;
+                model.SWLat = model.CenterLat - .5;
+                model.NELng = model.CenterLng + .5;
+                model.SWLng = model.CenterLng - .5;
             }
+
+            if (model.NELat != null && model.NELng != null)
+            {
+                model.Teachers = model.Teachers.Where(t => t.ApplicationUser.Longitude != null && t.ApplicationUser.Longitude >= model.SWLng && t.ApplicationUser.Longitude <= model.NELng && t.ApplicationUser.Latitude != null && t.ApplicationUser.Latitude >= model.SWLat && t.ApplicationUser.Latitude <= model.NELat);
+            }
+
+            if (model.DanceStyleId != null)
+            {
+                model.Teachers = model.Teachers.Where(t => t.DanceStyles.Any(s => s.Id == model.DanceStyleId));
+            }
+
             return View(model);
         }
 

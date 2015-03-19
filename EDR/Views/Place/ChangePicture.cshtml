@@ -1,8 +1,82 @@
-﻿
+﻿@model EDR.Models.ViewModels.ChangePlacePictureViewModel
+
 @{
-    ViewBag.Title = "ChangePicture";
-    Layout = "~/Views/Place/_PlaceLayout.cshtml";
+    ViewBag.Title = "Change Picture for " + Model.Place.Name;
 }
 
-<h2>ChangePicture</h2>
+<div class="container" style="padding: 10px;">
+    <h2>Change Picture</h2>
+    @ViewBag.Message
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 col-lg-3 col-sm-12 col-xs-12">
+                @if (Model.Place.Filename != null)
+                {
+                    <img class="img-thumbnail" src="@Url.Content(Model.Place.Filename)" />
+                }
+                else
+                {
+                    <img style="max-width: 100%;" src="~/Content/images/NoImage.png" />
+                }
+            </div>
+        </div>
+        <div class="row">
+            <div class="tabbable panel panel-default">
+                <div class="panel-heading">
+                    <ul class="nav nav-tabs nav-justified" role="tablist">
+                        <li class="active"><a href="#newpic" data-toggle="tab">New Picture</a></li>
+                        <li><a href="#facebook" data-toggle="tab">Choose a Facebook Picture</a></li>
+                    </ul>
+                </div>
+                <div class="panel-body">
+                    <div class="tab-content">
+                        <div id="newpic" class="tab-pane active">
+                            <h3>Upload a New Picture</h3>
+                            @using (Html.BeginForm("UploadPicture",
+                                    "Place",
+                                    new { id = Model.Place.Id },
+                                    FormMethod.Post,
+                                    new { enctype = "multipart/form-data" }))
+                            {
+                                @Html.Partial("~/Views/Shared/_FileUploadPartial.cshtml")
+                            }
+                        </div>
+                        <div id="facebook" class="tab-pane">
+                            <h4>Facebook Pictures</h4>
+                            <div class="col-md-12">
+                                @if (Model.FacebookPictures != null && Model.FacebookPictures.Count() > 0)
+                                {
+                                    <ul class="list-inline">
+                                        @foreach (var photo in Model.FacebookPictures.OrderByDescending(photo => photo.PhotoDate))
+                                        {
+                                            <li>
+                                                <div class="thumbnail">
+                                                    <a href="@photo.Link" target="_blank">
+                                                        @if (photo.Source != null)
+                                                        {
+                                                            <img src="@photo.Source" />
+                                                        }
+                                                    </a>
+                                                    <div class="caption">
+                                                        @Html.ActionLink("Set Cover Picture", "SetFacebookPicture", "Place", new { id = Model.Place.Id, largeSource = photo.LargeSource, source = photo.Source }, htmlAttributes: new { @class = "btn btn-primary" })
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                                else
+                                {
+                                    @:No Facebook pictures found.
+                            }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
+        </div>
+    </div>
+
+    <a class="btn btn-primary" href="@Url.Action("Details", new { id = Model.Place.Id })">Back</a>
+</div>

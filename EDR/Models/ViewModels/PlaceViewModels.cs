@@ -32,4 +32,10 @@ namespace EDR.Models.ViewModels
         public IEnumerable<Event> Events { get; set; }
         public List<Media> MediaUpdates { get; set; }
     }
+
+    public class ChangePlacePictureViewModel
+    {
+        public Place Place { get; set; }
+        public IEnumerable<FacebookPhoto> FacebookPictures { get; set; }
+    }
 }

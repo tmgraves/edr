@@ -18,10 +18,14 @@
                     Edit
                 </a>
             }
+            <a class="btn btn-info" title="View All Teachers" href="@Url.Action("List", "Teacher")">
+                <i class="glyphicon glyphicon-search" style="vertical-align: middle;"></i>
+                All Teachers
+            </a>
             <span class="pull-right">
                 <small>Teacher</small>
-                <span class="dropdown">
-                    @*<button class="btn btn-default dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">
+                @*<span class="dropdown">
+                    <button class="btn btn-default dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">
                         Switch to...
                         <span class="caret"></span>
                     </button>
@@ -35,8 +39,8 @@
                         {
                             <li role="presentation"><a role="menuitem" tabindex="-1" href="@Url.Action("Home", "Owner", new { username = Model.Teacher.ApplicationUser.UserName })">Studio Owner Page</a></li>
                         }
-                    </ul>*@
-                </span>
+                    </ul>
+                </span>*@
             </span>
         </h1>
     </div>

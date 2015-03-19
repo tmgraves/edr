@@ -149,7 +149,7 @@
                         <ul class="list-inline">
                             @foreach (var item in Model.Event.DanceStyles)
                                 {
-                                <li>@Html.ActionLink(item.Name, "Details", "DanceStyle", new { id = item.Id }, new { @class = "label label-info" })</li>
+                                <li>@Html.ActionLink(item.Name, "Details", "DanceStyle", new { styleName = item.Name }, new { @class = "label label-info" })</li>
                                 }
                         </ul>
                     </div>

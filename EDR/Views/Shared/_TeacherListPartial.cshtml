@@ -4,7 +4,7 @@
 @foreach (var t in Model.OrderBy(x => x.ApplicationUser.FullName))
 {
     <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" style="padding:1px;">
-        <a class="btn btn-info top" href="@Url.Action("MyTeach", "Teacher", new { username = t.ApplicationUser.UserName }) " style="text-align: left; vertical-align: top; width: 100%;">
+        <a class="btn btn-default top" href="@Url.Action("MyTeach", "Teacher", new { username = t.ApplicationUser.UserName }) " style="text-align: left; vertical-align: top; width: 100%;">
             <div class="captionpic" style="display: inline-block;">
                 @if (t.ApplicationUser.UserPictures != null && t.ApplicationUser.UserPictures.Count > 0)
                 {
@@ -16,7 +16,12 @@
                 }
             </div>
             <div style="display: inline-block; vertical-align: top;">
-                <span>@t.ApplicationUser.FullName</span>
+                <span class="text-primary">@t.ApplicationUser.FullName</span>
+                @if (t.ApplicationUser.ZipCode != null)
+                {
+                    var address = Geolocation.ParseAddress(t.ApplicationUser.ZipCode);
+                    <br /><span class="small">@address.City , @address.State</span>
+                }
             </div>
         </a>
     </div>
