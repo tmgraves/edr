@@ -19,9 +19,12 @@
                         <img src="@Url.Content("~/Content/images/MissingImageThumbnail.jpg")" />
                     }
                 </div>
-                <div class="col-lg-10 col-md-10 col-sm-10 col-xs-10">
+                <div class="col-lg-8 col-md-8 col-sm-10 col-xs-10">
                     <strong>@(rowNo += 1). @item.Name</strong><br />
                     <span class="text-info">@item.PlaceType</span>
+                </div>
+                <div class="col-lg-2 col-md-2">
+                    @item.Events.Sum(e => e.Reviews.Sum(r => r.Like ? 1 : 0)) <i class="glyphicon glyphicon-thumbs-up"></i> | @item.Events.Sum(e => e.Reviews.Sum(r => !r.Like ? 1 : 0)) <i class="glyphicon glyphicon-thumbs-down"></i>
                 </div>
             </div>
         </a>

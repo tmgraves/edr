@@ -13,24 +13,24 @@
             {
                 if (Session["MyRole"].ToString() == RoleName.Owner.ToString())
                 {
-                    @Html.ActionLink("Welcome " + User.Identity.Name, "Home", "Owner", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
+                    <a href="@Url.Action("Home", "Owner", new { username = User.Identity.Name })"><i class="glyphicon glyphicon-user"></i> @User.Identity.Name</a>
                 }
                 else if (Session["MyRole"].ToString() == RoleName.Teacher.ToString())
                 {
-                    @Html.ActionLink("Welcome " + User.Identity.Name, "Home", "Teacher", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
+                    <a href="@Url.Action("Home", "Teacher", new { username = User.Identity.Name })"><i class="glyphicon glyphicon-user"></i> @User.Identity.Name</a>
                 }
                 else if (Session["MyRole"].ToString() == RoleName.Promoter.ToString())
                 {
-                    @Html.ActionLink("Welcome " + User.Identity.Name, "Home", "Promoter", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
+                    <a href="@Url.Action("Home", "Promoter", new { username = User.Identity.Name })"><i class="glyphicon glyphicon-user"></i> @User.Identity.Name</a>
                 }
                 else
                 {
-                    @Html.ActionLink("Welcome " + User.Identity.Name, "Home", "Dancer", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
+                    <a href="@Url.Action("Home", "Dancer", new { username = User.Identity.Name })"><i class="glyphicon glyphicon-user"></i> @User.Identity.Name</a>
                 }
             }
             else
             {
-                @Html.ActionLink("Welcome " + User.Identity.Name, "Home", "Dancer", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
+                <a href="@Url.Action("Home", "Dancer", new { username = User.Identity.Name })"><i class="glyphicon glyphicon-user"></i> @User.Identity.Name</a>
             }
         </li>
         <li role="presentation" class="dropdown">
