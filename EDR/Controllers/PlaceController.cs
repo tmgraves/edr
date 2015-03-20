@@ -17,7 +17,7 @@ namespace EDR.Controllers
     {
         public ActionResult List(PlaceListViewModel model)
         {
-            model.Places = DataContext.Places.Include("Events").Include("Events.DanceStyles").Where(p => p.PlaceType != PlaceType.OtherPlace).ToList();
+            model.Places = DataContext.Places.Include("Events").Include("Events.DanceStyles").Include("Events.Reviews").Where(p => p.PlaceType != PlaceType.OtherPlace).ToList();
             model.DanceStyles = DataContext.DanceStyles;
             model.Zoom = model.Zoom == 0 ? 10 : model.Zoom;
 
@@ -179,7 +179,7 @@ namespace EDR.Controllers
             viewModel.SocialDays = new List<DayOfWeek>();
             viewModel.Place = DataContext.Places.Include("Teachers").Include("Owners").Where(x => x.Id == id).FirstOrDefault();
             viewModel.DanceStyleList = DataContext.DanceStyles.Select(d => new SelectListItem() { Text = d.Name, Value = d.Id.ToString() }).ToList();
-            viewModel.Owners = DataContext.Owners.Where(y => y.Places.Any(x => x.Id == id)).ToList();
+            //  viewModel.Owners = DataContext.Owners.Where(y => y.Places.Any(x => x.Id == id)).ToList();
             viewModel.TeacherList = DataContext.Teachers.Where(x => x.Classes.Any(c => c.Place.Id == id) || x.Workshops.Any(w => w.Place.Id == id)).Select(t => new SelectListItem() { Text = t.ApplicationUser.FirstName + " " + t.ApplicationUser.LastName, Value = t.ApplicationUser.Id.ToString() }).ToList();
             var date = DateTime.Now.AddDays(21);
             viewModel.Classes = new PlaceEventSearchViewModel();

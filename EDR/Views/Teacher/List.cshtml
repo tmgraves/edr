@@ -2,7 +2,7 @@
 @using EDR.Utilities
 
 @{
-    ViewBag.Title = "List of Teachers";
+    ViewBag.Title = "Eat. Dance. Repeat. Teachers";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -228,7 +228,7 @@
                                 }
                             }
                         </div>
-                        <div>
+                        <div class="col-lg-2 col-md-2">
                             @t.Classes.Sum(c => c.Reviews.Sum(r => r.Like ? 1 : 0)) <i class="glyphicon glyphicon-thumbs-up"></i> | @t.Classes.Sum(c => c.Reviews.Sum(r => !r.Like ? 1 : 0)) <i class="glyphicon glyphicon-thumbs-down"></i>
                         </div>
                     </a>
@@ -239,3 +239,4 @@
             <div class="container" id="map-canvas"></div>
         </div>
     </div>
+</div>
