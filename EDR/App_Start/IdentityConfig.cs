@@ -5,6 +5,7 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using EDR.Models;
 using EDR.Data;
+using System.Net.Mail;
 
 namespace EDR
 {
@@ -59,10 +60,14 @@ namespace EDR
 
     public class EmailService : IIdentityMessageService
     {
-        public Task SendAsync(IdentityMessage message)
+        public async Task SendAsync(IdentityMessage message)
         {
             // Plug in your email service here to send an email.
-            return Task.FromResult(0);
+            using(var client = new SmtpClient())
+            {
+                client.Timeout = 120;
+                await client.SendMailAsync("info@eatdancerepeat.com", message.Destination, message.Subject, message.Body);
+            }
         }
     }
 

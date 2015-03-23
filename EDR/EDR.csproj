@@ -402,6 +402,7 @@
     <Content Include="Content\images\dancers.png" />
     <Content Include="Content\images\email.png" />
     <Content Include="Content\images\error.png" />
+    <Content Include="Content\images\facebooklogin.png" />
     <Content Include="Content\images\facebookSmall.png" />
     <Content Include="Content\images\indicator.white.gif" />
     <Content Include="Content\images\instagram.png" />
@@ -683,6 +684,7 @@
     <Content Include="Views\Place\Classes.cshtml" />
     <Content Include="Views\Shared\_EventsNoMapPartial.cshtml" />
     <Content Include="Views\Shared\_FileUploadPartial.cshtml" />
+    <Content Include="Views\Shared\Info.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

@@ -148,6 +148,29 @@ namespace EDR
             );
 
             routes.MapRoute(
+                name: "ClassEdit",
+                url: "Class/{id}/Edit",
+                defaults: new { controller = "Event", action = "Edit", eventType = EventType.Class }
+            );
+
+            routes.MapRoute(
+                name: "SocialEdit",
+                url: "Social/{id}/Edit",
+                defaults: new { controller = "Event", action = "Edit", eventType = EventType.Social }
+            );
+
+            routes.MapRoute(
+                name: "ClassAdd",
+                url: "Class/Edit",
+                defaults: new { controller = "Event", action = "Edit", eventType = EventType.Class }
+            );
+            routes.MapRoute(
+                name: "SocialAdd",
+                url: "Social/Edit",
+                defaults: new { controller = "Event", action = "Edit", eventType = EventType.Social }
+            );
+
+            routes.MapRoute(
                 name: "ClassView",
                 url: "Class/{id}",
                 defaults: new { controller = "Event", action = "View", eventType = EventType.Class }
@@ -171,11 +194,18 @@ namespace EDR
                 defaults: new { controller = "Event", action = UrlParameter.Optional, eventType = EventType.Social }
             );
 
-            routes.MapRoute(
-                name: "EventCreate",
-                url: "Event/Create",
-                defaults: new { controller = "Event", action = "Create" }
-            );
+            //routes.MapRoute(
+            //    name: "EventCreate",
+            //    url: "Event/Create",
+            //    defaults: new { controller = "Event", action = "Create" }
+            //);
+
+
+            //routes.MapRoute(
+            //    name: "EventCreate",
+            //    url: "Event/Edit",
+            //    defaults: new { controller = "Event", action = "Edit" }
+            //);
 
             routes.MapRoute(
                 name: "EventAction",

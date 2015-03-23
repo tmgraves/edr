@@ -174,3 +174,23 @@ facebookvideoimage img
 {
     font-weight: normal;
 }
+
+.linebehind {
+  display: table;
+  white-space: nowrap;
+}
+.linebehind:before,
+.linebehind:after {
+  border-top: 1px solid #ccc;
+  content: '';
+  display: table-cell;
+  position: relative;
+  top: 0.5em;
+  width: 45%;
+}
+.linebehind:before {
+  right: 1.5%;
+}
+.linebehind:after {
+  left: 1.5%;
+}

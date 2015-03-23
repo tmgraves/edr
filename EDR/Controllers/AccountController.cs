@@ -49,6 +49,16 @@ namespace EDR.Controllers
 
                 if (user != null)
                 {
+                    if (!await UserManager.IsEmailConfirmedAsync(user.Id))
+                    {
+                        ViewBag.errorMessage = "You must have a confirmed email to log on.";
+                        string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Eat. Dance. Repeat. - Confirm your account");
+                        ViewBag.Message = "Check your email and confirm your account, you must be confirmed "
+                                                 + "before you can log in.";
+
+                        return View("Info"); 
+                    }
+                    
                     await SignInAsync(user, model.RememberMe);
                     returnUrl = returnUrl != null ? returnUrl.Replace("NotLoggedIn", user.UserName) : null;
                     return RedirectToLocal(returnUrl);
@@ -84,15 +94,22 @@ namespace EDR.Controllers
                 IdentityResult result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    await SignInAsync(user, isPersistent: false);
+                    //  await SignInAsync(user, isPersistent: false);
 
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
-                    // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                    string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                    await UserManager.SendEmailAsync(user.Id, "Eat. Dance. Repeat. - Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-                    return RedirectToAction("Index", "Home");
+                    // Uncomment to debug locally 
+                    // TempData["ViewBagLink"] = callbackUrl;
+
+                    ViewBag.Message = "Check your email and confirm your account, you must be confirmed "
+                                    + "before you can log in.";
+
+                    return View("Info");
+                    //return RedirectToAction("Index", "Home");
                 }
                 else
                 {
@@ -144,31 +161,43 @@ namespace EDR.Controllers
             if (ModelState.IsValid)
             {
                 var user = await UserManager.FindByEmailAsync(model.Email);
-                if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
+                if (user == null)
                 {
-                    ModelState.AddModelError("", "The user either does not exist or is not confirmed.");
+                    ModelState.AddModelError("", "The user either does not exist.");
                     return View();
                 }
+                else if (!await UserManager.IsEmailConfirmedAsync(user.Id))
+                {
+                    string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Eat. Dance. Repeat. - Confirm your account");
+                    ViewBag.Message = "Check your email and confirm your account, you must be confirmed "
+                                             + "before you can log in.";
 
-                System.Net.Mail.MailMessage message = new System.Net.Mail.MailMessage();
+                    return View("Info");
+                }
+                else
+                {
+                    // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
+                    // Send an email with this link
+                    string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
+                    var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                    await UserManager.SendEmailAsync(user.Id, "Eat. Dance. Repeat. - Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                    return RedirectToAction("ForgotPasswordConfirmation", "Account");
+                }
 
-                message.From = new System.Net.Mail.MailAddress("info@eatdancerepeat.com");
-                message.To.Add(new System.Net.Mail.MailAddress("tadashigraves@gmail.com"));
+                //UserManager.SendEmail(user.Id, "Test Email", "Test Body");
 
-                message.IsBodyHtml = true;
-                message.BodyEncoding = Encoding.UTF8;
-                message.Subject = "this is a test subject";
-                message.Body = "Here is the test email message";
+                //System.Net.Mail.MailMessage message = new System.Net.Mail.MailMessage();
 
-                System.Net.Mail.SmtpClient client = new System.Net.Mail.SmtpClient();
-                client.Send(message);
+                //message.To.Add(new System.Net.Mail.MailAddress("tadashigraves@gmail.com"));
+
+                //message.IsBodyHtml = true;
+                //message.BodyEncoding = Encoding.UTF8;
+                //message.Subject = "this is a test subject for " + user.FullName;
+                //message.Body = "Here is the test email message";
+
+                //System.Net.Mail.SmtpClient client = new System.Net.Mail.SmtpClient();
+                //client.Send(message);
                 
-                // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
-                // Send an email with this link
-                // string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
-                // var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);		
-                // await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
-                // return RedirectToAction("ForgotPasswordConfirmation", "Account");
             }
 
             // If we got this far, something failed, redisplay form
@@ -204,7 +233,7 @@ namespace EDR.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await UserManager.FindByNameAsync(model.Email);
+                var user = await UserManager.FindByEmailAsync(model.Email);
                 if (user == null)
                 {
                     ModelState.AddModelError("", "No user found.");
@@ -554,27 +583,37 @@ namespace EDR.Controllers
             return View(teacher);
         }
 
-        public ActionResult Backend()
+        private async Task<string> SendEmailConfirmationTokenAsync(string userID, string subject)
         {
-            return new Dpm().CallBack(this);
+            string code = await UserManager.GenerateEmailConfirmationTokenAsync(userID);
+            var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = userID, code = code }, protocol: Request.Url.Scheme);
+            await UserManager.SendEmailAsync(userID, subject, "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+
+            return callbackUrl;
         }
 
-        class Dpm : DayPilotMonth
-        {
 
-            protected override void OnInit(InitArgs e)
-            {
-                var db = new ApplicationDbContext();
-                Events = db.Events.Where(x => x.StartDate > DateTime.Today && x.EndDate > DateTime.Today).ToList();
+        //public ActionResult Backend()
+        //{
+        //    return new Dpm().CallBack(this);
+        //}
 
-                DataIdField = "Id";
-                DataTextField = "Name";
-                DataStartField = "StartDate";
-                DataEndField = "EndDate";
+        //class Dpm : DayPilotMonth
+        //{
 
-                Update();
-            }
-        }
+        //    protected override void OnInit(InitArgs e)
+        //    {
+        //        var db = new ApplicationDbContext();
+        //        Events = db.Events.Where(x => x.StartDate > DateTime.Today && x.EndDate > DateTime.Today).ToList();
+
+        //        DataIdField = "Id";
+        //        DataTextField = "Name";
+        //        DataStartField = "StartDate";
+        //        DataEndField = "EndDate";
+
+        //        Update();
+        //    }
+        //}
 
         #region Helpers
         // Used for XSRF protection when adding external logins

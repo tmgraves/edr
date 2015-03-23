@@ -2,8 +2,10 @@
 @using EDR.Enums
 @using MvcCheckBoxList.Model
 
+@{ var eventType = Model.Event is EDR.Models.Class ? EventType.Class : EventType.Social;}
+
 @{
-    ViewBag.Title = Model.UpdateType.ToString() + " " + Model.EventType.ToString();
+    ViewBag.Title = Model.UpdateType.ToString() + " " + eventType;
 }
 
 <script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
@@ -156,7 +158,6 @@
         });
     });
 </script>
-
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
@@ -169,23 +170,23 @@
         @Html.HiddenFor(x => x.Event.FacebookLink)
         @Html.HiddenFor(x => x.Event.FacebookId)
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <h3>Fill in Details for the @Model.EventType</h3>
+            <h2 class="page-header">Fill in Details for the @eventType.ToString()</h2>
             <div class="col-lg-8 col-md-8">
                 <div class="row col-lg-12 col-md-12">
-                    @if (Model.EventType == EventType.Class)
+                    @if (Model.Event is EDR.Models.Class)
                     {
-                        @Html.LabelFor(model => model.ClassType, htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
+                        @Html.LabelFor(model => ((EDR.Models.Class)model.Event).ClassType, htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
                         <div class="col-md-9 col-lg-9">
-                            @Html.EnumDropDownListFor(model => model.ClassType, htmlAttributes: new { @class = "form-control" })
-                            @Html.ValidationMessageFor(model => model.ClassType, "", new { @class = "text-danger" })
+                            @Html.EnumDropDownListFor(model => ((EDR.Models.Class)model.Event).ClassType, htmlAttributes: new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => ((EDR.Models.Class)model.Event).ClassType, "", new { @class = "text-danger" })
                         </div>
                     }
                     else
                     {
-                        @Html.LabelFor(model => model.SocialType, htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
+                        @Html.LabelFor(model => ((EDR.Models.Social)model.Event).SocialType, htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
                         <div class="col-md-9 col-lg-9">
-                            @Html.EnumDropDownListFor(model => model.SocialType, htmlAttributes: new { @class = "form-control" })
-                            @Html.ValidationMessageFor(model => model.SocialType, "", new { @class = "text-danger" })
+                            @Html.EnumDropDownListFor(model => ((EDR.Models.Social)model.Event).SocialType, htmlAttributes: new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => ((EDR.Models.Social)model.Event).SocialType, "", new { @class = "text-danger" })
                         </div>
                     }
                 </div>
@@ -336,9 +337,16 @@
             </div>
             <div class="col-lg-4 col-md-4">
                 <div class="col-lg-12 col-md-12 croppedpic" style="height: 300px;">
-                    <a href="@Model.Event.PhotoUrl" target="_blank">
-                        <img src="@(Model.Event.PhotoUrl != null ? Model.Event.PhotoUrl : Url.Content("~/Content/images/MissingImage.jpg"))" />
-                    </a>
+                    @if (Model.Event.PhotoUrl != null)
+                    {
+                        <a href="@Url.Content(Model.Event.PhotoUrl)" target="_blank">
+                            <img src="@Url.Content(Model.Event.PhotoUrl)" />
+                        </a>
+                    }
+                    else
+                    {
+                        <img src="~/Content/images/MissingImage.jpg" />
+                    }
                 </div>
             </div>
             <div class="col-lg-12 col-md-12 radio-list">
@@ -377,8 +385,43 @@
                 }
             </div>
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin: 10px;">
-                <input type="submit" value="Save @Model.EventType" class="btn btn-lg btn-primary" />
-                <a class="btn btn-lg btn-warning" href="@Url.Action("View", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">Cancel</a>
+                <input type="submit" value="Save @eventType.ToString()" class="btn btn-lg btn-primary" />
+                @if (Model.Event.Id == null || Model.Event.Id == 0)
+                {
+                    if (eventType == EventType.Class)
+                    {
+                        if (Session["MyRole"] != null)
+                        {
+                            if ((RoleName)Session["MyRole"] == RoleName.Teacher)
+                            {
+                                <a class="btn btn-lg btn-warning" href="@Url.Action("MyTeach", "Teacher", new { username = User.Identity.Name })">Cancel</a>
+                            }
+                            else if ((RoleName)Session["MyRole"] == RoleName.Owner)
+                            {
+                                <a class="btn btn-lg btn-warning" href="@Url.Action("Home", "Owner", new { username = User.Identity.Name })">Cancel</a>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if ((RoleName)Session["MyRole"] == RoleName.Promoter)
+                        {
+                            <a class="btn btn-lg btn-warning" href="@Url.Action("MySocials", "Promoter", new { username = User.Identity.Name })">Cancel</a>
+                        }
+                        else if ((RoleName)Session["MyRole"] == RoleName.Owner)
+                        {
+                            <a class="btn btn-lg btn-warning" href="@Url.Action("Home", "Owner", new { username = User.Identity.Name })">Cancel</a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-lg btn-warning" href="@Url.Action("Home", "Dancer", new { username = User.Identity.Name })">Cancel</a>
+                        }
+                    }
+                }
+                else
+                {
+                    <a class="btn btn-lg btn-warning" href="@Url.Action("View", "Event", new { id = Model.Event.Id, eventType = eventType })">Cancel</a>
+                }
             </div>
         </div>
     }

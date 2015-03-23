@@ -40,26 +40,26 @@ window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>
-        </div>
-        <div class="container">
-            <div class="pull-right" style="display: inline-block; vertical-align: bottom !important; margin: 1px;">
-                <a class="twitter-share-button"
-                   data-count="none"
-                   href="https://twitter.com/share"
-                   data-url="http://www.eatdancerepeat.com"
-                   data-text="Check out Eat. Dance. Repeat.">
-                    Tweet
-                </a>
-            </div>
-            <div class="pull-right" style="display: inline-block; margin: 1px;">
-                <div class="fb-share-button" data-href="http://www.eatdancerepeat.com" data-layout="button" style="margin-bottom: 5px !important;"></div>
+            <div>
+                <div class="pull-right" style="display: inline-block; vertical-align: bottom !important; margin: 1px;">
+                    <a class="twitter-share-button"
+                       data-count="none"
+                       href="https://twitter.com/share"
+                       data-url="http://www.eatdancerepeat.com"
+                       data-text="Check out Eat. Dance. Repeat.">
+                        Tweet
+                    </a>
+                </div>
+                <div class="pull-right" style="display: inline-block; margin: 1px;">
+                    <div class="fb-share-button" data-href="http://www.eatdancerepeat.com" data-layout="button" style="margin-bottom: 5px !important;"></div>
+                </div>
             </div>
         </div>
     </div>
 
     @RenderSection("jumbotron", required: false)
 
-    <div class="container">
+    <div class="container" style="padding-top: 20px;">
         @RenderBody()
         <hr />
         <footer>

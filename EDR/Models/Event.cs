@@ -39,12 +39,12 @@ namespace EDR.Models
 
         [DataType(DataType.Time)]
         [Display(Name = "Start Time")]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:H:mm}")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:HH:mm}")]
         public DateTime? StartTime { get; set; }
 
         [DataType(DataType.Time)]
         [Display(Name = "End Time")]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:H:mm}")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:HH:mm}")]
         public DateTime? EndTime { get; set; }
 
         [Display(Name = "Duration")]
