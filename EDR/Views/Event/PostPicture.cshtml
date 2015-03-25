@@ -66,7 +66,6 @@
                 <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     @using (Html.BeginForm("UploadPicture",
                                     "Event",
-                                    new { returnUrl = @Url.Action("Pictures", new { id = @Model.Event.Id, eventType = @Model.EventType }) },
                                     FormMethod.Post,
                                     new { enctype = "multipart/form-data" }))
                     {

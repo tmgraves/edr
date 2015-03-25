@@ -183,10 +183,10 @@
                     }
                     else
                     {
-                        @Html.LabelFor(model => ((EDR.Models.Social)model.Event).SocialType, htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
+                        @Html.LabelFor(model => model.SocialType, htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
                         <div class="col-md-9 col-lg-9">
-                            @Html.EnumDropDownListFor(model => ((EDR.Models.Social)model.Event).SocialType, htmlAttributes: new { @class = "form-control" })
-                            @Html.ValidationMessageFor(model => ((EDR.Models.Social)model.Event).SocialType, "", new { @class = "text-danger" })
+                            @Html.EnumDropDownListFor(model => model.SocialType, htmlAttributes: new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.SocialType, "", new { @class = "text-danger" })
                         </div>
                     }
                 </div>

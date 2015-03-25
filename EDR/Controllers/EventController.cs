@@ -502,7 +502,7 @@ namespace EDR.Controllers
 
         [HttpPost]
         [Authorize]
-        public ActionResult UploadPicture(HttpPostedFileBase file, EventChangePictureViewModel model, string returnUrl)
+        public ActionResult UploadPicture(HttpPostedFileBase file, EventChangePictureViewModel model)
         {
             UploadFile newFile = ApplicationUtility.LoadPicture(file);
 
@@ -515,12 +515,20 @@ namespace EDR.Controllers
                 ev.Pictures.Add(new EventPicture() { Title = newFile.FileName, Filename = newFile.FilePath, ThumbnailFilename = newFile.ThumbnailFilePath, PhotoDate = today, PostedBy = user });
                 DataContext.Entry(ev).State = EntityState.Modified;
                 DataContext.SaveChanges();
+                if (ev is Class)
+                {
+                    return RedirectToAction("View", new { id = model.Event.Id, eventType = EventType.Class });
+                }
+                else
+                {
+                    return RedirectToAction("View", new { id = model.Event.Id, eventType = EventType.Social });
+                }
             }
             else
             {
                 ViewBag.Message = newFile.UploadStatus;
+                return View();
             }
-            return Redirect(returnUrl);
         }
 
         [Authorize]
@@ -996,7 +1004,9 @@ namespace EDR.Controllers
 
                 if (ev is Class)
                 {
-                    model.Event = DataContext.Events.OfType<Class>().Where(e => e.Id == id).Include("DanceStyles").FirstOrDefault();
+                    var cls = DataContext.Events.OfType<Class>().Where(e => e.Id == id).Include("DanceStyles").FirstOrDefault();
+                    model.Event = cls;
+                    model.ClassType = cls.ClassType;
                     //  Fill Places
                     var teacher = DataContext.Teachers.Where(t => t.Classes.Any(c => c.Id == id) && t.ApplicationUser.Id == userid).Include("Places").FirstOrDefault();
                     if (teacher == null)
@@ -1015,7 +1025,9 @@ namespace EDR.Controllers
                 }
                 else
                 {
-                    model.Event = DataContext.Events.OfType<Social>().Where(e => e.Id == id).Include("DanceStyles").FirstOrDefault();
+                    var soc = DataContext.Events.OfType<Social>().Where(e => e.Id == id).Include("DanceStyles").FirstOrDefault();
+                    model.Event = soc;
+                    model.SocialType = soc.SocialType;
                     //  Fill Places
                     var promoter = DataContext.Promoters.Where(p => p.Socials.Any(s => s.Id == id) && p.ApplicationUser.Id == userid).Include("Places").FirstOrDefault();
                     if (promoter == null)
@@ -1133,7 +1145,20 @@ namespace EDR.Controllers
                 }
                 else
                 {
-                    evt = DataContext.Events.Where(c => c.Id == model.Event.Id).Include("DanceStyles").FirstOrDefault();
+                    evt = new Event();
+
+                    if (model.EventType == EventType.Class)
+                    {
+                        var cls = DataContext.Events.OfType<Class>().Where(c => c.Id == model.Event.Id).Include("DanceStyles").FirstOrDefault();
+                        cls.ClassType = model.ClassType;
+                        evt = cls;
+                    }
+                    else
+                    {
+                        var soc = DataContext.Events.OfType<Social>().Where(c => c.Id == model.Event.Id).Include("DanceStyles").FirstOrDefault();
+                        soc.SocialType = model.SocialType;
+                        evt = soc;
+                    }
                 }
                 evt.Name = model.Event.Name;
                 evt.StartDate = model.Event.StartDate;
@@ -1159,20 +1184,6 @@ namespace EDR.Controllers
                 evt.DanceStyles = styles.ToList();
                 //  Dance Styles
                 evt.Place = DataContext.Places.Where(p => p.Id == model.PlaceId).FirstOrDefault();
-
-                if (model.Event.Id != 0)
-                {
-                    if (model.EventType == EventType.Class)
-                    {
-                        var cls = DataContext.Events.OfType<Class>().Where(c => c.Id == model.Event.Id).FirstOrDefault();
-                        cls.ClassType = model.ClassType;
-                    }
-                    else
-                    {
-                        var soc = DataContext.Events.OfType<Social>().Where(c => c.Id == model.Event.Id).FirstOrDefault();
-                        soc.SocialType = model.SocialType;
-                    }
-                }
 
                 if (model.Event.Id == 0)
                 {

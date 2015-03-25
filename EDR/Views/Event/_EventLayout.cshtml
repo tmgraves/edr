@@ -20,7 +20,7 @@
 
 <div class="row">
     <h1 class="page-header">
-        @Model.Event.Name
+        @Model.Event.Name  <small>(@(Model.Event is Class ? ((Class)Model.Event).ClassType.ToString() : ((Social)Model.Event).SocialType.ToString()))</small>
         @if (User.Identity != null && ((Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)) || (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
         {
             @*<a style="font-size: medium;" href="@Url.Action("Edit", "Dancer")">Edit Profile</a>*@
@@ -47,7 +47,7 @@
                 {
                 if (Model.Event.PhotoUrl != null)
                     {
-                        <a class="thumbnail" target="_blank" href="@Url.Content(Model.Event.PhotoUrl)">
+                        <a target="_blank" href="@Url.Content(Model.Event.PhotoUrl)">
                             <div class="croppedpic" style="height: 150px;">
                                 <img src="@Url.Content(Model.Event.PhotoUrl)" />
                             </div>
@@ -55,7 +55,7 @@
                     }
                     else
                     {
-                        <img class="img-thumbnail" src="~/Content/images/MissingImage.jpg" />
+                        <img src="~/Content/images/MissingImage.jpg" />
                     }
                 }
                 @if (User.Identity != null && ((Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)) || (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
