@@ -106,157 +106,157 @@ namespace EDR.Enums
     public enum State
     {
         [Display(Name = "Alabama")]
-        AL,
+        AL = 1,
 
         [Display(Name = "Alaska")]
-        AK,
+        AK = 2,
 
         [Display(Name = "Arkansas")]
-        AR,
+        AR = 3,
 
         [Display(Name = "Arizona")]
-        AZ,
+        AZ = 4,
 
         [Display(Name = "California")]
-        CA,
+        CA = 5,
 
         [Display(Name = "Colorado")]
-        CO,
+        CO = 6,
 
         [Display(Name = "Connecticut")]
-        CT,
+        CT = 7,
 
         [Display(Name = "D.C.")]
-        DC,
+        DC = 8,
 
         [Display(Name = "Delaware")]
-        DE,
+        DE = 9,
 
         [Display(Name = "Florida")]
-        FL,
+        FL = 10,
 
         [Display(Name = "Georgia")]
-        GA,
+        GA = 11,
 
         [Display(Name = "Hawaii")]
-        HI,
+        HI = 12,
 
         [Display(Name = "Iowa")]
-        IA,
+        IA = 13,
 
         [Display(Name = "Idaho")]
-        ID,
+        ID = 14,
 
         [Display(Name = "Illinois")]
-        IL,
+        IL = 15,
 
         [Display(Name = "Indiana")]
-        IN,
+        IN = 16,
 
         [Display(Name = "Kansas")]
-        KS,
+        KS = 17,
 
         [Display(Name = "Kentucky")]
-        KY,
+        KY = 18,
 
         [Display(Name = "Louisiana")]
-        LA,
+        LA = 19,
 
         [Display(Name = "Massachusetts")]
-        MA,
+        MA = 20,
 
         [Display(Name = "Maryland")]
-        MD,
+        MD = 21,
 
         [Display(Name = "Maine")]
-        ME,
+        ME = 22,
 
         [Display(Name = "Michigan")]
-        MI,
+        MI = 23,
 
         [Display(Name = "Minnesota")]
-        MN,
+        MN = 24,
 
         [Display(Name = "Missouri")]
-        MO,
+        MO = 25,
 
         [Display(Name = "Mississippi")]
-        MS,
+        MS = 26,
 
         [Display(Name = "Montana")]
-        MT,
+        MT = 27,
 
         [Display(Name = "North Carolina")]
-        NC,
+        NC = 28,
 
         [Display(Name = "North Dakota")]
-        ND,
+        ND = 29,
 
         [Display(Name = "Nebraska")]
-        NE,
+        NE = 30,
 
         [Display(Name = "New Hampshire")]
-        NH,
+        NH = 31,
 
         [Display(Name = "New Jersey")]
-        NJ,
+        NJ = 32,
 
         [Display(Name = "New Mexico")]
-        NM,
+        NM = 33,
 
         [Display(Name = "Nevada")]
-        NV,
+        NV = 34,
 
         [Display(Name = "New York")]
-        NY,
+        NY = 35,
 
         [Display(Name = "Oklahoma")]
-        OK,
+        OK = 36,
 
         [Display(Name = "Ohio")]
-        OH,
+        OH = 37,
 
         [Display(Name = "Oregon")]
-        OR,
+        OR = 38,
 
         [Display(Name = "Pennsylvania")]
-        PA,
+        PA = 39,
 
         [Display(Name = "Rhode Island")]
-        RI,
+        RI = 40,
 
         [Display(Name = "South Carolina")]
-        SC,
+        SC = 41,
 
         [Display(Name = "South Dakota")]
-        SD,
+        SD = 42,
 
         [Display(Name = "Tennessee")]
-        TN,
+        TN = 43,
 
         [Display(Name = "Texas")]
-        TX,
+        TX = 44,
 
         [Display(Name = "Utah")]
-        UT,
+        UT = 45,
 
         [Display(Name = "Virginia")]
-        VA,
+        VA = 46,
 
         [Display(Name = "Vermont")]
-        VT,
+        VT = 47,
 
         [Display(Name = "Washington")]
-        WA,
+        WA = 48,
 
         [Display(Name = "Wisconsin")]
-        WI,
+        WI = 49,
 
         [Display(Name = "West Virginia")]
-        WV,
+        WV = 50,
 
         [Display(Name = "Wyoming")]
-        WY
+        WY = 51
     }
 
     public enum UpdateType

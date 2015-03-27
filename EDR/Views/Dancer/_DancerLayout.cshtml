@@ -107,7 +107,7 @@
                     <li @if (ctrName == "MyDance") { <text> class="active" </text>         }><a href="@Url.Action("MyDance", "Dancer", new { username = Model.Dancer.UserName })"><i class="glyphicon glyphicon-globe"></i> Where I Dance</a></li>
                     <li @if (ctrName == "MyLearn") { <text> class="active" </text>          }><a href="@Url.Action("MyLearn", "Dancer", new { username = Model.Dancer.UserName })"><i class="glyphicon glyphicon-book"></i> Where I Learn</a></li>
                     <li @if (ctrName == "MyFriends") { <text> class="active" </text>           }><a href="@Url.Action("MyFriends", "Dancer", new { username = Model.Dancer.UserName })"><i class="glyphicon glyphicon-user"></i> My Friends</a></li>
-                    <li><a href="#myperformance" role="tab" data-toggle="tab"><i class="glyphicon glyphicon-map-marker"></i> Where I Perform</a></li>
+                    @*<li><a href="#myperformance" role="tab" data-toggle="tab"><i class="glyphicon glyphicon-map-marker"></i> Where I Perform</a></li>*@
                 </ul>
             </div>
             <div class="panel-body">

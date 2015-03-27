@@ -104,8 +104,8 @@
                 <ul class="nav nav-pills nav-justified" role="tablist">
                     <li @if (ctrName == "Home") { <text> class="active" </text>     }><a href="@Url.Action("Home", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })"><i class="glyphicon glyphicon-home"></i> Home</a></li>
                     <li @if (ctrName == "MyTeach") { <text> class="active" </text>    }><a href="@Url.Action("MyTeach", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })"><i class="glyphicon glyphicon-briefcase"></i> My Classes/Workshops</a></li>
-                    <li @if (ctrName == "Resume") { <text> class="active" </text>     }><a href="@Url.Action("Resume", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })"><i class="glyphicon glyphicon-file"></i> My Resume</a></li>
-                    <li><a href="#myperformance" role="tab" data-toggle="tab"><i class="glyphicon glyphicon-map-marker"></i> Where I Perform</a></li>
+                    <li @if (ctrName == "Resume") { <text> class="active" </text>     }><a href="@Url.Action("Resume", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName })"><i class="glyphicon glyphicon-file"></i> About Me</a></li>
+                    @*<li><a href="#myperformance" role="tab" data-toggle="tab"><i class="glyphicon glyphicon-map-marker"></i> Where I Perform</a></li>*@
                 </ul>
             </div>
             <div class="panel-body">

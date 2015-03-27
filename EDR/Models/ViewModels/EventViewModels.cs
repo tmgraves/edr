@@ -46,6 +46,12 @@ namespace EDR.Models.ViewModels
         public IEnumerable<FacebookEvent> FacebookEvents { get; set; }
     }
 
+    public class ImportFacebookEventViewModel : EventBaseViewModel
+    {
+        public IEnumerable<FacebookEvent> FacebookEvents { get; set; }
+        public int? PlaceId { get; set; }
+    }
+
     public class EventEditViewModel : EventBaseViewModel
     {
         public UpdateType UpdateType { get; set; }

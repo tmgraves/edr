@@ -131,9 +131,13 @@
                     {
                         <h4>New Place</h4>
                         @Html.EditorFor(model => model.NewPlace.Name, new { htmlAttributes = new { @class = "form-control", @placeholder = "Place Name" } })
+                        @Html.ValidationMessageFor(model => model.NewPlace.Name, "", new { @class = "text-danger" })
                         @Html.EditorFor(model => model.NewPlace.Address, new { htmlAttributes = new { @class = "form-control", @placeholder = "Address" } })
+                        @Html.ValidationMessageFor(model => model.NewPlace.Address, "", new { @class = "text-danger" })
                         @Html.EditorFor(model => model.NewPlace.City, new { htmlAttributes = new { @class = "form-control", @placeholder = "City" } })
+                        @Html.ValidationMessageFor(model => model.NewPlace.City, "", new { @class = "text-danger" })
                         @Html.EnumDropDownListFor(model => model.NewPlace.State, "- Select a State-", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.NewPlace.State, "", new { @class = "text-danger" })
                         @Html.EditorFor(model => model.NewPlace.Zip, new { htmlAttributes = new { @class = "form-control", @placeholder = "Zipcode" } })
                     }
                     else
@@ -150,7 +154,31 @@
     </div>
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin: 10px;">
         <input type="submit" value="Finish Creating @Model.EventType" class="btn btn-lg btn-primary" />
-        <a class="btn btn-lg btn-warning" href="@Session["ReturnUrl"]">Cancel</a>
+        @if (Session["MyRole"] != null)
+        {
+            if (Model.EventType == EventType.Class)
+            {
+                if ((RoleName)Session["MyRole"] == RoleName.Teacher)
+                {
+                    <a class="btn btn-lg btn-warning" href="@Url.Action("MyTeach", "Teacher", new { username = User.Identity.Name })">Cancel</a>
+                }
+                else
+                {
+                    <a class="btn btn-lg btn-warning" href="@Url.Action("Home", "Owner", new { username = User.Identity.Name })">Cancel</a>
+                }
+            }
+            else
+            {
+                if ((RoleName)Session["MyRole"] == RoleName.Promoter)
+                {
+                    <a class="btn btn-lg btn-warning" href="@Url.Action("MySocials", "Promoter", new { username = User.Identity.Name })">Cancel</a>
+                }
+                else
+                {
+                    <a class="btn btn-lg btn-warning" href="@Url.Action("Home", "Owner", new { username = User.Identity.Name })">Cancel</a>
+                }
+            }
+        }
     </div>
 </div>
 }

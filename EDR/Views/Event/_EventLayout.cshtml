@@ -16,6 +16,12 @@
     }
 }
 
+<script>
+    function imgError(image) {
+        image.src = "/Content/images/MissingImage.jpg";
+    }
+</script>
+
 @{string ctrName = ViewContext.RouteData.Values["action"].ToString();}
 
 <div class="row">
@@ -49,13 +55,13 @@
                     {
                         <a target="_blank" href="@Url.Content(Model.Event.PhotoUrl)">
                             <div class="croppedpic" style="height: 150px;">
-                                <img src="@Url.Content(Model.Event.PhotoUrl)" />
+                                <img src="@Url.Content(Model.Event.PhotoUrl)" onerror="imgError(this);" />
                             </div>
                         </a>
                     }
                     else
                     {
-                        <img src="~/Content/images/MissingImage.jpg" />
+                        <img src="~/Content/images/MissingImage.jpg" style="width: 100%;" />
                     }
                 }
                 @if (User.Identity != null && ((Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)) || (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1))

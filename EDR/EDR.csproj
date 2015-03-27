@@ -685,6 +685,7 @@
     <Content Include="Views\Shared\_EventsNoMapPartial.cshtml" />
     <Content Include="Views\Shared\_FileUploadPartial.cshtml" />
     <Content Include="Views\Shared\Info.cshtml" />
+    <Content Include="Views\Event\ImportFacebookEvent.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>
