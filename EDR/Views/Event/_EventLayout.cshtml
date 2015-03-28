@@ -36,7 +36,16 @@
             </a>
         }
         <br />
-        <small>@@ @Html.ActionLink(@Model.Event.Place.Name, "Details", "Place", new { id = Model.Event.Place.Id }, null)</small>
+        <small>@@ 
+            @if (Model.Event.Place.Public)
+            {
+                @Html.ActionLink(@Model.Event.Place.Name, "Details", "Place", new { id = Model.Event.Place.Id }, null)
+            }
+            else
+            {
+                @Model.Event.Place.Name
+            }
+        </small>
     </h1>
 </div>
 <div class="row">

@@ -13,7 +13,7 @@ namespace EDR.Models
         [Required]
         public string City { get; set; }
         [Required]
-        [Range(1, 50000, ErrorMessage = "Select a month")]
+        [Range(1, 50000, ErrorMessage = "Select a State")]
         public State State { get; set; }
         public string Zip { get; set; }
         public string Country { get; set; }
@@ -25,6 +25,7 @@ namespace EDR.Models
         public string ThumbnailFilename { get; set; }
         public PlaceType PlaceType { get; set; }
         public string FacebookId { get; set; }
+        public bool Public { get; set; }
 
         public virtual ICollection<Event> Events { get; set; }
         public virtual ICollection<Review> Reviews { get; set; }
@@ -32,5 +33,6 @@ namespace EDR.Models
         public virtual ICollection<Teacher> Teachers { get; set; }
         public virtual ICollection<Promoter> Promoters { get; set; }
         public ICollection<PlaceOwnerInvitation> PlaceOwnerInvitations { get; set; }
+        public virtual ICollection<ApplicationUser> Users { get; set; }
     }
 }

@@ -32,7 +32,7 @@
 
     .radio-list label {
         z-index: 5;
-        height: 240px;
+        min-height: 280px;
         text-align: left;
         display: block;
         padding: 5px 40px;
@@ -160,14 +160,14 @@
 </script>
 <script type="text/javascript">
     $(function () {
-        $("#Event_Place").change(function () {
-            if ($("#Event_Place").val() != "")
+        $("#Event_Place_Id").change(function () {
+            if ($("#Event_Place_Id").val() == "")
             {
-                $("#newplace").hide();
+                $("#newplace").show();
             }
             else
             {
-                $("#newplace").show();
+                $("#newplace").hide();
             }
         });
     });
@@ -357,14 +357,14 @@
                         @Html.ValidationMessageFor(model => model.Event.Description, "", new { @class = "text-danger" })
                     </div>
                 </div>
-                <div class="row col-lg-12 col-md-12" style="margin-top: 5px;">
+                @*<div class="row col-lg-12 col-md-12" style="margin-top: 5px;">
                     @Html.LabelFor(model => model.Event.Place, htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
                     <div class="col-md-9 col-lg-9">
-                        @Html.DropDownListFor(model => model.Event.Place, Model.Places.Select(p => new SelectListItem() { Value = p.Id.ToString(), Text = p.Name }), "Other Place", htmlAttributes: new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Event.Place, "", new { @class = "text-danger" })
+                        @Html.DropDownListFor(model => model.Event.Place.Id, Model.Places.Select(p => new SelectListItem() { Value = p.Id.ToString(), Text = p.Name }), "New Place", htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Event.Place.Id, "", new { @class = "text-danger" })
                     </div>
                 </div>
-                <div id="newplace" @(Model.Event.Place == null ? "" : "hidden='hidden'")>
+                <div id="newplace" @(Model.Event.Place == null || Model.Event.Place.Id == 0 ? "" : "hidden='hidden'")>
                     <div class="row col-lg-12 col-md-12" style="margin-top: 5px;">
                         @Html.LabelFor(model => model.NewPlace.Name, htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
                         <div class="col-md-9 col-lg-9">
@@ -400,7 +400,7 @@
                             @Html.ValidationMessageFor(model => model.NewPlace.Zip, "", new { @class = "text-danger" })
                         </div>
                     </div>
-                </div>
+                </div>*@
             </div>
             <div class="col-lg-4 col-md-4">
                 <div class="col-lg-12 col-md-12 croppedpic" style="height: 300px;">
@@ -417,27 +417,36 @@
                 </div>
             </div>
             <div class="col-lg-12 col-md-12 radio-list">
+                @Html.HiddenFor(x => x.NewPlace.Public, false)
+                @Html.HiddenFor(x => x.NewPlace.PlaceType, PlaceType.OtherPlace)
                 <h4 class="page-header">Select a Place for this Event</h4>
+                @Html.ValidationMessageFor(model => model.Event.Place.Id, "", new { @class = "text-danger" })
                 @foreach (var pl in Model.Places)
                 {
                     <div class="col-lg-4 col-md-4">
                         @if (pl.Selected)
                         {
-                            @Html.RadioButtonFor(m => m.PlaceId, pl.Id, new { id = pl.Id, @checked = true })
+                            @Html.RadioButtonFor(m => m.Event.Place.Id, pl.Id, new { id = pl.Id, @checked = true })
                         }
                         else
                         {
-                            @Html.RadioButtonFor(m => m.PlaceId, pl.Id, new { id = pl.Id })
+                            @Html.RadioButtonFor(m => m.Event.Place.Id, pl.Id, new { id = pl.Id })
                         }
                         <label class="col-lg-12 col-md-12 btn btn-default" for="@pl.Id">
                             @if (pl.Id == 0)
                             {
                                 <h4>New Place</h4>
                                 @Html.EditorFor(model => model.NewPlace.Name, new { htmlAttributes = new { @class = "form-control", @placeholder = "Place Name" } })
+                                @Html.ValidationMessageFor(model => model.NewPlace.Name, "", new { @class = "text-danger" })
                                 @Html.EditorFor(model => model.NewPlace.Address, new { htmlAttributes = new { @class = "form-control", @placeholder = "Address" } })
+                                @Html.ValidationMessageFor(model => model.NewPlace.Address, "", new { @class = "text-danger" })
                                 @Html.EditorFor(model => model.NewPlace.City, new { htmlAttributes = new { @class = "form-control", @placeholder = "City" } })
+                                @Html.ValidationMessageFor(model => model.NewPlace.City, "", new { @class = "text-danger" })
                                 @Html.EnumDropDownListFor(model => model.NewPlace.State, "- Select a State-", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.NewPlace.State, "", new { @class = "text-danger" })
                                 @Html.EditorFor(model => model.NewPlace.Zip, new { htmlAttributes = new { @class = "form-control", @placeholder = "Zipcode" } })
+                                @Html.ValidationMessageFor(model => model.NewPlace.Zip, "", new { @class = "text-danger" })
+                                @Html.CheckBoxFor(model => model.AddtoMyPlaces) <text>Save This Place</text>
                             }
                             else
                             {

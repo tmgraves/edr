@@ -60,7 +60,7 @@ namespace EDR.Models.ViewModels
         public RoleName Role { get; set; }
         public ClassType ClassType { get; set; }
         public SocialType SocialType { get; set; }
-        public PlaceItem NewPlace { get; set; }
+        public Place NewPlace { get; set; }
         public IEnumerable<DanceStyleListItem> AvailableStyles { get; set; }
         public IEnumerable<DanceStyleListItem> SelectedStyles { get; set; }
         public PostedStyles PostedStyles { get; set; }
@@ -69,6 +69,8 @@ namespace EDR.Models.ViewModels
         public string[] PostedMonthDays { get; set; }
         public string MonthDay { get; set; }
         public string HiddenMonthDay { get; set; }
+        [Display(Name = "Save this Place")]
+        public bool AddtoMyPlaces { get; set; }
     }
 
     public class EventNewViewModel

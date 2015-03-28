@@ -990,12 +990,28 @@ namespace EDR.Controllers
         [HttpPost]
         public ActionResult Edit(EventEditViewModel model)
         {
+            ModelState["Event.Place.Name"].Errors.Clear();
+            ModelState["Event.Place.Address"].Errors.Clear();
+            ModelState["Event.Place.City"].Errors.Clear();
+            ModelState["Event.Place.State"].Errors.Clear();
+
+            if (model.Event.Place.Id != 0)
+            {
+                ModelState["NewPlace.Name"].Errors.Clear();
+                ModelState["NewPlace.Address"].Errors.Clear();
+                ModelState["NewPlace.City"].Errors.Clear();
+                ModelState["NewPlace.State"].Errors.Clear();
+            }
+            else
+            {
+                ModelState["Event.Place.Id"].Errors.Clear();
+            }
             if (ModelState.IsValid)
             {
                 var userid = User.Identity.GetUserId();
-                var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+                var user = DataContext.Users.Where(u => u.Id == userid).Include("Places").FirstOrDefault();
 
-                //  Update Event Details
+                //  New Event
                 var evt = new Event();
                 if (model.Event.Id == 0)
                 {
@@ -1028,6 +1044,7 @@ namespace EDR.Controllers
                     }
                     evt.DanceStyles = new List<DanceStyle>();
                 }
+                //  Existing Event
                 else
                 {
                     evt = new Event();
@@ -1055,6 +1072,35 @@ namespace EDR.Controllers
                 evt.Recurring = model.Event.Recurring;
                 evt.Frequency = model.Event.Frequency;
                 evt.Interval = model.Event.Interval;
+
+                var place = new Place();
+                if (model.Event.Place.Id == 0)
+                {
+                    var address = Geolocation.ParseAddress(model.NewPlace.Address + " " + model.NewPlace.City + " " + model.NewPlace.State + " " + model.NewPlace.Zip);
+                    place = (Place)model.NewPlace;
+                    place.Latitude = address.Latitude;
+                    place.Longitude = address.Longitude;
+                    if (model.AddtoMyPlaces)
+                    {
+                        user.Places.Add(place);
+                        DataContext.Entry(user).State = EntityState.Modified;
+                    }
+                }
+                else
+                {
+                    place = DataContext.Places.Where(p => p.Id == model.Event.Place.Id).FirstOrDefault();
+                }
+
+
+                //  Remove old place
+                var oldplace = evt.Place;
+                evt.Place = place;
+                if (oldplace.Id != place.Id && !oldplace.Public && oldplace.PlaceType == PlaceType.OtherPlace && user.Places.Where(p => p.Id == oldplace.Id).Count() == 0)
+                {
+                    DataContext.Places.Remove(oldplace);
+                }
+                //  Remove old place
+
                 if (model.PostedMonthDays != null)
                 {
                     evt.MonthDays = String.Join("-", model.PostedMonthDays) + "-" + model.HiddenMonthDay;
@@ -1068,7 +1114,6 @@ namespace EDR.Controllers
                 var styles = DataContext.DanceStyles.Where(s => model.PostedStyles.DanceStyleIds.Contains(s.Id.ToString()));
                 evt.DanceStyles = styles.ToList();
                 //  Dance Styles
-                evt.Place = DataContext.Places.Where(p => p.Id == model.PlaceId).FirstOrDefault();
 
                 if (model.Event.Id == 0)
                 {
@@ -1108,7 +1153,8 @@ namespace EDR.Controllers
         {
             var userid = User.Identity.GetUserId();
             model.Places = new List<PlaceItem>();
-            model.NewPlace = new PlaceItem() { Id = 0, Latitude = 0.0, Longitude = 0.0 };
+            model.NewPlace = new Place() { Id = 0, Latitude = 0.0, Longitude = 0.0, Public = false, PlaceType = PlaceType.OtherPlace };
+
             var places = new List<Place>();
             //  Fill Places
 
@@ -1117,68 +1163,40 @@ namespace EDR.Controllers
                 if (model.EventType == EventType.Class)
                 {
                     model.Event = new Class() { StartDate = DateTime.Today };
-
-                    if ((RoleName)Session["MyRole"] == RoleName.Teacher)
-                    {
-                        places = DataContext.Teachers.Where(t => t.ApplicationUser.Id == userid).FirstOrDefault().Places.ToList();
-                    }
-                    else if ((RoleName)Session["MyRole"] == RoleName.Owner)
-                    {
-                        places = DataContext.Owners.Where(t => t.ApplicationUser.Id == userid).FirstOrDefault().Places.ToList();
-                    }
                 }
                 else
                 {
                     model.Event = new Social() { StartDate = DateTime.Today };
-
-                    if ((RoleName)Session["MyRole"] == RoleName.Promoter)
-                    {
-                        places = DataContext.Promoters.Where(t => t.ApplicationUser.Id == userid).FirstOrDefault().Places.ToList();
-                    }
-                    else if ((RoleName)Session["MyRole"] == RoleName.Owner)
-                    {
-                        places = DataContext.Owners.Where(t => t.ApplicationUser.Id == userid).FirstOrDefault().Places.ToList();
-                    }
                 }
             }
 
+            int? placeid = model.Event.Place != null ? (int?)model.Event.Place.Id : null;
             //  Fill Places
             if (model.EventType == EventType.Class)
             {
-                var teacher = DataContext.Teachers.Where(t => t.Classes.Any(c => c.Id == model.Event.Id) && t.ApplicationUser.Id == userid).Include("Places").FirstOrDefault();
-                if (teacher == null)
+                if ((RoleName)Session["MyRole"] == RoleName.Teacher)
                 {
-                    var owner = DataContext.Owners.Where(o => o.Classes.Any(c => c.Id == model.Event.Id) && o.ApplicationUser.Id == userid).Include("Places").FirstOrDefault();
-                    if (owner != null)
-                    {
-                        places = owner.Places.ToList();
-                    }
+                    places = DataContext.Places.Where(p => p.Teachers.Any(t => t.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == placeid).ToList();
                 }
-                else
+                else if ((RoleName)Session["MyRole"] == RoleName.Owner)
                 {
-                    places = teacher.Places.ToList();
+                    places = DataContext.Places.Where(p => p.Owners.Any(t => t.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == placeid).ToList();
                 }
             }
             else
             {
-                var promoter = DataContext.Promoters.Where(p => p.Socials.Any(s => s.Id == model.Event.Id) && p.ApplicationUser.Id == userid).Include("Places").FirstOrDefault();
-                if (promoter == null)
+                if ((RoleName)Session["MyRole"] == RoleName.Promoter)
                 {
-                    var owner = DataContext.Owners.Where(o => o.Socials.Any(c => c.Id == model.Event.Id) && o.ApplicationUser.Id == userid).Include("Places").FirstOrDefault();
-                    places = owner.Places.ToList();
+                    places = DataContext.Places.Where(p => p.Promoters.Any(t => t.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == placeid).ToList();
                 }
-                else
+                else if ((RoleName)Session["MyRole"] == RoleName.Owner)
                 {
-                    places = promoter.Places.ToList();
+                    places = DataContext.Places.Where(p => p.Owners.Any(t => t.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == placeid).ToList();
                 }
-            }
-
-            foreach (var pl in places)
-            {
-                model.Places.Add(new PlaceItem() { Address = pl.Address, Address2 = pl.Address2, City = pl.City, Country = pl.Country, FacebookId = pl.FacebookId, FacebookLink = pl.FacebookLink, Filename = pl.Filename, Id = pl.Id, Latitude = pl.Latitude, Longitude = pl.Longitude, Name = pl.Name, PlaceType = pl.PlaceType, State = pl.State, ThumbnailFilename = pl.ThumbnailFilename, Website = pl.Website, Zip = pl.Zip, Selected = (model.Event.Place != null && model.Event.Place.Id == pl.Id) ? true : false });
             }
 
             model.Places = new List<PlaceItem>();
+            model.Places.Add(new PlaceItem() { Id = 0, Latitude = 0.0, Longitude = 0.0 });
 
             foreach (var pl in places)
             {

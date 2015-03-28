@@ -77,5 +77,6 @@ namespace EDR.Models
         public virtual ICollection<UserPicture> UserPictures { get; set; }
         public virtual ICollection<Student> Students { get; set; }
         public ICollection<EventMember> EventMembers { get; set; }
+        public virtual ICollection<Place> Places { get; set; }
     }
 }
