@@ -26,17 +26,53 @@
                             </a>
                             - <span class="text-danger">@video.PublishDate.ToShortDateString()</span>*@
                             <span style="">
-                                @if (video.Id > 0)
+                                @if (User.Identity.IsAuthenticated)
                                 {
-                                    <a class="text-danger" style="vertical-align: top; float: right;" title="Delete Video" href="@Url.Action("DeleteVideo", "Event", new { videoId = video.Id, returnUrl = @Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this video?')">
-                                        <i class="glyphicon glyphicon-remove-circle"></i>
-                                    </a>
-                                }
-                                else if (video.PlayList != null)
-                                {
-                                    <a class="text-danger" style="vertical-align: top; float: right;" title="Delete Playlist" href="@Url.Action("DeletePlaylist", "Event", new { listId = video.PlayList.Id, returnUrl = @Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this playlist?')">
-                                        <i class="glyphicon glyphicon-remove-circle"></i>
-                                    </a>
+                                    if (Model.Event is EDR.Models.Class && (((EDR.Models.Class)Model.Event).Teachers.Where(t => t.ApplicationUser.UserName == User.Identity.Name).Count() == 1 || ((EDR.Models.Class)Model.Event).Owners.Where(o => o.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
+                                    {
+                                        if (video.Id > 0)
+                                        {
+                                            <a class="text-danger" style="vertical-align: top; float: right;" title="Delete Video" href="@Url.Action("DeleteVideo", "Event", new { videoId = video.Id, returnUrl = @Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this video?')">
+                                                <i class="glyphicon glyphicon-remove-circle"></i>
+                                            </a>
+                                        }
+                                        else if (video.PlayList != null)
+                                        {
+                                            <a class="text-danger" style="vertical-align: top; float: right;" title="Delete Playlist" href="@Url.Action("DeletePlaylist", "Event", new { listId = video.PlayList.Id, returnUrl = @Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this playlist?')">
+                                                <i class="glyphicon glyphicon-remove-circle"></i>
+                                            </a>
+                                        }
+                                    }
+                                    else if (Model.Event is EDR.Models.Social && (((EDR.Models.Social)Model.Event).Promoters.Where(p => p.ApplicationUser.UserName == User.Identity.Name).Count() == 1 || ((EDR.Models.Social)Model.Event).Owners.Where(o => o.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
+                                    {
+                                        if (video.Id > 0)
+                                        {
+                                            <a class="text-danger" style="vertical-align: top; float: right;" title="Delete Video" href="@Url.Action("DeleteVideo", "Event", new { videoId = video.Id, returnUrl = @Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this video?')">
+                                                <i class="glyphicon glyphicon-remove-circle"></i>
+                                            </a>
+                                        }
+                                        else if (video.PlayList != null)
+                                        {
+                                            <a class="text-danger" style="vertical-align: top; float: right;" title="Delete Playlist" href="@Url.Action("DeletePlaylist", "Event", new { listId = video.PlayList.Id, returnUrl = @Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this playlist?')">
+                                                <i class="glyphicon glyphicon-remove-circle"></i>
+                                            </a>
+                                        }
+                                    }
+                                    else if (video.Author.UserName == User.Identity.Name)
+                                    {
+                                        if (video.Id > 0)
+                                        {
+                                            <a class="text-danger" style="vertical-align: top; float: right;" title="Delete Video" href="@Url.Action("DeleteVideo", "Event", new { videoId = video.Id, returnUrl = @Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this video?')">
+                                                <i class="glyphicon glyphicon-remove-circle"></i>
+                                            </a>
+                                        }
+                                        else if (video.PlayList != null)
+                                        {
+                                            <a class="text-danger" style="vertical-align: top; float: right;" title="Delete Playlist" href="@Url.Action("DeletePlaylist", "Event", new { listId = video.PlayList.Id, returnUrl = @Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this playlist?')">
+                                                <i class="glyphicon glyphicon-remove-circle"></i>
+                                            </a>
+                                        }
+                                    }
                                 }
                             </span>
                         </div>

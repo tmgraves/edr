@@ -46,6 +46,85 @@ namespace EDR.Utilities
             return(photoList);
         }
 
+        public static List<FacebookPhoto> GetAlbumPhotos(string token, string albumid)
+        {
+            var fb = new FacebookClient(token);
+            ArrayList imageSize;
+            //Get the album data
+            var photoList = new List<FacebookPhoto>();
+            //Get the Pictures inside the album this gives JASON objects list that has photo attributes 
+            // described here http://developers.facebook.com/docs/reference/api/photo/
+            dynamic albumPhotos = fb.Get(albumid + "/photos");
+
+            foreach (dynamic pictures in albumPhotos.data)
+            {
+                imageSize = new ArrayList();
+                foreach (dynamic rsa in pictures.images)
+                {
+                    imageSize.Add(rsa.height);
+                }
+                photoList.Add(new FacebookPhoto()
+                {
+                    Id = pictures.id,
+                    Name = pictures.name,
+                    Link = pictures.link,
+                    Source = pictures.picture,
+                    LargeSource = pictures.source,
+                    PhotoDate = DateTime.Parse(pictures.created_time)
+                });
+            }
+            return (photoList);
+        }
+
+        public static FacebookPhoto GetPhoto(FacebookClient client, string id)
+        {
+            dynamic fbphoto = client.Get(id);
+
+            var photo = new FacebookPhoto()
+            {
+                Id = fbphoto.id,
+                Name = fbphoto.name,
+                Link = fbphoto.link,
+                Source = fbphoto.picture,
+                LargeSource = fbphoto.source,
+                PhotoDate = DateTime.Parse(fbphoto.created_time)
+            };
+
+            return(photo);
+        }
+
+        public static List<FacebookAlbum> GetAlbums(string token)
+        {
+            var fb = new FacebookClient(token);
+            //Get the album data
+            var albumList = new List<FacebookAlbum>();
+            dynamic albums = fb.Get("me/albums");
+            foreach (dynamic album in albums.data)
+            {
+                var newalbum = new FacebookAlbum()
+                {
+                        Id = album.id,
+                        Name = album.name,
+                        Count = album.count != null ? album.count : 0,
+                        Created_Time = DateTime.Parse(album.created_time),
+                        Description = album.description,
+                        Link = album.link,
+                        //Location = album.loaction,
+                        //Privacy = album.privacy,
+                        Updated_Time = DateTime.Parse(album.updated_time)
+                };
+                if (album.cover_photo != null)
+                {
+                    var cover = GetPhoto(fb, album.cover_photo);
+                    newalbum.Cover_Photo = cover.LargeSource;
+                    newalbum.Thumbnail = cover.Source;
+                }
+
+                albumList.Add(newalbum);
+            }
+            return (albumList);
+        }
+
         private static FacebookAlbum GetAlbum(dynamic fbalbum, string token)
         {
             var fb = new FacebookClient(token);

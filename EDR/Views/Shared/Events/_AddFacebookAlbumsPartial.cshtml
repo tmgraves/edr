@@ -1,0 +1,46 @@
+﻿@model EDR.Models.ViewModels.EventFacebookAlbumContainer
+
+@if (Model.FacebookAlbums != null && Model.FacebookAlbums.Count() > 0)
+{
+    using (Html.BeginForm("AddFacebookAlbums",
+                                    "Event",
+                                    new { eventId = Model.Event.Id },
+                                    FormMethod.Post,
+                                    new { enctype = "multipart/form-data" }))
+    {
+        <p>
+            <button type="submit" name="Import" value="Import Albums" class="btn btn-warning">
+                <i class="glyphicon glyphicon glyphicon-plus"></i>
+                Import Albums
+            </button>
+        </p>
+        <ul class="list-inline">
+            @foreach (var album in Model.FacebookAlbums.OrderByDescending(album => album.Created_Time))
+            {
+                <li class="col-lg-2 col-md-2 col-sm-12 col-xs-12" style="vertical-align: top;">
+                    <div class="thumbnail text-left">
+                        <div>
+                            <label style="display: block; width: 100%;"><input type="checkbox" name="albumIds" id="albumIds" value="@album.Id" /></label>
+                        </div>
+                        <a href="@album.Link" target="_blank">
+                            <div class="croppedpic" style="height: 100px;">
+                                <img src="@album.Cover_Photo" />
+                            </div>
+                        </a>
+                        <div class="caption">
+                                                          <small>@album.Name</small><br />
+                            <small>@album.Count.ToString() Picture(s)</small><br />
+                            <small>@album.Created_Time.ToShortDateString()</small>
+                        </div>
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+}
+else
+{
+    @:No Facebook Albums found.
+}
+
+

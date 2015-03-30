@@ -117,6 +117,11 @@ namespace EDR.Models.ViewModels
         public IEnumerable<FacebookPhoto> FacebookPictures { get; set; }
     }
 
+    public class EventFacebookAlbumContainer : EventBaseViewModel
+    {
+        public IEnumerable<FacebookAlbum> FacebookAlbums { get; set; }
+    }
+
     public class EventFacebookVideosContainer : EventBaseViewModel
     {
         public IEnumerable<FacebookVideo> FacebookVideos { get; set; }
@@ -143,6 +148,7 @@ namespace EDR.Models.ViewModels
     public class EventPictures : EventBaseViewModel
     {
         public IEnumerable<EventPicture> Pictures { get; set; }
+        public IEnumerable<EventAlbum> Albums { get; set; }
     }
 
     public class EventReviewsViewModel

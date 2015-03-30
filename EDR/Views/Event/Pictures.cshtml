@@ -24,10 +24,27 @@
 
 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
     <div style="width: 100%; display: inline-block;">
-        <a class="btn btn-warning pull-left" title="Add New Picture" href="@Url.Action("PostPicture", "Event", new { id = Model.Event.Id, eventType = Model.EventType })" style="margin: 5px;">
-            <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
-            Add Picture
-        </a>
+        @if (Model.Event.EventMembers.Where(m => m.Member.UserName == User.Identity.Name).Count() == 1)
+        {
+            <a class="btn btn-warning pull-left" title="Add New Picture" href="@Url.Action("PostPicture", "Event", new { id = Model.Event.Id, eventType = Model.EventType })" style="margin: 5px;">
+                <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                Add Picture
+            </a>
+        }
+        else if (Model.Class != null && (Model.Class.Teachers.Where(t => t.ApplicationUser.UserName == User.Identity.Name).Count() == 1 || Model.Class.Owners.Where(t => t.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
+        {
+            <a class="btn btn-warning pull-left" title="Add New Picture" href="@Url.Action("PostPicture", "Event", new { id = Model.Event.Id, eventType = Model.EventType })" style="margin: 5px;">
+                <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                Add Picture
+            </a>
+        }
+        else if (Model.Social != null && (Model.Social.Promoters.Where(t => t.ApplicationUser.UserName == User.Identity.Name).Count() == 1 || Model.Social.Owners.Where(t => t.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
+        {
+            <a class="btn btn-warning pull-left" title="Add New Picture" href="@Url.Action("PostPicture", "Event", new { id = Model.Event.Id, eventType = Model.EventType })" style="margin: 5px;">
+                <i class="glyphicon glyphicon-plus" aria-hidden="true"></i>
+                Add Picture
+            </a>
+        }
     </div>
     <div class="partialContents" data-url="/Event/@Model.Event.Id/GetPictures?eventType=@Model.EventType.ToString()">
         <img src="~/Content/images/indicator.white.gif" />Loading...

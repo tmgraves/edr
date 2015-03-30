@@ -175,17 +175,57 @@ namespace EDR.Controllers
             var model = new EventPictures();
             model.EventType = eventType;
             model.ReturnUrl = Url.Action("Pictures", new { id = id, eventType = eventType });
-            var lstPictures = new List<EventPicture>();
 
-            var evt = DataContext.Events.Where(e => e.Id == id)
+            var evt = new Event();
+            if (eventType == EventType.Class)
+            {
+                evt =   DataContext.Events.OfType<Class>()
+                    .Where(e => e.Id == id)
                     .Include("Creator")
                     .Include("Pictures")
                     .Include("Pictures.PostedBy")
+                    .Include("Albums")
+                    .Include("Albums.PostedBy")
+                    .Include("LinkedFacebookObjects")
+                    .Include("Teachers")
+                    .Include("Teachers.ApplicationUser")
+                    .Include("Owners")
+                    .Include("Owners.ApplicationUser")
                     .FirstOrDefault();
+            }
+            else
+            {
+                evt = DataContext.Events.OfType<Social>()
+                    .Where(e => e.Id == id)
+                    .Include("Creator")
+                    .Include("Pictures")
+                    .Include("Pictures.PostedBy")
+                    .Include("Albums")
+                    .Include("Albums.PostedBy")
+                    .Include("LinkedFacebookObjects")
+                    .Include("Promoters")
+                    .Include("Promoters.ApplicationUser")
+                    .Include("Owners")
+                    .Include("Owners.ApplicationUser")
+                    .FirstOrDefault();
+            }
 
+            var lstPictures = new List<EventPicture>();
             lstPictures = evt.Pictures.ToList();
 
-            if (evt.FacebookId != null)
+            var lstAlbums = new List<EventAlbum>();
+            lstAlbums = evt.Albums.ToList();
+
+            foreach (var album in lstAlbums)
+            {
+                if (album.PostedBy.FacebookToken != null)
+                {
+                    album.Pictures = FacebookHelper.GetAlbumPhotos(album.PostedBy.FacebookToken, album.FacebookId).Select(p => new Picture() { Album = album, Title = p.Name, PhotoDate = p.PhotoDate, Filename = p.LargeSource, ThumbnailFilename = p.Source, MediaSource = MediaSource.Facebook }).ToList();
+                }
+            }
+            model.Albums = lstAlbums;
+
+            foreach (var ob in evt.LinkedFacebookObjects)
             {
                 if (evt.Creator != null && evt.Creator.FacebookToken != null)
                 {
@@ -196,7 +236,7 @@ namespace EDR.Controllers
                     }
                     else
                     {
-                        posts = FacebookHelper.GetFeed(evt.FacebookId, evt.Creator.FacebookToken);
+                        posts = FacebookHelper.GetFeed(ob.FacebookId, evt.Creator.FacebookToken);
                         Session["FacebookPosts"] = posts;
                     }
 
@@ -205,7 +245,6 @@ namespace EDR.Controllers
                         lstPictures.Add(new EventPicture() { Event = evt, PostedBy = evt.Creator, PhotoDate = post.Created_Time, Filename = post.Link, ThumbnailFilename = post.Picture, Title = post.Description, MediaSource = MediaSource.Facebook });
                     }
                 }
-
             }
 
             model.Pictures = lstPictures;
@@ -236,6 +275,31 @@ namespace EDR.Controllers
             }
 
             return PartialView("~/Views/Shared/Events/_AddFacebookPicturesPartial.cshtml", model);
+        }
+
+        public ActionResult GetFacebookAlbums(int id, EventType eventType)
+        {
+            var model = new EventFacebookAlbumContainer();
+            model.EventType = eventType;
+            var evt = DataContext.Events.Where(e => e.Id == id).Include("Creator").Include("Albums").FirstOrDefault();
+            model.Event = evt;
+
+            var userid = User.Identity.GetUserId();
+            var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+            var token = user.FacebookToken;
+            if (token != null)
+            {
+                if (Session["FacebookAlbums"] == null)
+                {
+                    Session["FacebookAlbums"] = FacebookHelper.GetAlbums(token);
+
+                }
+                var facebookIds = evt.Albums.Where(a => a.FacebookId != null).Select(a => a.FacebookId).ToArray();
+
+                model.FacebookAlbums = ((List<FacebookAlbum>)Session["FacebookAlbums"]).Where(a => !facebookIds.Any(f => f.Contains(a.Id)));
+            }
+
+            return PartialView("~/Views/Shared/Events/_AddFacebookAlbumsPartial.cshtml", model);
         }
 
         public ActionResult GetFacebookVideos(int id, EventType eventType)
@@ -362,6 +426,8 @@ namespace EDR.Controllers
                         .Include("Creator")
                         .Include("Pictures")
                         .Include("Pictures.PostedBy")
+                        .Include("Albums")
+                        .Include("Albums.PostedBy")
                         .Include("Videos")
                         .Include("Videos.Author")
                         .Include("Playlists")
@@ -439,6 +505,8 @@ namespace EDR.Controllers
                 model.Class = DataContext.Events.OfType<Class>().Where(x => x.Id == id)
                     .Include("Teachers")
                     .Include("Teachers.ApplicationUser")
+                    .Include("Owners")
+                    .Include("Owners.ApplicationUser")
                     .FirstOrDefault();
                 model.ClassTeacherInvitations = DataContext.ClassTeacherInvitations.Where(i => i.ClassId == id)
                                                         .Include("Teacher")
@@ -447,7 +515,12 @@ namespace EDR.Controllers
             }
             else if (eventType == EventType.Social)
             {
-                model.Social = DataContext.Events.OfType<Social>().Where(x => x.Id == id).Include("Promoters").Include("Promoters.ApplicationUser").FirstOrDefault();
+                model.Social = DataContext.Events.OfType<Social>().Where(x => x.Id == id)
+                    .Include("Promoters")
+                    .Include("Promoters.ApplicationUser")
+                    .Include("Owners")
+                    .Include("Owners.ApplicationUser")
+                    .FirstOrDefault();
             }
 
             return model;
@@ -542,6 +615,16 @@ namespace EDR.Controllers
             return Redirect(returnUrl);
         }
 
+        [Authorize]
+        public ActionResult DeleteAlbum(int albumId, string returnUrl)
+        {
+            var album = DataContext.Albums.Find(albumId);
+            DataContext.Albums.Remove(album);
+            //  DataContext.Entry(album).State = EntityState.Deleted;
+            DataContext.SaveChanges();
+            return Redirect(returnUrl);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
@@ -614,6 +697,42 @@ namespace EDR.Controllers
                     var userid = User.Identity.GetUserId();
                     var postedby = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
                     ev.Pictures.Add(new EventPicture() { Title = picture.Name == null ? "No Title" : picture.Name, ThumbnailFilename = picture.Source, Filename = picture.LargeSource, PhotoDate = picture.PhotoDate, PostedBy = postedby, MediaSource = MediaSource.Facebook, FacebookId = picture.Id, SourceLink = picture.Link });
+                }
+
+                DataContext.Entry(ev).State = EntityState.Modified;
+                DataContext.SaveChanges();
+                return Redirect(returnUrl);
+            }
+            catch (Exception ex)
+            {
+                return Redirect(returnUrl);
+            }
+        }
+
+        [Authorize]
+        [HttpPost]
+        public ActionResult AddFacebookAlbums(int eventId, string[] albumIds)
+        {
+            var ev = DataContext.Events.Where(e => e.Id == eventId).Include("Albums").FirstOrDefault();
+            var returnUrl = "";
+            if (ev is Class)
+            {
+                returnUrl = Url.Action("Pictures", "Event", new { id = eventId, eventType = EventType.Class });
+            }
+            else
+            {
+                returnUrl = Url.Action("Pictures", "Event", new { id = eventId, eventType = EventType.Social });
+            }
+
+            try
+            {
+                foreach (var id in albumIds)
+                {
+                    string userId = User.Identity.GetUserId();
+                    var album = ((List<FacebookAlbum>)Session["FacebookAlbums"]).Where(a => a.Id == id).FirstOrDefault();
+                    var userid = User.Identity.GetUserId();
+                    var postedby = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+                    ev.Albums.Add(new EventAlbum() { Name = album.Name == null ? "No Title" : album.Name, CoverThumbnail = album.Thumbnail, CoverPhoto = album.Cover_Photo, AlbumDate = album.Created_Time, PostedBy = postedby, MediaSource = MediaSource.Facebook, FacebookId = album.Id, SourceLink = album.Link, PhotoCount = Convert.ToInt32(album.Count) });
                 }
 
                 DataContext.Entry(ev).State = EntityState.Modified;

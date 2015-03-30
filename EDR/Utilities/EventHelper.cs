@@ -50,24 +50,51 @@ namespace EDR.Utilities
         {
             if (!videosOnly)
             {
-                foreach (var p in evt.Pictures)
+                if (evt.Pictures != null)
                 {
-                    lstMedia.Add(new EventMedia() { Event = evt, Id = p.Id, SourceName = p.Title, SourceLink = p.SourceLink, Author = p.PostedBy, MediaDate = p.PhotoDate, MediaType = Enums.MediaType.Picture, PhotoUrl = p.Filename, Title = p.Title, MediaSource = p.MediaSource, Link = p.Filename, Target = target });
+                    foreach (var p in evt.Pictures)
+                    {
+                        lstMedia.Add(new EventMedia() { Event = evt, Id = p.Id, SourceName = p.Title, SourceLink = p.SourceLink, Author = p.PostedBy, MediaDate = p.PhotoDate, MediaType = Enums.MediaType.Picture, PhotoUrl = p.Filename, Title = p.Title, MediaSource = p.MediaSource, Link = p.Filename, Target = target });
+                    }
+                }
+
+                if (evt.Albums != null)
+                {
+                    foreach (var a in evt.Albums)
+                    {
+                        if (a.PostedBy.FacebookToken != null && a.PostedBy.FacebookToken != null)
+                        {
+                            var photos = FacebookHelper.GetAlbumPhotos(a.PostedBy.FacebookToken, a.FacebookId);
+
+                            foreach (var photo in photos)
+                            {
+                                lstMedia.Add(new EventMedia() { Event = evt, SourceName = a.Name, SourceLink = a.SourceLink, Author = a.PostedBy, MediaDate = photo.PhotoDate, MediaType = Enums.MediaType.Picture, PhotoUrl = photo.LargeSource, Title = photo.Name, MediaSource = a.MediaSource, Link = photo.Link, Target = target });
+                            }
+                        }
+                    }
                 }
             }
             if (!picturesOnly)
             {
-                foreach (var v in evt.Videos)
+                if (evt.Videos != null)
                 {
-                    lstMedia.Add(new EventMedia() { Event = evt, Id = v.Id, SourceName = v.Title, SourceLink = v.VideoUrl, Author = v.Author, MediaDate = v.PublishDate, MediaType = Enums.MediaType.Video, PhotoUrl = v.PhotoUrl, MediaUrl = v.VideoUrl, Title = v.Title, MediaSource = v.MediaSource, Target = target });
-                }
-                foreach (var lst in evt.Playlists)
-                {
-                    var videos = YouTubeHelper.GetPlaylistVideos(lst.YouTubeId);
-
-                    foreach (var movie in videos)
+                    foreach (var v in evt.Videos)
                     {
-                        lstMedia.Add(new EventMedia() { Event = evt, SourceName = movie.Title, SourceLink = movie.VideoLink.ToString(), Author = lst.Author, MediaDate = movie.PubDate, MediaType = Enums.MediaType.Video, PhotoUrl = movie.Thumbnail.ToString(), MediaUrl = movie.VideoLink.ToString(), Title = movie.Title, MediaSource = lst.MediaSource, Target = target, Playlist = lst });
+                        lstMedia.Add(new EventMedia() { Event = evt, Id = v.Id, SourceName = v.Title, SourceLink = v.VideoUrl, Author = v.Author, MediaDate = v.PublishDate, MediaType = Enums.MediaType.Video, PhotoUrl = v.PhotoUrl, MediaUrl = v.VideoUrl, Title = v.Title, MediaSource = v.MediaSource, Target = target });
+                    }
+
+                }
+
+                if (evt.Playlists != null)
+                {
+                    foreach (var lst in evt.Playlists)
+                    {
+                        var videos = YouTubeHelper.GetPlaylistVideos(lst.YouTubeId);
+
+                        foreach (var movie in videos)
+                        {
+                            lstMedia.Add(new EventMedia() { Event = evt, SourceName = movie.Title, SourceLink = movie.VideoLink.ToString(), Author = lst.Author, MediaDate = movie.PubDate, MediaType = Enums.MediaType.Video, PhotoUrl = movie.Thumbnail.ToString(), MediaUrl = movie.VideoLink.ToString(), Title = movie.Title, MediaSource = lst.MediaSource, Target = target, Playlist = lst });
+                        }
                     }
                 }
             }

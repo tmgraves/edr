@@ -119,8 +119,23 @@
                 </div>
             </div>
             <div id="facebookpics" class="tab-pane">
-                <div class="partialContents" data-url="/Event/@Model.Event.Id/GetFacebookPictures?eventType=@Model.EventType">
-                    <img src="~/Content/images/indicator.white.gif" />Loading...
+                <p>
+                    <ul class="nav nav-pills text-center" role="tablist">
+                        <li class="active"><a href="#fbpictures" data-toggle="tab">Pictures</a></li>
+                        <li><a href="#fbalbums" data-toggle="tab">Albums</a></li>
+                    </ul>
+                </p>
+                <div class="tab-content">
+                    <div id="fbpictures" class="tab-pane active">
+                        <div class="partialContents" data-url="/Event/@Model.Event.Id/GetFacebookPictures?eventType=@Model.EventType">
+                            <img src="~/Content/images/indicator.white.gif" />Loading...
+                        </div>
+                    </div>
+                    <div id="fbalbums" class="tab-pane">
+                        <div class="partialContents" data-url="/Event/@Model.Event.Id/GetFacebookAlbums?eventType=@Model.EventType">
+                            <img src="~/Content/images/indicator.white.gif" />Loading...
+                        </div>
+                    </div>
                 </div>
             </div>
             <div id="instagrampics" class="tab-pane">

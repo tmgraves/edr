@@ -25,9 +25,10 @@ namespace EDR.Models
         //  Whether the viewer can upload photos to this album
         public bool Can_Upload;
         //  Number of photos in this album.
-        public int Count;
+        public double? Count;
         //  The ID of the album's cover photo.
         public string Cover_Photo;
+        public string Thumbnail;
         //  The time the album was initially created.
         public DateTime Created_Time;
         //  The description of the album.
@@ -53,8 +54,9 @@ namespace EDR.Models
 
     public class FacebookPhoto
     {
-        public string Album;
+        [Key]
         public string Id;
+        public string Album;
         public string Name;
         public string Link;
         public string Source;

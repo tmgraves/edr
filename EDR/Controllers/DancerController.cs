@@ -310,6 +310,7 @@ namespace EDR.Controllers
                                     .Include("DanceStyles")
                                     .Include("Pictures")
                                     .Include("Videos")
+                                    .Include("Reviews")
                                     .ToList();
             viewModel.Classes.Events = classes.Where(e => e.NextDate >= today);
             viewModel.Classes.Location = viewModel.Address;
@@ -396,6 +397,7 @@ namespace EDR.Controllers
                                             .Include("Pictures")
                                             .Include("EventMembers.Member")
                                             .Include("Videos")
+                                            .Include("Reviews")
                                             .Where(x => x.EventMembers.Any(m => m.Member.UserName == username)).ToList();
             viewModel.Socials.Location = viewModel.Address;
 

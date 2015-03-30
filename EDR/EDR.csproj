@@ -292,7 +292,6 @@
     <Compile Include="Models\Address.cs" />
     <Compile Include="Models\EventInviations.cs" />
     <Compile Include="Models\EventMember.cs" />
-    <Compile Include="Models\EventPicture.cs" />
     <Compile Include="Models\EventPlaylist.cs" />
     <Compile Include="Models\Facebook.cs" />
     <Compile Include="Models\Friend.cs" />
@@ -686,6 +685,7 @@
     <Content Include="Views\Shared\_FileUploadPartial.cshtml" />
     <Content Include="Views\Shared\Info.cshtml" />
     <Content Include="Views\Event\ImportFacebookEvent.cshtml" />
+    <Content Include="Views\Shared\Events\_AddFacebookAlbumsPartial.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

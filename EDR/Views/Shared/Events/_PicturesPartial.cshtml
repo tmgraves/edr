@@ -6,30 +6,105 @@
     foreach (var picture in Model.Pictures.OrderByDescending(v => v.PhotoDate))
     {
         <ul class="list-inline">
-            <li class="thumbnail col-lg-2 col-md-2 col-sm-6 col-xs-6">
-                <div style="width: 100%; height: 20px; display: block;">
-                    @if (picture.MediaSource == MediaSource.Facebook)
-                    {
-                        <img class="img-circle" style="width: 18px;" src="@Url.Content("~/Content/images/facebookSmall.png")">
-                    }
-                    @if (picture.MediaSource == MediaSource.Instagram)
-                    {
-                        <img class="img-circle" style="width: 18px;" src="@Url.Content("~/Content/images/instagram.png")">
-                    }
-                    @if (picture.Id > 0)
-                    {
-                        <a class="text-danger" style="vertical-align: top; float: right;" title="Delete Picture" href="@Url.Action("DeletePicture", "Event", new { pictureId = picture.Id, returnUrl = @Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this picture?')">
-                            <i class="glyphicon glyphicon-remove-circle"></i>
-                        </a>
-                    }
-                </div>
-                <div style="height: 75px;">
-                    <a target="_blank" href="@Url.Content(picture.Filename)">
-                        <img src="@Url.Content(picture.ThumbnailFilename)" alt="@picture.Title" style="max-height: 75px;" />
+            <li class="col-lg-3 col-md-3 col-sm-6 col-xs-6" style="padding: 2px;">
+                <div class="thumbnail">
+                    <div style="width: 100%; height: 20px; display: block; margin-bottom: 5px;">
+                        @if (picture.MediaSource == MediaSource.Facebook)
+                        {
+                            <img class="img-circle" style="width: 18px;" src="@Url.Content("~/Content/images/facebookSmall.png")">
+                        }
+                        @if (picture.MediaSource == MediaSource.Instagram)
+                        {
+                            <img class="img-circle" style="width: 18px;" src="@Url.Content("~/Content/images/instagram.png")">
+                        }
+                        @if (picture.Id > 0)
+                        {
+                            if (User.Identity.IsAuthenticated)
+                            {
+                                if (Model.Event is EDR.Models.Class && (((EDR.Models.Class)Model.Event).Teachers.Where(t => t.ApplicationUser.UserName == User.Identity.Name).Count() == 1 || ((EDR.Models.Class)Model.Event).Owners.Where(o => o.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
+                                {
+                                    <a class="text-danger" style="vertical-align: top; float: right;" title="Delete Picture" href="@Url.Action("DeletePicture", "Event", new { pictureId = picture.Id, returnUrl = @Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this Album?')">
+                                        <i class="glyphicon glyphicon-remove-circle"></i>
+                                    </a>
+                                }
+                                else if (Model.Event is EDR.Models.Social && (((EDR.Models.Social)Model.Event).Promoters.Where(p => p.ApplicationUser.UserName == User.Identity.Name).Count() == 1 || ((EDR.Models.Social)Model.Event).Owners.Where(o => o.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
+                                {
+                                    <a class="text-danger" style="vertical-align: top; float: right;" title="Delete Picture" href="@Url.Action("DeletePicture", "Event", new { pictureId = picture.Id, returnUrl = @Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this Album?')">
+                                        <i class="glyphicon glyphicon-remove-circle"></i>
+                                    </a>
+                                }
+                                else if (picture.PostedBy.UserName == User.Identity.Name)
+                                {
+                                    <a class="text-danger" style="vertical-align: top; float: right;" title="Delete Picture" href="@Url.Action("DeletePicture", "Event", new { pictureId = picture.Id, returnUrl = @Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this Album?')">
+                                        <i class="glyphicon glyphicon-remove-circle"></i>
+                                    </a>
+                                }
+                            }
+                        }
+                    </div>
+                    <a target="_blank" href="@Url.Content(picture.Filename)" style="text-align: left;" title="@picture.Title">
+                        <div class="croppedpic" style="height: 100px;">
+                            <img src="@Url.Content(picture.ThumbnailFilename)" alt="@picture.Title" />
+                        </div>
                     </a>
                 </div>
             </li>
+
         </ul>
     }
 }
 
+@if (Model.Albums != null && Model.Albums.Count() > 0)
+{
+    foreach (var album in Model.Albums.OrderByDescending(a => a.AlbumDate))
+    {
+        foreach (var picture in album.Pictures)
+        {
+            <ul class="list-inline">
+                <li class="col-lg-3 col-md-3 col-sm-6 col-xs-6" style="padding: 2px;">
+                    <div class="thumbnail" title="Photo Album - @album.Name">
+                        <div style="width: 100%; height: 20px; display: block; margin-bottom: 5px;">
+                            @if (album.MediaSource == MediaSource.Facebook)
+                            {
+                                <img class="img-circle" style="width: 18px;" src="@Url.Content("~/Content/images/facebookSmall.png")">
+                            }
+                            @if (album.MediaSource == MediaSource.Instagram)
+                            {
+                                <img class="img-circle" style="width: 18px;" src="@Url.Content("~/Content/images/instagram.png")">
+                            }
+                            <i class="glyphicon glyphicon-book text-primary"></i>
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                if (Model.Event is EDR.Models.Class && (((EDR.Models.Class)Model.Event).Teachers.Where(t => t.ApplicationUser.UserName == User.Identity.Name).Count() == 1 || ((EDR.Models.Class)Model.Event).Owners.Where(o => o.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
+                                {
+                                    <a class="text-danger" style="vertical-align: top; float: right;" title="Delete Picture" href="@Url.Action("DeleteAlbum", "Event", new { albumid = album.Id, returnUrl = @Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this Album?')">
+                                        <i class="glyphicon glyphicon-remove-circle"></i>
+                                    </a>
+                                }
+                                else if (Model.Event is EDR.Models.Social && (((EDR.Models.Social)Model.Event).Promoters.Where(p => p.ApplicationUser.UserName == User.Identity.Name).Count() == 1 || ((EDR.Models.Social)Model.Event).Owners.Where(o => o.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
+                                {
+                                    <a class="text-danger" style="vertical-align: top; float: right;" title="Delete Picture" href="@Url.Action("DeleteAlbum", "Event", new { albumid = album.Id, returnUrl = @Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this Album?')">
+                                        <i class="glyphicon glyphicon-remove-circle"></i>
+                                    </a>
+                                }
+                                else if (album.PostedBy.UserName == User.Identity.Name)
+                                {
+                                    <a class="text-danger" style="vertical-align: top; float: right;" title="Delete Album" href="@Url.Action("DeleteAlbum", "Event", new { albumid = album.Id, returnUrl = @Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this Album?')">
+                                        <i class="glyphicon glyphicon-remove-circle"></i>
+                                    </a>
+                                }
+                            }
+                        </div>
+                        <a target="_blank" href="@Url.Content(picture.Filename)" style="text-align: left;">
+                            <div class="croppedpic" style="height: 100px;">
+                                <img src="@Url.Content(picture.ThumbnailFilename)" alt="@picture.Title" />
+                            </div>
+                        </a>
+                        @*<small><strong>Album: @album.Name</strong></small><br />
+                        <small>@album.PhotoCount.ToString() Pictures</small>*@
+                    </div>
+                </li>
+            </ul>
+        }
+    }
+}
