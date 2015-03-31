@@ -180,32 +180,41 @@ namespace EDR.Utilities
             return(friendsList);
         }
 
-        public static List<FacebookEvent> GetEvents(string token)
+        public static List<FacebookEvent> GetEvents(string token, DateTime? startdate = null)
         {
             var fb = new FacebookClient(token);
-            dynamic myInfo = fb.Get("/me/events?fields=id,cover,description,end_time,is_date_only,location,name,owner,privacy,start_time,ticket_uri,timezone,updated_time,venue,parent_group");
+            var query = "/me/events?fields=id,cover,description,end_time,is_date_only,location,name,owner,privacy,start_time,ticket_uri,timezone,updated_time,venue,parent_group";
+            if (startdate != null)
+            {
+                query = query + "&since=" + Convert.ToDateTime(startdate).ToString("o");
+            }
+            dynamic myInfo = fb.Get(query);
             var eventList = new List<FacebookEvent>();
             dynamic paging;
             dynamic next;
             if (myInfo != null)
             {
                 ParseData(myInfo.data, eventList);
-                paging = myInfo.paging;
-                if (paging != null)
+
+                if (startdate == null)
                 {
-                    next = paging.next;
-                    while (next != null)
+                    paging = myInfo.paging;
+                    if (paging != null)
                     {
-                        myInfo = fb.Get(next);
-                        ParseData(myInfo.data, eventList);
-                        paging = myInfo.paging;
-                        if (paging != null)
+                        next = paging.next;
+                        while (next != null)
                         {
-                            next = paging.next;
-                        }
-                        else
-                        {
-                            next = null;
+                            myInfo = fb.Get(next);
+                            ParseData(myInfo.data, eventList);
+                            paging = myInfo.paging;
+                            if (paging != null)
+                            {
+                                next = paging.next;
+                            }
+                            else
+                            {
+                                next = null;
+                            }
                         }
                     }
                 }

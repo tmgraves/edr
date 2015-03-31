@@ -147,6 +147,8 @@ namespace EDR.Controllers
         [Authorize]
         public ActionResult Home(string username)
         {
+            var userid = User.Identity.GetUserId();
+            var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
             if (String.IsNullOrWhiteSpace(username))
             {
                 if (User != null)
@@ -225,6 +227,13 @@ namespace EDR.Controllers
             viewModel.NewStudents = new List<ApplicationUser>();
             var classArray = viewModel.Teacher.Classes.Select(c => c.Id).ToArray();
             viewModel.NewStudents = DataContext.Users.Include("Events").Where(u => u.Events.Any(e => classArray.Contains(e.Id)));
+
+            //  Load Facebook Events
+            if (user.FacebookToken != null)
+            {
+                viewModel.FacebookEvents = FacebookHelper.GetEvents(user.FacebookToken, DateTime.Now);
+            }
+            //  Load Facebook Events
 
             Session["ReturnUrl"] = Url.Action("Home", "Teacher", new { username = User.Identity.Name });
 
