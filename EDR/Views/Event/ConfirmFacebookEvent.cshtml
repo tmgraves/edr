@@ -49,12 +49,7 @@
 @Html.HiddenFor(x => x.NewEvent.Interval)
 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
     <h3>Please Confirm Details for the New @Model.EventType</h3>
-    <div class="col-lg-3 col-md-3">
-        <div class="col-lg-12 col-md-12 croppedpic" style="height: 250px;">
-            <a href="@Model.NewEvent.PhotoUrl" target="_blank"><img class="img-thumbnail" src="@(Model.NewEvent.PhotoUrl != null ? Model.NewEvent.PhotoUrl : Url.Content("~/Content/images/MissingImage.jpg"))" /></a>
-        </div>
-    </div>
-    <div class="col-lg-9 col-md-9">
+    <div class="col-lg-6 col-md-6">
         <div class="col-lg-12 col-md-12">
             @if (Model.EventType == EventType.Class)
             {
@@ -111,6 +106,11 @@
                 @Html.EditorFor(model => model.NewEvent.Description, new { htmlAttributes = new { @class = "form-control", @rows = 10 } })
                 @Html.ValidationMessageFor(model => model.NewEvent.Description, "", new { @class = "text-danger" })
             </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-6">
+        <div class="col-lg-12 col-md-12 croppedpic">
+            <a href="@Model.NewEvent.PhotoUrl" target="_blank"><img class="img-thumbnail" src="@(Model.NewEvent.PhotoUrl != null ? Model.NewEvent.PhotoUrl : Url.Content("~/Content/images/MissingImage.jpg"))" /></a>
         </div>
     </div>
     <div class="col-lg-12 col-md-12 radio-list">

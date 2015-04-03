@@ -231,7 +231,14 @@ namespace EDR.Controllers
             //  Load Facebook Events
             if (user.FacebookToken != null)
             {
-                viewModel.FacebookEvents = FacebookHelper.GetEvents(user.FacebookToken, DateTime.Now);
+                if (Session["FacebookEvents"] == null)
+                {
+                    Session["FacebookEvents"] = FacebookHelper.GetEvents(user.FacebookToken, DateTime.Now);
+                }
+                if (Session["FacebookEvents"] != null)
+                {
+                    viewModel.FacebookEvents = (List<FacebookEvent>)Session["FacebookEvents"];
+                }
             }
             //  Load Facebook Events
 

@@ -33,76 +33,79 @@
                 <a href="@Url.Action("Home", "Dancer", new { username = User.Identity.Name })"><i class="glyphicon glyphicon-user"></i> @User.Identity.Name</a>
             }
         </li>
-        <li role="presentation" class="dropdown">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
-                Switch to <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu" role="menu">
-                <li>
-                </li>
-
-                @if (Session["MyRole"] != null)
-                {
+        @if (User.IsInRole("Teacher") || User.IsInRole("Owner") || User.IsInRole("Promoter"))
+        {
+            <li role="presentation" class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">
+                    Switch to <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu" role="menu">
                     <li>
-                        @Html.ActionLink("Dancer Profile", "Home", "Dancer", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
                     </li>
-                }
-                @if (User.IsInRole("Teacher"))
-                {
-                    if (Session["MyRole"] != null)
+
+                    @if (Session["MyRole"] != null)
                     {
-                        if (Session["MyRole"].ToString() != RoleName.Teacher.ToString())
+                        <li>
+                            @Html.ActionLink("Dancer Profile", "Home", "Dancer", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
+                        </li>
+                    }
+                    @if (User.IsInRole("Teacher"))
+                    {
+                        if (Session["MyRole"] != null)
+                        {
+                            if (Session["MyRole"].ToString() != RoleName.Teacher.ToString())
+                            {
+                                <li>
+                                    @Html.ActionLink("Teacher Profile", "Home", "Teacher", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
+                                </li>
+                            }
+                        }
+                        else
                         {
                             <li>
                                 @Html.ActionLink("Teacher Profile", "Home", "Teacher", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
                             </li>
                         }
                     }
-                    else
+                    @if (User.IsInRole("Owner"))
                     {
-                        <li>
-                            @Html.ActionLink("Teacher Profile", "Home", "Teacher", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
-                        </li>
-                    }
-                }
-                @if (User.IsInRole("Owner"))
-                {
-                    if (Session["MyRole"] != null)
-                    {
-                        if (Session["MyRole"].ToString() != RoleName.Owner.ToString())
+                        if (Session["MyRole"] != null)
+                        {
+                            if (Session["MyRole"].ToString() != RoleName.Owner.ToString())
+                            {
+                                <li>
+                                    @Html.ActionLink("Owner Profile", "Home", "Owner", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
+                                </li>
+                            }
+                        }
+                        else
                         {
                             <li>
                                 @Html.ActionLink("Owner Profile", "Home", "Owner", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
                             </li>
                         }
                     }
-                    else
+                    @if (User.IsInRole("Promoter"))
                     {
-                        <li>
-                            @Html.ActionLink("Owner Profile", "Home", "Owner", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
-                        </li>
-                    }
-                }
-                @if (User.IsInRole("Promoter"))
-                {
-                    if (Session["MyRole"] != null)
-                    {
-                        if (Session["MyRole"].ToString() != RoleName.Promoter.ToString())
+                        if (Session["MyRole"] != null)
+                        {
+                            if (Session["MyRole"].ToString() != RoleName.Promoter.ToString())
+                            {
+                                <li>
+                                    @Html.ActionLink("Promoter Profile", "Home", "Promoter", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
+                                </li>
+                            }
+                        }
+                        else
                         {
                             <li>
                                 @Html.ActionLink("Promoter Profile", "Home", "Promoter", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
                             </li>
                         }
                     }
-                    else
-                    {
-                        <li>
-                            @Html.ActionLink("Promoter Profile", "Home", "Promoter", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
-                        </li>
-                    }
-                }
-            </ul>
-        </li>
+                </ul>
+            </li>
+        }
         <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
     </ul>
     }
