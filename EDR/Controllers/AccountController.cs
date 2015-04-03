@@ -456,13 +456,29 @@ namespace EDR.Controllers
                 var email = emailClaim != null ? emailClaim.Value : null;
                 var usernameClaim = info.ExternalIdentity.Claims.First(c => c.Type == "urn:facebook:id");
                 var username = usernameClaim != null ? usernameClaim.Value : null;
-                dynamic locationClaim = JsonConvert.DeserializeObject(info.ExternalIdentity.Claims.Single(c => c.Type == "urn:facebook:location").Value);
-                var location = locationClaim != null ? locationClaim.name : null;
                 var tokenClaim = info.ExternalIdentity.Claims.First(c => c.Type == "urn:facebook:access_token");
                 var token = tokenClaim != null ? tokenClaim.Value : null;
 
                 var user = new ApplicationUser();
                 IdentityResult result = new IdentityResult();
+
+                //  Get User's Location
+                var address = new Address();
+                var locationData = FacebookHelper.GetData(token, "me?fields=location");
+                if (locationData.location != null)
+                {
+                    var addressData = locationData.location;
+                    if (locationData.location.name != null)
+                    {
+                        address = Geolocation.ParseAddress(addressData.name);
+                    }
+                }
+                else
+                {
+                    address = Geolocation.ParseAddress(model.Zipcode);
+                }
+                //  Get User's Location
+
 
                 if (DataContext.Users.Where(x => x.Email == email).Count() == 1)
                 {
@@ -471,6 +487,8 @@ namespace EDR.Controllers
                     user.FacebookUsername = username;
                     user.StartDate = model.StartDate;
                     user.ZipCode = model.Zipcode;
+                    user.Latitude = address != null ? address.Latitude : 0;
+                    user.Longitude = address != null ? address.Longitude : 0;
                     user.EmailConfirmed = true;
                     DataContext.SaveChanges();
                 }

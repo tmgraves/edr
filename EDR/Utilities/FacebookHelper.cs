@@ -11,6 +11,13 @@ namespace EDR.Utilities
 {
     public class FacebookHelper
     {
+        public static dynamic GetData(string token, string query)
+        {
+            var fb = new FacebookClient(token);
+            dynamic data = fb.Get(query);
+            return (data);
+        }
+
         public static List<FacebookPhoto> GetPhotos(string token)
         {
             var fb = new FacebookClient(token);
