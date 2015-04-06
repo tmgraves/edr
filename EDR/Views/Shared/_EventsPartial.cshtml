@@ -7,7 +7,7 @@
         <a class="btn btn-default" href="@Url.Action("View", "Event", new { id = evt.Id, eventType = evt is Class ? EventType.Class : EventType.Social })" title="@evt.Name" style="text-align: left; width: 100%; display: inline-block; margin-top: 2px;">
             <span class="label label-primary">@evt.NextDate.ToString("ddd, M/d")</span>
             <span class="text-primary">@evt.Name.PadRight(20, ' ').Substring(0, 20)</span>
-            <span class="text-danger">@@@evt.Place.City</span>
+            <span class="text-danger">@@@evt.Place.Name</span>
         </a>
         @*<div class="col-lg-4 col-md-4" style="height: 75px;">
         @if (evt.VideoUrl != null)

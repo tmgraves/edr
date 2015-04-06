@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using EDR.Enums;
+using EDR.Utilities.Validators;
 
 namespace EDR.Models.ViewModels
 {
@@ -189,15 +190,12 @@ namespace EDR.Models.ViewModels
 
     public class ConfirmFacebookEvent : EventBaseViewModel
     {
-        public Event NewEvent { get; set; }
-        public int PlaceId { get; set; }
-        public List<PlaceItem> Places { get; set; }
         public RoleName Role { get; set; }
         public ClassType ClassType { get; set; }
         public SocialType SocialType { get; set; }
-        public PlaceItem NewPlace { get; set; }
         public IEnumerable<DanceStyleListItem> AvailableStyles { get; set; }
         public IEnumerable<DanceStyleListItem> SelectedStyles { get; set; }
+        [RequiredStringArrayValue(ErrorMessage = "Select at least (1) Dance Style")]
         public PostedStyles PostedStyles { get; set; }
     }
 

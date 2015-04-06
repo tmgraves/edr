@@ -106,27 +106,31 @@ namespace EDR.Utilities
                     if (evt.Creator != null && evt.Creator.FacebookToken != null)
                     {
                         var posts = FacebookHelper.GetFeed(fbob.FacebookId, evt.Creator.FacebookToken);
-                        foreach (var post in posts.Where(p => !p.Is_Hidden))
+                        
+                        if (posts != null)
                         {
-                            if (post.Type == "video")
+                            foreach (var post in posts.Where(p => !p.Is_Hidden))
                             {
-                                if (!picturesOnly)
+                                if (post.Type == "video")
                                 {
-                                    lstMedia.Add(new EventMedia() { Event = evt, SourceName = fbob.Name, SourceLink = fbob.Url, Author = evt.Creator, MediaDate = post.Created_Time, MediaType = Enums.MediaType.Video, PhotoUrl = post.Picture, MediaUrl = post.Source, Text = post.Description, Title = post.Description, MediaSource = MediaSource.Facebook, Link = post.Source, Target = target });
+                                    if (!picturesOnly)
+                                    {
+                                        lstMedia.Add(new EventMedia() { Event = evt, SourceName = fbob.Name, SourceLink = fbob.Url, Author = evt.Creator, MediaDate = post.Created_Time, MediaType = Enums.MediaType.Video, PhotoUrl = post.Picture, MediaUrl = post.Source, Text = post.Description, Title = post.Description, MediaSource = MediaSource.Facebook, Link = post.Source, Target = target });
+                                    }
                                 }
-                            }
-                            else if (post.Type == "photo")
-                            {
-                                if (!videosOnly)
+                                else if (post.Type == "photo")
                                 {
-                                    lstMedia.Add(new EventMedia() { Event = evt, SourceName = fbob.Name, SourceLink = fbob.Url, Author = evt.Creator, MediaDate = post.Created_Time, MediaType = Enums.MediaType.Picture, PhotoUrl = post.Picture, Text = post.Description, MediaSource = MediaSource.Facebook, Link = post.Link, Target = target });
+                                    if (!videosOnly)
+                                    {
+                                        lstMedia.Add(new EventMedia() { Event = evt, SourceName = fbob.Name, SourceLink = fbob.Url, Author = evt.Creator, MediaDate = post.Created_Time, MediaType = Enums.MediaType.Picture, PhotoUrl = post.Picture, Text = post.Description, MediaSource = MediaSource.Facebook, Link = post.Link, Target = target });
+                                    }
                                 }
-                            }
-                            else if (post.Type == "status" && !mediaOnly && post.Message != null)
-                            {
-                                if (!videosOnly && !picturesOnly)
+                                else if (post.Type == "status" && !mediaOnly && post.Message != null)
                                 {
-                                    lstMedia.Add(new EventMedia() { Event = evt, SourceName = fbob.Name, SourceLink = fbob.Url, Author = evt.Creator, MediaDate = post.Created_Time, MediaType = Enums.MediaType.Comment, Title = post.Name, Text = post.Message, MediaSource = MediaSource.Facebook, Link = post.Source, Target = target });
+                                    if (!videosOnly && !picturesOnly)
+                                    {
+                                        lstMedia.Add(new EventMedia() { Event = evt, SourceName = fbob.Name, SourceLink = fbob.Url, Author = evt.Creator, MediaDate = post.Created_Time, MediaType = Enums.MediaType.Comment, Title = post.Name, Text = post.Message, MediaSource = MediaSource.Facebook, Link = post.Source, Target = target });
+                                    }
                                 }
                             }
                         }

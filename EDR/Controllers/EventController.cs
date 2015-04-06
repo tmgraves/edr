@@ -1277,17 +1277,19 @@ namespace EDR.Controllers
             var places = new List<Place>();
             //  Fill Places
 
+            //  New Event
             if (model.Event == null)
             {
                 if (model.EventType == EventType.Class)
                 {
-                    model.Event = new Class() { StartDate = DateTime.Today };
+                    model.Event = new Class() { StartDate = DateTime.Today, Place = new Place() };
                 }
                 else
                 {
-                    model.Event = new Social() { StartDate = DateTime.Today };
+                    model.Event = new Social() { StartDate = DateTime.Today, Place = new Place() };
                 }
             }
+            //  New Event
 
             int? placeid = model.Event.Place != null ? (int?)model.Event.Place.Id : null;
             //  Fill Places
@@ -1740,89 +1742,115 @@ namespace EDR.Controllers
 
             if (ModelState.IsValid)
             {
+                var evt = model.Event;
                 try
                 {
-                    int eventId = 0;
-
-                    if (model.PostedStyles == null)
+                    if (DataContext.Events.Where(e => e.FacebookId == evt.FacebookId).Count() == 0)
                     {
-                        model.PostedStyles = new PostedStyles();
-                        model.PostedStyles.DanceStyleIds = new string[0];
-                    }
+                        int eventId = 0;
 
-                    Place pl = new Place();
-                    if (model.PlaceId == 0)
-                    {
-                        if (model.NewPlace.Latitude == 0.0 || model.NewPlace.Longitude == 0.0)
+                        if (model.PostedStyles == null)
                         {
-                            var ad = Geolocation.ParseAddress(model.NewPlace.Address + " " + model.NewPlace.City + ", " + model.NewPlace.State + " " + model.NewPlace.Zip);
-                            model.NewPlace.Longitude = ad.Longitude;
-                            model.NewPlace.Latitude = ad.Latitude;
+                            model.PostedStyles = new PostedStyles();
+                            model.PostedStyles.DanceStyleIds = new string[0];
                         }
-                        pl = model.NewPlace;
-                        pl.PlaceType = Enums.PlaceType.OtherPlace;
-                    }
-                    else if (model.PlaceId > 0)
-                    {
-                        pl = DataContext.Places.Where(p => p.Id == model.PlaceId).FirstOrDefault();
-                    }
-                    else
-                    {
-                        Address ad = new Address();
-                        ad = Utilities.Geolocation.ParseAddress(user.ZipCode != null ? user.ZipCode : "90065");
-                        pl = new Place() { Name = "TBD", PlaceType = Enums.PlaceType.OtherPlace, Zip = user.ZipCode != null ? user.ZipCode : "90065", Address = ad.StreetNumber + " " + ad.StreetName, City = ad.City, State = (Enums.State)System.Enum.Parse(typeof(Enums.State), ad.State), Latitude = ad.Latitude, Longitude = ad.Longitude };
-                    }
-                    model.NewEvent.Place = pl;
 
-                    var obj = new LinkedFacebookObject() { MediaSource = MediaSource.Facebook, Name = model.NewEvent.Name, FacebookId = model.NewEvent.FacebookId, Url = model.NewEvent.FacebookLink, ObjectType = FacebookObjectType.Event };
-                    if (model.EventType == EventType.Class)
-                    {
-                        var cls = new Class() { Name = model.NewEvent.Name, Description = model.NewEvent.Description, FacebookId = model.NewEvent.FacebookId, PhotoUrl = model.NewEvent.PhotoUrl, StartDate = model.NewEvent.StartDate, EndDate = model.NewEvent.EndDate, ClassType = model.ClassType, Place = pl, FacebookLink = model.NewEvent.FacebookLink, Creator = user, DanceStyles = DataContext.DanceStyles.Where(s => model.PostedStyles.DanceStyleIds.Any(ps => ps == s.Id.ToString())).ToList(), Interval = 1, LinkedFacebookObjects = new List<LinkedFacebookObject>() { obj } };
-
-                        if (Session["MyRole"] != null)
+                        //  Import Facebook Place
+                        if (evt.Place.Id == 0)
                         {
-                            if ((RoleName)Session["MyRole"] == RoleName.Teacher)
-                            {
-                                var teacher = DataContext.Teachers.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").Include("Places").FirstOrDefault();
-                                teacher.Classes.Add(cls);
-                                teacher.Places.Add(pl);
-                                DataContext.Entry(teacher).State = EntityState.Modified;
-                                DataContext.SaveChanges();
-                            }
-                            else if ((RoleName)Session["MyRole"] == RoleName.Owner)
-                            {
-                                var owner = DataContext.Owners.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").FirstOrDefault();
-                                owner.Classes.Add(cls);
-                                DataContext.Entry(owner).State = EntityState.Modified;
-                                DataContext.SaveChanges();
-                            }
-                            eventId = cls.Id;
-                        }
-                    }
-                    else
-                    {
-                        var social = new Social() { Name = model.NewEvent.Name, Description = model.NewEvent.Description, FacebookId = model.NewEvent.FacebookId, PhotoUrl = model.NewEvent.PhotoUrl, StartDate = model.NewEvent.StartDate, EndDate = model.NewEvent.EndDate, SocialType = model.SocialType, Place = pl, FacebookLink = model.NewEvent.FacebookLink, Creator = user, DanceStyles = DataContext.DanceStyles.Where(s => model.PostedStyles.DanceStyleIds.Any(ps => ps == s.Id.ToString())).ToList(), Interval = 1, LinkedFacebookObjects = new List<LinkedFacebookObject>() { obj } };
+                            DataContext.Places.Add(evt.Place);
+                            DataContext.SaveChanges();
 
-                        if (Session["MyRole"] != null)
-                        {
-                            if ((RoleName)Session["MyRole"] == RoleName.Promoter)
+                            //  Add the place to user if it's not a Facebook Page
+                            if (evt.Place.FacebookId == null)
                             {
-                                var promoter = DataContext.Promoters.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").FirstOrDefault();
-                                promoter.Socials.Add(social);
-                                DataContext.Entry(promoter).State = EntityState.Modified;
+                                user.Places.Add(evt.Place);
                                 DataContext.SaveChanges();
                             }
-                            else if ((RoleName)Session["MyRole"] == RoleName.Owner)
-                            {
-                                var owner = DataContext.Owners.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").FirstOrDefault();
-                                owner.Socials.Add(social);
-                                DataContext.Entry(owner).State = EntityState.Modified;
-                                DataContext.SaveChanges();
-                            }
-                            eventId = social.Id;
                         }
+                        else
+                        {
+                            DataContext.Places.Attach(evt.Place);
+                        }
+
+                        //Place pl = new Place();
+                        //if (model.PlaceId == 0)
+                        //{
+                        //    if (model.NewPlace.Latitude == 0.0 || model.NewPlace.Longitude == 0.0)
+                        //    {
+                        //        var ad = Geolocation.ParseAddress(model.NewPlace.Address + " " + model.NewPlace.City + ", " + model.NewPlace.State + " " + model.NewPlace.Zip);
+                        //        model.NewPlace.Longitude = ad.Longitude;
+                        //        model.NewPlace.Latitude = ad.Latitude;
+                        //    }
+                        //    pl = model.NewPlace;
+                        //    pl.PlaceType = Enums.PlaceType.OtherPlace;
+                        //}
+                        //else if (model.PlaceId > 0)
+                        //{
+                        //    pl = DataContext.Places.Where(p => p.Id == model.PlaceId).FirstOrDefault();
+                        //}
+                        //else
+                        //{
+                        //    Address ad = new Address();
+                        //    ad = Utilities.Geolocation.ParseAddress(user.ZipCode != null ? user.ZipCode : "90065");
+                        //    pl = new Place() { Name = "TBD", PlaceType = Enums.PlaceType.OtherPlace, Zip = user.ZipCode != null ? user.ZipCode : "90065", Address = ad.StreetNumber + " " + ad.StreetName, City = ad.City, State = (Enums.State)System.Enum.Parse(typeof(Enums.State), ad.State), Latitude = ad.Latitude, Longitude = ad.Longitude };
+                        //}
+                        //evt.Place = pl;
+
+                        var obj = new LinkedFacebookObject() { MediaSource = MediaSource.Facebook, Name = evt.Name, FacebookId = evt.FacebookId, Url = evt.FacebookLink, ObjectType = FacebookObjectType.Event };
+                        if (model.EventType == EventType.Class)
+                        {
+                            var cls = new Class() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = evt.StartDate, EndDate = evt.EndDate, StartTime = evt.StartTime, EndTime = evt.EndTime, ClassType = model.ClassType, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, DanceStyles = DataContext.DanceStyles.Where(s => model.PostedStyles.DanceStyleIds.Any(ps => ps == s.Id.ToString())).ToList(), Interval = 1, IsAvailable = evt.IsAvailable, LinkedFacebookObjects = new List<LinkedFacebookObject>() { obj } };
+
+                            if (Session["MyRole"] != null)
+                            {
+                                if ((RoleName)Session["MyRole"] == RoleName.Teacher)
+                                {
+                                    var teacher = DataContext.Teachers.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").Include("Places").FirstOrDefault();
+                                    teacher.Classes.Add(cls);
+                                    teacher.Places.Add(evt.Place);
+                                    DataContext.Entry(teacher).State = EntityState.Modified;
+                                    DataContext.SaveChanges();
+                                }
+                                else if ((RoleName)Session["MyRole"] == RoleName.Owner)
+                                {
+                                    var owner = DataContext.Owners.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").FirstOrDefault();
+                                    owner.Classes.Add(cls);
+                                    DataContext.Entry(owner).State = EntityState.Modified;
+                                    DataContext.SaveChanges();
+                                }
+                                eventId = cls.Id;
+                            }
+                        }
+                        else
+                        {
+                            var social = new Social() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = evt.StartDate, EndDate = evt.EndDate, SocialType = model.SocialType, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, DanceStyles = DataContext.DanceStyles.Where(s => model.PostedStyles.DanceStyleIds.Any(ps => ps == s.Id.ToString())).ToList(), Interval = 1, IsAvailable = evt.IsAvailable, LinkedFacebookObjects = new List<LinkedFacebookObject>() { obj } };
+
+                            if (Session["MyRole"] != null)
+                            {
+                                if ((RoleName)Session["MyRole"] == RoleName.Promoter)
+                                {
+                                    var promoter = DataContext.Promoters.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").FirstOrDefault();
+                                    promoter.Socials.Add(social);
+                                    DataContext.Entry(promoter).State = EntityState.Modified;
+                                    DataContext.SaveChanges();
+                                }
+                                else if ((RoleName)Session["MyRole"] == RoleName.Owner)
+                                {
+                                    var owner = DataContext.Owners.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").FirstOrDefault();
+                                    owner.Socials.Add(social);
+                                    DataContext.Entry(owner).State = EntityState.Modified;
+                                    DataContext.SaveChanges();
+                                }
+                                eventId = social.Id;
+                            }
+                        }
+                        return RedirectToAction("View", "Event", new { id = eventId, eventType = model.EventType });
                     }
-                    return RedirectToAction("View", "Event", new { id = eventId, eventType = model.EventType });
+                    else 
+                    {
+                        return RedirectToAction("Home", Session["MyRole"] != null ? Session["MyRole"].ToString() : "Dancer", new { username = User.Identity.Name });
+                    }
                 }
                 catch (DbEntityValidationException e)
                 {
@@ -1849,51 +1877,51 @@ namespace EDR.Controllers
                 model.AvailableStyles = styles.OrderBy(x => x.Name);
                 //  Load Dance Styles
 
-                //  Load Places
-                model.Places = new List<PlaceItem>();
-                var blankPlace = new PlaceItem() { Id = 0 };
-                model.Places.Add(blankPlace);
-                if (model.EventType == EventType.Class)
-                {
-                    if (Session["MyRole"] != null)
-                    {
-                        if ((RoleName)Session["MyRole"] == RoleName.Teacher)
-                        {
-                            foreach (var pl in DataContext.Places.Where(p => p.Teachers.Any(t => t.ApplicationUser.Id == userid)))
-                            {
-                                model.Places.Add(new PlaceItem() { Address = pl.Address, Address2 = pl.Address2, City = pl.City, Country = pl.Country, FacebookId = pl.FacebookId, FacebookLink = pl.FacebookLink, Filename = pl.Filename, Id = pl.Id, Latitude = pl.Latitude, Longitude = pl.Longitude, Name = pl.Name, PlaceType = pl.PlaceType, State = pl.State, ThumbnailFilename = pl.ThumbnailFilename, Website = pl.Website, Zip = pl.Zip });
-                            }
-                        }
-                        else
-                        {
-                            foreach (var pl in DataContext.Places.Where(p => p.Owners.Any(o => o.ApplicationUser.Id == userid)))
-                            {
-                                model.Places.Add(new PlaceItem() { Address = pl.Address, Address2 = pl.Address2, City = pl.City, Country = pl.Country, FacebookId = pl.FacebookId, FacebookLink = pl.FacebookLink, Filename = pl.Filename, Id = pl.Id, Latitude = pl.Latitude, Longitude = pl.Longitude, Name = pl.Name, PlaceType = pl.PlaceType, State = pl.State, ThumbnailFilename = pl.ThumbnailFilename, Website = pl.Website, Zip = pl.Zip });
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    if (Session["MyRole"] != null)
-                    {
-                        if ((RoleName)Session["MyRole"] == RoleName.Promoter)
-                        {
-                            foreach (var pl in DataContext.Places.Where(p => p.Promoters.Any(pr => pr.ApplicationUser.Id == userid)))
-                            {
-                                model.Places.Add(new PlaceItem() { Address = pl.Address, Address2 = pl.Address2, City = pl.City, Country = pl.Country, FacebookId = pl.FacebookId, FacebookLink = pl.FacebookLink, Filename = pl.Filename, Id = pl.Id, Latitude = pl.Latitude, Longitude = pl.Longitude, Name = pl.Name, PlaceType = pl.PlaceType, State = pl.State, ThumbnailFilename = pl.ThumbnailFilename, Website = pl.Website, Zip = pl.Zip });
-                            }
-                        }
-                        else
-                        {
-                            foreach (var pl in DataContext.Places.Where(p => p.Owners.Any(o => o.ApplicationUser.Id == userid)))
-                            {
-                                model.Places.Add(new PlaceItem() { Address = pl.Address, Address2 = pl.Address2, City = pl.City, Country = pl.Country, FacebookId = pl.FacebookId, FacebookLink = pl.FacebookLink, Filename = pl.Filename, Id = pl.Id, Latitude = pl.Latitude, Longitude = pl.Longitude, Name = pl.Name, PlaceType = pl.PlaceType, State = pl.State, ThumbnailFilename = pl.ThumbnailFilename, Website = pl.Website, Zip = pl.Zip });
-                            }
-                        }
-                    }
-                }
-                //  Load Places
+                ////  Load Places
+                //model.Places = new List<PlaceItem>();
+                //var blankPlace = new PlaceItem() { Id = 0 };
+                //model.Places.Add(blankPlace);
+                //if (model.EventType == EventType.Class)
+                //{
+                //    if (Session["MyRole"] != null)
+                //    {
+                //        if ((RoleName)Session["MyRole"] == RoleName.Teacher)
+                //        {
+                //            foreach (var pl in DataContext.Places.Where(p => p.Teachers.Any(t => t.ApplicationUser.Id == userid)))
+                //            {
+                //                model.Places.Add(new PlaceItem() { Address = pl.Address, Address2 = pl.Address2, City = pl.City, Country = pl.Country, FacebookId = pl.FacebookId, FacebookLink = pl.FacebookLink, Filename = pl.Filename, Id = pl.Id, Latitude = pl.Latitude, Longitude = pl.Longitude, Name = pl.Name, PlaceType = pl.PlaceType, State = pl.State, ThumbnailFilename = pl.ThumbnailFilename, Website = pl.Website, Zip = pl.Zip });
+                //            }
+                //        }
+                //        else
+                //        {
+                //            foreach (var pl in DataContext.Places.Where(p => p.Owners.Any(o => o.ApplicationUser.Id == userid)))
+                //            {
+                //                model.Places.Add(new PlaceItem() { Address = pl.Address, Address2 = pl.Address2, City = pl.City, Country = pl.Country, FacebookId = pl.FacebookId, FacebookLink = pl.FacebookLink, Filename = pl.Filename, Id = pl.Id, Latitude = pl.Latitude, Longitude = pl.Longitude, Name = pl.Name, PlaceType = pl.PlaceType, State = pl.State, ThumbnailFilename = pl.ThumbnailFilename, Website = pl.Website, Zip = pl.Zip });
+                //            }
+                //        }
+                //    }
+                //}
+                //else
+                //{
+                //    if (Session["MyRole"] != null)
+                //    {
+                //        if ((RoleName)Session["MyRole"] == RoleName.Promoter)
+                //        {
+                //            foreach (var pl in DataContext.Places.Where(p => p.Promoters.Any(pr => pr.ApplicationUser.Id == userid)))
+                //            {
+                //                model.Places.Add(new PlaceItem() { Address = pl.Address, Address2 = pl.Address2, City = pl.City, Country = pl.Country, FacebookId = pl.FacebookId, FacebookLink = pl.FacebookLink, Filename = pl.Filename, Id = pl.Id, Latitude = pl.Latitude, Longitude = pl.Longitude, Name = pl.Name, PlaceType = pl.PlaceType, State = pl.State, ThumbnailFilename = pl.ThumbnailFilename, Website = pl.Website, Zip = pl.Zip });
+                //            }
+                //        }
+                //        else
+                //        {
+                //            foreach (var pl in DataContext.Places.Where(p => p.Owners.Any(o => o.ApplicationUser.Id == userid)))
+                //            {
+                //                model.Places.Add(new PlaceItem() { Address = pl.Address, Address2 = pl.Address2, City = pl.City, Country = pl.Country, FacebookId = pl.FacebookId, FacebookLink = pl.FacebookLink, Filename = pl.Filename, Id = pl.Id, Latitude = pl.Latitude, Longitude = pl.Longitude, Name = pl.Name, PlaceType = pl.PlaceType, State = pl.State, ThumbnailFilename = pl.ThumbnailFilename, Website = pl.Website, Zip = pl.Zip });
+                //            }
+                //        }
+                //    }
+                //}
+                ////  Load Places
 
                 return View(model);
             }
@@ -1904,6 +1932,7 @@ namespace EDR.Controllers
         {
             var model = new ConfirmFacebookEvent();
             var userid = User.Identity.GetUserId();
+            var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
 
             //  Load Dance Styles
             var selectedStyles = new List<DanceStyleListItem>();
@@ -1918,71 +1947,150 @@ namespace EDR.Controllers
             //  Load Dance Styles
 
             model.EventType = eventType;
-            var fbevent = ((List<FacebookEvent>)Session["FacebookEvents"]).Where(x => x.Id == id).FirstOrDefault();
-            model.PlaceId = -1;
-            model.NewPlace = new PlaceItem() { Id = 0, Name = fbevent.Location, Address = fbevent.Address.Street, City = fbevent.Address.City, State = fbevent.Address.State != null ? (State)Enum.Parse(typeof(State), fbevent.Address.State) : State.CA, Zip = fbevent.Address.ZipCode, Latitude = fbevent.Address.Latitude, Longitude = fbevent.Address.Longitude};
-            model.Places = new List<PlaceItem>();
-            var blankPlace = new PlaceItem() { Id = 0 };
-            model.Places.Add(blankPlace);
-            model.NewEvent = new Event() { Name = fbevent.Name, Description = fbevent.Description, StartDate = Convert.ToDateTime(fbevent.StartTime.ToShortDateString()), EndDate = fbevent.EndTime, PhotoUrl = fbevent.CoverPhoto.LargeSource, FacebookId = fbevent.Id, FacebookLink = fbevent.EventLink, Interval = 1 };
-            if (eventType == EventType.Class)
-            {
-                if (Session["MyRole"] != null)
-                {
-                    if ((RoleName)Session["MyRole"] == RoleName.Teacher)
-                    {
-                        foreach (var pl in DataContext.Places.Where(p => p.Teachers.Any(t => t.ApplicationUser.Id == userid)))
-                        {
-                            model.Places.Add(new PlaceItem() { Address = pl.Address, Address2 = pl.Address2, City = pl.City, Country = pl.Country, FacebookId = pl.FacebookId, FacebookLink = pl.FacebookLink, Filename = pl.Filename, Id = pl.Id, Latitude = pl.Latitude, Longitude = pl.Longitude, Name = pl.Name, PlaceType = pl.PlaceType, State = pl.State, ThumbnailFilename = pl.ThumbnailFilename, Website = pl.Website, Zip = pl.Zip });
-                        }
-                    }
-                    else
-                    {
-                        foreach (var pl in DataContext.Places.Where(p => p.Owners.Any(o => o.ApplicationUser.Id == userid)))
-                        {
-                            model.Places.Add(new PlaceItem() { Address = pl.Address, Address2 = pl.Address2, City = pl.City, Country = pl.Country, FacebookId = pl.FacebookId, FacebookLink = pl.FacebookLink, Filename = pl.Filename, Id = pl.Id, Latitude = pl.Latitude, Longitude = pl.Longitude, Name = pl.Name, PlaceType = pl.PlaceType, State = pl.State, ThumbnailFilename = pl.ThumbnailFilename, Website = pl.Website, Zip = pl.Zip });
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if (Session["MyRole"] != null)
-                {
-                    if ((RoleName)Session["MyRole"] == RoleName.Promoter)
-                    {
-                        foreach (var pl in DataContext.Places.Where(p => p.Promoters.Any(pr => pr.ApplicationUser.Id == userid)))
-                        {
-                            model.Places.Add(new PlaceItem() { Address = pl.Address, Address2 = pl.Address2, City = pl.City, Country = pl.Country, FacebookId = pl.FacebookId, FacebookLink = pl.FacebookLink, Filename = pl.Filename, Id = pl.Id, Latitude = pl.Latitude, Longitude = pl.Longitude, Name = pl.Name, PlaceType = pl.PlaceType, State = pl.State, ThumbnailFilename = pl.ThumbnailFilename, Website = pl.Website, Zip = pl.Zip });
-                        }
-                    }
-                    else
-                    {
-                        foreach (var pl in DataContext.Places.Where(p => p.Owners.Any(o => o.ApplicationUser.Id == userid)))
-                        {
-                            model.Places.Add(new PlaceItem() { Address = pl.Address, Address2 = pl.Address2, City = pl.City, Country = pl.Country, FacebookId = pl.FacebookId, FacebookLink = pl.FacebookLink, Filename = pl.Filename, Id = pl.Id, Latitude = pl.Latitude, Longitude = pl.Longitude, Name = pl.Name, PlaceType = pl.PlaceType, State = pl.State, ThumbnailFilename = pl.ThumbnailFilename, Website = pl.Website, Zip = pl.Zip });
-                        }
-                    }
-                }
-            }
+            var fbevent = FacebookHelper.GetEvent(id, user.FacebookToken, "id,cover,description,end_time,is_date_only,location,name,owner,privacy,start_time,ticket_uri,timezone,updated_time,venue,parent_group");            //  ((List<FacebookEvent>)Session["FacebookEvents"]).Where(x => x.Id == id).FirstOrDefault();
+            var available = fbevent.Privacy == "OPEN" ? true : false;
+            model.Event = new Event() { Name = fbevent.Name, Description = fbevent.Description, StartDate = fbevent.StartTime, StartTime = fbevent.StartTime, EndDate = fbevent.EndTime, EndTime = fbevent.EndTime, PhotoUrl = fbevent.CoverPhoto.LargeSource, FacebookId = fbevent.Id, FacebookLink = fbevent.EventLink, Interval = 1, IsAvailable = available };
 
-            if (fbevent.Address.Street != null && fbevent.Address.City != null && fbevent.Address.State != null && fbevent.Address.ZipCode != null)
+            //  Extract Place from Facebook
+            if (fbevent.Address != null)
             {
-                var fbeventAddress = Geolocation.ParseAddress(fbevent.Address.Street + " " + fbevent.Address.City + ", " + fbevent.Address.State + " " + fbevent.Address.ZipCode);
-                var pl = model.Places.Where(p => p.Address == fbeventAddress.Street && p.City == fbeventAddress.City && p.State.ToString() == fbeventAddress.State).FirstOrDefault();
-                if (pl != null)
+                //  Place is a Page in Facebook
+                if (fbevent.Address.FacebookId != null)
                 {
-                    pl.Selected = true;
+                    var place = DataContext.Places.Where(p => p.FacebookId == fbevent.Address.FacebookId).FirstOrDefault();
+
+                    //  Existing Facebook place in the database
+                    if (place != null)
+                    {
+                        model.Event.Place = place;
+                    }
+                    //  New Place from Facebook
+                    else
+                    {
+                        var fbplace = FacebookHelper.GetData(user.FacebookToken, fbevent.Address.FacebookId);
+
+                        var placetype = new PlaceType();
+                        if (fbplace.category_list != null)
+                        {
+                            foreach (dynamic category in fbplace.category_list)
+                            {
+                                //  Search for Dance Instruction category
+                                if (category.name == "Dance Instruction" || category.id == "203916779633178")
+                                {
+                                    placetype = PlaceType.Studio;
+                                    break;
+                                }
+                                else if (category.name == "Dance Club" || category.id == "176139629103647")
+                                {
+                                    placetype = PlaceType.Nightclub;
+                                    break;
+                                }
+                                else if (category.name == "Restaurant" || category.id == "273819889375819")
+                                {
+                                    placetype = PlaceType.Restaurant;
+                                    break;
+                                }
+                                else if (category.name == "Hotel" || category.id == "164243073639257")
+                                {
+                                    placetype = PlaceType.Hotel;
+                                    break;
+                                }
+                                else if (category.name == "Meeting Room" || category.id == "210261102322291")
+                                {
+                                    placetype = PlaceType.ConferenceCenter;
+                                    break;
+                                }
+                                else if (category.name == "Theater" || category.id == "173883042668223")
+                                {
+                                    placetype = PlaceType.Theater;
+                                    break;
+                                }
+                                else
+                                {
+                                    placetype = PlaceType.OtherPlace;
+                                }
+                            }
+                        }
+
+                        model.Event.Place = new Place() { Name = fbevent.Location, Address = fbevent.Address.Street, City = fbevent.Address.City, State = fbevent.Address.State != null ? (State)Enum.Parse(typeof(State), fbevent.Address.State) : State.CA, Zip = fbevent.Address.ZipCode, Country = fbevent.Address.Country, Latitude = fbevent.Address.Latitude, Longitude = fbevent.Address.Longitude, FacebookId = fbevent.Address.FacebookId, PlaceType = placetype, Public = true, Website = fbevent.Address.WebsiteUrl, FacebookLink = fbevent.Address.FacebookUrl, Filename = fbplace.cover != null ? fbplace.cover.source : null, ThumbnailFilename = fbplace.cover != null ? fbplace.cover.source : null };
+                    }
                 }
+                //  Place does not have a Facebook Page
                 else
                 {
-                    blankPlace.Selected = true;
+                    model.Event.Place = new Place() { Name = fbevent.Location, Address = fbevent.Address.Street, City = fbevent.Address.City, State = fbevent.Address.State != null ? (State)Enum.Parse(typeof(State), fbevent.Address.State) : State.CA, Zip = fbevent.Address.ZipCode, Country = fbevent.Address.Country, Latitude = fbevent.Address.Latitude, Longitude = fbevent.Address.Longitude, FacebookId = "0", PlaceType = PlaceType.OtherPlace, Public = false, Website = fbevent.Address.WebsiteUrl, FacebookLink = fbevent.Address.FacebookUrl };
                 }
             }
+            //  Place not in Facebook
             else
             {
-                blankPlace.Selected = true;
+                model.Event.Place = new Place() { PlaceType = PlaceType.OtherPlace, Public = false };
             }
+            //  Extract Place
+
+            //model.PlaceId = -1;
+            //model.NewPlace = new PlaceItem() { Id = 0, Name = fbevent.Location, Address = fbevent.Address.Street, City = fbevent.Address.City, State = fbevent.Address.State != null ? (State)Enum.Parse(typeof(State), fbevent.Address.State) : State.CA, Zip = fbevent.Address.ZipCode, Latitude = fbevent.Address.Latitude, Longitude = fbevent.Address.Longitude, FacebookId = fbevent.Address.FacebookId };
+            //model.Places = new List<PlaceItem>();
+            //var blankPlace = new PlaceItem() { Id = 0 };
+            //model.Places.Add(blankPlace);
+            //if (eventType == EventType.Class)
+            //{
+            //    if (Session["MyRole"] != null)
+            //    {
+            //        if ((RoleName)Session["MyRole"] == RoleName.Teacher)
+            //        {
+            //            foreach (var pl in DataContext.Places.Where(p => p.Teachers.Any(t => t.ApplicationUser.Id == userid)))
+            //            {
+            //                model.Places.Add(new PlaceItem() { Address = pl.Address, Address2 = pl.Address2, City = pl.City, Country = pl.Country, FacebookId = pl.FacebookId, FacebookLink = pl.FacebookLink, Filename = pl.Filename, Id = pl.Id, Latitude = pl.Latitude, Longitude = pl.Longitude, Name = pl.Name, PlaceType = pl.PlaceType, State = pl.State, ThumbnailFilename = pl.ThumbnailFilename, Website = pl.Website, Zip = pl.Zip });
+            //            }
+            //        }
+            //        else
+            //        {
+            //            foreach (var pl in DataContext.Places.Where(p => p.Owners.Any(o => o.ApplicationUser.Id == userid)))
+            //            {
+            //                model.Places.Add(new PlaceItem() { Address = pl.Address, Address2 = pl.Address2, City = pl.City, Country = pl.Country, FacebookId = pl.FacebookId, FacebookLink = pl.FacebookLink, Filename = pl.Filename, Id = pl.Id, Latitude = pl.Latitude, Longitude = pl.Longitude, Name = pl.Name, PlaceType = pl.PlaceType, State = pl.State, ThumbnailFilename = pl.ThumbnailFilename, Website = pl.Website, Zip = pl.Zip });
+            //            }
+            //        }
+            //    }
+            //}
+            //else
+            //{
+            //    if (Session["MyRole"] != null)
+            //    {
+            //        if ((RoleName)Session["MyRole"] == RoleName.Promoter)
+            //        {
+            //            foreach (var pl in DataContext.Places.Where(p => p.Promoters.Any(pr => pr.ApplicationUser.Id == userid)))
+            //            {
+            //                model.Places.Add(new PlaceItem() { Address = pl.Address, Address2 = pl.Address2, City = pl.City, Country = pl.Country, FacebookId = pl.FacebookId, FacebookLink = pl.FacebookLink, Filename = pl.Filename, Id = pl.Id, Latitude = pl.Latitude, Longitude = pl.Longitude, Name = pl.Name, PlaceType = pl.PlaceType, State = pl.State, ThumbnailFilename = pl.ThumbnailFilename, Website = pl.Website, Zip = pl.Zip });
+            //            }
+            //        }
+            //        else
+            //        {
+            //            foreach (var pl in DataContext.Places.Where(p => p.Owners.Any(o => o.ApplicationUser.Id == userid)))
+            //            {
+            //                model.Places.Add(new PlaceItem() { Address = pl.Address, Address2 = pl.Address2, City = pl.City, Country = pl.Country, FacebookId = pl.FacebookId, FacebookLink = pl.FacebookLink, Filename = pl.Filename, Id = pl.Id, Latitude = pl.Latitude, Longitude = pl.Longitude, Name = pl.Name, PlaceType = pl.PlaceType, State = pl.State, ThumbnailFilename = pl.ThumbnailFilename, Website = pl.Website, Zip = pl.Zip });
+            //            }
+            //        }
+            //    }
+            //}
+
+            //if (fbevent.Address.Street != null && fbevent.Address.City != null && fbevent.Address.State != null && fbevent.Address.ZipCode != null)
+            //{
+            //    var fbeventAddress = Geolocation.ParseAddress(fbevent.Address.Street + " " + fbevent.Address.City + ", " + fbevent.Address.State + " " + fbevent.Address.ZipCode);
+            //    var pl = model.Places.Where(p => p.Address == fbeventAddress.Street && p.City == fbeventAddress.City && p.State.ToString() == fbeventAddress.State).FirstOrDefault();
+            //    if (pl != null)
+            //    {
+            //        pl.Selected = true;
+            //    }
+            //    else
+            //    {
+            //        blankPlace.Selected = true;
+            //    }
+            //}
+            //else
+            //{
+            //    blankPlace.Selected = true;
+            //}
 
             return View(model);
         }

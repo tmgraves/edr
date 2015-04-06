@@ -87,6 +87,8 @@ namespace EDR.Models
     public class FacebookAddress : Address
     {
         public string FacebookId;
+        public string WebsiteUrl;
+        public string FacebookUrl;
     }
 
     public class FacebookVideo

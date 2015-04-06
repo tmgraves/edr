@@ -382,6 +382,7 @@
     <Compile Include="Utilities\IdentityExtension.cs" />
     <Compile Include="Utilities\InstagramHelper.cs" />
     <Compile Include="Utilities\SpotifyHelper.cs" />
+    <Compile Include="Utilities\Validators.cs" />
     <Compile Include="Utilities\YelpHelper.cs" />
     <Compile Include="Utilities\YouTubeHelper.cs" />
   </ItemGroup>

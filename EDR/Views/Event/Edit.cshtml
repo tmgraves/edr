@@ -194,6 +194,7 @@
                     </a>
                 }
             </h2>
+            @Html.ValidationSummary("", new { @class = "text-danger" })
             <div class="col-lg-8 col-md-8">
                 <div class="row col-lg-12 col-md-12">
                     @if (Model.EventType == EventType.Class)
