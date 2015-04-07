@@ -523,6 +523,16 @@ namespace EDR.Controllers
                     .FirstOrDefault();
             }
 
+            //  Get Current Facebook Picture/Video
+            if (model.Event.FacebookId != null)
+            {
+                var obj = FacebookHelper.GetData(model.Event.Creator.FacebookToken, model.Event.FacebookId + "?fields=cover");
+                if (obj != null && obj.cover != null)
+                {
+                    model.Event.PhotoUrl = obj.cover.source;
+                }
+            }
+
             return model;
         }
 
@@ -1745,6 +1755,7 @@ namespace EDR.Controllers
                 var evt = model.Event;
                 try
                 {
+                    //  Check if FB event exists
                     if (DataContext.Events.Where(e => e.FacebookId == evt.FacebookId).Count() == 0)
                     {
                         int eventId = 0;

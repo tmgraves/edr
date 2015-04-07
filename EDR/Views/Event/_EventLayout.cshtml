@@ -52,7 +52,9 @@
     <div class="well col-lg-3 col-md-3 col-sm-12 col-xs-12">
         <div class="row">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
-                @if (Model.Event.VideoUrl != null)
+                @Html.Partial("~/Views/Shared/_CoverMediaPartial.cshtml", new EDR.Models.ViewModels.CoverMediaViewModel() { Picture = Model.Event.PhotoUrl != null ? new Picture { Filename = Model.Event.PhotoUrl } : null, Video = Model.Event.VideoUrl != null ? new Video() { VideoUrl = Model.Event.VideoUrl } : null })
+
+                @*@if (Model.Event.VideoUrl != null)
                 {
                     <div style="height: 150px;">
                         @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new Video() { PhotoUrl = Model.Event.PhotoUrl, VideoUrl = Model.Event.VideoUrl })
@@ -72,7 +74,7 @@
                     {
                         <img src="~/Content/images/MissingImage.jpg" style="width: 100%;" />
                     }
-                }
+                }*@
                 @if (User.Identity != null && ((Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)) || (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
                 {
                     <p>

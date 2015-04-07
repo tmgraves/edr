@@ -83,39 +83,39 @@
                 @Html.ValidationMessageFor(model => model.Event.StartDate, "", new { @class = "text-danger" })
             </div>
         </div>
-        <div class="row" style="margin-bottom: 5px;">
-            @Html.HiddenFor(m => m.Event.EndDate)
-            @Html.LabelFor(model => model.Event.EndDate, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
-            <div class="col-md-10 col-lg-9">
-                @if (Model.Event.EndDate != null)
-                {
+        @if (Model.Event.EndDate != null)
+        {
+            <div class="row" style="margin-bottom: 5px;">
+                @Html.HiddenFor(m => m.Event.EndDate)
+                @Html.LabelFor(model => model.Event.EndDate, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
+                <div class="col-md-10 col-lg-9">
                     @(((DateTime)Model.Event.EndDate).ToLongDateString())
-                }
-                @Html.ValidationMessageFor(model => model.Event.EndDate, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model.Event.EndDate, "", new { @class = "text-danger" })
+                </div>
             </div>
-        </div>
-        <div class="row" style="margin-bottom: 5px;">
-            @Html.HiddenFor(m => m.Event.StartTime)
-            <label class="control-label col-lg-3 col-md-2">From</label>
-            <div class="col-lg-9 col-md-10">
-                @if (Model.Event.StartTime != null)
-                {
+        }
+        @if (Model.Event.StartTime != null)
+        {
+            <div class="row" style="margin-bottom: 5px;">
+                @Html.HiddenFor(m => m.Event.StartTime)
+                <label class="control-label col-lg-3 col-md-2">From</label>
+                <div class="col-lg-9 col-md-10">
                     @(((DateTime)Model.Event.StartTime).ToShortTimeString())
-                }
-                @Html.ValidationMessageFor(model => model.Event.StartTime, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model.Event.StartTime, "", new { @class = "text-danger" })
+                </div>
             </div>
-        </div>
-        <div class="row" style="margin-bottom: 5px;">
-            @Html.HiddenFor(m => m.Event.EndTime)
-            <label class="control-label col-lg-3 col-md-2">To</label>
-            <div class="col-lg-9 col-md-10">
-                @if (Model.Event.EndTime != null)
-                {
+        }
+        @if (Model.Event.EndTime != null)
+        {
+            <div class="row" style="margin-bottom: 5px;">
+                @Html.HiddenFor(m => m.Event.EndTime)
+                <label class="control-label col-lg-3 col-md-2">To</label>
+                <div class="col-lg-9 col-md-10">
                     @(((DateTime)Model.Event.EndTime).ToShortTimeString())
-                }
-                @Html.ValidationMessageFor(model => model.Event.EndTime, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model.Event.EndTime, "", new { @class = "text-danger" })
+                </div>
             </div>
-        </div>
+        }
         <div class="row" style="margin-bottom: 5px;">
             @Html.LabelFor(model => model.Event.Name, "Dance Styles", htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
             <div class="col-md-10 col-lg-9">
