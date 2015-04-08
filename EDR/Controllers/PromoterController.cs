@@ -185,6 +185,19 @@ namespace EDR.Controllers
             var socialArray = viewModel.Promoter.Socials.Select(c => c.Id).ToArray();
             viewModel.NewDancers = DataContext.Users.Include("EventMembers").Where(u => u.EventMembers.Any(m => socialArray.Contains(m.Event.Id)));
 
+            //  Load Facebook Events
+            if (User.Identity.IsAuthenticated)
+            {
+                var userid = User.Identity.GetUserId();
+                var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+
+                if (user.FacebookToken != null)
+                {
+                    viewModel.FacebookEvents = FacebookHelper.GetEvents(user.FacebookToken, DateTime.Now).Where(fe => !DataContext.Events.Select(e => e.FacebookId).Contains(fe.Id)).ToList();
+                }
+                //  Load Facebook Events
+            }
+
             return View(viewModel);
         }
 

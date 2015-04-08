@@ -7,36 +7,108 @@
 }
 
 <style>
-    .radio-list div
-    {
-        text-align: left;
-        white-space: normal;
-        vertical-align: text-top;
-        position: relative;
-        margin-top: 5px;
-    }
-    .radio-list input[type="radio"] {
-        vertical-align: top;
-        width: 20px;
-        height: 20px;
-        position: absolute;
-        top: 5px;
-        left: 20px;
-        z-index: 10;   
+    input[type="radio"] + label {
+        padding: 0px 5px 0px 5px;
+        font-weight: normal;
+        font-style: italic;
     }
 
-    .radio-list label {
-        z-index: 5;
-        height: 240px;
-        text-align: left;
-        display:block;
-        padding: 5px 40px;
-    }
-
-    .radio-list input[type="radio"]:checked + label {
-        background-color:#FFCC99;
-    }
 </style>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        var date = '@Model.Event.StartDate';
+        var res = date.split("-");
+        date = new Date(res[1] + "/" + res[2] + "/" + res[0]);
+        setInitialLock(date);
+
+        function setInitialLock(date) {
+            var weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            var daysofmonth = ["blank", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th", "13th", "14th", "15th", "16th", "17th", "18th", "19th", "20th", "21st", "22nd", "23rd", "24th", "25th", "26th", "27th", "28th", "29th", "30th", "31st"];
+            $("#dayofweek").text(weekdays[date.getDay()]);
+            //  $("#eventday").text(daysofmonth[date.getDate()] + " of the Month");
+            var nth = parseInt(date.getDate() / 7) + 1;
+
+            var cb = $('input[type=checkbox][name="PostedMonthDays"][value="' + nth.toString() + '"]');
+            //  var test = $('input[type=checkbox][name="cbtest"]');
+            //  alert(cb.attr("value").valueOf());
+            //  alert(test.attr("value").valueOf());
+            cb.prop("disabled", true);
+            var hcb = $('input[type=hidden][id="HiddenMonthDay"]');
+            hcb.prop("value", cb.prop("value"));
+        }
+
+        function setMonthDay(date) {
+            var weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            var daysofmonth = ["blank", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th", "13th", "14th", "15th", "16th", "17th", "18th", "19th", "20th", "21st", "22nd", "23rd", "24th", "25th", "26th", "27th", "28th", "29th", "30th", "31st"];
+            $("#dayofweek").text(weekdays[date.getDay()]);
+            //  $("#eventday").text(daysofmonth[date.getDate()] + " of the Month");
+            var nth = parseInt(date.getDate() / 7) + 1;
+            var cb1 = $('input[type=checkbox][name="PostedMonthDays"][value="1"]');
+            cb1.prop("disabled", false);
+            var cb2 = $('input[type=checkbox][name="PostedMonthDays"][value="2"]');
+            cb2.prop("disabled", false);
+            var cb3 = $('input[type=checkbox][name="PostedMonthDays"][value="3"]');
+            cb3.prop("disabled", false);
+            var cb4 = $('input[type=checkbox][name="PostedMonthDays"][value="4"]');
+            cb4.prop("disabled", false);
+            cb1.prop("checked", "");
+            cb2.prop("checked", "");
+            cb3.prop("checked", "");
+            cb4.prop("checked", "");
+
+            var cb = $('input[type=checkbox][name="PostedMonthDays"][value="' + nth.toString() + '"]');
+            //  var test = $('input[type=checkbox][name="cbtest"]');
+            //  alert(cb.attr("value").valueOf());
+            //  alert(test.attr("value").valueOf());
+            cb.prop("checked", "checked");
+            cb.prop("disabled", true);
+            var hcb = $('input[type=hidden][id="HiddenMonthDay"]');
+            //  alert(cb.attr("value"));
+            hcb.prop("value", cb.prop("value"));
+
+            //  cb.prop("readonly", "readonly");
+            //  alert(cb.attr("readonly").valueOf());
+            //  alert(cb.promise("readonly").valueOf());
+
+            //  test.prop("checked", "checked");
+            //  .prop("checked",true);
+        }
+
+        $('input[name="Event.Recurring"]').click(function () {
+            if ($(this).attr("value") == "True") {
+                $("#recurring").show();
+            }
+            if ($(this).attr("value") == "False") {
+                $("#recurring").hide();
+            }
+        });
+
+        $('select[id="Event_Frequency"]').change(function () {
+            if ($('option:selected', $(this)).text() == "Daily") {
+                $('#frequency').text('Day(s)');
+                $("#monthly").hide();
+            }
+            if ($('option:selected', $(this)).text() == "Weekly") {
+                $('#frequency').text('Week(s)');
+                $("#monthly").hide();
+            }
+            if ($('option:selected', $(this)).text() == "Monthly") {
+                $('#frequency').text('Month(s)');
+                $("#monthly").show();
+                var date = $('#Event_StartDate').val();
+                var res = date.split("-");
+                date = new Date(res[1] + "/" + res[2] + "/" + res[0]);
+                setMonthDay(date);
+            }
+            if ($('option:selected', $(this)).text() == "Yearly") {
+                $('#frequency').text('Year(s)');
+                $("#monthly").hide();
+            }
+        });
+    });
+</script>
+
 @using (Html.BeginForm())
 {
 @Html.AntiForgeryToken()
@@ -45,6 +117,7 @@
 @Html.HiddenFor(x => x.Event.FacebookId)
 @Html.HiddenFor(x => x.Event.Interval)
 @Html.HiddenFor(x => x.Event.IsAvailable)
+@Html.HiddenFor(x => x.HiddenMonthDay)
 <div class="row">
     <h3>Please Confirm Details for the New @Model.EventType</h3>
     @Html.ValidationSummary("", new { @class = "text-danger" })
@@ -116,6 +189,91 @@
                 </div>
             </div>
         }
+        <div class="row" style="margin-bottom: 5px;">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                @Html.LabelFor(model => model.Event.Recurring, htmlAttributes: new { @class = "control-label" })
+                <span>
+                    @if (!Model.Event.Recurring)
+                    {
+                        @Html.RadioButtonFor(model => model.Event.Recurring, false, new { @checked = "checked", id = "recurring_no" })
+                    }
+                    else
+                    {
+                        @Html.RadioButtonFor(model => model.Event.Recurring, false, new { id = "recurring_no" })
+                    }
+                    <label for="recurring_no">NO</label>
+                </span>
+                <span>
+                    @if (Model.Event.Recurring)
+                    {
+                        @Html.RadioButtonFor(model => model.Event.Recurring, true, new { @checked = "checked", id = "recurring_yes" } )
+                    }
+                    else
+                    {
+                        @Html.RadioButtonFor(model => model.Event.Recurring, true, new { id = "recurring_yes" } )
+                    }
+                    <label for="recurring_yes">YES</label>
+                </span>
+            </div>
+            <div class="row col-lg-12 col-md-12">
+                <div class="col-lg-3 col-md-3"></div>
+                <div class="col-md-9 col-lg-9">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="recurring" style="margin-top: 5px;" @(Model.Event.Recurring ? "" : "hidden")>
+                        <div class="row">
+                            <span class="control-label col-lg-3 col-md-3 text-warning">Repeats</span>
+                            <div class="col-md-9 col-lg-9">
+                                @Html.EnumDropDownListFor(model => model.Event.Frequency, htmlAttributes: new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Event.Frequency, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 5px;">
+                            <span class="control-label col-lg-3 col-md-3 text-warning">Every</span>
+                            <div class="col-md-4 col-lg-4">
+                                @Html.TextBoxFor(model => model.Event.Interval, htmlAttributes: new { @class = "form-control", @type = "number", @min = "1", @max = "200" })
+                                @Html.ValidationMessageFor(model => model.Event.Interval, "", new { @class = "text-danger" })
+                            </div>
+                            <label class="text-warning" id="frequency" style="font-weight: normal; height: 30px; vertical-align: bottom;">
+                                @if (Model.Event.Frequency == EDR.Models.Frequency.Daily)
+                                {
+                                    @: Day(s)
+                            }
+                                else if (Model.Event.Frequency == EDR.Models.Frequency.Weekly)
+                                {
+                                    @: Week(s)
+                            }
+                                else if (Model.Event.Frequency == EDR.Models.Frequency.Monthly)
+                                {
+                                    @: Month(s)
+                            }
+                                else if (Model.Event.Frequency == EDR.Models.Frequency.Yearly)
+                                {
+                                    @: Year(s)
+                            }
+                            </label>
+                        </div>
+                        <div class="row col-lg-12 col-md-12" id="monthly" style="padding-top: 5px; margin-top: 5px;" @(Model.Event.Frequency == EDR.Models.Frequency.Monthly ? "" : "hidden='hidden'")>
+                            <div class="panel panel-info">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <span class="control-label col-lg-3 col-md-3 text-warning">On the </span>
+                                        <span class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                            @Html.CheckBoxListFor(model => model.PostedMonthDays,
+                                                    model => model.MonthDays,
+                                                    item => item.Value,
+                                                    item => item.Text,
+                                                    model => model.SelectedMonthDays,
+                                                    new HtmlListInfo(HtmlTag.table, 2, new { @class = "checkboxlist text-warning" }, TextLayout.Default))
+                                        </span>
+                                        <label class="col-lg-1 col-md-1 text-warning" id="dayofweek">@Model.Event.StartDate.DayOfWeek</label>
+                                        @Html.HiddenFor(x => x.HiddenMonthDay)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="row" style="margin-bottom: 5px;">
             @Html.LabelFor(model => model.Event.Name, "Dance Styles", htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
             <div class="col-md-10 col-lg-9">

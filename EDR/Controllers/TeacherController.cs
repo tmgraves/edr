@@ -147,8 +147,6 @@ namespace EDR.Controllers
         [Authorize]
         public ActionResult Home(string username)
         {
-            var userid = User.Identity.GetUserId();
-            var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
             if (String.IsNullOrWhiteSpace(username))
             {
                 if (User != null)
@@ -229,11 +227,17 @@ namespace EDR.Controllers
             viewModel.NewStudents = DataContext.Users.Include("Events").Where(u => u.Events.Any(e => classArray.Contains(e.Id)));
 
             //  Load Facebook Events
-            if (user.FacebookToken != null)
+            if (User.Identity.IsAuthenticated)
             {
-                viewModel.FacebookEvents = FacebookHelper.GetEvents(user.FacebookToken, DateTime.Now).Where(fe => !DataContext.Events.Select(e => e.FacebookId).Contains(fe.Id)).ToList();
+                var userid = User.Identity.GetUserId();
+                var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+
+                if (user.FacebookToken != null)
+                {
+                    viewModel.FacebookEvents = FacebookHelper.GetEvents(user.FacebookToken, DateTime.Now).Where(fe => !DataContext.Events.Select(e => e.FacebookId).Contains(fe.Id)).ToList();
+                }
+                //  Load Facebook Events
             }
-            //  Load Facebook Events
 
             Session["ReturnUrl"] = Url.Action("Home", "Teacher", new { username = User.Identity.Name });
 

@@ -75,13 +75,15 @@
                         <img src="~/Content/images/MissingImage.jpg" style="width: 100%;" />
                     }
                 }*@
-                @if (User.Identity != null && ((Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)) || (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
+                @if (Model.Event.FacebookId == null)
                 {
-                    <p>
-                        <a style="font-size: small;" href="@Url.Action("ChangeCover", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">Change Cover</a>
-                    </p>
+                    if (User.Identity != null && ((Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)) || (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
+                    {
+                        <p>
+                            <a style="font-size: small;" href="@Url.Action("ChangeCover", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">Change Cover</a>
+                        </p>
+                    }
                 }
-
 
                 <div class="row">
                     <label class="control-label col-lg-3 col-md-3 col-sm-3 col-xs-3">
@@ -128,9 +130,12 @@
                         @if (!Model.Event.AllDay)
                         {
                             <br />
-                            if (Model.Event.StartTime != null && Model.Event.EndTime != null)
+                            if (Model.Event.StartTime != null)
                             {
                                 @(((DateTime)Model.Event.StartTime).ToString("%h:mm tt"))
+                            }
+                            if (Model.Event.EndTime != null)
+                            {
                                 @:~
                                 @(((DateTime)Model.Event.EndTime).ToString("%h:mm tt"))
                             }

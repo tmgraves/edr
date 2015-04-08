@@ -17,5 +17,6 @@ namespace EDR.Models.ViewModels
         public IEnumerable<ApplicationUser> NewDancers { get; set; }
         public EventListViewModel Events { get; set; }
         public List<RoleName> Roles { get; set; }
+        public List<FacebookEvent> FacebookEvents { get; set; }
     }
 }

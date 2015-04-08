@@ -197,6 +197,11 @@ namespace EDR.Models.ViewModels
         public IEnumerable<DanceStyleListItem> SelectedStyles { get; set; }
         [RequiredStringArrayValue(ErrorMessage = "Select at least (1) Dance Style")]
         public PostedStyles PostedStyles { get; set; }
+        public List<SelectListItem> MonthDays { get; set; }
+        public List<SelectListItem> SelectedMonthDays { get; set; }
+        public string[] PostedMonthDays { get; set; }
+        public string MonthDay { get; set; }
+        public string HiddenMonthDay { get; set; }
     }
 
     public class EventLinkedFacebookEventContainer : EventBaseViewModel

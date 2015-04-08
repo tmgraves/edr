@@ -1750,9 +1750,22 @@ namespace EDR.Controllers
             var userid = User.Identity.GetUserId();
             var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
 
+            //  Update Month Days
+            if (model.PostedMonthDays != null)
+            {
+                model.Event.MonthDays = String.Join("-", model.PostedMonthDays) + "-" + model.HiddenMonthDay;
+            }
+            else
+            {
+                model.Event.MonthDays = model.HiddenMonthDay;
+            }
+            //  Update Month Days
+
+
             if (ModelState.IsValid)
             {
                 var evt = model.Event;
+
                 try
                 {
                     //  Check if FB event exists
@@ -1811,7 +1824,7 @@ namespace EDR.Controllers
                         var obj = new LinkedFacebookObject() { MediaSource = MediaSource.Facebook, Name = evt.Name, FacebookId = evt.FacebookId, Url = evt.FacebookLink, ObjectType = FacebookObjectType.Event };
                         if (model.EventType == EventType.Class)
                         {
-                            var cls = new Class() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = evt.StartDate, EndDate = evt.EndDate, StartTime = evt.StartTime, EndTime = evt.EndTime, ClassType = model.ClassType, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, DanceStyles = DataContext.DanceStyles.Where(s => model.PostedStyles.DanceStyleIds.Any(ps => ps == s.Id.ToString())).ToList(), Interval = 1, IsAvailable = evt.IsAvailable, LinkedFacebookObjects = new List<LinkedFacebookObject>() { obj } };
+                            var cls = new Class() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = evt.StartDate, EndDate = evt.EndDate, StartTime = evt.StartTime, EndTime = evt.EndTime, ClassType = model.ClassType, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, DanceStyles = DataContext.DanceStyles.Where(s => model.PostedStyles.DanceStyleIds.Any(ps => ps == s.Id.ToString())).ToList(), Interval = 1, IsAvailable = evt.IsAvailable, LinkedFacebookObjects = new List<LinkedFacebookObject>() { obj }, MonthDays = evt.MonthDays };
 
                             if (Session["MyRole"] != null)
                             {
@@ -1835,7 +1848,7 @@ namespace EDR.Controllers
                         }
                         else
                         {
-                            var social = new Social() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = evt.StartDate, EndDate = evt.EndDate, SocialType = model.SocialType, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, DanceStyles = DataContext.DanceStyles.Where(s => model.PostedStyles.DanceStyleIds.Any(ps => ps == s.Id.ToString())).ToList(), Interval = 1, IsAvailable = evt.IsAvailable, LinkedFacebookObjects = new List<LinkedFacebookObject>() { obj } };
+                            var social = new Social() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = evt.StartDate, EndDate = evt.EndDate, StartTime = evt.StartTime, EndTime = evt.EndTime, SocialType = model.SocialType, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, DanceStyles = DataContext.DanceStyles.Where(s => model.PostedStyles.DanceStyleIds.Any(ps => ps == s.Id.ToString())).ToList(), Interval = 1, IsAvailable = evt.IsAvailable, LinkedFacebookObjects = new List<LinkedFacebookObject>() { obj }, MonthDays = evt.MonthDays };
 
                             if (Session["MyRole"] != null)
                             {
@@ -1887,6 +1900,26 @@ namespace EDR.Controllers
                 }
                 model.AvailableStyles = styles.OrderBy(x => x.Name);
                 //  Load Dance Styles
+
+                //  For Month Days Checkbox List
+                var selectedMonthDays = new List<SelectListItem>();
+                string[] daysarray;
+                model.SelectedMonthDays = new List<SelectListItem>();
+                if (model.Event.MonthDays != null)
+                {
+                    daysarray = model.Event.MonthDays.Split(new char[] { '-' });
+                    foreach (var day in daysarray)
+                    {
+                        model.SelectedMonthDays.Add(new SelectListItem() { Value = day, Text = day });
+                    }
+                }
+                model.MonthDays = new List<SelectListItem>() { new SelectListItem() { Value = "1", Text = "1st" }, new SelectListItem() { Value = "2", Text = "2nd" }, new SelectListItem() { Value = "3", Text = "3rd" }, new SelectListItem() { Value = "4", Text = "4th" } };
+                //  For Month Days Checkbox List
+
+                //  Set Month day text
+                var daysofmonth = new string[] { "blank", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th", "13th", "14th", "15th", "16th", "17th", "18th", "19th", "20th", "21st", "22nd", "23rd", "24th", "25th", "26th", "27th", "28th", "29th", "30th", "31st" };
+                model.MonthDay = daysofmonth[model.Event.StartDate.Day];
+                //  Set Month day text
 
                 ////  Load Places
                 //model.Places = new List<PlaceItem>();
@@ -1961,6 +1994,26 @@ namespace EDR.Controllers
             var fbevent = FacebookHelper.GetEvent(id, user.FacebookToken, "id,cover,description,end_time,is_date_only,location,name,owner,privacy,start_time,ticket_uri,timezone,updated_time,venue,parent_group");            //  ((List<FacebookEvent>)Session["FacebookEvents"]).Where(x => x.Id == id).FirstOrDefault();
             var available = fbevent.Privacy == "OPEN" ? true : false;
             model.Event = new Event() { Name = fbevent.Name, Description = fbevent.Description, StartDate = fbevent.StartTime, StartTime = fbevent.StartTime, EndDate = fbevent.EndTime, EndTime = fbevent.EndTime, PhotoUrl = fbevent.CoverPhoto.LargeSource, FacebookId = fbevent.Id, FacebookLink = fbevent.EventLink, Interval = 1, IsAvailable = available };
+
+            //  For Month Days Checkbox List
+            var selectedMonthDays = new List<SelectListItem>();
+            string[] daysarray;
+            model.SelectedMonthDays = new List<SelectListItem>();
+            if (model.Event.MonthDays != null)
+            {
+                daysarray = model.Event.MonthDays.Split(new char[] { '-' });
+                foreach (var day in daysarray)
+                {
+                    model.SelectedMonthDays.Add(new SelectListItem() { Value = day, Text = day });
+                }
+            }
+            model.MonthDays = new List<SelectListItem>() { new SelectListItem() { Value = "1", Text = "1st" }, new SelectListItem() { Value = "2", Text = "2nd" }, new SelectListItem() { Value = "3", Text = "3rd" }, new SelectListItem() { Value = "4", Text = "4th" } };
+            //  For Month Days Checkbox List
+
+            //  Set Month day text
+            var daysofmonth = new string[] { "blank", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th", "13th", "14th", "15th", "16th", "17th", "18th", "19th", "20th", "21st", "22nd", "23rd", "24th", "25th", "26th", "27th", "28th", "29th", "30th", "31st" };
+            model.MonthDay = daysofmonth[model.Event.StartDate.Day];
+            //  Set Month day text
 
             //  Extract Place from Facebook
             if (fbevent.Address != null)
