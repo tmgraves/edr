@@ -261,33 +261,34 @@ namespace EDR.Utilities
                     add.Country = address.Country;
                 }
 
-                //  Get Place
+                //  Get Place from Page
                 if (eventdata.venue.id != null)
                 {
                     var place = client.Get(eventdata.venue.id);
                     add.WebsiteUrl = place.website;
                     add.FacebookUrl = "https://www.facebook.com/" + place.username;
+                    add.Location = place.name;
                 }
-                //  Get Place
-            }
-
-            if (add.FacebookId == null && eventdata.venue != null)
-            {
-                if (eventdata.venue.name != null)
+                //  Place is not a Page
+                else
                 {
-                    var address = Geolocation.ParseAddress(eventdata.venue.name);
-
-                    if (address != null)
+                    if (eventdata.venue.name != null)
                     {
-                        add.City = address.City;
-                        add.Country = address.Country;
-                        add.Latitude = address.Latitude;
-                        add.Longitude = address.Longitude;
-                        add.State = address.State != null ? address.State.ToString() : null;
-                        add.Street = address.Street;
-                        add.ZipCode = address.ZipCode;
+                        address = Geolocation.ParseAddress(eventdata.venue.name);
+
+                        if (address != null)
+                        {
+                            add.City = address.City;
+                            add.Country = address.Country;
+                            add.Latitude = address.Latitude;
+                            add.Longitude = address.Longitude;
+                            add.State = address.State != null ? address.State.ToString() : null;
+                            add.Street = address.Street;
+                            add.ZipCode = address.ZipCode;
+                        }
                     }
                 }
+                //  Get Place
             }
 
             var evt = new FacebookEvent()
@@ -296,7 +297,7 @@ namespace EDR.Utilities
                 Description = eventdata.description,
                 EndTime = eventdata.end_time != null ? DateTime.Parse(eventdata.end_time) : null,
                 IsDateOnly = eventdata.is_date_only,
-                Location = eventdata.location,
+                Location = add.Location,
                 Name = eventdata.name,
                 //  Owner = ev.owner,
                 Privacy = eventdata.privacy,

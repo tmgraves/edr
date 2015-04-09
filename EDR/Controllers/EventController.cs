@@ -2031,58 +2031,64 @@ namespace EDR.Controllers
                     //  New Place from Facebook
                     else
                     {
-                        var fbplace = FacebookHelper.GetData(user.FacebookToken, fbevent.Address.FacebookId);
-
-                        var placetype = new PlaceType();
-                        if (fbplace.category_list != null)
+                        //  Place has a Page in Facebook
+                        if (fbevent.Address.FacebookId != null)
                         {
-                            foreach (dynamic category in fbplace.category_list)
+                            var fbplace = FacebookHelper.GetData(user.FacebookToken, fbevent.Address.FacebookId);
+
+                            var placetype = new PlaceType();
+                            if (fbplace.category_list != null)
                             {
-                                //  Search for Dance Instruction category
-                                if (category.name == "Dance Instruction" || category.id == "203916779633178")
+                                foreach (dynamic category in fbplace.category_list)
                                 {
-                                    placetype = PlaceType.Studio;
-                                    break;
-                                }
-                                else if (category.name == "Dance Club" || category.id == "176139629103647")
-                                {
-                                    placetype = PlaceType.Nightclub;
-                                    break;
-                                }
-                                else if (category.name == "Restaurant" || category.id == "273819889375819")
-                                {
-                                    placetype = PlaceType.Restaurant;
-                                    break;
-                                }
-                                else if (category.name == "Hotel" || category.id == "164243073639257")
-                                {
-                                    placetype = PlaceType.Hotel;
-                                    break;
-                                }
-                                else if (category.name == "Meeting Room" || category.id == "210261102322291")
-                                {
-                                    placetype = PlaceType.ConferenceCenter;
-                                    break;
-                                }
-                                else if (category.name == "Theater" || category.id == "173883042668223")
-                                {
-                                    placetype = PlaceType.Theater;
-                                    break;
-                                }
-                                else
-                                {
-                                    placetype = PlaceType.OtherPlace;
+                                    //  Search for Dance Instruction category
+                                    if (category.name == "Dance Instruction" || category.id == "203916779633178")
+                                    {
+                                        placetype = PlaceType.Studio;
+                                        break;
+                                    }
+                                    else if (category.name == "Dance Club" || category.id == "176139629103647")
+                                    {
+                                        placetype = PlaceType.Nightclub;
+                                        break;
+                                    }
+                                    else if (category.name == "Restaurant" || category.id == "273819889375819")
+                                    {
+                                        placetype = PlaceType.Restaurant;
+                                        break;
+                                    }
+                                    else if (category.name == "Hotel" || category.id == "164243073639257")
+                                    {
+                                        placetype = PlaceType.Hotel;
+                                        break;
+                                    }
+                                    else if (category.name == "Meeting Room" || category.id == "210261102322291")
+                                    {
+                                        placetype = PlaceType.ConferenceCenter;
+                                        break;
+                                    }
+                                    else if (category.name == "Theater" || category.id == "173883042668223")
+                                    {
+                                        placetype = PlaceType.Theater;
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        placetype = PlaceType.OtherPlace;
+                                    }
                                 }
                             }
-                        }
 
-                        model.Event.Place = new Place() { Name = fbevent.Location, Address = fbevent.Address.Street, City = fbevent.Address.City, State = fbevent.Address.State != null ? (State)Enum.Parse(typeof(State), fbevent.Address.State) : State.CA, Zip = fbevent.Address.ZipCode, Country = fbevent.Address.Country, Latitude = fbevent.Address.Latitude, Longitude = fbevent.Address.Longitude, FacebookId = fbevent.Address.FacebookId, PlaceType = placetype, Public = true, Website = fbevent.Address.WebsiteUrl, FacebookLink = fbevent.Address.FacebookUrl, Filename = fbplace.cover != null ? fbplace.cover.source : null, ThumbnailFilename = fbplace.cover != null ? fbplace.cover.source : null };
+                            model.Event.Place = new Place() { Name = fbevent.Location, Address = fbevent.Address.Street, City = fbevent.Address.City, State = fbevent.Address.State != null ? (State)Enum.Parse(typeof(State), fbevent.Address.State) : State.CA, Zip = fbevent.Address.ZipCode, Country = fbevent.Address.Country, Latitude = fbevent.Address.Latitude, Longitude = fbevent.Address.Longitude, FacebookId = fbevent.Address.FacebookId, PlaceType = placetype, Public = true, Website = fbevent.Address.WebsiteUrl, FacebookLink = fbevent.Address.FacebookUrl, Filename = fbplace.cover != null ? fbplace.cover.source : null, ThumbnailFilename = fbplace.cover != null ? fbplace.cover.source : null };
+                        }
                     }
                 }
                 //  Place does not have a Facebook Page
                 else
                 {
-                    model.Event.Place = new Place() { Name = fbevent.Location, Address = fbevent.Address.Street, City = fbevent.Address.City, State = fbevent.Address.State != null ? (State)Enum.Parse(typeof(State), fbevent.Address.State) : State.CA, Zip = fbevent.Address.ZipCode, Country = fbevent.Address.Country, Latitude = fbevent.Address.Latitude, Longitude = fbevent.Address.Longitude, FacebookId = "0", PlaceType = PlaceType.OtherPlace, Public = false, Website = fbevent.Address.WebsiteUrl, FacebookLink = fbevent.Address.FacebookUrl };
+                    var placetype = new PlaceType();
+                    placetype = eventType == EventType.Class ? PlaceType.Studio : PlaceType.Nightclub;
+                    model.Event.Place = new Place() { Name = fbevent.Location, Address = fbevent.Address.Street, City = fbevent.Address.City, State = fbevent.Address.State != null ? (State)Enum.Parse(typeof(State), fbevent.Address.State) : State.CA, Zip = fbevent.Address.ZipCode, Country = fbevent.Address.Country, Latitude = fbevent.Address.Latitude, Longitude = fbevent.Address.Longitude, PlaceType = placetype, Public = false, Website = fbevent.Address.WebsiteUrl, FacebookLink = fbevent.Address.FacebookUrl };
                 }
             }
             //  Place not in Facebook

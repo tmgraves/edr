@@ -227,6 +227,16 @@ namespace EDR.Controllers
                                     .ToList();
             viewModel.Socials.MediaUpdates = EventHelper.BuildAllUpdates(viewModel.Socials.Events, MediaTarget.Place);
 
+            //  Get Current Facebook Picture/Video
+            if (viewModel.Place.FacebookId != null)
+            {
+                //  var obj = FacebookHelper.GetData(viewModel.Place.Creator.FacebookToken, model.Event.FacebookId + "?fields=cover");
+                //if (obj != null && obj.cover != null)
+                //{
+                //    model.Event.PhotoUrl = obj.cover.source;
+                //}
+            }
+
             ////  viewModel.Workshops = DataContext.Events.Include("Teachers").Include("Teachers.ApplicationUser").Include("DanceStyles").Include("EventMembers.Member").OfType<Workshop>().Where(c => c.Place.Id == id).Where(x => x.IsAvailable == true).Where(y => !y.Recurring ? (y.StartDate >= DateTime.Now) : (y.StartDate <= date && (y.EndDate == null || y.EndDate >= DateTime.Now))).OrderBy(z => z.StartDate).ToList();
             //var Events = DataContext.Events.Include("DanceStyles").Include("EventMembers.Member").Include("Reviews").Where(c => c.Place.Id == id).Where(x => x.IsAvailable == true).Where(y => !y.Recurring ? (y.StartDate >= DateTime.Now) : (y.StartDate <= date && (y.EndDate == null || y.EndDate >= DateTime.Now))).OrderBy(z => z.StartDate).ToList();
 

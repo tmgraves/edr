@@ -53,12 +53,12 @@
                 foreach (var evt in Model.FacebookEvents.OrderBy(e => e.StartTime))
                 {
                     <div class="row" style="padding: 2px;">
-                        <div class="label label-default col-lg-2 col-md-2 col-sm-2 col-xs-2" style="padding-right: 2px;">
+                        <div class="label label-warning col-lg-3 col-md-3 col-sm-3 col-xs-3" style="padding-right: 2px; font-size: 12pt;">
                             <span>@evt.StartTime.ToString("ddd, M/d")</span>
                         </div>
-                        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8">
-                            <span class="text-primary" style="white-space: normal;">
-                                <a href="@Url.Content(evt.EventLink)" title="@evt.Name" style="white-space: normal; text-align: left;" target="_blank">
+                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            <span class="text-primary">
+                                <a href="@Url.Content(evt.EventLink)" title="@evt.Name" style="text-align: left;" target="_blank">
                                     @evt.Name
                                 </a>
                             </span>

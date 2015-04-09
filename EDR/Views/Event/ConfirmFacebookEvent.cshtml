@@ -317,7 +317,15 @@
                 else
                 {
                     @Html.HiddenFor(m => m.Event.Place.Id)
-                    @Html.HiddenFor(m => m.Event.Place.Name)
+                    if(Model.Event.Place.FacebookId == "0")
+                    {
+                        @Html.EditorFor(model => model.Event.Place.Name, new { htmlAttributes = new { @class = "form-control", @placeholder = "Place Name" } })
+                        @Html.ValidationMessageFor(model => model.Event.Place.Name, "", new { @class = "text-danger" })
+                    }
+                    else
+                    {
+                        @Html.HiddenFor(m => m.Event.Place.Name)
+                    }
                     @Html.HiddenFor(m => m.Event.Place.PlaceType)
                     @Html.HiddenFor(m => m.Event.Place.Address)
                     @Html.HiddenFor(m => m.Event.Place.City)

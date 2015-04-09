@@ -4,11 +4,15 @@
 
 @foreach (var evt in Model.OrderBy(c => c.NextDate))
 {
-        <a class="btn btn-default" href="@Url.Action("View", "Event", new { id = evt.Id, eventType = evt is Class ? EventType.Class : EventType.Social })" title="@evt.Name" style="text-align: left; width: 100%; display: inline-block; margin-top: 2px;">
-            <span class="label label-primary">@evt.NextDate.ToString("ddd, M/d")</span>
-            <span class="text-primary">@evt.Name.PadRight(20, ' ').Substring(0, 20)</span>
-            <span class="text-danger">@@@evt.Place.Name</span>
-        </a>
+    <a class="btn btn-default col-lg-12 col-md-12 col-sm-12 col-xs-12" href="@Url.Action("View", "Event", new { id = evt.Id, eventType = evt is Class ? EventType.Class : EventType.Social })" title="@evt.Name @("@" + evt.Place.Name)">
+        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 label label-primary" style="font-size: 12pt;">@evt.NextDate.ToString("ddd, M/d")</div>
+        <div class="text-primary col-lg-9 col-md-9 col-sm-9 col-xs-9">
+            <div style="width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                @evt.Name
+            </div>
+        </div>
+        @*<span class="text-danger">@@@evt.Place.Name</span>*@
+    </a>
         @*<div class="col-lg-4 col-md-4" style="height: 75px;">
         @if (evt.VideoUrl != null)
         {

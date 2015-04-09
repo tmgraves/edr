@@ -53,19 +53,23 @@
         <div class="row">
             <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
                 <div style="text-align: center;">
-                    @if (Model.Place.Filename != null)
+                    @Html.Partial("~/Views/Shared/_CoverMediaPartial.cshtml", new EDR.Models.ViewModels.CoverMediaViewModel() { Picture = Model.Place.Filename != null ? new Picture { Filename = Model.Place.Filename } : null, Video = null })
+                    @*@if (Model.Place.Filename != null)
                     {
                         <img style="max-width: 100%;" src="@Url.Content(Model.Place.Filename)" />
                     }
                     else
                     {
                         <img style="max-width: 100%;" src="~/Content/images/NoImage.png" />
-                    }
-                    @if (User.Identity != null && Model.Place.Owners.Where(o => o.ApplicationUser.UserName == User.Identity.Name).Count() == 1)
+                    }*@
+                    @if (Model.Place.FacebookId == null)
                     {
-                        <p>
-                            <a style="font-size: small;" href="@Url.Action("ChangePicture", "Place")">Change Picture</a>
-                        </p>
+                        if (User.Identity != null && Model.Place.Owners.Where(o => o.ApplicationUser.UserName == User.Identity.Name).Count() == 1)
+                        {
+                            <p>
+                                <a style="font-size: small;" href="@Url.Action("ChangePicture", "Place")">Change Picture</a>
+                            </p>
+                        }
                     }
                 </div>
             </div>
