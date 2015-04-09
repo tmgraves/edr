@@ -230,11 +230,11 @@ namespace EDR.Controllers
             //  Get Current Facebook Picture/Video
             if (viewModel.Place.FacebookId != null)
             {
-                //  var obj = FacebookHelper.GetData(viewModel.Place.Creator.FacebookToken, model.Event.FacebookId + "?fields=cover");
-                //if (obj != null && obj.cover != null)
-                //{
-                //    model.Event.PhotoUrl = obj.cover.source;
-                //}
+                var obj = FacebookHelper.GetData(FacebookHelper.GetGlobalToken(), viewModel.Place.FacebookId + "?fields=cover");
+                if (obj != null && obj.cover != null)
+                {
+                    viewModel.Place.Filename = obj.cover.source;
+                }
             }
 
             ////  viewModel.Workshops = DataContext.Events.Include("Teachers").Include("Teachers.ApplicationUser").Include("DanceStyles").Include("EventMembers.Member").OfType<Workshop>().Where(c => c.Place.Id == id).Where(x => x.IsAvailable == true).Where(y => !y.Recurring ? (y.StartDate >= DateTime.Now) : (y.StartDate <= date && (y.EndDate == null || y.EndDate >= DateTime.Now))).OrderBy(z => z.StartDate).ToList();

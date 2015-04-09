@@ -824,6 +824,7 @@
     <Content Include="Views\Shared\_EventsPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Views\Facebook\" />
     <Folder Include="Views\Instagram\" />
     <Folder Include="Views\Series\" />
   </ItemGroup>

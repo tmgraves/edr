@@ -1,4 +1,5 @@
-﻿using EDR.Models;
+﻿using EDR.Data;
+using EDR.Models;
 using Facebook;
 using System;
 using System.Collections;
@@ -6,11 +7,21 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Web;
+using EDR.Controllers;
+using System.Configuration;
 
 namespace EDR.Utilities
 {
-    public class FacebookHelper
+    public class FacebookHelper : BaseController
     {
+        public static string GetGlobalToken()
+        {
+            ApplicationDbContext context = new ApplicationDbContext();
+            var email = ConfigurationManager.AppSettings["GlobalFacebookUserEmail"];
+            var user = context.Users.Where(u => u.Email == email).FirstOrDefault();
+            return user.FacebookToken;
+        }
+
         public static dynamic GetData(string token, string query)
         {
             var fb = new FacebookClient(token);
