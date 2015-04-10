@@ -1119,21 +1119,22 @@ namespace EDR.Controllers
         [HttpPost]
         public ActionResult Edit(EventEditViewModel model)
         {
-            ModelState["Event.Place.Name"].Errors.Clear();
-            ModelState["Event.Place.Address"].Errors.Clear();
-            ModelState["Event.Place.City"].Errors.Clear();
-            ModelState["Event.Place.State"].Errors.Clear();
-
             if (model.Event.Place.Id != 0)
             {
                 ModelState["NewPlace.Name"].Errors.Clear();
                 ModelState["NewPlace.Address"].Errors.Clear();
                 ModelState["NewPlace.City"].Errors.Clear();
                 ModelState["NewPlace.State"].Errors.Clear();
+                ModelState["NewPlace.Zip"].Errors.Clear();
             }
             else
             {
                 ModelState["Event.Place.Id"].Errors.Clear();
+                ModelState["Event.Place.Name"].Errors.Clear();
+                ModelState["Event.Place.Address"].Errors.Clear();
+                ModelState["Event.Place.City"].Errors.Clear();
+                ModelState["Event.Place.State"].Errors.Clear();
+                ModelState["Event.Place.Zip"].Errors.Clear();
             }
             if (ModelState.IsValid)
             {
@@ -1761,6 +1762,14 @@ namespace EDR.Controllers
             }
             //  Update Month Days
 
+            //  Update Lon/Lat for Place
+            if (model.Event.Place.Latitude == null || model.Event.Place.Longitude == null)
+            {
+                var address = Geolocation.ParseAddress(model.Event.Place.Address + " " + model.Event.Place.City + " " + model.Event.Place.State + " " + model.Event.Place.Zip);
+                model.Event.Place.Latitude = address.Latitude;
+                model.Event.Place.Longitude = address.Longitude;
+            }
+            //  Update Lon/Lat for Place
 
             if (ModelState.IsValid)
             {
@@ -1824,7 +1833,7 @@ namespace EDR.Controllers
                         var obj = new LinkedFacebookObject() { MediaSource = MediaSource.Facebook, Name = evt.Name, FacebookId = evt.FacebookId, Url = evt.FacebookLink, ObjectType = FacebookObjectType.Event };
                         if (model.EventType == EventType.Class)
                         {
-                            var cls = new Class() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = evt.StartDate, EndDate = evt.EndDate, StartTime = evt.StartTime, EndTime = evt.EndTime, ClassType = model.ClassType, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, DanceStyles = DataContext.DanceStyles.Where(s => model.PostedStyles.DanceStyleIds.Any(ps => ps == s.Id.ToString())).ToList(), Interval = 1, IsAvailable = evt.IsAvailable, LinkedFacebookObjects = new List<LinkedFacebookObject>() { obj }, MonthDays = evt.MonthDays };
+                            var cls = new Class() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = evt.StartDate, EndDate = evt.EndDate, StartTime = evt.StartTime, EndTime = evt.EndTime, ClassType = model.ClassType, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, DanceStyles = DataContext.DanceStyles.Where(s => model.PostedStyles.DanceStyleIds.Any(ps => ps == s.Id.ToString())).ToList(), IsAvailable = evt.IsAvailable, LinkedFacebookObjects = new List<LinkedFacebookObject>() { obj }, Recurring = evt.Recurring, Interval = evt.Interval, Frequency = evt.Frequency, MonthDays = evt.MonthDays };
 
                             if (Session["MyRole"] != null)
                             {
@@ -1848,7 +1857,7 @@ namespace EDR.Controllers
                         }
                         else
                         {
-                            var social = new Social() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = evt.StartDate, EndDate = evt.EndDate, StartTime = evt.StartTime, EndTime = evt.EndTime, SocialType = model.SocialType, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, DanceStyles = DataContext.DanceStyles.Where(s => model.PostedStyles.DanceStyleIds.Any(ps => ps == s.Id.ToString())).ToList(), Interval = 1, IsAvailable = evt.IsAvailable, LinkedFacebookObjects = new List<LinkedFacebookObject>() { obj }, MonthDays = evt.MonthDays };
+                            var social = new Social() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = evt.StartDate, EndDate = evt.EndDate, StartTime = evt.StartTime, EndTime = evt.EndTime, SocialType = model.SocialType, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, DanceStyles = DataContext.DanceStyles.Where(s => model.PostedStyles.DanceStyleIds.Any(ps => ps == s.Id.ToString())).ToList(), IsAvailable = evt.IsAvailable, LinkedFacebookObjects = new List<LinkedFacebookObject>() { obj }, Recurring = evt.Recurring, Interval = evt.Interval, Frequency = evt.Frequency, MonthDays = evt.MonthDays };
 
                             if (Session["MyRole"] != null)
                             {

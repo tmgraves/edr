@@ -5,7 +5,7 @@ namespace EDR.Models
 {
     public class Place : Entity
     {
-        [Required]
+        [Required(ErrorMessage = "Place Name is Required")]
         public string Name { get; set; }
         [Required]
         public string Address { get; set; }
@@ -15,6 +15,7 @@ namespace EDR.Models
         [Required]
         [Range(1, 50000, ErrorMessage = "Select a State")]
         public State State { get; set; }
+        [Required(ErrorMessage = "Zipcode is Required")]
         public string Zip { get; set; }
         public string Country { get; set; }
         public double Latitude { get; set; }

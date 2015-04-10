@@ -59,7 +59,7 @@
             <img src="~/Content/images/indicator.white.gif" />Loading...
         </div>
         <div class="well" style="white-space: pre-line">
-            @Model.Event.Description
+            @Html.Raw(EDR.Utilities.ApplicationUtility.WithActiveLinks(Model.Event.Description))
         </div>
         <div class="panel panel-default">
             <div class="panel-heading">

@@ -217,28 +217,52 @@
                 <div class="row col-lg-12 col-md-12" style="margin-top: 5px;">
                     @Html.LabelFor(model => model.Event.Name, htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
                     <div class="col-md-9 col-lg-9">
-                        @Html.EditorFor(model => model.Event.Name, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.Event.Name, "", new { @class = "text-danger" })
+                        @if (Model.Event.FacebookId == null)
+                        {
+                            @Html.EditorFor(model => model.Event.Name, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Event.Name, "", new { @class = "text-danger" })
+                        }
+                        else
+                        {
+                            @Html.DisplayFor(model => model.Event.Name, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.HiddenFor(model => model.Event.Name)
+                        }
                     </div>
                 </div>
                 <div class="row col-lg-12 col-md-12" style="margin-top: 5px;">
                     @Html.LabelFor(model => model.Event.StartDate, htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
                     <div class="col-md-9 col-lg-9">
-                        @Html.EditorFor(model => model.Event.StartDate, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.Event.StartDate, "", new { @class = "text-danger" })
+                        @if (Model.Event.FacebookId == null)
+                        {
+                            @Html.EditorFor(model => model.Event.StartDate, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Event.StartDate, "", new { @class = "text-danger" })
+                        }
+                        else
+                        {
+                            @Model.Event.StartDate.ToLongDateString()
+                            @Html.HiddenFor(model => model.Event.StartDate)
+                        }
                     </div>
                 </div>
                 <div class="row col-lg-12 col-md-12" style="margin-top: 5px;">
                     <div class="col-lg-12 col-md-12">
                         @Html.LabelFor(model => model.Event.AllDay, htmlAttributes: new { @class = "control-label" })
-                        <label>
-                            @Html.RadioButtonFor(model => model.Event.AllDay, false, (!Model.Event.AllDay) ? new { @checked = "checked" } : null)
-                            No
-                        </label>
-                        <label>
-                            @Html.RadioButtonFor(model => model.Event.AllDay, true, (Model.Event.AllDay) ? new { @checked = "checked" } : null)
-                            Yes
-                        </label>
+                        @if (Model.Event.FacebookId == null)
+                        {
+                            <label>
+                                @Html.RadioButtonFor(model => model.Event.AllDay, false, (!Model.Event.AllDay) ? new { @checked = "checked" } : null)
+                                No
+                            </label>
+                            <label>
+                                @Html.RadioButtonFor(model => model.Event.AllDay, true, (Model.Event.AllDay) ? new { @checked = "checked" } : null)
+                                Yes
+                            </label>
+                        }
+                        else
+                        {
+                            @:No
+                            @Html.HiddenFor(model => model.Event.Recurring)
+                        }
                     </div>
                     <div class="row col-lg-12 col-md-12">
                         <div class="col-lg-3 col-md-3"></div>
@@ -247,15 +271,31 @@
                                 <div class="row col-lg-12 col-md-12">
                                     <span class="control-label col-lg-3 col-md-3 text-warning">From</span>
                                     <div class="col-lg-6 col-md-6">
-                                        @Html.EditorFor(model => model.Event.StartTime, new { htmlAttributes = new { @class = "form-control" } })
-                                        @Html.ValidationMessageFor(model => model.Event.StartTime, "", new { @class = "text-danger" })
+                                        @if (Model.Event.FacebookId == null)
+                                        {
+                                            @Html.EditorFor(model => model.Event.StartTime, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.Event.StartTime, "", new { @class = "text-danger" })
+                                        }
+                                        else
+                                        {
+                                            @(((DateTime)Model.Event.StartTime).ToShortTimeString())
+                                            @Html.HiddenFor(model => model.Event.StartTime)
+                                        }
                                     </div>
                                 </div>
                                 <div class="row col-lg-12 col-md-12" style="margin-top: 2px;">
                                     <span class="control-label col-lg-3 col-md-3 text-warning">To</span>
                                     <div class="col-lg-6 col-md-6">
-                                        @Html.EditorFor(model => model.Event.EndTime, new { htmlAttributes = new { @class = "form-control" } })
-                                        @Html.ValidationMessageFor(model => model.Event.EndTime, "", new { @class = "text-danger" })
+                                        @if (Model.Event.FacebookId == null)
+                                        {
+                                            @Html.EditorFor(model => model.Event.EndTime, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.Event.EndTime, "", new { @class = "text-danger" })
+                                        }
+                                        else
+                                        {
+                                            @(((DateTime)Model.Event.EndTime).ToShortTimeString())
+                                            @Html.HiddenFor(model => model.Event.EndTime)
+                                        }
                                     </div>
                                 </div>
                             </div>
@@ -265,8 +305,16 @@
                 <div class="row col-lg-12 col-md-12" style="margin-top: 5px;">
                     @Html.LabelFor(model => model.Event.EndDate, htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
                     <div class="col-md-9 col-lg-9">
-                        @Html.EditorFor(model => model.Event.EndDate, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.Event.EndDate, "", new { @class = "text-danger" })
+                        @if (Model.Event.FacebookId == null)
+                        {
+                            @Html.EditorFor(model => model.Event.EndDate, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Event.EndDate, "", new { @class = "text-danger" })
+                        }
+                        else
+                        {
+                            @(((DateTime)Model.Event.EndTime).ToShortTimeString())
+                            @Html.HiddenFor(model => model.Event.EndTime)
+                        }
                     </div>
                 </div>
                 <div class="row col-lg-12 col-md-12" style="margin-top: 5px;">
@@ -277,7 +325,7 @@
                             No
                         </label>
                         <label>
-                            @Html.RadioButtonFor(model => model.Event.Recurring, true, (Model.Event.Recurring) ? new { @checked="checked" } : null)
+                            @Html.RadioButtonFor(model => model.Event.Recurring, true, (Model.Event.Recurring) ? new { @checked = "checked" } : null)
                             Yes
                         </label>
                     </div>
@@ -353,11 +401,42 @@
                 </div>
                 <div class="row col-lg-12 col-md-12">
                     @Html.LabelFor(model => model.Event.Description, htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
-                    <div class="col-md-9 col-lg-9">
-                        @Html.TextAreaFor(model => model.Event.Description, htmlAttributes: new { @class = "form-control", @style = "width: 100%; max-width: 100%;", @rows = "10" })
-                        @Html.ValidationMessageFor(model => model.Event.Description, "", new { @class = "text-danger" })
+                    <div class="col-md-9 col-lg-9" style="white-space: pre-line">
+                        @if (Model.Event.FacebookId == null)
+                        {
+                            @Html.TextAreaFor(model => model.Event.Description, htmlAttributes: new { @class = "form-control", @style = "width: 100%; max-width: 100%;", @rows = "10" })
+                            @Html.ValidationMessageFor(model => model.Event.Description, "", new { @class = "text-danger" })
+                        }
+                        else
+                        {
+                            @Html.DisplayFor(model => model.Event.Description, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.HiddenFor(model => model.Event.Description)
+                        }
                     </div>
                 </div>
+                @if (Model.Event.FacebookId != null)
+                {
+                    @Html.HiddenFor(x => x.Event.Place.Id)
+                    @Html.HiddenFor(x => x.Event.Place.Public)
+                    @Html.HiddenFor(x => x.Event.Place.PlaceType)
+                    @Html.HiddenFor(x => x.Event.Place.Name)
+                    @Html.HiddenFor(x => x.Event.Place.Address)
+                    @Html.HiddenFor(x => x.Event.Place.City)
+                    @Html.HiddenFor(x => x.Event.Place.State)
+                    @Html.HiddenFor(x => x.Event.Place.Zip)
+                    @Html.HiddenFor(x => x.Event.Place.Latitude)
+                    @Html.HiddenFor(x => x.Event.Place.Longitude)
+                    <div class="row col-lg-12 col-md-12">
+                        @Html.Label("Location", htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
+                        <div class="col-md-9 col-lg-9">
+                            <h4>@Model.Event.Place.Name</h4>
+                            @Model.Event.Place.PlaceType<br />
+                            @Model.Event.Place.Address<br />
+                            @Model.Event.Place.City, @Model.Event.Place.State @Model.Event.Place.Zip<br />
+                            <img src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Event.Place.Latitude,@Model.Event.Place.Longitude&zoom=10&size=200x100&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Event.Place.Latitude, @Model.Event.Place.Longitude">
+                        </div>
+                    </div>
+                }
                 @*<div class="row col-lg-12 col-md-12" style="margin-top: 5px;">
                     @Html.LabelFor(model => model.Event.Place, htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
                     <div class="col-md-9 col-lg-9">
@@ -417,13 +496,15 @@
                     }
                 </div>
             </div>
-            <div class="col-lg-12 col-md-12 radio-list">
-                @Html.HiddenFor(x => x.NewPlace.Public, false)
-                @Html.HiddenFor(x => x.NewPlace.PlaceType, PlaceType.OtherPlace)
-                <h4 class="page-header">Select a Place for this Event</h4>
-                @Html.ValidationMessageFor(model => model.Event.Place.Id, "", new { @class = "text-danger" })
-                @foreach (var pl in Model.Places)
-                {
+            @if (Model.Event.FacebookId == null)
+            {
+                <div class="col-lg-12 col-md-12 radio-list">
+                    @Html.HiddenFor(x => x.NewPlace.Public, false)
+                    @Html.HiddenFor(x => x.NewPlace.PlaceType, PlaceType.OtherPlace)
+                    <h4 class="page-header">Select a Place for this Event</h4>
+                    @Html.ValidationMessageFor(model => model.Event.Place.Id, "", new { @class = "text-danger" })
+                    @foreach (var pl in Model.Places)
+                    {
                     <div class="col-lg-4 col-md-4">
                         @if (pl.Selected)
                         {
@@ -459,8 +540,9 @@
                             }
                         </label>
                     </div>
-                }
-            </div>
+                    }
+                </div>
+            }
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin: 10px;">
                 <input type="submit" value="Save @Model.EventType" class="btn btn-lg btn-primary" />
                 @if (Model.Event.Id == null || Model.Event.Id == 0)

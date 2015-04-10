@@ -4,7 +4,7 @@
 
 @foreach (var evt in Model.OrderBy(c => c.NextDate))
 {
-    <a class="btn btn-default col-lg-12 col-md-12 col-sm-12 col-xs-12" href="@Url.Action("View", "Event", new { id = evt.Id, eventType = evt is Class ? EventType.Class : EventType.Social })" title="@evt.Name @("@" + evt.Place.Name)">
+    <a class="btn btn-default col-lg-12 col-md-12 col-sm-12 col-xs-12" href="@Url.Action("View", "Event", new { id = evt.Id, eventType = evt is Class ? EventType.Class : EventType.Social })" title="@evt.Name @("@" + evt.Place.Name)" style="text-align: left;">
         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 label label-primary" style="font-size: 12pt;">@evt.NextDate.ToString("ddd, M/d")</div>
         <div class="text-primary col-lg-9 col-md-9 col-sm-9 col-xs-9">
             <div style="width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">

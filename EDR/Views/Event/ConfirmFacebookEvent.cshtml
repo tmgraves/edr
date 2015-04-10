@@ -191,7 +191,7 @@
         }
         <div class="row" style="margin-bottom: 5px;">
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                @Html.LabelFor(model => model.Event.Recurring, htmlAttributes: new { @class = "control-label" })
+                @Html.LabelFor(model => model.Event.Recurring, htmlAttributes: new { @class = "control-label text-danger text-uppercase" })
                 <span>
                     @if (!Model.Event.Recurring)
                     {
@@ -287,6 +287,7 @@
             </div>
         </div>
         <div class="row" style="margin-bottom: 5px;">
+            @Html.HiddenFor(model => model.Event.Description)
             @Html.LabelFor(model => model.Event.Description, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
             <div class="col-md-10 col-lg-9">
                 @Html.DisplayFor(model => model.Event.Description, new { htmlAttributes = new { @class = "form-control" } })
@@ -296,43 +297,86 @@
         <div class="row">
             @Html.Label("Location", htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
             @Html.HiddenFor(m => m.Event.Place.FacebookId)
+            @Html.HiddenFor(m => m.Event.Place.PlaceType)
             @Html.HiddenFor(m => m.Event.Place.Public)
             @Html.HiddenFor(m => m.Event.Place.Country)
+            @Html.HiddenFor(m => m.Event.Place.Longitude)
+            @Html.HiddenFor(m => m.Event.Place.Latitude)
             @Html.HiddenFor(m => m.Event.Place.Filename)
             @Html.HiddenFor(m => m.Event.Place.ThumbnailFilename)
             <div class="col-md-10 col-lg-9">
                 @if (Model.Event.Place.FacebookId == null)
                 {
                     <h4>New Place</h4>
-                    @Html.EditorFor(model => model.Event.Place.Name, new { htmlAttributes = new { @class = "form-control", @placeholder = "Place Name" } })
-                    @Html.ValidationMessageFor(model => model.Event.Place.Name, "", new { @class = "text-danger" })
-                    @Html.EditorFor(model => model.Event.Place.Address, new { htmlAttributes = new { @class = "form-control", @placeholder = "Address" } })
-                    @Html.ValidationMessageFor(model => model.Event.Place.Address, "", new { @class = "text-danger" })
-                    @Html.EditorFor(model => model.Event.Place.City, new { htmlAttributes = new { @class = "form-control", @placeholder = "City" } })
-                    @Html.ValidationMessageFor(model => model.Event.Place.City, "", new { @class = "text-danger" })
-                    @Html.EnumDropDownListFor(model => model.Event.Place.State, "- Select a State-", new { @class = "form-control" })
-                    @Html.ValidationMessageFor(model => model.Event.Place.State, "", new { @class = "text-danger" })
-                    @Html.EditorFor(model => model.Event.Place.Zip, new { htmlAttributes = new { @class = "form-control", @placeholder = "Zipcode" } })
+                    <div class="row">
+                        @if(Model.Event.Place.Name == null)
+                        {
+                        @Html.EditorFor(model => model.Event.Place.Name, new { htmlAttributes = new { @class = "form-control", @placeholder = "Place Name" } })
+                        @Html.ValidationMessageFor(model => model.Event.Place.Name, "", new { @class = "text-danger" })
+                        }
+                        else
+                        {
+                        @Html.HiddenFor(m => m.Event.Place.Name)
+                        @Html.DisplayFor(m => m.Event.Place.Name)
+                        }
+                    </div>
+                    <div class="row">
+                        @if(Model.Event.Place.Address == null)
+                        {
+                        @Html.EditorFor(model => model.Event.Place.Address, new { htmlAttributes = new { @class = "form-control", @placeholder = "Address" } })
+                        @Html.ValidationMessageFor(model => model.Event.Place.Address, "", new { @class = "text-danger" })
+                        }
+                        else
+                        {
+                        @Html.HiddenFor(m => m.Event.Place.Address)
+                        @Html.DisplayFor(m => m.Event.Place.Address)
+                        }
+                    </div>
+                    <div class="row">
+                        @if(Model.Event.Place.City == null)
+                        {
+                        @Html.EditorFor(model => model.Event.Place.City, new { htmlAttributes = new { @class = "form-control", @placeholder = "City" } })
+                        @Html.ValidationMessageFor(model => model.Event.Place.City, "", new { @class = "text-danger" })
+                        }
+                        else
+                        {
+                        @Html.HiddenFor(m => m.Event.Place.City)
+                        @Html.DisplayFor(m => m.Event.Place.City)
+                        }
+                    </div>
+                    <div class="row">
+                        @if(Model.Event.Place.State == null)
+                        {
+                        @Html.EnumDropDownListFor(model => model.Event.Place.State, "- Select a State-", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Event.Place.State, "", new { @class = "text-danger" })
+                        }
+                        else
+                        {
+                        @Html.HiddenFor(m => m.Event.Place.State)
+                        @Html.DisplayFor(m => m.Event.Place.State)
+                        }
+                    </div>
+                    <div class="row">
+                        @if(Model.Event.Place.Zip == null)
+                        {
+                        @Html.EditorFor(model => model.Event.Place.Zip, new { htmlAttributes = new { @class = "form-control", @placeholder = "Zipcode" } })
+                        @Html.ValidationMessageFor(model => model.Event.Place.Zip, "", new { @class = "text-danger" })
+                        }
+                        else
+                        {
+                        @Html.HiddenFor(m => m.Event.Place.Zip)
+                        @Html.DisplayFor(m => m.Event.Place.Zip)
+                        }
+                    </div>
                 }
                 else
                 {
                     @Html.HiddenFor(m => m.Event.Place.Id)
-                    if(Model.Event.Place.FacebookId == "0")
-                    {
-                        @Html.EditorFor(model => model.Event.Place.Name, new { htmlAttributes = new { @class = "form-control", @placeholder = "Place Name" } })
-                        @Html.ValidationMessageFor(model => model.Event.Place.Name, "", new { @class = "text-danger" })
-                    }
-                    else
-                    {
-                        @Html.HiddenFor(m => m.Event.Place.Name)
-                    }
-                    @Html.HiddenFor(m => m.Event.Place.PlaceType)
+                    @Html.HiddenFor(m => m.Event.Place.Name)
                     @Html.HiddenFor(m => m.Event.Place.Address)
                     @Html.HiddenFor(m => m.Event.Place.City)
                     @Html.HiddenFor(m => m.Event.Place.State)
                     @Html.HiddenFor(m => m.Event.Place.Zip)
-                    @Html.HiddenFor(m => m.Event.Place.Longitude)
-                    @Html.HiddenFor(m => m.Event.Place.Latitude)
                     @Html.HiddenFor(m => m.Event.Place.Website)
                     @Html.HiddenFor(m => m.Event.Place.FacebookLink)
                     <h4>@Model.Event.Place.Name</h4>
