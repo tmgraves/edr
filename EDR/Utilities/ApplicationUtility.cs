@@ -204,21 +204,15 @@ namespace EDR.Utilities
         /// </summary>
         /// <param name="s"></param>
         /// <returns>String</returns>
-        public static string WithActiveLinks(this string s)
+        public static string WithActiveLinks(this string text)
         {
-            //Finds URLs with a protocol
-            var httpurlregex = new Regex(@"\b\({0,1}(?<url>[^>](http://www\.|http://|https://|ftp://)[^,""\s<)]*)\b",
-              RegexOptions.IgnoreCase | RegexOptions.Compiled);
-            //Finds URLs with no protocol
-            var urlregex = new Regex(@"\b\({0,1}(?<url>(www|ftp)\.[^ ,""\s<)]*)\b",
-              RegexOptions.IgnoreCase | RegexOptions.Compiled);
-            //Finds email addresses
-            var emailregex = new Regex(@"\b(?<mail>[a-zA-Z_0-9.-]+\@[a-zA-Z_0-9.-]+\.\w+)\b",
-              RegexOptions.IgnoreCase | RegexOptions.Compiled);
-            s = httpurlregex.Replace(s, " <a href=\"${url}\" target=\"_blank\">${url}</a>");
-            //  s = urlregex.Replace(s, " <a href=\"http://${url}\" target=\"_blank\">${url}</a>");
-            s = emailregex.Replace(s, "<a href=\"mailto:${mail}\">${mail}</a>");
-            return s;
+            if (text != null)
+            {
+                text = Regex.Replace(text,
+                                @"((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?)",
+                                "<a target='_blank' href='$1'>$1</a>");
+            }
+            return text; 
         }
     }
 }
