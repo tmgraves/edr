@@ -434,13 +434,13 @@
     </div>*@
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin: 10px;">
         <input type="submit" value="Finish Creating @Model.EventType" class="btn btn-lg btn-primary" />
-        @if (Session["MyRole"] != null)
+        <a class="btn btn-lg btn-warning" href="@Url.Action("Home", Session["CurrentRole"] != null ? Session["CurrentRole"].ToString() : "Dancer", new { username = User.Identity.Name })">Cancel</a>
+        @*@if (Session["CurrentRole"] != null)
         {
             if (Model.EventType == EventType.Class)
             {
-                if ((RoleName)Session["MyRole"] == RoleName.Teacher)
+                if (Model.User.CurrentRole.Name == "Teacher")
                 {
-                    <a class="btn btn-lg btn-warning" href="@Url.Action("MyTeach", "Teacher", new { username = User.Identity.Name })">Cancel</a>
                 }
                 else
                 {
@@ -449,7 +449,7 @@
             }
             else
             {
-                if ((RoleName)Session["MyRole"] == RoleName.Promoter)
+                if (Model.User.CurrentRole.Name == "Promoter")
                 {
                     <a class="btn btn-lg btn-warning" href="@Url.Action("MySocials", "Promoter", new { username = User.Identity.Name })">Cancel</a>
                 }
@@ -458,7 +458,7 @@
                     <a class="btn btn-lg btn-warning" href="@Url.Action("Home", "Owner", new { username = User.Identity.Name })">Cancel</a>
                 }
             }
-        }
+        }*@
     </div>
 </div>
 }

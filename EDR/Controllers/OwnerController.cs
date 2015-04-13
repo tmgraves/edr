@@ -55,12 +55,12 @@ namespace EDR.Controllers
             }
             //  Load Roles
 
-            //  Set Role
-            if (User.Identity.IsAuthenticated)
-            {
-                Session["MyRole"] = RoleName.Owner;
-            }
-            //  Set Role
+            ////  Set Role
+            //if (User.Identity.IsAuthenticated)
+            //{
+            //    Session["MyRole"] = RoleName.Owner;
+            //}
+            ////  Set Role
 
             return viewModel;
         }

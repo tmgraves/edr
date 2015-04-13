@@ -305,16 +305,8 @@
                 <div class="row col-lg-12 col-md-12" style="margin-top: 5px;">
                     @Html.LabelFor(model => model.Event.EndDate, htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
                     <div class="col-md-9 col-lg-9">
-                        @if (Model.Event.FacebookId == null)
-                        {
-                            @Html.EditorFor(model => model.Event.EndDate, new { htmlAttributes = new { @class = "form-control" } })
-                            @Html.ValidationMessageFor(model => model.Event.EndDate, "", new { @class = "text-danger" })
-                        }
-                        else
-                        {
-                            @(((DateTime)Model.Event.EndTime).ToShortTimeString())
-                            @Html.HiddenFor(model => model.Event.EndTime)
-                        }
+                        @Html.EditorFor(model => model.Event.EndDate, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Event.EndDate, "", new { @class = "text-danger" })
                     </div>
                 </div>
                 <div class="row col-lg-12 col-md-12" style="margin-top: 5px;">
@@ -549,13 +541,13 @@
                 {
                     if (Model.EventType == EventType.Class)
                     {
-                        if (Session["MyRole"] != null)
+                        if (Model.User.CurrentRole != null)
                         {
-                            if ((RoleName)Session["MyRole"] == RoleName.Teacher)
+                            if (Model.User.CurrentRole.Name == "Teacher")
                             {
                                 <a class="btn btn-lg btn-warning" href="@Url.Action("MyTeach", "Teacher", new { username = User.Identity.Name })">Cancel</a>
                             }
-                            else if ((RoleName)Session["MyRole"] == RoleName.Owner)
+                            else if (Model.User.CurrentRole.Name == "Owner")
                             {
                                 <a class="btn btn-lg btn-warning" href="@Url.Action("Home", "Owner", new { username = User.Identity.Name })">Cancel</a>
                             }
@@ -563,11 +555,11 @@
                     }
                     else
                     {
-                        if ((RoleName)Session["MyRole"] == RoleName.Promoter)
+                        if (Model.User.CurrentRole.Name == "Promoter")
                         {
                             <a class="btn btn-lg btn-warning" href="@Url.Action("MySocials", "Promoter", new { username = User.Identity.Name })">Cancel</a>
                         }
-                        else if ((RoleName)Session["MyRole"] == RoleName.Owner)
+                        else if (Model.User.CurrentRole.Name == "Owner")
                         {
                             <a class="btn btn-lg btn-warning" href="@Url.Action("Home", "Owner", new { username = User.Identity.Name })">Cancel</a>
                         }

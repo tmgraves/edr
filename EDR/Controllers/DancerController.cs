@@ -27,6 +27,7 @@ using DHTMLX.Scheduler;
 using DHTMLX.Scheduler.Controls;
 using DHTMLX.Scheduler.Data;
 using EDR.Enums;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace EDR.Controllers
 {
@@ -773,6 +774,7 @@ namespace EDR.Controllers
             try
             {
                 string userId = User.Identity.GetUserId();
+                var user = UserManager.FindById(userId);
 
                 var dancer = DataContext.Users.Where(x => x.Id == userId).Include("UserPictures").FirstOrDefault();
 
@@ -792,17 +794,17 @@ namespace EDR.Controllers
                 DataContext.SaveChanges();
 
                 //  Set Return
-                if (Session["MyRole"] != null)
+                if (user.CurrentRole != null)
                 {
-                    if ((RoleName)Session["MyRole"] == RoleName.Owner)
+                    if (user.CurrentRole.Name == "Owner")
                     {
                         return Redirect(Url.Action("Home", "Owner", new { username = User.Identity.Name }));
                     }
-                    else if ((RoleName)Session["MyRole"] == RoleName.Promoter)
+                    else if (user.CurrentRole.Name == "Promoter")
                     {
                         return Redirect(Url.Action("Home", "Promoter", new { username = User.Identity.Name }));
                     }
-                    else if ((RoleName)Session["MyRole"] == RoleName.Teacher)
+                    else if (user.CurrentRole.Name == "Teacher")
                     {
                         return Redirect(Url.Action("Home", "Teacher", new { username = User.Identity.Name }));
                     }

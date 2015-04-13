@@ -12,6 +12,7 @@ using EDR.Enums;
 using System.Data.Entity;
 using EDR.Utilities;
 using System.IO;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace EDR.Controllers
 {
@@ -1094,7 +1095,7 @@ namespace EDR.Controllers
 
             if (id != null)
             {
-                var ev = DataContext.Events.Where(e => e.Id == id).FirstOrDefault();
+                var ev = DataContext.Events.Where(e => e.Id == id).Include("Creator").FirstOrDefault();
 
                 if (ev is Class)
                 {
@@ -1108,6 +1109,21 @@ namespace EDR.Controllers
                     model.Event = soc;
                     model.SocialType = soc.SocialType;
                 }
+
+                //  Update Facebook Details
+                if (ev.FacebookId != null)
+                {
+                    var fbev = FacebookHelper.GetEvent(ev.FacebookId, ev.Creator.FacebookToken, "id,cover,description,end_time,is_date_only,location,name,owner,privacy,start_time,ticket_uri,timezone,updated_time,venue,parent_group");
+                    model.Event.Name = fbev.Name;
+                    model.Event.Description = fbev.Description;
+                    model.Event.PhotoUrl = fbev.CoverPhoto.LargeSource;
+                    model.Event.StartDate = fbev.StartTime;
+                    model.Event.StartTime = fbev.StartTime;
+                    model.Event.EndTime = fbev.EndTime;
+                }
+
+                //  Update Facebook Details
+
             }
 
             BuildEditModel(model);
@@ -1149,7 +1165,7 @@ namespace EDR.Controllers
                     {
                         var cls = new Class() { ClassType = model.ClassType, Teachers = new List<Teacher>(), Owners = new List<Owner>() };
 
-                        if ((RoleName)Session["MyRole"] == RoleName.Teacher)
+                        if (user.CurrentRole.Name == "Teacher")
                         {
                             cls.Teachers.Add(DataContext.Teachers.Where(t => t.ApplicationUser.Id == userid).FirstOrDefault());
                         }
@@ -1162,7 +1178,7 @@ namespace EDR.Controllers
                     else
                     {
                         var soc = new Social() { SocialType = model.SocialType, Promoters = new List<Promoter>(), Owners = new List<Owner>() };
-                        if ((RoleName)Session["MyRole"] == RoleName.Promoter)
+                        if (user.CurrentRole.Name == "Promoter")
                         {
                             soc.Promoters.Add(DataContext.Promoters.Where(t => t.ApplicationUser.Id == userid).FirstOrDefault());
                         }
@@ -1282,6 +1298,8 @@ namespace EDR.Controllers
         private void BuildEditModel(EventEditViewModel model)
         {
             var userid = User.Identity.GetUserId();
+            var user = DataContext.Users.Where(u => u.Id == userid).Include("CurrentRole").FirstOrDefault();
+            model.User = user;
             model.Places = new List<PlaceItem>();
             model.NewPlace = new Place() { Id = 0, Latitude = 0.0, Longitude = 0.0, Public = false, PlaceType = PlaceType.OtherPlace };
 
@@ -1306,22 +1324,22 @@ namespace EDR.Controllers
             //  Fill Places
             if (model.EventType == EventType.Class)
             {
-                if ((RoleName)Session["MyRole"] == RoleName.Teacher)
+                if (user.CurrentRole.Name == "Teacher")
                 {
                     places = DataContext.Places.Where(p => p.Teachers.Any(t => t.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == placeid).ToList();
                 }
-                else if ((RoleName)Session["MyRole"] == RoleName.Owner)
+                else if (user.CurrentRole.Name == "Owner")
                 {
                     places = DataContext.Places.Where(p => p.Owners.Any(t => t.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == placeid).ToList();
                 }
             }
             else
             {
-                if ((RoleName)Session["MyRole"] == RoleName.Promoter)
+                if (user.CurrentRole.Name == "Promoter")
                 {
                     places = DataContext.Places.Where(p => p.Promoters.Any(t => t.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == placeid).ToList();
                 }
-                else if ((RoleName)Session["MyRole"] == RoleName.Owner)
+                else if (user.CurrentRole.Name == "Owner")
                 {
                     places = DataContext.Places.Where(p => p.Owners.Any(t => t.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == placeid).ToList();
                 }
@@ -1400,18 +1418,21 @@ namespace EDR.Controllers
             DataContext.Events.Remove(evt);
             DataContext.SaveChanges();
 
+            var userid = User.Identity.GetUserId();
+            var user = UserManager.FindById(userid);
+
             //  Set Return
-            if (Session["MyRole"] != null)
+            if (user.CurrentRole != null)
             {
-                if ((RoleName)Session["MyRole"] == RoleName.Owner)
+                if (user.CurrentRole.Name == "Owner")
                 {
                     return Redirect(Url.Action("Home", "Owner", new { username = User.Identity.Name }));
                 }
-                else if ((RoleName)Session["MyRole"] == RoleName.Promoter)
+                else if (user.CurrentRole.Name == "Promoter")
                 {
                     return Redirect(Url.Action("Home", "Promoter", new { username = User.Identity.Name }));
                 }
-                else if ((RoleName)Session["MyRole"] == RoleName.Teacher)
+                else if (user.CurrentRole.Name == "Teacher")
                 {
                     return Redirect(Url.Action("Home", "Teacher", new { username = User.Identity.Name }));
                 }
@@ -1444,6 +1465,7 @@ namespace EDR.Controllers
                 }
 
                 var model = new ImportFacebookEventViewModel();
+                model.User = user;
                 model.EventType = EventType.Class;
 
                 if (placeId != null)
@@ -1488,6 +1510,7 @@ namespace EDR.Controllers
                 }
 
                 var model = new ImportFacebookEventViewModel();
+                model.User = user;
                 model.EventType = EventType.Social;
 
                 if (placeId != null)
@@ -1749,7 +1772,7 @@ namespace EDR.Controllers
         public ActionResult ConfirmFacebookEvent(ConfirmFacebookEvent model)
         {
             var userid = User.Identity.GetUserId();
-            var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+            var user = DataContext.Users.Where(u => u.Id == userid).Include("CurrentRole").FirstOrDefault();
 
             //  Update Month Days
             if (model.PostedMonthDays != null)
@@ -1835,9 +1858,10 @@ namespace EDR.Controllers
                         {
                             var cls = new Class() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = evt.StartDate, EndDate = evt.EndDate, StartTime = evt.StartTime, EndTime = evt.EndTime, ClassType = model.ClassType, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, DanceStyles = DataContext.DanceStyles.Where(s => model.PostedStyles.DanceStyleIds.Any(ps => ps == s.Id.ToString())).ToList(), IsAvailable = evt.IsAvailable, LinkedFacebookObjects = new List<LinkedFacebookObject>() { obj }, Recurring = evt.Recurring, Interval = evt.Interval, Frequency = evt.Frequency, MonthDays = evt.MonthDays };
 
-                            if (Session["MyRole"] != null)
+                            var usr = UserManager.FindByName(User.Identity.Name);
+                            if (user.CurrentRole != null)
                             {
-                                if ((RoleName)Session["MyRole"] == RoleName.Teacher)
+                                if (user.CurrentRole.Name == "Teacher")
                                 {
                                     var teacher = DataContext.Teachers.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").Include("Places").FirstOrDefault();
                                     teacher.Classes.Add(cls);
@@ -1845,7 +1869,7 @@ namespace EDR.Controllers
                                     DataContext.Entry(teacher).State = EntityState.Modified;
                                     DataContext.SaveChanges();
                                 }
-                                else if ((RoleName)Session["MyRole"] == RoleName.Owner)
+                                else if (user.CurrentRole.Name == "Owner")
                                 {
                                     var owner = DataContext.Owners.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").FirstOrDefault();
                                     owner.Classes.Add(cls);
@@ -1859,16 +1883,16 @@ namespace EDR.Controllers
                         {
                             var social = new Social() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = evt.StartDate, EndDate = evt.EndDate, StartTime = evt.StartTime, EndTime = evt.EndTime, SocialType = model.SocialType, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, DanceStyles = DataContext.DanceStyles.Where(s => model.PostedStyles.DanceStyleIds.Any(ps => ps == s.Id.ToString())).ToList(), IsAvailable = evt.IsAvailable, LinkedFacebookObjects = new List<LinkedFacebookObject>() { obj }, Recurring = evt.Recurring, Interval = evt.Interval, Frequency = evt.Frequency, MonthDays = evt.MonthDays };
 
-                            if (Session["MyRole"] != null)
+                            if (user.CurrentRole != null)
                             {
-                                if ((RoleName)Session["MyRole"] == RoleName.Promoter)
+                                if (user.CurrentRole.Name == "Promoter")
                                 {
                                     var promoter = DataContext.Promoters.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").FirstOrDefault();
                                     promoter.Socials.Add(social);
                                     DataContext.Entry(promoter).State = EntityState.Modified;
                                     DataContext.SaveChanges();
                                 }
-                                else if ((RoleName)Session["MyRole"] == RoleName.Owner)
+                                else if (user.CurrentRole.Name == "Owner")
                                 {
                                     var owner = DataContext.Owners.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").FirstOrDefault();
                                     owner.Socials.Add(social);
@@ -1882,7 +1906,7 @@ namespace EDR.Controllers
                     }
                     else 
                     {
-                        return RedirectToAction("Home", Session["MyRole"] != null ? Session["MyRole"].ToString() : "Dancer", new { username = User.Identity.Name });
+                        return RedirectToAction("Home", user.CurrentRole != null ? user.CurrentRole.Name : "Dancer", new { username = User.Identity.Name });
                     }
                 }
                 catch (DbEntityValidationException e)
@@ -1908,6 +1932,10 @@ namespace EDR.Controllers
                     styles.Add(new DanceStyleListItem { Id = s.Id, Name = s.Name });
                 }
                 model.AvailableStyles = styles.OrderBy(x => x.Name);
+                if (model.PostedStyles != null)
+                {
+                    model.SelectedStyles = model.AvailableStyles.Where(s => model.PostedStyles.DanceStyleIds.Contains(s.Id.ToString()));
+                }
                 //  Load Dance Styles
 
                 //  For Month Days Checkbox List
@@ -1986,6 +2014,7 @@ namespace EDR.Controllers
             var model = new ConfirmFacebookEvent();
             var userid = User.Identity.GetUserId();
             var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+            model.User = user;
 
             //  Load Dance Styles
             var selectedStyles = new List<DanceStyleListItem>();
@@ -2177,6 +2206,8 @@ namespace EDR.Controllers
         private void LoadCreateModel(EventCreateViewModel model)
         {
             var id = User.Identity.GetUserId();
+            var user = UserManager.FindById(id);
+            model.User = user;
 
             var selectedStyles = new List<DanceStyleListItem>();
             model.SelectedStyles = selectedStyles;
@@ -2188,15 +2219,15 @@ namespace EDR.Controllers
             }
             model.AvailableStyles = styles.OrderBy(x => x.Name);
 
-            if ((RoleName)Session["MyRole"] == RoleName.Teacher)
+            if (user.CurrentRole.Name == "Teacher")
             {
                 model.PlaceList = DataContext.Places.Where(x => x.Teachers.Any(t => t.ApplicationUser.Id == id)).Select(p => new SelectListItem() { Text = p.Name, Value = p.Id.ToString() }).ToList();
             }
-            else if ((RoleName)Session["MyRole"] == RoleName.Owner)
+            else if (user.CurrentRole.Name == "Owner")
             {
                 model.PlaceList = DataContext.Places.Where(x => x.Owners.Any(t => t.ApplicationUser.Id == id)).Select(p => new SelectListItem() { Text = p.Name, Value = p.Id.ToString() }).ToList();
             }
-            else if ((RoleName)Session["MyRole"] == RoleName.Promoter)
+            else if (user.CurrentRole.Name == "Promoter")
             {
                 model.PlaceList = DataContext.Places.Where(x => x.Promoters.Any(t => t.ApplicationUser.Id == id)).Select(p => new SelectListItem() { Text = p.Name, Value = p.Id.ToString() }).ToList();
             }

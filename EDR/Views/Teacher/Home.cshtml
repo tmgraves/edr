@@ -48,7 +48,7 @@
     <div class="panel panel-success">
         <h4 class="col-lg-12 col-md-12 col-sm-12 col-xs-12"><img class="img-rounded" style="width: 20px;" src="@Url.Content("~/Content/images/facebookSmall.png")" /> Import Facebook Events</h4>
         <div class="panel-body">
-            @if (Model.FacebookEvents.Count() > 0)
+            @if (Model.FacebookEvents != null && Model.FacebookEvents.Count() > 0)
             {
                 foreach (var evt in Model.FacebookEvents.OrderBy(e => e.StartTime))
                 {

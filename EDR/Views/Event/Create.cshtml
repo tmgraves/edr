@@ -325,17 +325,17 @@
 }
 else
 {
-    if (Session["MyRole"] != null)
+    if (Model.User.CurrentRole != null)
     {
-        if ((EDR.Enums.RoleName)Session["MyRole"] == EDR.Enums.RoleName.Teacher)
+        if (Model.User.CurrentRole.Name == "Teacher")
         {
             <a class="btn btn-primary" href="@Url.Action("Home", "Teacher", new { username = User.Identity.Name } )">Cancel</a>
         }
-        else if ((EDR.Enums.RoleName)Session["MyRole"] == EDR.Enums.RoleName.Promoter)
+        else if (Model.User.CurrentRole.Name == "Promoter")
         {
             <a class="btn btn-primary" href="@Url.Action("Home", "Promoter", new { username = User.Identity.Name } )">Cancel</a>
         }
-        else if ((EDR.Enums.RoleName)Session["MyRole"] == EDR.Enums.RoleName.Owner)
+        else if (Model.User.CurrentRole.Name == "Owner")
         {
             <a class="btn btn-primary" href="@Url.Action("Home", "Owner", new { username = User.Identity.Name })">Cancel</a>
         }

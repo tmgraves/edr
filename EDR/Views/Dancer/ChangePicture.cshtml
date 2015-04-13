@@ -136,17 +136,17 @@
         </div>
     </div>
 
-    @if (Session["MyRole"] != null)
+    @if (Model.Dancer.CurrentRole != null)
     {
-        if ((EDR.Enums.RoleName)Session["MyRole"] == EDR.Enums.RoleName.Owner)
+        if (Model.Dancer.CurrentRole.Name == "Owner")
         {
             <a class="btn btn-primary" href="@Url.Action("Home", "Owner", new { username = Model.Dancer.UserName })">Back to Owner Page</a>
         }
-        else if ((EDR.Enums.RoleName)Session["MyRole"] == EDR.Enums.RoleName.Promoter)
+        else if (Model.Dancer.CurrentRole.Name == "Promoter")
         {
             <a class="btn btn-primary" href="@Url.Action("Home", "Promoter", new { username = Model.Dancer.UserName })">Back to Promoter Page</a>
         }
-        else if ((EDR.Enums.RoleName)Session["MyRole"] == EDR.Enums.RoleName.Teacher)
+        else if (Model.Dancer.CurrentRole.Name == "Teacher")
         {
             <a class="btn btn-primary" href="@Url.Action("Home", "Teacher", new { username = Model.Dancer.UserName })">Back to Teacher Page</a>
         }

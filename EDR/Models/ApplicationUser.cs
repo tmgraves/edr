@@ -6,6 +6,7 @@ using System.Data.Entity;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 using System;
+using EDR.Enums;
 
 namespace EDR.Models
 {
@@ -58,6 +59,7 @@ namespace EDR.Models
         public string SpotifyUsername { get; set; }
         public string SpotifyToken { get; set; }
         public string SpotifyRefreshToken { get; set; }
+        public IdentityRole CurrentRole { get; set; }
 
         [Display(Name = "Full Name")]
         public string FullName

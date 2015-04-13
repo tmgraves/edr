@@ -20,6 +20,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Facebook;
 using Newtonsoft.Json;
 using System.Text;
+using EDR.Enums;
 
 namespace EDR.Controllers
 {
@@ -60,6 +61,10 @@ namespace EDR.Controllers
                     }
                     
                     await SignInAsync(user, model.RememberMe);
+                    if (user.CurrentRole != null)
+                    {
+                        Session["CurrentRole"] = DataContext.Roles.Where(r => r.Id == user.CurrentRole.Id).FirstOrDefault().Name;
+                    }
                     returnUrl = returnUrl != null ? returnUrl.Replace("NotLoggedIn", user.UserName) : null;
                     return RedirectToLocal(returnUrl);
                 }
@@ -379,6 +384,10 @@ namespace EDR.Controllers
             if (user != null)
             {
                 await SignInAsync(user, isPersistent: false);
+                if (user.CurrentRole != null)
+                {
+                    Session["CurrentRole"] = DataContext.Roles.Where(r => r.Id == user.CurrentRole.Id).FirstOrDefault().Name;
+                }
                 returnUrl = returnUrl != null ? returnUrl.Replace("NotLoggedIn", user.UserName) : null;
                 return RedirectToLocal(returnUrl);
             }
@@ -584,6 +593,22 @@ namespace EDR.Controllers
                 viewModel = DataContext.Teachers.Where(x => x.ApplicationUser.Id == user).FirstOrDefault();
             }
             return View(viewModel);
+        }
+
+        //
+        // GET: /Account/ForgotPassword
+        [Authorize]
+        public ActionResult SwitchRole(string id)
+        {
+            var userid = User.Identity.GetUserId();
+            var role = DataContext.Roles.Where(r => r.Name == id).FirstOrDefault();
+            var user = DataContext.Users.Where(u => u.Id == userid).Include("CurrentRole").FirstOrDefault();
+            Session["CurrentRole"] = role != null ? role.Name : null;
+           
+            user.CurrentRole = role != null ? role : null;
+            DataContext.Entry(user).State = EntityState.Modified;
+            DataContext.SaveChanges();
+            return RedirectToAction("Home", role == null ? "Dancer" : role.Name, new { username = User.Identity.Name });
         }
 
         //

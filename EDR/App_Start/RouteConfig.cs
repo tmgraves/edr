@@ -232,6 +232,11 @@ namespace EDR
             );
             routes.MapRoute(
                 name: "Account",
+                url: "Account/{action}/{id}",
+                defaults: new { controller = "Account", action = UrlParameter.Optional, id = UrlParameter.Optional }
+            );
+            routes.MapRoute(
+                name: "AccountAction",
                 url: "Account/{action}",
                 defaults: new { controller = "Account", action = UrlParameter.Optional }
             );

@@ -1,37 +1,24 @@
 ﻿@using Microsoft.AspNet.Identity
 @using EDR.Enums
+@using EDR.Models
+@using EDR.Data
+@using System.Data.Entity
 
 @if (Request.IsAuthenticated)
 {
+    var context = new ApplicationDbContext();
+    var userid = User.Identity.GetUserId();
+    //var user = new ApplicationUser();
+    //user = context.Users.Where(u => u.Id == userid).Include("CurrentRole").FirstOrDefault();
+    var roles = context.Roles.Where(r => r.Users.Any(u => u.UserId == userid));
+
     using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
     {
     @Html.AntiForgeryToken()
 
     <ul class="nav navbar-nav navbar-right">
         <li>
-            @if (Session["MyRole"] != null)
-            {
-                if (Session["MyRole"].ToString() == RoleName.Owner.ToString())
-                {
-                    <a href="@Url.Action("Home", "Owner", new { username = User.Identity.Name })"><i class="glyphicon glyphicon-user"></i> @User.Identity.Name</a>
-                }
-                else if (Session["MyRole"].ToString() == RoleName.Teacher.ToString())
-                {
-                    <a href="@Url.Action("Home", "Teacher", new { username = User.Identity.Name })"><i class="glyphicon glyphicon-user"></i> @User.Identity.Name</a>
-                }
-                else if (Session["MyRole"].ToString() == RoleName.Promoter.ToString())
-                {
-                    <a href="@Url.Action("Home", "Promoter", new { username = User.Identity.Name })"><i class="glyphicon glyphicon-user"></i> @User.Identity.Name</a>
-                }
-                else
-                {
-                    <a href="@Url.Action("Home", "Dancer", new { username = User.Identity.Name })"><i class="glyphicon glyphicon-user"></i> @User.Identity.Name</a>
-                }
-            }
-            else
-            {
-                <a href="@Url.Action("Home", "Dancer", new { username = User.Identity.Name })"><i class="glyphicon glyphicon-user"></i> @User.Identity.Name</a>
-            }
+            <a href="@Url.Action("Home", Session["CurrentRole"] != null ? Session["CurrentRole"].ToString() : "Dancer", new { username = User.Identity.Name })"><i class="glyphicon glyphicon-user"></i> @User.Identity.Name</a>
         </li>
         @if (User.IsInRole("Teacher") || User.IsInRole("Owner") || User.IsInRole("Promoter"))
         {
@@ -42,66 +29,14 @@
                 <ul class="dropdown-menu" role="menu">
                     <li>
                     </li>
-
-                    @if (Session["MyRole"] != null)
+                    <li>
+                        @Html.ActionLink("Dancer Profile", "SwitchRole", "Account", routeValues: new { id = "" }, htmlAttributes: new { title = "Swith to Dancer Profile" })
+                    </li>
+                    @foreach(var role in roles)
                     {
                         <li>
-                            @Html.ActionLink("Dancer Profile", "Home", "Dancer", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
+                            @Html.ActionLink(role.Name + " Profile", "SwitchRole", "Account", routeValues: new { id = role.Name }, htmlAttributes: new { title = "Swith to " + role.Name + " Profile" })
                         </li>
-                    }
-                    @if (User.IsInRole("Teacher"))
-                    {
-                        if (Session["MyRole"] != null)
-                        {
-                            if (Session["MyRole"].ToString() != RoleName.Teacher.ToString())
-                            {
-                                <li>
-                                    @Html.ActionLink("Teacher Profile", "Home", "Teacher", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
-                                </li>
-                            }
-                        }
-                        else
-                        {
-                            <li>
-                                @Html.ActionLink("Teacher Profile", "Home", "Teacher", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
-                            </li>
-                        }
-                    }
-                    @if (User.IsInRole("Owner"))
-                    {
-                        if (Session["MyRole"] != null)
-                        {
-                            if (Session["MyRole"].ToString() != RoleName.Owner.ToString())
-                            {
-                                <li>
-                                    @Html.ActionLink("Owner Profile", "Home", "Owner", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
-                                </li>
-                            }
-                        }
-                        else
-                        {
-                            <li>
-                                @Html.ActionLink("Owner Profile", "Home", "Owner", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
-                            </li>
-                        }
-                    }
-                    @if (User.IsInRole("Promoter"))
-                    {
-                        if (Session["MyRole"] != null)
-                        {
-                            if (Session["MyRole"].ToString() != RoleName.Promoter.ToString())
-                            {
-                                <li>
-                                    @Html.ActionLink("Promoter Profile", "Home", "Promoter", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
-                                </li>
-                            }
-                        }
-                        else
-                        {
-                            <li>
-                                @Html.ActionLink("Promoter Profile", "Home", "Promoter", routeValues: new { username = User.Identity.Name }, htmlAttributes: new { title = "Manage" })
-                            </li>
-                        }
                     }
                 </ul>
             </li>

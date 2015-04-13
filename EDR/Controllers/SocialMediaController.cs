@@ -12,6 +12,7 @@ using System.Data.Entity;
 using System.Text;
 using EDR.Utilities;
 using System.Configuration;
+using TweetSharp;
 
 namespace EDR.Controllers
 {
@@ -94,5 +95,24 @@ namespace EDR.Controllers
 
             return RedirectToAction("SocialMedia", "Dancer", new { username = User.Identity.Name });
         }
+
+        //  Twitter Authentication
+        [Authorize]
+        public ActionResult AddTwitter()
+        {
+            var API_key = "API key";
+            var API_secret = "API secret";
+            var Access_token_secret = "Access token";
+            var Access_token = "Access token";
+            var service = new TwitterService(API_key, API_secret);
+            service.AuthenticateWith(Access_token, Access_token_secret);
+            //var api_key = ConfigurationManager.AppSettings["TwitterAPIKey"];
+            //var client_secret = ConfigurationManager.AppSettings["TwitterAPISecret"];
+            //var redirect_uri = ConfigurationManager.AppSettings["TwitterRedirectUri"];
+            //return Redirect("http://twitter.com/oauth/authorize?client_id=" + client_id + "&redirect_uri=" + redirect_uri + "&response_type=code&scope=playlist-read-private%20playlist-modify-public");
+            return View();
+        }
+        //  Twitter Authentication
+    
     }
 }

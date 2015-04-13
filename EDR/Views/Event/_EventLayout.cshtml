@@ -163,6 +163,26 @@
                         </div>
                     </div>
                     }
+                else
+                {
+                    <div class="row">
+                        <label class="control-label col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                            Promoters:
+                        </label>
+                        <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9 text-left">
+                            <ul class="list-inline">
+                                @foreach (var promoter in Model.Social.Promoters)
+                                {
+                                    <li>
+                                        <a class="label label-warning" href="@Url.Action("Home", "Promoter", new { username = promoter.ApplicationUser.UserName }) ">
+                                            @promoter.ApplicationUser.FullName
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                }
                 <div class="row">
                     <label class="control-label col-lg-3 col-md-3 col-sm-3 col-xs-3">
                         Styles:

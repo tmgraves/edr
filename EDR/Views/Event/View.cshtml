@@ -87,10 +87,12 @@
                 {
                     <div class="row" style="margin-top: 5px;">
                         <a class="btn btn-primary col-lg-8 col-md-8 col-lg-offset-1 col-md-offset-1" target="_blank" href="@Url.Content(ee.Url)" title="@ee.Name" style="text-align: left;">
-                            <img class="img-rounded" style="height: 20px;" src="@Url.Content("~/Content/images/facebookSmall.png")" />
-                            @ee.Name.PadRight(25, ' ').Substring(0, 25)
+                            <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                <img class="img-rounded" style="height: 20px;" src="@Url.Content("~/Content/images/facebookSmall.png")" />
+                                @ee.Name
+                            </div>
                         </a>
-                        @if (User.Identity != null && ((Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)) || (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
+                        @if (ee.FacebookId != Model.Event.FacebookId && (User.Identity != null && ((Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)) || (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)))
                         {
                             <a class="btn btn-danger" href="@Url.Action("RemoveLinkedFacebookObject", "Event", new { id = ee.Id, returnUrl = Request.Url.AbsolutePath })">
                                 <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>

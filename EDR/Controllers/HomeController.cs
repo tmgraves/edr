@@ -21,15 +21,15 @@ namespace EDR.Controllers
             return View();
         }
 
-        public ActionResult Index2()
-        {
-            return View();
-        }
+        //public ActionResult Index2()
+        //{
+        //    return View();
+        //}
 
-        public ActionResult MapTest()
-        {
-            return View();
-        }
+        //public ActionResult MapTest()
+        //{
+        //    return View();
+        //}
 
         public ActionResult Explore()
         {

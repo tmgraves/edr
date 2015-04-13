@@ -21,5 +21,20 @@ namespace EDR
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
+
+        protected void Session_Start(object sender, EventArgs e)
+        {
+            var context = new ApplicationDbContext();
+
+            if (User.Identity.IsAuthenticated)
+            {
+                var user = context.Users.Where(u => u.UserName == User.Identity.Name).Include("CurrentRole").FirstOrDefault();
+                if (user != null && user.CurrentRole != null)
+                {
+                    HttpContext.Current.Session["CurrentRole"] = user.CurrentRole.Name;
+                }
+
+            }
+        }
     }
 }
