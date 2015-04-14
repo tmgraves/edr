@@ -59,6 +59,14 @@ namespace EDR.Models
         public string SpotifyUsername { get; set; }
         public string SpotifyToken { get; set; }
         public string SpotifyRefreshToken { get; set; }
+
+        //  Twitter Variables
+        public string TwitterUsername { get; set; }
+        public string TwitterToken { get; set; }
+        public string TwitterSecret { get; set; }
+        public int? TwitterUserId { get; set; }
+        //  Twitter Variables
+
         public IdentityRole CurrentRole { get; set; }
 
         [Display(Name = "Full Name")]

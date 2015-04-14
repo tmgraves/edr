@@ -22,12 +22,15 @@
         Add Yelp
     </a>
 </div>
-<div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12 col-lg-offset-0" style="margin: 5px;">
-    <a class="btn btn-primary" href=@Url.Action("AddTwitter", "SocialMedia", null) title="Link to your Yelp" style="width: 150px;">
-        <img class="img-rounded" style="height: 30px;" src="@Url.Content("~/Content/images/twitter.png")" />
-        Add Twitter
-    </a>
-</div>
+@if (Model.Dancer.TwitterUserId == null)
+{
+    <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12 col-lg-offset-0" style="margin: 5px;">
+        <a class="btn btn-primary" href=@Url.Action("AddTwitter", "SocialMedia", null) title="Link to your Yelp" style="width: 150px;">
+            <img class="img-rounded" style="height: 30px;" src="@Url.Content("~/Content/images/twitter.png")" />
+            Add Twitter
+        </a>
+    </div>
+}
 @if (Model.Dancer.SpotifyId == null)
 {
     <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12 col-lg-offset-0" style="margin: 5px;">

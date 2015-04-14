@@ -100,19 +100,63 @@ namespace EDR.Controllers
         [Authorize]
         public ActionResult AddTwitter()
         {
-            var API_key = "API key";
-            var API_secret = "API secret";
-            var Access_token_secret = "Access token";
-            var Access_token = "Access token";
-            var service = new TwitterService(API_key, API_secret);
-            service.AuthenticateWith(Access_token, Access_token_secret);
+            TwitterClientInfo twitterClientInfo = new TwitterClientInfo();
+            twitterClientInfo.ConsumerKey = ConfigurationManager.AppSettings["TwitterAPIKey"]; //Read ConsumerKey out of the app.config
+            twitterClientInfo.ConsumerSecret = ConfigurationManager.AppSettings["TwitterAPISecret"]; //Read the ConsumerSecret out the app.config
+            TwitterService twitterService = new TwitterService(twitterClientInfo);
+
+            //Firstly we need the RequestToken and the AuthorisationUrl
+            var requestToken = twitterService.GetRequestToken("https://localhost:44302/SocialMedia/AuthenticateTwitter");
+            var authUrl = twitterService.GetAuthorizationUri(requestToken);
+            //authUrl is just a URL we can open IE and paste it in if we want
+            //  Console.WriteLine("Please Allow This App to send Tweets on your behalf");
+            return Redirect(authUrl.ToString()); //Launches a browser that'll go to the AuthUrl.
+
+            //var API_key = "API key";
+            //var API_secret = "API secret";
+            //var Access_token_secret = "Access token";
+            //var Access_token = "Access token";
+            //var service = new TwitterService(API_key, API_secret);
+            //service.AuthenticateWith(Access_token, Access_token_secret);
+            //var token = service.GetRequestToken();
             //var api_key = ConfigurationManager.AppSettings["TwitterAPIKey"];
             //var client_secret = ConfigurationManager.AppSettings["TwitterAPISecret"];
             //var redirect_uri = ConfigurationManager.AppSettings["TwitterRedirectUri"];
             //return Redirect("http://twitter.com/oauth/authorize?client_id=" + client_id + "&redirect_uri=" + redirect_uri + "&response_type=code&scope=playlist-read-private%20playlist-modify-public");
-            return View();
+            //return View();
         }
+
+        public ActionResult AuthenticateTwitter(string oauth_token, string oauth_verifier)
+        {
+            var requestToken = new OAuthRequestToken { Token = oauth_token };
+
+            TwitterService service = new TwitterService("key", "secret");
+            OAuthAccessToken accessToken = service.GetAccessToken(requestToken, oauth_verifier);
+
+            var userid = User.Identity.GetUserId();
+            var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+            user.TwitterUsername = accessToken.ScreenName;
+            user.TwitterUserId = accessToken.UserId;
+            user.TwitterToken = accessToken.Token;
+            user.TwitterSecret = accessToken.TokenSecret;
+            DataContext.Entry(user).State = EntityState.Modified;
+            DataContext.SaveChanges();
+
+            //  service.ListTweetsOnHomeTimeline()
+
+            service.AuthenticateWith(accessToken.Token, accessToken.TokenSecret);
+
+            return RedirectToAction("Index", "Home");
+        }
+        
+        //public ActionResult AuthenticateTwitter(string oauth_token)
+        //{
+        //    TwitterClientInfo twitterClientInfo = new TwitterClientInfo();
+        //    var service = new TwitterService();
+        //    service.AuthenticateWith()
+
+        //    return RedirectToAction("SocialMedia", "Dancer", new { username = User.Identity.Name });
+        //}
         //  Twitter Authentication
-    
     }
 }
