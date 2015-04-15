@@ -325,7 +325,7 @@ namespace EDR.Utilities
         }
 
 
-        public static FacebookEvent GetEvent(string id, string token, string fields)
+        public static FacebookEvent GetEvent(string id, string token, string fields = "id,cover,description,end_time,is_date_only,location,name,owner,privacy,start_time,ticket_uri,timezone,updated_time,venue,parent_group")
         {
             var fb = new FacebookClient(token);
             dynamic evt = fb.Get("/" + id + "?fields=" + fields);

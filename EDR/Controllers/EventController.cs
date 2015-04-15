@@ -100,7 +100,16 @@ namespace EDR.Controllers
             }
 
             var model = LoadEvent(id, eventType);
+
             model.EventType = eventType;
+
+            //  Update Facebook Event with Current Info
+            if (model.Event.FacebookId != null)
+            {
+                UpdateFacebookEvent(model.Event);
+            }
+            //  Get Current Facebook Picture/Video
+
             model.LinkedFacebookObjects = DataContext.Events.Where(e => e.Id == id).Include("LinkedFacebookObjects").FirstOrDefault().LinkedFacebookObjects;
 
             if (model.Event == null)
@@ -109,6 +118,103 @@ namespace EDR.Controllers
             }
 
             return View(model);
+        }
+
+        protected void UpdateFacebookEvent(Event rEvent)
+        {
+            var evt = FacebookHelper.GetEvent(rEvent.FacebookId, rEvent.Creator.FacebookToken);
+
+            if (evt != null)
+            {
+                //  Update Event
+                rEvent.PhotoUrl = evt.CoverPhoto != null ? evt.CoverPhoto.LargeSource : rEvent.PhotoUrl;
+                rEvent.Name = evt.Name;
+                rEvent.Description = evt.Description;
+                rEvent.StartDate = evt.StartTime;
+                rEvent.StartTime = evt.StartTime;
+                rEvent.EndTime = evt.EndTime;
+                rEvent.IsAvailable = evt.Privacy == "OPEN" ? true : false;
+                //  Update Event
+
+                //  Update Page
+                if (evt.Address.FacebookId != null)
+                {
+                    if (rEvent.Place.FacebookId == null)
+                    {
+                        var place = DataContext.Places.Where(p => p.FacebookId == evt.Address.FacebookId).FirstOrDefault();
+
+                        if (place != null)
+                        {
+                            rEvent.Place = place;
+                        }
+                        else
+                        {
+                            //  Place has a Page in Facebook
+                            if (evt.Address.FacebookId != null)
+                            {
+                                var fbplace = FacebookHelper.GetData(rEvent.Creator.FacebookToken, evt.Address.FacebookId);
+
+                                var placetype = new PlaceType();
+                                if (fbplace.category_list != null)
+                                {
+                                    foreach (dynamic category in fbplace.category_list)
+                                    {
+                                        //  Search for Dance Instruction category
+                                        if (category.name == "Dance Instruction" || category.id == "203916779633178")
+                                        {
+                                            placetype = PlaceType.Studio;
+                                            break;
+                                        }
+                                        else if (category.name == "Dance Club" || category.id == "176139629103647")
+                                        {
+                                            placetype = PlaceType.Nightclub;
+                                            break;
+                                        }
+                                        else if (category.name == "Restaurant" || category.id == "273819889375819")
+                                        {
+                                            placetype = PlaceType.Restaurant;
+                                            break;
+                                        }
+                                        else if (category.name == "Hotel" || category.id == "164243073639257")
+                                        {
+                                            placetype = PlaceType.Hotel;
+                                            break;
+                                        }
+                                        else if (category.name == "Meeting Room" || category.id == "210261102322291")
+                                        {
+                                            placetype = PlaceType.ConferenceCenter;
+                                            break;
+                                        }
+                                        else if (category.name == "Theater" || category.id == "173883042668223")
+                                        {
+                                            placetype = PlaceType.Theater;
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            placetype = PlaceType.OtherPlace;
+                                        }
+                                    }
+                                }
+
+                                rEvent.Place = new Place() { Name = evt.Location, Address = evt.Address.Street, City = evt.Address.City, State = evt.Address.State != null ? (State)Enum.Parse(typeof(State), evt.Address.State) : State.CA, Zip = evt.Address.ZipCode, Country = evt.Address.Country, Latitude = evt.Address.Latitude, Longitude = evt.Address.Longitude, FacebookId = evt.Address.FacebookId, PlaceType = placetype, Public = true, Website = evt.Address.WebsiteUrl, FacebookLink = evt.Address.FacebookUrl, Filename = fbplace.cover != null ? fbplace.cover.source : null, ThumbnailFilename = fbplace.cover != null ? fbplace.cover.source : null };
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    rEvent.Place.Address = evt.Address.Street;
+                    rEvent.Place.City = evt.Address.City;
+                    rEvent.Place.State = evt.Address.State != null ? (State)Enum.Parse(typeof(State), evt.Address.State) : State.CA;
+                    rEvent.Place.Zip = evt.Address.ZipCode;
+                }
+
+                DataContext.Entry(rEvent).State = EntityState.Modified;
+                DataContext.SaveChanges();
+                //  Update Page
+            }
+
         }
 
         public ActionResult Pictures(int id, EventType eventType)
@@ -522,16 +628,6 @@ namespace EDR.Controllers
                     .Include("Owners")
                     .Include("Owners.ApplicationUser")
                     .FirstOrDefault();
-            }
-
-            //  Get Current Facebook Picture/Video
-            if (model.Event.FacebookId != null)
-            {
-                var obj = FacebookHelper.GetData(model.Event.Creator.FacebookToken, model.Event.FacebookId + "?fields=cover");
-                if (obj != null && obj.cover != null)
-                {
-                    model.Event.PhotoUrl = obj.cover.source;
-                }
             }
 
             return model;
@@ -1856,7 +1952,7 @@ namespace EDR.Controllers
                         var obj = new LinkedFacebookObject() { MediaSource = MediaSource.Facebook, Name = evt.Name, FacebookId = evt.FacebookId, Url = evt.FacebookLink, ObjectType = FacebookObjectType.Event };
                         if (model.EventType == EventType.Class)
                         {
-                            var cls = new Class() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = evt.StartDate, EndDate = evt.EndDate, StartTime = evt.StartTime, EndTime = evt.EndTime, ClassType = model.ClassType, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, DanceStyles = DataContext.DanceStyles.Where(s => model.PostedStyles.DanceStyleIds.Any(ps => ps == s.Id.ToString())).ToList(), IsAvailable = evt.IsAvailable, LinkedFacebookObjects = new List<LinkedFacebookObject>() { obj }, Recurring = evt.Recurring, Interval = evt.Interval, Frequency = evt.Frequency, MonthDays = evt.MonthDays };
+                            var cls = new Class() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = evt.StartDate, EndDate = evt.EndDate, StartTime = evt.StartTime, EndTime = evt.EndTime, ClassType = model.ClassType != null ? (ClassType)Enum.Parse(typeof(ClassType), model.ClassType.ToString()) : ClassType.Class, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, DanceStyles = DataContext.DanceStyles.Where(s => model.PostedStyles.DanceStyleIds.Any(ps => ps == s.Id.ToString())).ToList(), IsAvailable = evt.IsAvailable, LinkedFacebookObjects = new List<LinkedFacebookObject>() { obj }, Recurring = evt.Recurring, Interval = evt.Interval, Frequency = evt.Frequency, MonthDays = evt.MonthDays };
 
                             var usr = UserManager.FindByName(User.Identity.Name);
                             if (user.CurrentRole != null)
@@ -1881,7 +1977,7 @@ namespace EDR.Controllers
                         }
                         else
                         {
-                            var social = new Social() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = evt.StartDate, EndDate = evt.EndDate, StartTime = evt.StartTime, EndTime = evt.EndTime, SocialType = model.SocialType, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, DanceStyles = DataContext.DanceStyles.Where(s => model.PostedStyles.DanceStyleIds.Any(ps => ps == s.Id.ToString())).ToList(), IsAvailable = evt.IsAvailable, LinkedFacebookObjects = new List<LinkedFacebookObject>() { obj }, Recurring = evt.Recurring, Interval = evt.Interval, Frequency = evt.Frequency, MonthDays = evt.MonthDays };
+                            var social = new Social() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = evt.StartDate, EndDate = evt.EndDate, StartTime = evt.StartTime, EndTime = evt.EndTime, SocialType = model.SocialType != null ? (SocialType)Enum.Parse(typeof(SocialType), model.SocialType.ToString()) : SocialType.Social, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, DanceStyles = DataContext.DanceStyles.Where(s => model.PostedStyles.DanceStyleIds.Any(ps => ps == s.Id.ToString())).ToList(), IsAvailable = evt.IsAvailable, LinkedFacebookObjects = new List<LinkedFacebookObject>() { obj }, Recurring = evt.Recurring, Interval = evt.Interval, Frequency = evt.Frequency, MonthDays = evt.MonthDays };
 
                             if (user.CurrentRole != null)
                             {

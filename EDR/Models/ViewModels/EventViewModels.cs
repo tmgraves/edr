@@ -195,8 +195,8 @@ namespace EDR.Models.ViewModels
     {
         public ApplicationUser User { get; set; }
         public RoleName Role { get; set; }
-        public ClassType ClassType { get; set; }
-        public SocialType SocialType { get; set; }
+        public ClassType? ClassType { get; set; }
+        public SocialType? SocialType { get; set; }
         public IEnumerable<DanceStyleListItem> AvailableStyles { get; set; }
         public IEnumerable<DanceStyleListItem> SelectedStyles { get; set; }
         [RequiredStringArrayValue(ErrorMessage = "Select at least (1) Dance Style")]
