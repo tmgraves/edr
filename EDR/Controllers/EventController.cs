@@ -1950,9 +1950,12 @@ namespace EDR.Controllers
                         //evt.Place = pl;
 
                         var obj = new LinkedFacebookObject() { MediaSource = MediaSource.Facebook, Name = evt.Name, FacebookId = evt.FacebookId, Url = evt.FacebookLink, ObjectType = FacebookObjectType.Event };
-                        if (model.EventType == EventType.Class)
+                        if (model.Type == EventType.Class)
                         {
                             var cls = new Class() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = evt.StartDate, EndDate = evt.EndDate, StartTime = evt.StartTime, EndTime = evt.EndTime, ClassType = model.ClassType != null ? (ClassType)Enum.Parse(typeof(ClassType), model.ClassType.ToString()) : ClassType.Class, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, DanceStyles = DataContext.DanceStyles.Where(s => model.PostedStyles.DanceStyleIds.Any(ps => ps == s.Id.ToString())).ToList(), IsAvailable = evt.IsAvailable, LinkedFacebookObjects = new List<LinkedFacebookObject>() { obj }, Recurring = evt.Recurring, Interval = evt.Interval, Frequency = evt.Frequency, MonthDays = evt.MonthDays };
+
+                            DataContext.Events.Add(cls);
+                            DataContext.SaveChanges();
 
                             var usr = UserManager.FindByName(User.Identity.Name);
                             if (user.CurrentRole != null)
@@ -1960,45 +1963,51 @@ namespace EDR.Controllers
                                 if (user.CurrentRole.Name == "Teacher")
                                 {
                                     var teacher = DataContext.Teachers.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").Include("Places").FirstOrDefault();
-                                    teacher.Classes.Add(cls);
-                                    teacher.Places.Add(evt.Place);
+                                    DataContext.Teachers.Attach(teacher);
+                                    cls.Teachers.Add(teacher);
                                     DataContext.Entry(teacher).State = EntityState.Modified;
                                     DataContext.SaveChanges();
                                 }
                                 else if (user.CurrentRole.Name == "Owner")
                                 {
                                     var owner = DataContext.Owners.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").FirstOrDefault();
-                                    owner.Classes.Add(cls);
+                                    DataContext.Owners.Attach(owner);
+                                    cls.Owners.Add(owner);
                                     DataContext.Entry(owner).State = EntityState.Modified;
                                     DataContext.SaveChanges();
                                 }
-                                eventId = cls.Id;
                             }
+                            eventId = cls.Id;
                         }
                         else
                         {
                             var social = new Social() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = evt.StartDate, EndDate = evt.EndDate, StartTime = evt.StartTime, EndTime = evt.EndTime, SocialType = model.SocialType != null ? (SocialType)Enum.Parse(typeof(SocialType), model.SocialType.ToString()) : SocialType.Social, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, DanceStyles = DataContext.DanceStyles.Where(s => model.PostedStyles.DanceStyleIds.Any(ps => ps == s.Id.ToString())).ToList(), IsAvailable = evt.IsAvailable, LinkedFacebookObjects = new List<LinkedFacebookObject>() { obj }, Recurring = evt.Recurring, Interval = evt.Interval, Frequency = evt.Frequency, MonthDays = evt.MonthDays };
+
+                            DataContext.Events.Add(social);
+                            DataContext.SaveChanges();
 
                             if (user.CurrentRole != null)
                             {
                                 if (user.CurrentRole.Name == "Promoter")
                                 {
                                     var promoter = DataContext.Promoters.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").FirstOrDefault();
-                                    promoter.Socials.Add(social);
-                                    DataContext.Entry(promoter).State = EntityState.Modified;
+                                    DataContext.Promoters.Attach(promoter);
+                                    social.Promoters.Add(promoter);
+                                    DataContext.Entry(social).State = EntityState.Modified;
                                     DataContext.SaveChanges();
                                 }
                                 else if (user.CurrentRole.Name == "Owner")
                                 {
                                     var owner = DataContext.Owners.Where(x => x.ApplicationUser.Id == userid).Include("ApplicationUser").FirstOrDefault();
-                                    owner.Socials.Add(social);
+                                    DataContext.Owners.Attach(owner);
+                                    social.Owners.Add(owner);
                                     DataContext.Entry(owner).State = EntityState.Modified;
                                     DataContext.SaveChanges();
                                 }
-                                eventId = social.Id;
                             }
+                            eventId = social.Id;
                         }
-                        return RedirectToAction("View", "Event", new { id = eventId, eventType = model.EventType });
+                        return RedirectToAction("View", "Event", new { id = eventId, eventType = model.Type });
                     }
                     else 
                     {
@@ -2105,7 +2114,7 @@ namespace EDR.Controllers
         }
 
         [Authorize]
-        public ActionResult ConfirmFacebookEvent(string id, EventType eventType)
+        public ActionResult ConfirmFacebookEvent(string id, EventType? eventType)
         {
             var model = new ConfirmFacebookEvent();
             var userid = User.Identity.GetUserId();
@@ -2124,7 +2133,8 @@ namespace EDR.Controllers
             model.AvailableStyles = styles.OrderBy(x => x.Name);
             //  Load Dance Styles
 
-            model.EventType = eventType;
+            model.Type = eventType;
+
             var fbevent = FacebookHelper.GetEvent(id, user.FacebookToken, "id,cover,description,end_time,is_date_only,location,name,owner,privacy,start_time,ticket_uri,timezone,updated_time,venue,parent_group");            //  ((List<FacebookEvent>)Session["FacebookEvents"]).Where(x => x.Id == id).FirstOrDefault();
             var available = fbevent.Privacy == "OPEN" ? true : false;
             model.Event = new Event() { Name = fbevent.Name, Description = fbevent.Description, StartDate = fbevent.StartTime, StartTime = fbevent.StartTime, EndDate = fbevent.EndTime, EndTime = fbevent.EndTime, PhotoUrl = fbevent.CoverPhoto.LargeSource, FacebookId = fbevent.Id, FacebookLink = fbevent.EventLink, Interval = 1, IsAvailable = available };

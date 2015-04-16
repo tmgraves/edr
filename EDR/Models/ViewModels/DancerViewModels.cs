@@ -54,4 +54,10 @@ namespace EDR.Models.ViewModels
         public ApplicationUser User { get; set; }
         public string ReturnUrl { get; set; }
     }
+
+    public class FacebookEventsViewModel
+    {
+        public EventType? Type { get; set; }
+        public List<FacebookEvent> FacebookEvents { get; set; }
+    }
 }

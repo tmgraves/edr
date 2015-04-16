@@ -266,7 +266,32 @@ namespace EDR.Utilities
                 add.Street = eventdata.venue.street;
                 add.ZipCode = eventdata.venue.zip;
                 add.FacebookId = eventdata.venue.id;
-                var address = Geolocation.ParseAddress(add.Street + " " + add.City + " " + add.State + " " + add.ZipCode);
+
+                var address = new Address();
+
+                if (add.City == null || add.State == null)
+                {
+                    if (eventdata.location != null)
+                    {
+                        address = Geolocation.ParseAddress(eventdata.location);
+
+                        if (address != null)
+                        {
+                            add.City = address.City;
+                            add.Country = address.Country;
+                            add.Latitude = address.Latitude;
+                            add.Longitude = address.Longitude;
+                            add.State = address.State != null ? address.State.ToString() : null;
+                            add.Street = address.Street;
+                            add.ZipCode = address.ZipCode;
+                        }
+                    }
+                }
+                else
+                {
+                    address = Geolocation.ParseAddress(add.Street + " " + add.City + " " + add.State + " " + add.ZipCode);
+                }
+
                 if (address != null)
                 {
                     add.Country = address.Country;
@@ -276,6 +301,7 @@ namespace EDR.Utilities
                 if (eventdata.venue.id != null)
                 {
                     var place = client.Get(eventdata.venue.id);
+
                     add.WebsiteUrl = place.website;
                     add.FacebookUrl = "https://www.facebook.com/" + place.username;
                     add.Location = place.name;

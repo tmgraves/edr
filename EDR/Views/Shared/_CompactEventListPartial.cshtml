@@ -16,20 +16,6 @@
     var lat = 0;
     var lon = 0;
 
-    $(function () {
-        navigator.geolocation.getCurrentPosition(showPosition, positionError);
-
-        function showPosition(position) {
-            var coordinates = position.coords;
-            lat = coordinates.latitude;
-            lon = coordinates.longitude;
-        }
-
-        function positionError(position) {
-            alert("Error " + position.code);
-        }
-    });
-
     function initialize() {
         var mapOptions = {
             zoom: 8,
@@ -39,6 +25,22 @@
 
         map = new google.maps.Map(document.getElementById('map-canvas'),
             mapOptions);
+
+        // Try W3C Geolocation (Preferred)
+        if (navigator.geolocation) {
+            browserSupportFlag = true;
+            navigator.geolocation.getCurrentPosition(function (position) {
+                initialLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                map.setCenter(initialLocation);
+            }, function () {
+                handleNoGeolocation(browserSupportFlag);
+            });
+        }
+            // Browser doesn't support Geolocation
+        else {
+            browserSupportFlag = false;
+            handleNoGeolocation(browserSupportFlag);
+        }
 
         @{
             int idx = 1;
@@ -53,10 +55,10 @@
             icon: "http://maps.google.com/mapfiles/kml/paddle/" + @idx + "-lv.png"
         });
 
-        attachMessage(marker, '@ev.Id', '@ev.Place.Name', '@ev.Place.Address <br/> @ev.Place.City , @ev.Place.State  @ev.Place.Zip', '<a href="@Url.Action("View", "Event", new { id = ev.Id, eventType = Model.EventType })">' + marker.title + '</a>', '@(ev.EventMembers != null ? ev.EventMembers.Count : 0)', '@(ev.Videos != null ? ev.Videos.Count : 0)', '@(ev.Pictures != null ? ev.Pictures.Count : 0)', '@Model.EventType.ToString()');
-                markers.push(marker);
+        attachMessage(marker, '@ev.Id', '@ev.Place.Name', '@ev.Place.Address <br/> @ev.Place.City , @ev.Place.State  @ev.Place.Zip', '<a href="@Url.Action("View", "Event", new { id = ev.Id, eventType = Model.EventType })">' + marker.title + '</a>', '@(ev.EventMembers != null ? ev.EventMembers.Count : 0)', '@(ev.Videos != null ? ev.Videos.Count : 0)', '@(ev.Pictures != null ? ev.Pictures.Count : 0)', '@Model.EventType.ToString()', '@(ev.PhotoUrl != null ? ev.PhotoUrl : "~/Content/images/socialdance.jpg")');
+        markers.push(marker);
 
-                </text>
+        </text>
                 idx += 1;
             }
 
@@ -70,7 +72,7 @@
             icon: "http://maps.google.com/mapfiles/kml/paddle/" + @idx + "-lv.png"
         });
 
-        attachMessage(marker, '@ev.Id', '@ev.Place.Name', '@ev.Place.Address <br/> @ev.Place.City , @ev.Place.State  @ev.Place.Zip', '<a href="@Url.Action("View", "Event", new { id = ev.Id, eventType = Model.EventType })">' + marker.title + '</a>', '@(ev.EventMembers != null ? ev.EventMembers.Count : 0)', '@(ev.Videos != null ? ev.Videos.Count : 0)', '@(ev.Pictures != null ? ev.Videos.Count : 0)', '@Model.EventType.ToString()');
+        attachMessage(marker, '@ev.Id', '@ev.Place.Name', '@ev.Place.Address <br/> @ev.Place.City , @ev.Place.State  @ev.Place.Zip', '<a href="@Url.Action("View", "Event", new { id = ev.Id, eventType = Model.EventType })">' + marker.title + '</a>', '@(ev.EventMembers != null ? ev.EventMembers.Count : 0)', '@(ev.Videos != null ? ev.Videos.Count : 0)', '@(ev.Pictures != null ? ev.Videos.Count : 0)', '@Model.EventType.ToString()', '@(ev.PhotoUrl != null ? ev.PhotoUrl : "~/Content/images/socialdance.jpg")');
         markers.push(marker);
 
         </text>
@@ -99,17 +101,21 @@
 
     // The five markers show a secret message when clicked
     // but that message is not within the marker's instance data
-    function attachMessage(marker, num, placeName, address, link, users, videos, pictures, eventtype) {
+    function attachMessage(marker, num, placeName, address, link, users, videos, pictures, eventtype, photourl) {
         var message = marker.title;
         var infowindow = new google.maps.InfoWindow({
             disableAutoPan: true,
             content: '<div id="content">' +
             '<div id="siteNotice">' +
             '</div>' +
-            '<h4 id="firstHeading" class="firstHeading">' + link + '</h4>' +
+            '<div style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
+            '<img style="max-width: 50px; max-height: 50px; display: inline-block; padding-right: 5px;" src="' + photourl + '"/>' +
+            '<h4 style="display: inline-block;" id="firstHeading" class="firstHeading">' + link + '</h4>' +
+            '</div>' +
+            '<strong>' + placeName + '</strong>' +
             '<div id="bodyContent">' +
             '<p>' +
-            address + '<br/>' +
+            address +
             '</p>' +
             '</div>' +
             '</div>'
@@ -172,8 +178,12 @@
                                     </span>
                                 </div>
                                 <div class="col-lg-9 col-md-9 col-sm-10 col-xs-10">
-                                    <strong>@(rowNo += 1). @item.Name<br />
-                                    <span class="text-success"> @@@item.Place.Name</span></strong><br />
+                                    <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        <strong>@(rowNo += 1). @item.Name</strong>
+                                    </div>
+                                    <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        <strong><span class="text-success"> @@@item.Place.Name</span></strong>
+                                    </div>
                                     @if (Model.EventType == EDR.Enums.EventType.Class)
                                     {
                                         if (((Class)item).Teachers != null && ((Class)item).Teachers.Count > 0)

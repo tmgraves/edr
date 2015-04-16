@@ -98,7 +98,7 @@ namespace EDR.Models.ViewModels
     {
         public Event Event { get; set; }
         public string ReturnUrl { get; set; }
-        public EventType EventType { get; set; }
+        public EventType? EventType { get; set; }
     }
 
     public class EventViewModel : EventBaseViewModel
@@ -191,8 +191,10 @@ namespace EDR.Models.ViewModels
         public IEnumerable<Event> Events { get; set; }
     }
 
-    public class ConfirmFacebookEvent : EventBaseViewModel
+    public class ConfirmFacebookEvent
     {
+        public Event Event { get; set; }
+        public EventType? Type { get; set; }
         public ApplicationUser User { get; set; }
         public RoleName Role { get; set; }
         public ClassType? ClassType { get; set; }

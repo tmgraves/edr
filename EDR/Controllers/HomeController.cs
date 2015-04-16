@@ -111,20 +111,6 @@ namespace EDR.Controllers
                 viewModel.SearchAddress = new Address() { Latitude = (double)CenterLat, Longitude = (double)CenterLng };
                 //  Set Map Location
             }
-            else if (User.Identity.IsAuthenticated)
-            {
-                var userid = User.Identity.GetUserId();
-                var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
-
-                if (user.ZipCode != null)
-                {
-                    viewModel.SearchAddress = Geolocation.ParseAddress(user.ZipCode);
-                }
-            }
-            else if (viewModel.SearchAddress == null)
-            {
-                viewModel.SearchAddress = Geolocation.ParseAddress("90065");
-            }
 
             viewModel.Socials = viewModel.Socials.Take(25);
 
@@ -211,20 +197,6 @@ namespace EDR.Controllers
                 //  Set Map Location
                 viewModel.SearchAddress = new Address() { Latitude = (double)CenterLat, Longitude = (double)CenterLng };
                 //  Set Map Location
-            }
-            else if (User.Identity.IsAuthenticated)
-            {
-                var userid = User.Identity.GetUserId();
-                var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
-
-                if (user.ZipCode != null)
-                {
-                    viewModel.SearchAddress = Geolocation.ParseAddress(user.ZipCode);
-                }
-            }
-            else if (viewModel.SearchAddress == null)
-            {
-                viewModel.SearchAddress = Geolocation.ParseAddress("90065");
             }
 
             viewModel.Classes = viewModel.Classes.Take(25);

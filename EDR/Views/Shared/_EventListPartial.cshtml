@@ -13,23 +13,9 @@
     var map;
     var markers = [];
     var infowindows = [];
-    var lat = 0;
-    var lon = 0;
+    var lat = '@(Model.Location != null ? Model.Location.Latitude.ToString() : "0")';
+    var lon = '@(Model.Location != null ? Model.Location.Longitude.ToString() : "0")';
 
-    $(function () {
-        navigator.geolocation.getCurrentPosition(showPosition, positionError);
-
-        function showPosition(position) {
-            var coordinates = position.coords;
-            lat = coordinates.latitude;
-            lon = coordinates.longitude;
-        }
-
-        function positionError(position) {
-            alert("Error " + position.code);
-        }
-    });
-   
     function initialize() {
         var mapOptions = {
             zoom: @(Model.Zoom),
@@ -39,6 +25,27 @@
 
         map = new google.maps.Map(document.getElementById('map-canvas'),
             mapOptions);
+
+        @if (Model.Location == null)
+        {
+            <text>
+        // Try W3C Geolocation (Preferred)
+        if (navigator.geolocation) {
+            browserSupportFlag = true;
+            navigator.geolocation.getCurrentPosition(function (position) {
+                initialLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                map.setCenter(initialLocation);
+            }, function () {
+                handleNoGeolocation(browserSupportFlag);
+            });
+        }
+            // Browser doesn't support Geolocation
+        else {
+            browserSupportFlag = false;
+            handleNoGeolocation(browserSupportFlag);
+        }
+        </text>
+        }
 
         @{
             int idx = 1;

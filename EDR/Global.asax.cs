@@ -1,5 +1,6 @@
 ﻿using EDR.Data;
 using EDR.Models;
+using EDR.Types;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -20,6 +21,8 @@ namespace EDR
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+            ModelBinders.Binders.Add(typeof(DateTime), new DateTimeBinder());
+            ModelBinders.Binders.Add(typeof(DateTime?), new NullableDateTimeBinder());
         }
 
         protected void Session_Start(object sender, EventArgs e)

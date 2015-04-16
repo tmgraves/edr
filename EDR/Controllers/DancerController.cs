@@ -284,6 +284,29 @@ namespace EDR.Controllers
 
         }
 
+        public ActionResult GetFacebookEvents(string username, EventType? eventType)
+        {
+            var model = new FacebookEventsViewModel();
+            model.Type = eventType;
+
+            //  Load Facebook Events
+            if (User.Identity.IsAuthenticated)
+            {
+                var userid = User.Identity.GetUserId();
+                var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+
+                if (user.FacebookToken != null)
+                {
+                    model.FacebookEvents = FacebookHelper.GetEvents(user.FacebookToken, DateTime.Now).Where(fe => !DataContext.Events.Select(e => e.FacebookId).Contains(fe.Id)).ToList();
+                }
+                //  Load Facebook Events
+            }
+
+            return PartialView("~/Views/Shared/_ImportFacebookEventsPartial.cshtml", model);
+            //  Media Updates
+
+        }
+
         [Authorize]
         public ActionResult MyLearn(string username)
         {
