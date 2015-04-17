@@ -427,7 +427,6 @@
                 <div class="row" style="margin-bottom: 5px;">
                     @Html.Label("Location", htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
                     @Html.HiddenFor(m => m.Event.Place.FacebookId)
-                    @Html.HiddenFor(m => m.Event.Place.PlaceType)
                     @Html.HiddenFor(m => m.Event.Place.Public)
                     @Html.HiddenFor(m => m.Event.Place.Country)
                     @Html.HiddenFor(m => m.Event.Place.Longitude)
@@ -438,7 +437,6 @@
                         @Html.HiddenFor(m => m.Event.Place.Id)
                         @Html.HiddenFor(m => m.Event.Place.Website)
                         @Html.HiddenFor(m => m.Event.Place.FacebookLink)
-                        <h4>New Place</h4>
                         <div class="row">
                             @if (Model.Event.Place.Name == null)
                             {
@@ -452,7 +450,16 @@
                             }
                         </div>
                         <div class="row">
-                            @Html.DisplayFor(m => m.Event.Place.PlaceType)
+                            @if (Model.Event.Place.PlaceType == null)
+                            {
+                                @Html.EnumDropDownListFor(model => model.Event.Place.PlaceType, "- Select a Place Type-", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Event.Place.PlaceType, "", new { @class = "text-danger" })
+                            }
+                            else
+                            {
+                                @Html.HiddenFor(m => m.Event.Place.PlaceType)
+                                @Html.DisplayFor(m => m.Event.Place.PlaceType)
+                            }
                         </div>
                         <div class="row">
                             @if (Model.Event.Place.Address == null)

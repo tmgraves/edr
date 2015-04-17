@@ -25,5 +25,6 @@ namespace EDR.Models
             get { return _date; }
             set { _date = value; }
         }
+        public bool Admin { get; set; }
     }
 }

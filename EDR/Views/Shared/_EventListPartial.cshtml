@@ -118,7 +118,7 @@
             content: '<div id="content">' +
             '<div id="siteNotice">' +
             '</div>' +
-            '<div style="display: block;">' +
+            '<div style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
             '<img style="max-width: 50px; max-height: 50px; display: inline-block; padding-right: 5px;" src="' + photourl + '"/>' +
             '<h4 style="display: inline-block;" id="firstHeading" class="firstHeading">' + link + '</h4>' +
             '</div>' +
@@ -178,7 +178,9 @@
                     </span>
                 </div>
                 <div class="col-lg-7 col-md-7 col-sm-9 col-xs-9">
-                    <strong>@(rowNo += 1). @item.Name</strong><br />
+                    <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        <strong>@(rowNo += 1). @item.Name</strong>
+                    </div>
                     <span class="text-success"> @@@item.Place.Name</span>
                     @if (item is Class)
                     {

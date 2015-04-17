@@ -1394,7 +1394,7 @@ namespace EDR.Controllers
         private void BuildEditModel(EventEditViewModel model)
         {
             var userid = User.Identity.GetUserId();
-            var user = DataContext.Users.Where(u => u.Id == userid).Include("CurrentRole").FirstOrDefault();
+            var user = DataContext.Users.Where(u => u.Id == userid).Include("CurrentRole").Include("Places").FirstOrDefault();
             model.User = user;
             model.Places = new List<PlaceItem>();
             model.NewPlace = new Place() { Id = 0, Latitude = 0.0, Longitude = 0.0, Public = false, PlaceType = PlaceType.OtherPlace };
@@ -1418,27 +1418,34 @@ namespace EDR.Controllers
 
             int? placeid = model.Event.Place != null ? (int?)model.Event.Place.Id : null;
             //  Fill Places
-            if (model.EventType == EventType.Class)
+            if (user.CurrentRole != null)
             {
-                if (user.CurrentRole.Name == "Teacher")
+                if (model.EventType == EventType.Class)
                 {
-                    places = DataContext.Places.Where(p => p.Teachers.Any(t => t.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == placeid).ToList();
+                    if (user.CurrentRole.Name == "Teacher")
+                    {
+                        places = DataContext.Places.Where(p => p.Teachers.Any(t => t.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == placeid).ToList();
+                    }
+                    else if (user.CurrentRole.Name == "Owner")
+                    {
+                        places = DataContext.Places.Where(p => p.Owners.Any(t => t.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == placeid).ToList();
+                    }
                 }
-                else if (user.CurrentRole.Name == "Owner")
+                else
                 {
-                    places = DataContext.Places.Where(p => p.Owners.Any(t => t.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == placeid).ToList();
+                    if (user.CurrentRole.Name == "Promoter")
+                    {
+                        places = DataContext.Places.Where(p => p.Promoters.Any(t => t.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == placeid).ToList();
+                    }
+                    else if (user.CurrentRole.Name == "Owner")
+                    {
+                        places = DataContext.Places.Where(p => p.Owners.Any(t => t.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == placeid).ToList();
+                    }
                 }
             }
             else
             {
-                if (user.CurrentRole.Name == "Promoter")
-                {
-                    places = DataContext.Places.Where(p => p.Promoters.Any(t => t.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == placeid).ToList();
-                }
-                else if (user.CurrentRole.Name == "Owner")
-                {
-                    places = DataContext.Places.Where(p => p.Owners.Any(t => t.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == placeid).ToList();
-                }
+                places = user.Places.ToList();
             }
 
             model.Places = new List<PlaceItem>();
@@ -1505,12 +1512,14 @@ namespace EDR.Controllers
                     .Include("Pictures")
                     .Include("Playlists")
                     .Include("LinkedFacebookObjects")
+                    .Include("EventMembers")
                     .FirstOrDefault();
 
             evt.Videos.Clear();
             evt.Pictures.Clear();
             evt.Playlists.Clear();
             evt.LinkedFacebookObjects.Clear();
+            DataContext.EventMembers.RemoveRange(evt.EventMembers);
             DataContext.Events.Remove(evt);
             DataContext.SaveChanges();
 
@@ -1953,11 +1962,13 @@ namespace EDR.Controllers
                         if (model.Type == EventType.Class)
                         {
                             var cls = new Class() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = evt.StartDate, EndDate = evt.EndDate, StartTime = evt.StartTime, EndTime = evt.EndTime, ClassType = model.ClassType != null ? (ClassType)Enum.Parse(typeof(ClassType), model.ClassType.ToString()) : ClassType.Class, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, DanceStyles = DataContext.DanceStyles.Where(s => model.PostedStyles.DanceStyleIds.Any(ps => ps == s.Id.ToString())).ToList(), IsAvailable = evt.IsAvailable, LinkedFacebookObjects = new List<LinkedFacebookObject>() { obj }, Recurring = evt.Recurring, Interval = evt.Interval, Frequency = evt.Frequency, MonthDays = evt.MonthDays };
-
+                            cls.EventMembers = new List<EventMember>();
+                            cls.Teachers = new List<Teacher>();
+                            cls.Owners = new List<Owner>();
+                            cls.EventMembers.Add(new EventMember() { Event = cls, Member = user, Admin = true });
                             DataContext.Events.Add(cls);
                             DataContext.SaveChanges();
 
-                            var usr = UserManager.FindByName(User.Identity.Name);
                             if (user.CurrentRole != null)
                             {
                                 if (user.CurrentRole.Name == "Teacher")
@@ -1982,7 +1993,10 @@ namespace EDR.Controllers
                         else
                         {
                             var social = new Social() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = evt.StartDate, EndDate = evt.EndDate, StartTime = evt.StartTime, EndTime = evt.EndTime, SocialType = model.SocialType != null ? (SocialType)Enum.Parse(typeof(SocialType), model.SocialType.ToString()) : SocialType.Social, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, DanceStyles = DataContext.DanceStyles.Where(s => model.PostedStyles.DanceStyleIds.Any(ps => ps == s.Id.ToString())).ToList(), IsAvailable = evt.IsAvailable, LinkedFacebookObjects = new List<LinkedFacebookObject>() { obj }, Recurring = evt.Recurring, Interval = evt.Interval, Frequency = evt.Frequency, MonthDays = evt.MonthDays };
-
+                            social.EventMembers = new List<EventMember>();
+                            social.Promoters = new List<Promoter>();
+                            social.Owners = new List<Owner>();
+                            social.EventMembers.Add(new EventMember() { Event = social, Member = user, Admin = true });
                             DataContext.Events.Add(social);
                             DataContext.SaveChanges();
 
@@ -2230,9 +2244,7 @@ namespace EDR.Controllers
                 //  Place does not have a Facebook Page
                 else
                 {
-                    var placetype = new PlaceType();
-                    placetype = eventType == EventType.Class ? PlaceType.Studio : PlaceType.Nightclub;
-                    model.Event.Place = new Place() { Name = fbevent.Location, Address = fbevent.Address.Street, City = fbevent.Address.City, State = fbevent.Address.State != null ? (State)Enum.Parse(typeof(State), fbevent.Address.State) : State.CA, Zip = fbevent.Address.ZipCode, Country = fbevent.Address.Country, Latitude = fbevent.Address.Latitude, Longitude = fbevent.Address.Longitude, PlaceType = placetype, Public = false, Website = fbevent.Address.WebsiteUrl, FacebookLink = fbevent.Address.FacebookUrl };
+                    model.Event.Place = new Place() { Name = fbevent.Location, Address = fbevent.Address.Street, City = fbevent.Address.City, State = fbevent.Address.State != null ? (State)Enum.Parse(typeof(State), fbevent.Address.State) : State.CA, Zip = fbevent.Address.ZipCode, Country = fbevent.Address.Country, Latitude = fbevent.Address.Latitude, Longitude = fbevent.Address.Longitude, Public = false, Website = fbevent.Address.WebsiteUrl, FacebookLink = fbevent.Address.FacebookUrl };
                 }
             }
             //  Place not in Facebook
