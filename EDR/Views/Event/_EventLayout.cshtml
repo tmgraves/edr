@@ -14,30 +14,6 @@
     {
         ViewBag.Title = "Social Details";
     }
-
-    bool editable = false;
-
-    if (User.Identity.IsAuthenticated)
-    {
-        if (Model.Event is Class)
-        {
-            if (Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)
-            {
-                editable = true;
-            }
-        }
-        if (Model.Event is Social)
-        {
-            if (Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)
-            {
-                editable = true;
-            }
-        }
-        if (Model.Event.Creator.UserName == User.Identity.Name)
-        {
-                editable = true;
-        }
-    }
 }
 
 <script>
@@ -51,8 +27,9 @@
 <div class="row">
     <h1 class="page-header">
         @Model.Event.Name  <small>(@(Model.Event is Class ? ((Class)Model.Event).ClassType.ToString() : ((Social)Model.Event).SocialType.ToString()))</small>
-        @if (editable)
+        @if (User.Identity != null && ((Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)) || (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
         {
+            @*<a style="font-size: medium;" href="@Url.Action("Edit", "Dancer")">Edit Profile</a>*@
             <a class="btn btn-info" title="Edit" href="@Url.Action("Edit", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">
                 <i class="glyphicon glyphicon-pencil" style="vertical-align: middle;"></i>
                 <span class="sr-only">Edit</span>
@@ -183,6 +160,18 @@
                                     </li>
                                     }
                             </ul>
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                if (Model.Class.Teachers.Where(t => t.ApplicationUser.UserName == User.Identity.Name).Count() == 1)
+                                {
+                                <p>
+                                    <a class="btn label label-danger col-lg-12 col-md-12 col-sm-12 col-xs-12" title="Remove Me From Teachers" href="@Url.Action("RemoveFromTeachers", "Event", new { id = Model.Event.Id })">
+                                        <i class="glyphicon glyphicon-remove"></i>
+                                        Remove Me
+                                    </a>
+                                </p>
+                                }
+                            }
                         </div>
                     </div>
                     }
@@ -260,7 +249,16 @@
                     }
                 @if (Model.EventType == EventType.Class)
                     {
-                        if (User.Identity.IsAuthenticated && User.IsInRole("Teacher") && Model.ClassTeacherInvitations.Where(i => i.Teacher.ApplicationUser.UserName == User.Identity.Name).Count() == 0 && Model.Class.Teachers.Where(t => t.ApplicationUser.UserName == User.Identity.Name).Count() == 0)
+                        if (User.Identity.IsAuthenticated)
+                        {
+                            <p>
+                                <a class="btn btn btn-warning col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 5px;" title="Signup" href="@Url.Action("AddTeacher", "Event", new { id = Model.Event.Id })">
+                                    <i class="glyphicon glyphicon-plus"></i>
+                                    Add a Teacher
+                                </a>
+                            </p>
+                        }
+                        @*if (User.Identity.IsAuthenticated && User.IsInRole("Teacher") && Model.ClassTeacherInvitations.Where(i => i.Teacher.ApplicationUser.UserName == User.Identity.Name).Count() == 0 && Model.Class.Teachers.Where(t => t.ApplicationUser.UserName == User.Identity.Name).Count() == 0)
                         {
                             <p>
                                 <a class="btn btn btn-warning col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 5px;" title="Signup" href="@Url.Action("JoinTeachers", "Event", new { id = Model.Event.Id, returnUrl = Request.Url.AbsolutePath })">
@@ -268,9 +266,9 @@
                                     Join As a Teacher
                                 </a>
                             </p>
-                        }
+                        }*@
                     }
-                @if (editable)
+                @if (User.Identity != null && ((Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)) || (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
                 {
                     <p>
                         <a class="btn btn btn-danger col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 5px;" title="Delete" href="@Url.Action("Delete", "Event", new { id = Model.Event.Id, eventType = Model.EventType, returnUrl = Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this Event?')">

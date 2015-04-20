@@ -237,4 +237,19 @@ namespace EDR.Models.ViewModels
         public int Zoom { get; set; }
         public IEnumerable<Event> Events { get; set; }
     }
+
+    public class AddTeacherViewModel
+    {
+        public Class Class { get; set; }
+        public List<Teacher> Teachers { get; set; }
+        [Display(Name = "First Name")]
+        public string FirstName { get; set; }
+        [Display(Name = "Last Name")]
+        public string LastName { get; set; }
+        public IEnumerable<DanceStyleListItem> AvailableStyles { get; set; }
+        public IEnumerable<DanceStyleListItem> SelectedStyles { get; set; }
+        public PostedStyles PostedStyles { get; set; }
+        [Display(Name = "Location")]
+        public string Location { get; set; }
+    }
 }

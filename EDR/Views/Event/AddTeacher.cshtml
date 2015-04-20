@@ -1,0 +1,90 @@
+﻿@model EDR.Models.ViewModels.AddTeacherViewModel
+@using MvcCheckBoxList.Model
+
+
+@{
+    ViewBag.Title = "AddTeacher";
+}
+
+<h2>Add Teacher to @Model.Class.Name</h2>
+
+@using (Html.BeginForm("AddTeacher", "Event", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.Class.Id)
+    <div class="row col-lg-12 col-md-12">
+        <div class="row" style="margin-bottom: 5px;">
+            <div class="form-group">
+                @Html.LabelFor(model => model.FirstName, htmlAttributes: new { @class = "control-label col-md-2 col-lg-2" })
+                <div class="col-md-10 col-lg-10">
+                    @Html.TextBoxFor(m => m.FirstName, null, new { @class = "form-control", @placeholder = "Joseph" })
+                    @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 5px;">
+            <div class="form-group">
+                @Html.LabelFor(model => model.LastName, htmlAttributes: new { @class = "control-label col-md-2 col-lg-2" })
+                <div class="col-md-10 col-lg-10">
+                    @Html.TextBoxFor(m => m.LastName, null, new { @class = "form-control", @placeholder = "Smith" })
+                    @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 5px;">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Location, htmlAttributes: new { @class = "control-label col-md-2 col-lg-2" })
+                <div class="col-md-10 col-lg-10">
+                    @Html.TextBox("location", null, new { @class = "form-control", @placeholder = "Enter your location (Los Angeles, CA, 90065, etc)" })
+                    @Html.ValidationMessageFor(model => model.Location, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 5px;">
+            @Html.Label("Dance Styles", htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
+            <div class="col-md-10 col-lg-9">
+                @Html.CheckBoxListFor(model => model.PostedStyles.DanceStyleIds,
+                                    model => model.AvailableStyles,
+                                    style => style.Id,
+                                    style => style.Name,
+                                    model => model.SelectedStyles,
+                                    new HtmlListInfo(HtmlTag.table, 2, new { @class = "checkboxlist" }, TextLayout.Default))
+                @Html.ValidationMessageFor(model => model.PostedStyles, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+    <div class="row col-lg-12 col-md-12" style="margin: 5px;">
+        <input type="submit" value="Search Teachers" class="btn btn-info" />
+        <a class="btn btn-warning right" href="@Url.Action("View", "Event", new { id = Model.Class.Id, eventType = EDR.Enums.EventType.Class })">
+            Cancel
+        </a>
+    </div>
+}
+
+<div class="row">
+    @foreach (var t in Model.Teachers.OrderBy(x => x.ApplicationUser.FullName))
+    {
+        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 panel panel-default" style="padding:1px;">
+            <div class="captionpic" style="display: inline-block;">
+                @if (t.ApplicationUser.UserPictures != null && t.ApplicationUser.UserPictures.Count > 0)
+                {
+                    <img src="@Url.Content(t.ApplicationUser.UserPictures.First().Filename)" />
+                }
+                else
+                {
+                    <img src="@Url.Content("~/Content/images/NoPic.png")" />
+                }
+            </div>
+            <div style="display: inline-block; vertical-align: top;">
+                <span class="text-primary">@t.ApplicationUser.FullName</span>
+                @if (t.ApplicationUser.ZipCode != null)
+                {
+                    var address = EDR.Utilities.Geolocation.ParseAddress(t.ApplicationUser.ZipCode);
+                    <br /><span class="small">@address.City , @address.State</span>
+                }
+            </div>
+            <a class="btn btn-primary right" href="@Url.Action("SaveTeacher", "Event", new { id = Model.Class.Id, teacherId = t.Id }) " style="text-align: left; vertical-align: top; float: right;">
+                Add Teacher
+            </a>
+        </div>
+    }
+</div>

@@ -136,82 +136,108 @@ namespace EDR.Controllers
                 rEvent.IsAvailable = evt.Privacy == "OPEN" ? true : false;
                 //  Update Event
 
-                //  Update Page
-                if (evt.Address.FacebookId != null)
+                //  Update Place
+                //  Does Event Place match Facebook Place
+                if (rEvent.Place.FacebookId != evt.Address.FacebookId)
                 {
-                    if (rEvent.Place.FacebookId == null)
+                    //  Is the Place not tied to a Page
+                    if (evt.Address.FacebookId == null)
                     {
-                        var place = DataContext.Places.Where(p => p.FacebookId == evt.Address.FacebookId).FirstOrDefault();
+                        var place = new Place() { Name = evt.Location, Address = evt.Address.Street, City = evt.Address.City, State = evt.Address.State != null ? (State)Enum.Parse(typeof(State), evt.Address.State) : State.CA, Zip = evt.Address.ZipCode, Country = evt.Address.Country, Latitude = evt.Address.Latitude, Longitude = evt.Address.Longitude, PlaceType = PlaceType.OtherPlace, Public = false };
+                        rEvent.Place = place;
+                    }
+                    else
+                    {
+                        //  Look up place in database
+                        var newplace = DataContext.Places.Where(p => p.FacebookId == evt.Address.FacebookId).FirstOrDefault();
 
-                        if (place != null)
+                        //  if exists, assign to event
+                        if (newplace == null)
                         {
-                            rEvent.Place = place;
-                        }
-                        else
-                        {
-                            //  Place has a Page in Facebook
-                            if (evt.Address.FacebookId != null)
+                            //  Create New Place from Facebook
+                            var fbplace = FacebookHelper.GetData(rEvent.Creator.FacebookToken, evt.Address.FacebookId);
+
+                            var placetype = new PlaceType();
+                            if (fbplace.category_list != null)
                             {
-                                var fbplace = FacebookHelper.GetData(rEvent.Creator.FacebookToken, evt.Address.FacebookId);
-
-                                var placetype = new PlaceType();
-                                if (fbplace.category_list != null)
+                                foreach (dynamic category in fbplace.category_list)
                                 {
-                                    foreach (dynamic category in fbplace.category_list)
+                                    //  Search for Dance Instruction category
+                                    if (category.name == "Dance Instruction" || category.id == "203916779633178")
                                     {
-                                        //  Search for Dance Instruction category
-                                        if (category.name == "Dance Instruction" || category.id == "203916779633178")
-                                        {
-                                            placetype = PlaceType.Studio;
-                                            break;
-                                        }
-                                        else if (category.name == "Dance Club" || category.id == "176139629103647")
-                                        {
-                                            placetype = PlaceType.Nightclub;
-                                            break;
-                                        }
-                                        else if (category.name == "Restaurant" || category.id == "273819889375819")
-                                        {
-                                            placetype = PlaceType.Restaurant;
-                                            break;
-                                        }
-                                        else if (category.name == "Hotel" || category.id == "164243073639257")
-                                        {
-                                            placetype = PlaceType.Hotel;
-                                            break;
-                                        }
-                                        else if (category.name == "Meeting Room" || category.id == "210261102322291")
-                                        {
-                                            placetype = PlaceType.ConferenceCenter;
-                                            break;
-                                        }
-                                        else if (category.name == "Theater" || category.id == "173883042668223")
-                                        {
-                                            placetype = PlaceType.Theater;
-                                            break;
-                                        }
-                                        else
-                                        {
-                                            placetype = PlaceType.OtherPlace;
-                                        }
+                                        placetype = PlaceType.Studio;
+                                        break;
+                                    }
+                                    else if (category.name == "Dance Club" || category.id == "176139629103647")
+                                    {
+                                        placetype = PlaceType.Nightclub;
+                                        break;
+                                    }
+                                    else if (category.name == "Restaurant" || category.id == "273819889375819")
+                                    {
+                                        placetype = PlaceType.Restaurant;
+                                        break;
+                                    }
+                                    else if (category.name == "Hotel" || category.id == "164243073639257")
+                                    {
+                                        placetype = PlaceType.Hotel;
+                                        break;
+                                    }
+                                    else if (category.name == "Meeting Room" || category.id == "210261102322291")
+                                    {
+                                        placetype = PlaceType.ConferenceCenter;
+                                        break;
+                                    }
+                                    else if (category.name == "Theater" || category.id == "173883042668223")
+                                    {
+                                        placetype = PlaceType.Theater;
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        placetype = PlaceType.OtherPlace;
                                     }
                                 }
-
-                                rEvent.Place = new Place() { Name = evt.Location, Address = evt.Address.Street, City = evt.Address.City, State = evt.Address.State != null ? (State)Enum.Parse(typeof(State), evt.Address.State) : State.CA, Zip = evt.Address.ZipCode, Country = evt.Address.Country, Latitude = evt.Address.Latitude, Longitude = evt.Address.Longitude, FacebookId = evt.Address.FacebookId, PlaceType = placetype, Public = true, Website = evt.Address.WebsiteUrl, FacebookLink = evt.Address.FacebookUrl, Filename = fbplace.cover != null ? fbplace.cover.source : null, ThumbnailFilename = fbplace.cover != null ? fbplace.cover.source : null };
                             }
+
+                            newplace = new Place() { Name = evt.Location, Address = evt.Address.Street, City = evt.Address.City, State = evt.Address.State != null ? (State)Enum.Parse(typeof(State), evt.Address.State) : State.CA, Zip = evt.Address.ZipCode, Country = evt.Address.Country, Latitude = evt.Address.Latitude, Longitude = evt.Address.Longitude, FacebookId = evt.Address.FacebookId, PlaceType = placetype, Public = true, Website = evt.Address.WebsiteUrl, FacebookLink = evt.Address.FacebookUrl, Filename = fbplace.cover != null ? fbplace.cover.source : null, ThumbnailFilename = fbplace.cover != null ? fbplace.cover.source : null };
+                        }
+                        var oldplace = rEvent.Place;
+                        rEvent.Place = newplace;
+
+                        //  Remove null Places
+                        if (oldplace.FacebookId == null)
+                        {
+                            DataContext.Places.Remove(oldplace);
                         }
                     }
                 }
                 else
                 {
+                    rEvent.Place.Name = evt.Location;
                     rEvent.Place.Address = evt.Address.Street;
                     rEvent.Place.City = evt.Address.City;
                     rEvent.Place.State = evt.Address.State != null ? (State)Enum.Parse(typeof(State), evt.Address.State) : State.CA;
                     rEvent.Place.Zip = evt.Address.ZipCode;
                 }
 
-                DataContext.Entry(rEvent).State = EntityState.Modified;
-                DataContext.SaveChanges();
+                try
+                {
+                    DataContext.Entry(rEvent).State = EntityState.Modified;
+                    DataContext.SaveChanges();
+                }
+                catch (DbEntityValidationException e)
+                {
+                    var msg = "";
+                    foreach (var eve in e.EntityValidationErrors)
+                    {
+                        msg = eve.Entry.Entity.GetType().Name + " " + eve.Entry.State;
+                        foreach (var ve in eve.ValidationErrors)
+                        {
+                            msg = ve.PropertyName + " " + ve.ErrorMessage;
+                        }
+                    }
+                }
                 //  Update Page
             }
 
@@ -1511,6 +1537,7 @@ namespace EDR.Controllers
                     .Include("Videos")
                     .Include("Pictures")
                     .Include("Playlists")
+                    .Include("Reviews")
                     .Include("LinkedFacebookObjects")
                     .Include("EventMembers")
                     .FirstOrDefault();
@@ -1518,6 +1545,7 @@ namespace EDR.Controllers
             evt.Videos.Clear();
             evt.Pictures.Clear();
             evt.Playlists.Clear();
+            evt.Reviews.Clear();
             evt.LinkedFacebookObjects.Clear();
             DataContext.EventMembers.RemoveRange(evt.EventMembers);
             DataContext.Events.Remove(evt);
@@ -2351,67 +2379,67 @@ namespace EDR.Controllers
             }
         }
 
-        [Authorize]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(EventCreateViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var event1 = model.Event;
-                event1.StartDate = event1.StartDate.AddHours(model.Time.Hour).AddMinutes(model.Time.Minute);
-                event1.Place = DataContext.Places.Find(model.PlaceId);
-                var id = User.Identity.GetUserId();
+        //[Authorize]
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Create(EventCreateViewModel model)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        var event1 = model.Event;
+        //        event1.StartDate = event1.StartDate.AddHours(model.Time.Hour).AddMinutes(model.Time.Minute);
+        //        event1.Place = DataContext.Places.Find(model.PlaceId);
+        //        var id = User.Identity.GetUserId();
 
-                event1.DanceStyles = new List<DanceStyle>();
-                var styles = DataContext.DanceStyles.Where(x => model.PostedStyles.DanceStyleIds.Contains(x.Id.ToString())).ToList();
+        //        event1.DanceStyles = new List<DanceStyle>();
+        //        var styles = DataContext.DanceStyles.Where(x => model.PostedStyles.DanceStyleIds.Contains(x.Id.ToString())).ToList();
 
-                event1.DanceStyles.Clear();
-                int newId = 0;
+        //        event1.DanceStyles.Clear();
+        //        int newId = 0;
 
-                foreach (DanceStyle s in styles)
-                {
-                    event1.DanceStyles.Add(s);
-                }
+        //        foreach (DanceStyle s in styles)
+        //        {
+        //            event1.DanceStyles.Add(s);
+        //        }
 
-                if (model.EventType == EventType.Class)
-                {
-                    var class1 = ConvertToClass(event1);
-                    if (model.Role == RoleName.Teacher)
-                    {
-                        var teacher = DataContext.Teachers.Include("ApplicationUser").Where(x => x.ApplicationUser.Id == id).FirstOrDefault();
-                        class1.Teachers.Add(teacher);
-                    }
-                    DataContext.Events.Add(class1);
-                    newId = class1.Id;
-                }
-                else if (model.EventType == EventType.Social)
-                {
-                    var social = ConvertToSocial(event1);
-                    if (model.Role == RoleName.Promoter)
-                    {
-                        var promoter = DataContext.Promoters.Include("ApplicationUser").Where(x => x.ApplicationUser.Id == id).FirstOrDefault();
-                        social.Promoters.Add(promoter);
-                    }
-                    DataContext.Events.Add(social);
-                    newId = social.Id;
-                }
-                DataContext.SaveChanges();
-                return RedirectToAction("View", "Event", new { id = newId, eventType = model.EventType });
-                //promoter.ContactEmail = model.Promoter.ContactEmail;
-                //promoter.Website = model.Promoter.Website;
-                //promoter.Facebook = model.Promoter.Facebook;
+        //        if (model.EventType == EventType.Class)
+        //        {
+        //            var class1 = ConvertToClass(event1);
+        //            if (model.Role == RoleName.Teacher)
+        //            {
+        //                var teacher = DataContext.Teachers.Include("ApplicationUser").Where(x => x.ApplicationUser.Id == id).FirstOrDefault();
+        //                class1.Teachers.Add(teacher);
+        //            }
+        //            DataContext.Events.Add(class1);
+        //            newId = class1.Id;
+        //        }
+        //        else if (model.EventType == EventType.Social)
+        //        {
+        //            var social = ConvertToSocial(event1);
+        //            if (model.Role == RoleName.Promoter)
+        //            {
+        //                var promoter = DataContext.Promoters.Include("ApplicationUser").Where(x => x.ApplicationUser.Id == id).FirstOrDefault();
+        //                social.Promoters.Add(promoter);
+        //            }
+        //            DataContext.Events.Add(social);
+        //            newId = social.Id;
+        //        }
+        //        DataContext.SaveChanges();
+        //        return RedirectToAction("View", "Event", new { id = newId, eventType = model.EventType });
+        //        //promoter.ContactEmail = model.Promoter.ContactEmail;
+        //        //promoter.Website = model.Promoter.Website;
+        //        //promoter.Facebook = model.Promoter.Facebook;
 
-                //DataContext.Entry(promoter).State = EntityState.Modified;
-                //DataContext.SaveChanges();
-            }
-            else
-            {
-                var allErrors = ModelState.Values.SelectMany(v => v.Errors);
-                LoadCreateModel(model);
-                return View(model);
-            }
-        }
+        //        //DataContext.Entry(promoter).State = EntityState.Modified;
+        //        //DataContext.SaveChanges();
+        //    }
+        //    else
+        //    {
+        //        var allErrors = ModelState.Values.SelectMany(v => v.Errors);
+        //        LoadCreateModel(model);
+        //        return View(model);
+        //    }
+        //}
 
         [Authorize]
         public PartialViewResult PostReview(EventViewModel model)
@@ -2566,73 +2594,202 @@ namespace EDR.Controllers
             return PartialView("~/Views/Shared/Events/_RelatedEventsPartial.cshtml", model);
             //  Get Events
         }
-        
-        public Class ConvertToClass(Event event1)
-        {
-            var class1 = new Class()
-            {
-                Name = event1.Name,
-                Description = event1.Description,
-                FacebookLink = event1.FacebookLink,
-                StartDate = event1.StartDate,
-                EndDate = event1.EndDate,
-                Price = event1.Price,
-                IsAvailable = event1.IsAvailable,
-                Recurring = event1.Recurring,
-                Frequency = event1.Frequency,
-                Interval = event1.Interval,
-                Duration = event1.Duration,
-                Place = event1.Place,
-                Teachers = new List<Teacher>(),
-                DanceStyles = event1.DanceStyles
-            };
 
-            return class1;
+        [Authorize]
+        public ActionResult AddTeacher(int id)
+        {
+            var model = new AddTeacherViewModel();
+            var clss = DataContext.Events.OfType<Class>().Where(e => e.Id == id).FirstOrDefault();
+            model.Class = clss;
+
+            //  Load Dance Styles
+            var styles = new List<DanceStyleListItem>();
+            foreach (DanceStyle s in DataContext.DanceStyles)
+            {
+                styles.Add(new DanceStyleListItem { Id = s.Id, Name = s.Name });
+            }
+            model.AvailableStyles = styles.OrderBy(x => x.Name);
+            //  Load Dance Styles
+
+            model.Teachers = DataContext.Teachers.Include("ApplicationUser").Where(t => !t.Classes.Any(c => c.Id == model.Class.Id)).ToList();
+
+            //  Search based on location
+            if (model.Location != null)
+            {
+                var address = Geolocation.ParseAddress(model.Location);
+                var NELat = address.Latitude + .5;
+                var SWLat = address.Latitude - .5;
+                var NELng = address.Longitude + .5;
+                var SWLng = address.Longitude - .5;
+                model.Teachers = model.Teachers.Where(t => t.ApplicationUser.Longitude >= SWLng && t.ApplicationUser.Longitude <= NELng && t.ApplicationUser.Latitude >= SWLat && t.ApplicationUser.Latitude <= NELat).ToList();
+            }
+
+            //  Search By Last Name
+            if (model.LastName != null)
+            {
+                model.Teachers = model.Teachers.Where(t => t.ApplicationUser.LastName.Contains(model.LastName)).ToList();
+            }
+
+            //  Search By First Name
+            if (model.LastName != null)
+            {
+                model.Teachers = model.Teachers.Where(t => t.ApplicationUser.FirstName.Contains(model.FirstName)).ToList();
+            }
+
+            return View(model);
         }
 
-        public Social ConvertToSocial(Event event1)
+        [Authorize]
+        [HttpPost]
+        public ActionResult AddTeacher(AddTeacherViewModel model)
         {
-            var social = new Social()
+            var clss = DataContext.Events.OfType<Class>().Where(e => e.Id == model.Class.Id).FirstOrDefault();
+            model.Class = clss;
+            //  Load Dance Styles
+            var styles = new List<DanceStyleListItem>();
+            foreach (DanceStyle s in DataContext.DanceStyles)
             {
-                Name = event1.Name,
-                Description = event1.Description,
-                FacebookLink = event1.FacebookLink,
-                StartDate = event1.StartDate,
-                EndDate = event1.EndDate,
-                Price = event1.Price,
-                IsAvailable = event1.IsAvailable,
-                Recurring = event1.Recurring,
-                Frequency = event1.Frequency,
-                Interval = event1.Interval,
-                Duration = event1.Duration,
-                Place = event1.Place,
-                DanceStyles = event1.DanceStyles,
-                Promoters = new List<Promoter>()
-            };
+                styles.Add(new DanceStyleListItem { Id = s.Id, Name = s.Name });
+            }
+            model.AvailableStyles = styles.OrderBy(x => x.Name);
+            if (model.PostedStyles != null)
+            {
+                model.SelectedStyles = model.AvailableStyles.Where(s => model.PostedStyles.DanceStyleIds.Contains(s.Id.ToString()));
+            }
+            //  Load Dance Styles
 
-            return social;
+            model.Teachers = DataContext.Teachers.Include("ApplicationUser").Where(t => !t.Classes.Any(c => c.Id == model.Class.Id)).ToList();
+
+            //  Search based on location
+            if (model.Location != null)
+            {
+                var address = Geolocation.ParseAddress(model.Location);
+                var NELat = address.Latitude + .5;
+                var SWLat = address.Latitude - .5;
+                var NELng = address.Longitude + .5;
+                var SWLng = address.Longitude - .5;
+                model.Teachers = model.Teachers.Where(t => t.ApplicationUser.Longitude >= SWLng && t.ApplicationUser.Longitude <= NELng && t.ApplicationUser.Latitude >= SWLat && t.ApplicationUser.Latitude <= NELat).ToList();
+            }
+
+            //  Search By First Name
+            if (model.FirstName != null)
+            {
+                model.Teachers = model.Teachers.Where(t => t.ApplicationUser.FirstName.IndexOf(model.FirstName, StringComparison.CurrentCultureIgnoreCase) != -1).ToList();
+            }
+
+            //  Search By Last Name
+            if (model.LastName != null)
+            {
+                model.Teachers = model.Teachers.Where(t => t.ApplicationUser.LastName.IndexOf(model.LastName, StringComparison.CurrentCultureIgnoreCase) != -1).ToList();
+            }
+
+            //  Search By Dance Styles
+            if (model.PostedStyles != null)
+            {
+                model.Teachers = model.Teachers.Where(t => t.DanceStyles.Any(s => model.PostedStyles.DanceStyleIds.Contains(s.Id.ToString()))).ToList();
+            }
+
+            return View(model);
         }
 
-        public Rehearsal ConvertToRehearsal(Event event1)
+        [Authorize]
+        public ActionResult SaveTeacher(int id, int teacherId)
         {
-            var rehearsal = new Rehearsal()
-            {
-                Name = event1.Name,
-                Description = event1.Description,
-                FacebookLink = event1.FacebookLink,
-                StartDate = event1.StartDate,
-                EndDate = event1.EndDate,
-                Price = event1.Price,
-                IsAvailable = event1.IsAvailable,
-                Recurring = event1.Recurring,
-                Frequency = event1.Frequency,
-                Interval = event1.Interval,
-                Duration = event1.Duration,
-                Place = event1.Place,
-                DanceStyles = event1.DanceStyles
-            };
+            var clss = DataContext.Events.OfType<Class>().Where(c => c.Id == id).Include("Teachers").FirstOrDefault();
 
-            return rehearsal;
+            if (clss != null)
+            {
+                if (!clss.Teachers.Any(t => t.Id == teacherId))
+                {
+                    clss.Teachers.Add(DataContext.Teachers.Where(t => t.Id == teacherId).FirstOrDefault());
+                    DataContext.SaveChanges();
+                }
+            }
+
+            return RedirectToAction("View", "Event", new { id = id, eventType = EventType.Class });
         }
+
+        [Authorize]
+        public ActionResult RemoveFromTeachers(int id)
+        {
+            var userid = User.Identity.GetUserId();
+            var clss = DataContext.Events.OfType<Class>().Where(c => c.Id == id).Include("Teachers").FirstOrDefault();
+
+            if (clss != null)
+            {
+                clss.Teachers.Remove(DataContext.Teachers.Where(t => t.ApplicationUser.Id == userid).FirstOrDefault());
+                DataContext.SaveChanges();
+            }
+
+            return RedirectToAction("View", "Event", new { id = id, eventType = EventType.Class });
+        }
+
+        //public Class ConvertToClass(Event event1)
+        //{
+        //    var class1 = new Class()
+        //    {
+        //        Name = event1.Name,
+        //        Description = event1.Description,
+        //        FacebookLink = event1.FacebookLink,
+        //        StartDate = event1.StartDate,
+        //        EndDate = event1.EndDate,
+        //        Price = event1.Price,
+        //        IsAvailable = event1.IsAvailable,
+        //        Recurring = event1.Recurring,
+        //        Frequency = event1.Frequency,
+        //        Interval = event1.Interval,
+        //        Duration = event1.Duration,
+        //        Place = event1.Place,
+        //        Teachers = new List<Teacher>(),
+        //        DanceStyles = event1.DanceStyles
+        //    };
+
+        //    return class1;
+        //}
+
+        //public Social ConvertToSocial(Event event1)
+        //{
+        //    var social = new Social()
+        //    {
+        //        Name = event1.Name,
+        //        Description = event1.Description,
+        //        FacebookLink = event1.FacebookLink,
+        //        StartDate = event1.StartDate,
+        //        EndDate = event1.EndDate,
+        //        Price = event1.Price,
+        //        IsAvailable = event1.IsAvailable,
+        //        Recurring = event1.Recurring,
+        //        Frequency = event1.Frequency,
+        //        Interval = event1.Interval,
+        //        Duration = event1.Duration,
+        //        Place = event1.Place,
+        //        DanceStyles = event1.DanceStyles,
+        //        Promoters = new List<Promoter>()
+        //    };
+
+        //    return social;
+        //}
+
+        //public Rehearsal ConvertToRehearsal(Event event1)
+        //{
+        //    var rehearsal = new Rehearsal()
+        //    {
+        //        Name = event1.Name,
+        //        Description = event1.Description,
+        //        FacebookLink = event1.FacebookLink,
+        //        StartDate = event1.StartDate,
+        //        EndDate = event1.EndDate,
+        //        Price = event1.Price,
+        //        IsAvailable = event1.IsAvailable,
+        //        Recurring = event1.Recurring,
+        //        Frequency = event1.Frequency,
+        //        Interval = event1.Interval,
+        //        Duration = event1.Duration,
+        //        Place = event1.Place,
+        //        DanceStyles = event1.DanceStyles
+        //    };
+
+        //    return rehearsal;
+        //}
     }
 }

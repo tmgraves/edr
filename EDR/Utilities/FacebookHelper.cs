@@ -303,7 +303,7 @@ namespace EDR.Utilities
                     var place = client.Get(eventdata.venue.id);
 
                     add.WebsiteUrl = place.website;
-                    add.FacebookUrl = "https://www.facebook.com/" + place.username;
+                    add.FacebookUrl = place.link;
                     add.Location = place.name;
                 }
                 //  Place is not a Page
@@ -311,6 +311,7 @@ namespace EDR.Utilities
                 {
                     if (eventdata.venue.name != null)
                     {
+                        add.Location = eventdata.venue.name;
                         address = Geolocation.ParseAddress(eventdata.venue.name);
 
                         if (address != null)
