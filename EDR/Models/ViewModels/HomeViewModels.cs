@@ -29,6 +29,7 @@ namespace EDR.Models.ViewModels
         public IEnumerable<ClassSeries> ClassSeries { get; set; }
         public IEnumerable<Class> Classes { get; set; }
         public IEnumerable<Workshop> Workshops { get; set; }
+        public ApplicationUser User { get; set; }
     }
 
     public class SocialViewModel
@@ -46,5 +47,6 @@ namespace EDR.Models.ViewModels
         public List<DayOfWeek> Days { get; set; }
         public List<DayOfWeek> DaysOfWeek { get; set; }
         public IEnumerable<Social> Socials { get; set; }
+        public ApplicationUser User { get; set; }
     }
 }
