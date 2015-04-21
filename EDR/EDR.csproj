@@ -698,6 +698,8 @@
     <Content Include="Views\Shared\_CoverMediaPartial.cshtml" />
     <Content Include="Views\Shared\_ImportFacebookEventsPartial.cshtml" />
     <Content Include="Views\Event\AddTeacher.cshtml" />
+    <Content Include="Views\Home\PrivacyPolicy.cshtml" />
+    <Content Include="Views\Home\TermsofService.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

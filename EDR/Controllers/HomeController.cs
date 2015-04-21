@@ -38,6 +38,16 @@ namespace EDR.Controllers
             return View(viewModel);
         }
 
+        public ActionResult PrivacyPolicy()
+        {
+            return View();
+        }
+
+        public ActionResult TermsofService()
+        {
+            return View();
+        }
+
         public ActionResult Social(int? danceStyle, int? place, string location, string[] days, double? CenterLat, double? CenterLng, int? Zoom, double? NELat, double? NELng, double? SWLat, double? SWLng)
         {
             var viewModel = new SocialViewModel();
