@@ -409,7 +409,6 @@
     <Content Include="Content\images\dancers.png" />
     <Content Include="Content\images\eatdancerepeat.png" />
     <Content Include="Content\images\email.png" />
-    <Content Include="Content\images\error.png" />
     <Content Include="Content\images\facebooklogin.png" />
     <Content Include="Content\images\facebookSmall.png" />
     <Content Include="Content\images\indicator.white.gif" />
