@@ -407,6 +407,7 @@
     <Content Include="Content\images\dancecollage.jpg" />
     <Content Include="Content\images\dancer.png" />
     <Content Include="Content\images\dancers.png" />
+    <Content Include="Content\images\eatdancerepeat.png" />
     <Content Include="Content\images\email.png" />
     <Content Include="Content\images\error.png" />
     <Content Include="Content\images\facebooklogin.png" />

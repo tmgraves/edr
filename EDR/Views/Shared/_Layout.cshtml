@@ -29,7 +29,9 @@ window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                @Html.ActionLink("Eat. Dance. Repeat.", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                <a href="@Url.Action("Index", "Home")" class="navbar-brand">
+                    <img src="~/Content/images/eatdancerepeat.png" style="height: 100%;" />
+                </a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
