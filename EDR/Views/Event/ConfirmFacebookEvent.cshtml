@@ -180,6 +180,9 @@
                     else {
                         btn.prop('disabled', true);
                     }
+
+                    //  Show Skill Level
+                    $('#skilllevel').show();
                 }
                 else if (eventtype == "0")
                 {
@@ -194,11 +197,13 @@
                     else {
                         btn.prop('disabled', true);
                     }
+                    $('#skilllevel').hide();
                 }
                 else
                 {
                     $('#classtype').hide();
                     $('#socialtype').hide();
+                    $('#skilllevel').hide();
                 }
             });
         });
@@ -234,6 +239,7 @@
             if (eventtype == "1") {
                 $('#classtype').show();
                 $('#socialtype').hide();
+                $('#skilllevel').show();
 
                 var classtype = $("#ClassType option:selected").val();
                 var btn = $('.wizard .next');
@@ -247,6 +253,7 @@
             else if (eventtype == "0") {
                 $('#classtype').hide();
                 $('#socialtype').show();
+                $('#skilllevel').hide();
 
                 var socialtype = $("#SocialType option:selected").val();
                 var btn = $('.wizard .next');
@@ -260,6 +267,7 @@
             else {
                 $('#classtype').hide();
                 $('#socialtype').hide();
+                $('#skilllevel').hide();
             }
         });
     </script>
@@ -523,6 +531,16 @@
                     <div class="col-md-10 col-lg-9">
                         @Html.DisplayFor(model => model.Event.Name, new { htmlAttributes = new { @class = "form-control" } })
                         @Html.ValidationMessageFor(model => model.Event.Name, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div id="skilllevel" class="row" style="margin-bottom: 5px;" hidden="hidden">
+                    @Html.LabelFor(m => m.SkillLevel, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
+                    <div class="col-md-10 col-lg-9">
+                        @{
+                            var list = new SelectList(new List<int> { 1, 2, 3, 4, 5 });
+                          }
+                        @Html.DropDownListFor(m => m.SkillLevel, new SelectList(new List<int> { 1, 2, 3, 4, 5 }), "-- Select a Skill Level --", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.SkillLevel, "", new { @class = "text-danger" })
                     </div>
                 </div>
                 <div class="row" style="margin-bottom: 5px;">

@@ -133,7 +133,7 @@ namespace EDR.Controllers
                 rEvent.StartDate = evt.StartTime;
                 rEvent.StartTime = evt.StartTime;
                 rEvent.EndTime = evt.EndTime;
-                rEvent.IsAvailable = evt.Privacy == "OPEN" ? true : false;
+                rEvent.IsAvailable = (evt.Privacy == "OPEN" || evt.Privacy == "FRIENDS") ? true : false;
                 //  Update Event
 
                 //  Update Place
@@ -1989,7 +1989,7 @@ namespace EDR.Controllers
                         var obj = new LinkedFacebookObject() { MediaSource = MediaSource.Facebook, Name = evt.Name, FacebookId = evt.FacebookId, Url = evt.FacebookLink, ObjectType = FacebookObjectType.Event };
                         if (model.Type == EventType.Class)
                         {
-                            var cls = new Class() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = evt.StartDate, EndDate = evt.EndDate, StartTime = evt.StartTime, EndTime = evt.EndTime, ClassType = model.ClassType != null ? (ClassType)Enum.Parse(typeof(ClassType), model.ClassType.ToString()) : ClassType.Class, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, DanceStyles = DataContext.DanceStyles.Where(s => model.PostedStyles.DanceStyleIds.Any(ps => ps == s.Id.ToString())).ToList(), IsAvailable = evt.IsAvailable, LinkedFacebookObjects = new List<LinkedFacebookObject>() { obj }, Recurring = evt.Recurring, Interval = evt.Interval, Frequency = evt.Frequency, MonthDays = evt.MonthDays };
+                            var cls = new Class() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = evt.StartDate, EndDate = evt.EndDate, StartTime = evt.StartTime, EndTime = evt.EndTime, ClassType = model.ClassType != null ? (ClassType)Enum.Parse(typeof(ClassType), model.ClassType.ToString()) : ClassType.Class, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, DanceStyles = DataContext.DanceStyles.Where(s => model.PostedStyles.DanceStyleIds.Any(ps => ps == s.Id.ToString())).ToList(), IsAvailable = evt.IsAvailable, LinkedFacebookObjects = new List<LinkedFacebookObject>() { obj }, Recurring = evt.Recurring, Interval = evt.Interval, Frequency = evt.Frequency, MonthDays = evt.MonthDays, SkillLevel = model.SkillLevel };
                             cls.EventMembers = new List<EventMember>();
                             cls.Teachers = new List<Teacher>();
                             cls.Owners = new List<Owner>();
@@ -2178,7 +2178,7 @@ namespace EDR.Controllers
             model.Type = eventType;
 
             var fbevent = FacebookHelper.GetEvent(id, user.FacebookToken, "id,cover,description,end_time,is_date_only,location,name,owner,privacy,start_time,ticket_uri,timezone,updated_time,venue,parent_group");            //  ((List<FacebookEvent>)Session["FacebookEvents"]).Where(x => x.Id == id).FirstOrDefault();
-            var available = fbevent.Privacy == "OPEN" ? true : false;
+            var available = (fbevent.Privacy == "OPEN" || fbevent.Privacy == "FRIENDS") ? true : false;
             model.Event = new Event() { Name = fbevent.Name, Description = fbevent.Description, StartDate = fbevent.StartTime, StartTime = fbevent.StartTime, EndDate = fbevent.EndTime, EndTime = fbevent.EndTime, PhotoUrl = fbevent.CoverPhoto.LargeSource, FacebookId = fbevent.Id, FacebookLink = fbevent.EventLink, Interval = 1, IsAvailable = available };
 
             //  For Month Days Checkbox List

@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using EDR.Enums;
 using EDR.Utilities.Validators;
+using System.ComponentModel;
 
 namespace EDR.Models.ViewModels
 {
@@ -208,6 +209,9 @@ namespace EDR.Models.ViewModels
         public string[] PostedMonthDays { get; set; }
         public string MonthDay { get; set; }
         public string HiddenMonthDay { get; set; }
+        [DefaultValue(1)]
+        [Range(1, 100)]
+        public int SkillLevel { get; set; }
     }
 
     public class EventLinkedFacebookEventContainer : EventBaseViewModel

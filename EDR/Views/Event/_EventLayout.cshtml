@@ -146,6 +146,14 @@
                     {
                     <div class="row">
                         <label class="control-label col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                            Level:
+                        </label>
+                        <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9 text-left">
+                            @Model.Class.SkillLevel
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label class="control-label col-lg-3 col-md-3 col-sm-3 col-xs-3">
                             Teachers:
                         </label>
                         <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9 text-left">
@@ -268,14 +276,44 @@
                             </p>
                         }*@
                     }
-                @if (User.Identity != null && ((Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)) || (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
+                @if (User.Identity != null)
                 {
-                    <p>
-                        <a class="btn btn btn-danger col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 5px;" title="Delete" href="@Url.Action("Delete", "Event", new { id = Model.Event.Id, eventType = Model.EventType, returnUrl = Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this Event?')">
-                            <i class="glyphicon glyphicon-remove"></i>
-                            Delete Event
-                        </a>
-                    </p>
+                    //  For Creator
+                    if (Model.Event.Creator.UserName == User.Identity.Name)
+                    {
+                        <p>
+                            <a class="btn btn btn-danger col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 5px;" title="Delete" href="@Url.Action("Delete", "Event", new { id = Model.Event.Id, eventType = Model.EventType, returnUrl = Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this Event?')">
+                                <i class="glyphicon glyphicon-remove"></i>
+                                Delete Event
+                            </a>
+                        </p>
+                    }
+                    //  For Class
+                    else if (Model.Event is Class)
+                    {
+                        if (Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)
+                        {
+                            <p>
+                                <a class="btn btn btn-danger col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 5px;" title="Delete" href="@Url.Action("Delete", "Event", new { id = Model.Event.Id, eventType = Model.EventType, returnUrl = Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this Event?')">
+                                    <i class="glyphicon glyphicon-remove"></i>
+                                    Delete Event
+                                </a>
+                            </p>
+                        }
+                    }
+                    //  For Social
+                    else
+                    {
+                        if (Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)
+                        {
+                            <p>
+                                <a class="btn btn btn-danger col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 5px;" title="Delete" href="@Url.Action("Delete", "Event", new { id = Model.Event.Id, eventType = Model.EventType, returnUrl = Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this Event?')">
+                                    <i class="glyphicon glyphicon-remove"></i>
+                                    Delete Event
+                                </a>
+                            </p>
+                        }
+                    }
                 }
             </div>
         </div>
