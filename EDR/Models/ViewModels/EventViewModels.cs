@@ -49,11 +49,12 @@ namespace EDR.Models.ViewModels
         public ApplicationUser User { get; set; }
     }
 
-    public class ImportFacebookEventViewModel : EventBaseViewModel
+    public class ImportFacebookEventViewModel
     {
         public IEnumerable<FacebookEvent> FacebookEvents { get; set; }
-        public int? PlaceId { get; set; }
-        public ApplicationUser User { get; set; }
+        [Display(Name = "Enter Facebook Url")]
+        public string FacebookLink { get; set; }
+        public EventType? Type { get; set; }
     }
 
     public class EventEditViewModel : EventBaseViewModel

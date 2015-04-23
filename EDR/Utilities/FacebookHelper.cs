@@ -22,6 +22,47 @@ namespace EDR.Utilities
             return user.FacebookToken;
         }
 
+        public static bool CheckToken(string token)
+        {
+            var valid = true;
+
+            try
+            {
+                var client = new FacebookClient(token);
+                dynamic result = client.Get("me/friends");
+            }
+            catch (FacebookOAuthException)
+            {
+                valid = false;
+                // Our access token is invalid or expired
+                // Here we need to do something to handle this.
+            }
+
+            return valid;
+        }
+
+        public static string GetExtendedAccessToken(string token)
+        {
+            FacebookClient client = new FacebookClient();
+            string extendedToken = "";
+            try
+            {
+                dynamic result = client.Get("/oauth/access_token", new
+                {
+                    grant_type = "fb_exchange_token",
+                    client_id = ConfigurationManager.AppSettings["FacebookAppId"],
+                    client_secret = ConfigurationManager.AppSettings["FacebookAppSecret"],
+                    fb_exchange_token = token
+                });
+                extendedToken = result.access_token;
+            }
+            catch
+            {
+                extendedToken = token;
+            }
+            return extendedToken;
+        }
+        
         public static dynamic GetData(string token, string query)
         {
             var fb = new FacebookClient(token);

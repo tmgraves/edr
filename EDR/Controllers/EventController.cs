@@ -1581,44 +1581,19 @@ namespace EDR.Controllers
             //  Set Return
         }
 
-        [Authorize(Roles = "Teacher,Owner")]
-        public ActionResult ImportClassFromFacebook(int? placeId)
+        [Authorize]
+        public ActionResult ImportFacebookEvent()
         {
-            if (User.Identity.IsAuthenticated)
+            var userid = User.Identity.GetUserId();
+            var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+
+            if (user.FacebookToken != null)
             {
-                var userid = User.Identity.GetUserId();
-                var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
-
-                if (placeId != null)
-                {
-                    if (DataContext.Places.Where(p => p.Id == placeId).Where(p => p.Teachers.Any(t => t.ApplicationUser.Id == userid) || p.Owners.Any(o => o.ApplicationUser.Id == userid)).Count() == 0)
-                    {
-                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                    }
-                }
-
                 var model = new ImportFacebookEventViewModel();
-                model.User = user;
-                model.EventType = EventType.Class;
 
-                if (placeId != null)
-                {
-                    model.PlaceId = (int)placeId;
-                }
+                model.FacebookEvents = FacebookHelper.GetEvents(user.FacebookToken, DateTime.Now).Where(fe => !DataContext.Events.Select(e => e.FacebookId).Contains(fe.Id)).ToList();
 
-                if (user.FacebookToken != null)
-                {
-                    if (Session["FacebookEvents"] == null)
-                    {
-                        Session["FacebookEvents"] = FacebookHelper.GetEvents(user.FacebookToken);
-                    }
-                    if (Session["FacebookEvents"] != null)
-                    {
-                        model.FacebookEvents = (List<FacebookEvent>)Session["FacebookEvents"];
-                    }
-                }
-
-                return View("ImportFacebookEvent", model);
+                return View(model);
             }
             else
             {
@@ -1626,50 +1601,147 @@ namespace EDR.Controllers
             }
         }
 
-        [Authorize(Roles = "Owner,Promoter")]
-        public ActionResult ImportSocialFromFacebook(int? placeId)
+        [Authorize]
+        [HttpPost]
+        public ActionResult ImportFacebookEvent(ImportFacebookEventViewModel model)
         {
-            if (User.Identity.IsAuthenticated)
+            var userid = User.Identity.GetUserId();
+            var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+
+            if (user.FacebookToken != null)
             {
-                var userid = User.Identity.GetUserId();
-                var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
-
-                if (placeId != null)
+                if (model.FacebookLink != null)
                 {
-                    if (DataContext.Places.Where(p => p.Id == placeId).Where(p => p.Promoters.Any(t => t.ApplicationUser.Id == userid) || p.Owners.Any(o => o.ApplicationUser.Id == userid)).Count() == 0)
+                    Uri fbUri = new Uri(model.FacebookLink);
+
+                    var id = "";
+                    var val = "";
+                    foreach (var s in fbUri.Segments)
                     {
-                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                        val = s.Replace("/", "").Replace("events", "").Replace("pages", "").Replace("groups", "");
+                        if (val != "")
+                        {
+                            id = val;
+                        }
+                    }
+
+                    var evt = DataContext.Events.Where(e => e.FacebookId == id).FirstOrDefault();
+                    if (evt == null)
+                    {
+                        return RedirectToAction("ConfirmFacebookEvent", "Event", new { id = val, eventType = model.Type });
+                    }
+                    else
+                    {
+                        if (evt is Class)
+                        {
+                            return RedirectToAction("View", "Event", new { id = evt.Id, eventType = EventType.Class });
+                        }
+                        else
+                        {
+                            return RedirectToAction("View", "Event", new { id = evt.Id, eventType = EventType.Social });
+                        }
                     }
                 }
-
-                var model = new ImportFacebookEventViewModel();
-                model.User = user;
-                model.EventType = EventType.Social;
-
-                if (placeId != null)
+                else
                 {
-                    model.PlaceId = (int)placeId;
+                    return View(model);
                 }
-
-                if (user.FacebookToken != null)
-                {
-                    if (Session["FacebookEvents"] == null)
-                    {
-                        Session["FacebookEvents"] = FacebookHelper.GetEvents(user.FacebookToken);
-                    }
-                    if (Session["FacebookEvents"] != null)
-                    {
-                        model.FacebookEvents = (List<FacebookEvent>)Session["FacebookEvents"];
-                    }
-                }
-
-                return View("ImportFacebookEvent", model);
             }
             else
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
         }
+
+        //[Authorize(Roles = "Teacher,Owner")]
+        //public ActionResult ImportClassFromFacebook(int? placeId)
+        //{
+        //    if (User.Identity.IsAuthenticated)
+        //    {
+        //        var userid = User.Identity.GetUserId();
+        //        var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+
+        //        if (placeId != null)
+        //        {
+        //            if (DataContext.Places.Where(p => p.Id == placeId).Where(p => p.Teachers.Any(t => t.ApplicationUser.Id == userid) || p.Owners.Any(o => o.ApplicationUser.Id == userid)).Count() == 0)
+        //            {
+        //                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //            }
+        //        }
+
+        //        var model = new ImportFacebookEventViewModel();
+        //        model.User = user;
+        //        model.EventType = EventType.Class;
+
+        //        if (placeId != null)
+        //        {
+        //            model.PlaceId = (int)placeId;
+        //        }
+
+        //        if (user.FacebookToken != null)
+        //        {
+        //            if (Session["FacebookEvents"] == null)
+        //            {
+        //                Session["FacebookEvents"] = FacebookHelper.GetEvents(user.FacebookToken);
+        //            }
+        //            if (Session["FacebookEvents"] != null)
+        //            {
+        //                model.FacebookEvents = (List<FacebookEvent>)Session["FacebookEvents"];
+        //            }
+        //        }
+
+        //        return View("ImportFacebookEvent", model);
+        //    }
+        //    else
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+        //}
+
+        //[Authorize(Roles = "Owner,Promoter")]
+        //public ActionResult ImportSocialFromFacebook(int? placeId)
+        //{
+        //    if (User.Identity.IsAuthenticated)
+        //    {
+        //        var userid = User.Identity.GetUserId();
+        //        var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+
+        //        if (placeId != null)
+        //        {
+        //            if (DataContext.Places.Where(p => p.Id == placeId).Where(p => p.Promoters.Any(t => t.ApplicationUser.Id == userid) || p.Owners.Any(o => o.ApplicationUser.Id == userid)).Count() == 0)
+        //            {
+        //                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //            }
+        //        }
+
+        //        var model = new ImportFacebookEventViewModel();
+        //        model.User = user;
+        //        model.EventType = EventType.Social;
+
+        //        if (placeId != null)
+        //        {
+        //            model.PlaceId = (int)placeId;
+        //        }
+
+        //        if (user.FacebookToken != null)
+        //        {
+        //            if (Session["FacebookEvents"] == null)
+        //            {
+        //                Session["FacebookEvents"] = FacebookHelper.GetEvents(user.FacebookToken);
+        //            }
+        //            if (Session["FacebookEvents"] != null)
+        //            {
+        //                model.FacebookEvents = (List<FacebookEvent>)Session["FacebookEvents"];
+        //            }
+        //        }
+
+        //        return View("ImportFacebookEvent", model);
+        //    }
+        //    else
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+        //}
 
         [Authorize(Roles = "Teacher,Owner")]
         public ActionResult CreateClass(int? placeId)
@@ -1904,6 +1976,10 @@ namespace EDR.Controllers
         [HttpPost]
         public ActionResult ConfirmFacebookEvent(ConfirmFacebookEvent model)
         {
+            if (model.Type == EventType.Social)
+            {
+                ModelState["SkillLevel"].Errors.Clear();
+            }
             var userid = User.Identity.GetUserId();
             var user = DataContext.Users.Where(u => u.Id == userid).Include("CurrentRole").FirstOrDefault();
 

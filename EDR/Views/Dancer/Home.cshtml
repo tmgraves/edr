@@ -29,42 +29,46 @@
     </div>
 </div>
 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-    <div class="panel panel-warning">
-        <div class="panel-heading">
-            Your Music
+    <div class="row" style="margin-bottom: 5px;">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+            <a class="btn btn-primary" href="@Url.Action("ImportFacebookEvent", "Event")" style="width: 100%;"><img class="img-rounded" style="width: 30px;" src="@Url.Content("~/Content/images/facebookSmall.png")" /> Import Event</a>
         </div>
-        <div class="panel-body text-center">
-            @if (Model.Dancer.SpotifyUri != null)
+        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+            @if (Model.Dancer.SpotifyId != null)
             {
+                <a class="btn btn-primary" href=@Url.Action("ChangeSpotifyPlaylist", "Dancer", new { username = Model.Dancer.UserName }) title="Add Your Playlist" style="width: 100%;">
+                    <img class="img-rounded" style="height: 30px;" src="@Url.Content("~/Content/images/spotify.png")" />
+                    Add Playlist
+                </a>
+            }
+            else
+            {
+                <a class="btn btn-primary" href=@Url.Action("SocialMedia", "Dancer", new { username = Model.Dancer.UserName }) title="Link Your Spotify Account" style="width: 100%;">
+                    <img class="img-rounded" style="height: 30px;" src="@Url.Content("~/Content/images/spotify.png")" />
+                    Link Spotify
+                </a>
+            }
+        </div>
+    </div>
+    @if (Model.Dancer.SpotifyUri != null)
+    {
+        <div class="panel panel-warning">
+            <div class="panel-heading">
+                Your Music
+            </div>
+            <div class="panel-body text-center">
                 <iframe src="https://embed.spotify.com/?uri=@Model.Dancer.SpotifyUri" width="250" height="380" frameborder="0" allowtransparency="true"></iframe>
                 <p>
                     <a class="btn-link" href=@Url.Action("ChangeSpotifyPlaylist", "Dancer", new { username = Model.Dancer.UserName }) title="Add Your Playlist">
                         Change Your Playlist
                     </a>
                 </p>
-            }
-            else
-            {
-                if (Model.Dancer.SpotifyId != null)
-                {
-                    <a class="btn btn-primary" href=@Url.Action("ChangeSpotifyPlaylist", "Dancer", new { username = Model.Dancer.UserName }) title="Add Your Playlist">
-                        Add Your Playlist
-                        <img class="img-rounded" style="height: 30px;" src="@Url.Content("~/Content/images/spotify.png")" />
-                    </a>
-                }
-                else
-                {
-                    <a class="btn btn-primary" href=@Url.Action("SocialMedia", "Dancer", new { username = Model.Dancer.UserName }) title="Link Your Spotify Account">
-                        Link Your Spotify Account
-                        <img class="img-rounded" style="height: 30px;" src="@Url.Content("~/Content/images/spotify.png")" />
-                    </a>
-                }
-            }
+            </div>
         </div>
-    </div>
-    <div class="partialContents" data-url="/@Model.Dancer.UserName/GetFacebookEvents">
+    }
+    @*<div class="partialContents" data-url="/@Model.Dancer.UserName/GetFacebookEvents">
         <img src="~/Content/images/indicator.white.gif" />Loading...
-    </div>
+    </div>*@
     <div class="panel panel-info">
         <div class="panel-heading">
             Suggested Classes/Workshops for you

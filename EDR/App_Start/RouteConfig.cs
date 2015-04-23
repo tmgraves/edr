@@ -136,6 +136,12 @@ namespace EDR
             );
 
             routes.MapRoute(
+                name: "EventImportFacebookEvent",
+                url: "Event/ImportFacebookEvent",
+                defaults: new { controller = "Event", action = "ImportFacebookEvent" }
+            );
+
+            routes.MapRoute(
                 name: "ClassCreate",
                 url: "Class/Create",
                 defaults: new { controller = "Event", action = "CreateClass" }

@@ -383,6 +383,8 @@ namespace EDR.Controllers
             var user = await UserManager.FindAsync(loginInfo.Login);
             if (user != null)
             {
+                //Save the FacebookToken in the database if not already there
+                await StoreFacebookAuthToken(user);
                 await SignInAsync(user, isPersistent: false);
                 if (user.CurrentRole != null)
                 {
@@ -410,6 +412,33 @@ namespace EDR.Controllers
             }
         }
 
+        private async Task StoreFacebookAuthToken(ApplicationUser user)
+        {
+            var claimsIdentity = await AuthenticationManager.GetExternalIdentityAsync(DefaultAuthenticationTypes.ExternalCookie);
+            if (claimsIdentity != null)
+            {
+                try
+                {
+                    // Retrieve the existing claims for the user and add the FacebookAccessTokenClaim
+                    var currentClaims = await UserManager.GetClaimsAsync(user.Id);
+                    var facebookAccessToken = claimsIdentity.FindAll("urn:facebook:access_token").First();
+
+                    var dbuser = DataContext.Users.Where(u => u.Id == user.Id).FirstOrDefault();
+
+                    if (dbuser != null)
+                    {
+                        user.FacebookToken = facebookAccessToken.Value;
+                        DataContext.Entry(dbuser).State = EntityState.Modified;
+                        DataContext.SaveChanges();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    var err = false;
+                }
+            }
+        }
+        
         //
         // POST: /Account/LinkLogin
         [HttpPost]

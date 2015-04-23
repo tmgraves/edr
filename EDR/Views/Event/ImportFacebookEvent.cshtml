@@ -1,127 +1,63 @@
 ﻿@model EDR.Models.ViewModels.ImportFacebookEventViewModel
 
 @{
-    ViewBag.Title = "ImportFacebookEvent";
+    ViewBag.Title = "Import a Facebook Event";
 }
 
-<h2 class="page-header">Import Facebook Event</h2>
+<h2 class="page-header">Import Facebook Event
+    <a class="btn btn-info" href="@Url.Action("Home", Session["CurrentRole"] != null ? Session["CurrentRole"].ToString() : "Dancer", new { username = User.Identity.Name })">Cancel</a>
+    </h2>
 
-@if (Model.FacebookEvents != null)
-{
-    if (Model.FacebookEvents.Count() > 0)
-    {
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <ul class="nav nav-pills" role="tablist">
-                    <li class="active"><a href="#currentEvents" data-toggle="tab">Current Events</a></li>
-                    <li><a href="#pastEvents" data-toggle="tab">Past Events</a></li>
-                </ul>
-            </div>
-            <div class="panel-body">
-                <div class="tab-content">
-                    <div id="currentEvents" class="tab-pane active">
-                        @foreach (var ev in @Model.FacebookEvents.Where(e => e.StartTime >= DateTime.Today).OrderBy(x => x.StartTime))
-                        {
-                            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" style="white-space: normal;">
-                                <div style="display: table; width: 100%;">
-                                    <div style="display: table-row;">
-                                        <div class="thumbnail text-center" style="display: table-cell; vertical-align: top; width: 120px;">
-                                            <span class="text-primary">@ev.StartTime.ToString("ddd").ToUpper()</span><br /><span class="text-success">@ev.StartTime.ToString("MMM").ToUpper() @ev.StartTime.Day.ToString()</span><br /><span class="text-success">@ev.StartTime.Year.ToString()</span>
-                                            <div class="croppedpic" style="height: 50px;">
-                                                <img src="@ev.CoverPhoto.LargeSource" />
-                                            </div>
-                                        </div>
-                                        <div style="display: table-cell; height: 100%;">
-                                            <a class="btn btn-default" href='https://www.facebook.com/events/@ev.Id' target="_blank" title="View this Event On Facebook" style="white-space: normal; text-align: left; width: 100%; margin-left: 2px;">
-                                                <strong>
-                                                    @ev.Name.PadRight(20, ' ').Substring(0, 20)<br />@@@(ev.Location != null ? ev.Location.PadRight(20, ' ').Substring(0, 20) : "")
-                                                </strong>
-                                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                                    <span class="text-danger">
-                                                        @ev.StartTime.ToString("%h:mm tt")
-                                                        @if (ev.EndTime != null)
-                                                        {
-                                                            <text> ~ </text> @(((DateTime)ev.EndTime).ToString("%h:mm tt"))
-                                                        }
-                                                    </span>
-                                                </div>
-                                            </a>
-                                            @Html.ActionLink("Import this Event", "ConfirmFacebookEvent", "Event", new { id = ev.Id, eventType = Model.EventType }, htmlAttributes: new { @class = "btn btn-primary", @style = " margin: 2px; width: 100%; vertical-align: bottom;" })
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                    <div id="pastEvents" class="tab-pane">
-                        @foreach (var ev in @Model.FacebookEvents.Where(e => e.StartTime < DateTime.Today).OrderByDescending(x => x.StartTime))
-                        {
-                            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12" style="white-space: normal;">
-                                <div style="display: table; width: 100%;">
-                                    <div style="display: table-row;">
-                                        <div class="thumbnail text-center" style="display: table-cell; vertical-align: top; width: 120px;">
-                                            <span class="text-primary">@ev.StartTime.ToString("ddd").ToUpper()</span><br /><span class="text-success">@ev.StartTime.ToString("MMM").ToUpper() @ev.StartTime.Day.ToString()</span><br /><span class="text-success">@ev.StartTime.Year.ToString()</span>
-                                            <div class="croppedpic" style="height: 50px;">
-                                                <img src="@ev.CoverPhoto.LargeSource" />
-                                            </div>
-                                        </div>
-                                        <div style="display: table-cell; height: 100%;">
-                                            <a class="btn btn-default" href='https://www.facebook.com/events/@ev.Id' target="_blank" title="View this Event On Facebook" style="white-space: normal; text-align: left; width: 100%; margin-left: 2px;">
-                                                <strong>
-                                                    @ev.Name.PadRight(20, ' ').Substring(0, 20)<br />@@@(ev.Location != null ? ev.Location.PadRight(20, ' ').Substring(0, 20) : "")
-                                                </strong>
-                                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                                    <span class="text-danger">
-                                                        @ev.StartTime.ToString("%h:mm tt")
-                                                        @if (ev.EndTime != null)
-                                                        {
-                                                            <text> ~ </text> @(((DateTime)ev.EndTime).ToString("%h:mm tt"))
-                                                        }
-                                                    </span>
-                                                </div>
-                                            </a>
-                                            @Html.ActionLink("Import this Event", "ConfirmFacebookEvent", "Event", new { id = ev.Id, eventType = Model.EventType }, htmlAttributes: new { @class = "btn btn-primary", @style = " margin: 2px; width: 100%; vertical-align: bottom;" })
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    </div>
+
+<div class="row">
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        @using (Html.BeginForm())
+        {
+            <div class="row" style="margin-bottom: 30px;">
+                @Html.ValidationSummary("", new { @class = "text-danger" })
+                <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                    @Html.LabelFor(model => model.FacebookLink, htmlAttributes: new { @class = "control-label" })
                 </div>
+                <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+                    @Html.EditorFor(model => model.FacebookLink, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                    <input type="submit" id="finish" value="Import Event" class="btn btn-primary" />
+                </div>
+                @Html.ValidationMessageFor(model => model.FacebookLink, "", new { @class = "text-danger" })
             </div>
-        </div>
-    }
-    else
-    {
-        @:No events found.
-    }
-}
-
-<div>
-    @if (Model.PlaceId != 0 && Model.PlaceId != null)
-    {
-        <a class="btn btn-primary" href="@Url.Action("Details", "Place", new { id = Model.PlaceId } )">Cancel</a>
-    }
-    else
-    {
-        if (Model.User.CurrentRole != null)
-        {
-            if (Model.User.CurrentRole.Name == "Teacher")
-            {
-                <a class="btn btn-primary" href="@Url.Action("Home", "Teacher", new { username = User.Identity.Name } )">Cancel</a>
-            }
-            else if (Model.User.CurrentRole.Name == "Promoter")
-            {
-                <a class="btn btn-primary" href="@Url.Action("Home", "Promoter", new { username = User.Identity.Name } )">Cancel</a>
-            }
-            else if (Model.User.CurrentRole.Name == "Owner")
-            {
-                <a class="btn btn-primary" href="@Url.Action("Home", "Owner", new { username = User.Identity.Name })">Cancel</a>
-            }
         }
-        else
+        @if (Model.FacebookEvents != null && Model.FacebookEvents.Count() > 0)
         {
-            <a class="btn btn-primary" href="@Url.Action("Home", "Dancer", new { username = User.Identity.Name })">Cancel</a>
+            <h4>Your Facebook Events</h4>
+            foreach (var evt in Model.FacebookEvents.OrderBy(e => e.StartTime))
+            {
+                <div class="row">
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                        <div class="label label-warning" style="padding-right: 2px; font-size: 12pt; width: 100%; display: block;">
+                            <span>@evt.StartTime.ToString("ddd, M/d")</span>
+                        </div>
+                    </div>
+                    <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+                        <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            <span class="text-primary">
+                                <a href="@Url.Content(evt.EventLink)" title="@evt.Name" style="text-align: left;" target="_blank">
+                                    @evt.Name
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                        <a class="btn btn-sm btn-primary" href="@Url.Action("ConfirmFacebookEvent", "Event", new { id = evt.Id, eventType = Model.Type })" title="@evt.Name">
+                            Import
+                        </a>
+                    </div>
+                    @Html.ValidationMessageFor(model => model.FacebookLink, "", new { @class = "text-danger" })
+                </div>
+                    <div class="row" style="padding: 2px;">
+                    </div>
+                }
         }
-    }
+    </div>
 </div>

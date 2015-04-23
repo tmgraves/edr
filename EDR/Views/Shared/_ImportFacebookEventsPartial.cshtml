@@ -8,7 +8,7 @@
             @foreach (var evt in Model.FacebookEvents.OrderBy(e => e.StartTime))
             {
             <div class="row" style="padding: 2px;">
-                <div class="label label-warning col-lg-3 col-md-3 col-sm-3 col-xs-3" style="padding-right: 2px; font-size: 12pt;">
+                <div class="label label-warning col-lg-3 col-md-3 col-sm-3 col-xs-3" style="padding-right: 2px; font-size: 12pt; display: block;">
                     <span>@evt.StartTime.ToString("ddd, M/d")</span>
                 </div>
                 <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">

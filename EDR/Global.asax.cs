@@ -36,7 +36,6 @@ namespace EDR
                 {
                     HttpContext.Current.Session["CurrentRole"] = user.CurrentRole.Name;
                 }
-
             }
         }
     }
