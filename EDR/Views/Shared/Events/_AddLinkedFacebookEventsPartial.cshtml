@@ -1,6 +1,32 @@
 ﻿@model EDR.Models.ViewModels.EventLinkedFacebookEventContainer
 
-    @if (Model.FacebookEvents != null)
+@if (Model.FacebookEvents != null && Model.FacebookEvents.Count() > 0)
+{
+    foreach (var evt in Model.FacebookEvents.OrderBy(e => e.StartTime))
+    {
+        <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                <div class="label label-warning" style="padding-right: 2px; font-size: 12pt; width: 100%; display: block;">
+                    <span>@evt.StartTime.ToString("ddd, M/d")</span>
+                </div>
+            </div>
+            <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+                <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <span class="text-primary">
+                        <a href="@Url.Content(evt.EventLink)" title="@evt.Name" style="text-align: left;" target="_blank">
+                            @evt.Name
+                        </a>
+                    </span>
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                @Html.ActionLink("Link This Event", "LinkFacebookEvent", "Event", new { id = evt.Id, eventId = Model.Event.Id, returnUrl = @Url.Action("View", "Event", new { id = Model.Event.Id, eventType = Model.EventType }) }, htmlAttributes: new { @class = "btn btn-primary", @style = "margin: 5px" })
+            </div>
+        </div>
+    }
+}
+
+    @*@if (Model.FacebookEvents != null)
     {
         if (Model.FacebookEvents.Count() > 0)
         {
@@ -87,5 +113,5 @@
         {
             @:No events found.
                 }
-    }
+    }*@
 

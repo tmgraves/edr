@@ -69,24 +69,42 @@
                 @Html.Partial("~/Views/Shared/Events/_EventMembersPartial.cshtml", Model.Event.EventMembers)
             </div>
         </div>
-        <div class="panel panel-default">
+        <div class="panel panel-primary">
             <div class="panel-heading">
                 <h4 style="width: 100%; vertical-align: bottom;">
-                    <img class="img-rounded" style="height: 20px;" src="@Url.Content("~/Content/images/facebookSmall.png")" />
+                    @*<img class="img-rounded" style="height: 20px;" src="@Url.Content("~/Content/images/facebookSmall.png")" />*@
                     Linked Events/Groups
-                    @if (User.Identity != null && ((Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)) || (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
-                    {
-                        <a class="btn btn-info" style="float: right;" title="Link Facebook Event/Group" href="@Url.Action("AddFacebookLink", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">
-                            <i class="glyphicon glyphicon-plus-sign"></i>
-                        </a>
-                    }
                 </h4>
             </div>
             <div class="panel-body">
+                @if (User.Identity != null)
+                {
+                    if (Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)
+                    {
+                        <a class="btn btn-link" title="Link Facebook Event/Group" href="@Url.Action("AddFacebookLink", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">
+                            <i class="glyphicon glyphicon-plus-sign"></i>
+                            Add an Event/Group/Page
+                        </a>
+                    }
+                    else if (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)
+                    {
+                        <a class="btn btn-link" title="Link Facebook Event/Group" href="@Url.Action("AddFacebookLink", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">
+                            <i class="glyphicon glyphicon-plus-sign"></i>
+                            Add an Event/Group/Page
+                        </a>
+                    }
+                    else if (Model.Event.Creator.UserName == User.Identity.Name)
+                    {
+                        <a class="btn btn-link" title="Link Facebook Event/Group" href="@Url.Action("AddFacebookLink", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">
+                            <i class="glyphicon glyphicon-plus-sign"></i>
+                            Add an Event/Group/Page
+                        </a>
+                    }
+                }
                 @foreach (var ee in Model.LinkedFacebookObjects)
                 {
                     <div class="row" style="margin-top: 5px;">
-                        <a class="btn btn-primary col-lg-8 col-md-8 col-lg-offset-1 col-md-offset-1" target="_blank" href="@Url.Content(ee.Url)" title="@ee.Name" style="text-align: left;">
+                        <a class="btn btn-info col-lg-8 col-md-8 col-lg-offset-1 col-md-offset-1" target="_blank" href="@Url.Content(ee.Url)" title="@ee.Name" style="text-align: left;">
                             <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                 <img class="img-rounded" style="height: 20px;" src="@Url.Content("~/Content/images/facebookSmall.png")" />
                                 @ee.Name
