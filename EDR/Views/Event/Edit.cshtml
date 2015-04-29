@@ -339,25 +339,25 @@
                                         @Html.ValidationMessageFor(model => model.Event.Interval, "", new { @class = "text-danger" })
                                     </div>
                                     <label class="text-warning" id="frequency" style="font-weight: normal; height: 30px; vertical-align: bottom;">
-                                        @if (Model.Event.Frequency == EDR.Models.Frequency.Daily)
+                                        @if (Model.Event.Frequency == Frequency.Daily)
                                         {
                                             @: Day(s)
                             }
-                                        else if (Model.Event.Frequency == EDR.Models.Frequency.Weekly)
+                                        else if (Model.Event.Frequency == Frequency.Weekly)
                                         {
                                             @: Week(s)
                             }
-                                        else if (Model.Event.Frequency == EDR.Models.Frequency.Monthly)
+                                        else if (Model.Event.Frequency == Frequency.Monthly)
                                         {
                                             @: Month(s)
                             }
-                                        else if (Model.Event.Frequency == EDR.Models.Frequency.Yearly)
+                                        else if (Model.Event.Frequency == Frequency.Yearly)
                                         {
                                             @: Year(s)
                             }
                                     </label>
                                 </div>
-                                <div class="row col-lg-10 col-md-10" id="monthly" style="padding-top: 5px; margin-top: 5px;" @(Model.Event.Frequency == EDR.Models.Frequency.Monthly ? "" : "hidden='hidden'")>
+                                <div class="row col-lg-10 col-md-10" id="monthly" style="padding-top: 5px; margin-top: 5px;" @(Model.Event.Frequency == Frequency.Monthly ? "" : "hidden='hidden'")>
                                     <div class="panel panel-info">
                                         <div class="panel-body">
                                             <div class="row">
@@ -391,6 +391,20 @@
                                     new HtmlListInfo(HtmlTag.table, 2, new { @class = "checkboxlist" }, TextLayout.Default))
                     </div>
                 </div>
+                @if (Model.EventType == EventType.Class)
+                {
+                    <div class="row col-lg-12 col-md-12">
+                        @Html.LabelFor(m => m.SkillLevel, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
+                        <div class="col-md-10 col-lg-9">
+                            @{
+                                var list = new SelectList(new List<int> { 1, 2, 3, 4, 5 });
+                            }
+                            @Html.DropDownListFor(m => m.SkillLevel, new SelectList(new List<int> { 1, 2, 3, 4, 5 }, Model.SkillLevel), "-- Select a Skill Level --", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.SkillLevel, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                }
+
                 <div class="row col-lg-12 col-md-12">
                     @Html.LabelFor(model => model.Event.Description, htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
                     <div class="col-md-9 col-lg-9" style="white-space: pre-line">
@@ -406,18 +420,18 @@
                         }
                     </div>
                 </div>
+                @Html.HiddenFor(x => x.Event.Place.Id)
+                @Html.HiddenFor(x => x.Event.Place.Public)
+                @Html.HiddenFor(x => x.Event.Place.PlaceType)
+                @Html.HiddenFor(x => x.Event.Place.Name)
+                @Html.HiddenFor(x => x.Event.Place.Address)
+                @Html.HiddenFor(x => x.Event.Place.City)
+                @Html.HiddenFor(x => x.Event.Place.State)
+                @Html.HiddenFor(x => x.Event.Place.Zip)
+                @Html.HiddenFor(x => x.Event.Place.Latitude)
+                @Html.HiddenFor(x => x.Event.Place.Longitude)
                 @if (Model.Event.FacebookId != null)
                 {
-                    @Html.HiddenFor(x => x.Event.Place.Id)
-                    @Html.HiddenFor(x => x.Event.Place.Public)
-                    @Html.HiddenFor(x => x.Event.Place.PlaceType)
-                    @Html.HiddenFor(x => x.Event.Place.Name)
-                    @Html.HiddenFor(x => x.Event.Place.Address)
-                    @Html.HiddenFor(x => x.Event.Place.City)
-                    @Html.HiddenFor(x => x.Event.Place.State)
-                    @Html.HiddenFor(x => x.Event.Place.Zip)
-                    @Html.HiddenFor(x => x.Event.Place.Latitude)
-                    @Html.HiddenFor(x => x.Event.Place.Longitude)
                     <div class="row col-lg-12 col-md-12">
                         @Html.Label("Location", htmlAttributes: new { @class = "control-label col-lg-3 col-md-3" })
                         <div class="col-md-9 col-lg-9">

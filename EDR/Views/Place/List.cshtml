@@ -21,20 +21,6 @@
     var lat = 0;
     var lng = 0;
 
-    $(function () {
-        navigator.geolocation.getCurrentPosition(showPosition, positionError);
-
-        function showPosition(position) {
-            var coordinates = position.coords;
-            lat = coordinates.latitude;
-            lng = coordinates.longitude;
-        }
-
-        function positionError(position) {
-            alert("Error " + position.code);
-        }
-    });
-
     function initialize() {
         @if(Model.CenterLat != null && Model.CenterLng != null)
         {
@@ -50,6 +36,22 @@
 
         map = new google.maps.Map(document.getElementById('map-canvas'),
             mapOptions);
+
+        // Try W3C Geolocation (Preferred)
+        if (navigator.geolocation) {
+            browserSupportFlag = true;
+            navigator.geolocation.getCurrentPosition(function (position) {
+                initialLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                map.setCenter(initialLocation);
+            }, function () {
+                handleNoGeolocation(browserSupportFlag);
+            });
+        }
+            // Browser doesn't support Geolocation
+        else {
+            browserSupportFlag = false;
+            handleNoGeolocation(browserSupportFlag);
+        }
 
         @{
             int idx = 1;

@@ -31,6 +31,43 @@ namespace EDR.Areas.Admin.Controllers
             return View(style);
         }
 
+        [Authorize(Roles = "Admin")]
+        public ActionResult Edit(int? id)
+        {
+            var style = new DanceStyle();
+
+            if (id != null)
+            {
+                style = DataContext.DanceStyles.Where(s => s.Id == id).FirstOrDefault();
+            }
+            
+            if (style == null)
+            {
+                return HttpNotFound();
+            }
+            else
+            {
+                return View(style);
+            }
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public ActionResult Edit(DanceStyle style)
+        {
+            if (ModelState.IsValid)
+            {
+                DataContext.DanceStyles.Add(style);
+                DataContext.SaveChanges();
+
+                return RedirectToAction("Details", new { id = style.Id });
+            }
+            else
+            {
+                return View(style);
+            }
+        }
+
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public ActionResult Details(DanceStyle postedStyle)

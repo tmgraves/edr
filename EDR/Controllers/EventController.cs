@@ -1224,6 +1224,7 @@ namespace EDR.Controllers
                     var cls = DataContext.Events.OfType<Class>().Where(e => e.Id == id).Include("DanceStyles").Include("Place").FirstOrDefault();
                     model.Event = cls;
                     model.ClassType = cls.ClassType;
+                    model.SkillLevel = cls.SkillLevel;
                 }
                 else
                 {
@@ -1274,6 +1275,13 @@ namespace EDR.Controllers
                 ModelState["Event.Place.State"].Errors.Clear();
                 ModelState["Event.Place.Zip"].Errors.Clear();
             }
+
+            //  Remove Validation for Socials
+            if (model.EventType == EventType.Social)
+            {
+                ModelState["SkillLevel"].Errors.Clear();
+            }
+
             if (ModelState.IsValid)
             {
                 var userid = User.Identity.GetUserId();
@@ -1340,6 +1348,11 @@ namespace EDR.Controllers
                 evt.Recurring = model.Event.Recurring;
                 evt.Frequency = model.Event.Frequency;
                 evt.Interval = model.Event.Interval;
+                if (model.EventType == EventType.Class)
+                {
+                    ((Class)evt).SkillLevel = (int)model.SkillLevel;
+                }
+
 
                 var place = new Place();
                 if (model.Event.Place.Id == 0)
@@ -1444,35 +1457,36 @@ namespace EDR.Controllers
 
             int? placeid = model.Event.Place != null ? (int?)model.Event.Place.Id : null;
             //  Fill Places
-            if (user.CurrentRole != null)
-            {
-                if (model.EventType == EventType.Class)
-                {
-                    if (user.CurrentRole.Name == "Teacher")
-                    {
-                        places = DataContext.Places.Where(p => p.Teachers.Any(t => t.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == placeid).ToList();
-                    }
-                    else if (user.CurrentRole.Name == "Owner")
-                    {
-                        places = DataContext.Places.Where(p => p.Owners.Any(t => t.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == placeid).ToList();
-                    }
-                }
-                else
-                {
-                    if (user.CurrentRole.Name == "Promoter")
-                    {
-                        places = DataContext.Places.Where(p => p.Promoters.Any(t => t.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == placeid).ToList();
-                    }
-                    else if (user.CurrentRole.Name == "Owner")
-                    {
-                        places = DataContext.Places.Where(p => p.Owners.Any(t => t.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == placeid).ToList();
-                    }
-                }
-            }
-            else
-            {
-                places = user.Places.ToList();
-            }
+            places = DataContext.Places.Where(p => p.Teachers.Any(t => t.ApplicationUser.Id == userid) || p.Owners.Any(o => o.ApplicationUser.Id == userid) || p.Promoters.Any(pr => pr.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == model.Event.Place.Id).ToList();
+            //if (user.CurrentRole != null)
+            //{
+            //    if (model.EventType == EventType.Class)
+            //    {
+            //        if (user.CurrentRole.Name == "Teacher")
+            //        {
+            //            places = DataContext.Places.Where(p => p.Teachers.Any(t => t.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == placeid).ToList();
+            //        }
+            //        else if (user.CurrentRole.Name == "Owner")
+            //        {
+            //            places = DataContext.Places.Where(p => p.Owners.Any(t => t.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == placeid).ToList();
+            //        }
+            //    }
+            //    else
+            //    {
+            //        if (user.CurrentRole.Name == "Promoter")
+            //        {
+            //            places = DataContext.Places.Where(p => p.Promoters.Any(t => t.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == placeid).ToList();
+            //        }
+            //        else if (user.CurrentRole.Name == "Owner")
+            //        {
+            //            places = DataContext.Places.Where(p => p.Owners.Any(t => t.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == placeid).ToList();
+            //        }
+            //    }
+            //}
+            //else
+            //{
+            //    places = user.Places.ToList();
+            //}
 
             model.Places = new List<PlaceItem>();
             model.Places.Add(new PlaceItem() { Id = 0, Latitude = 0.0, Longitude = 0.0 });
@@ -1601,6 +1615,24 @@ namespace EDR.Controllers
             }
         }
 
+        protected string ParseFacebookLink(string facebookLink)
+        {
+            Uri fbUri = new Uri(facebookLink);
+
+            var id = "";
+            var val = "";
+            foreach (var s in fbUri.Segments)
+            {
+                val = s.Replace("/", "").Replace("events", "").Replace("pages", "").Replace("groups", "");
+                if (val != "")
+                {
+                    id = val;
+                }
+            }
+
+            return id;
+        }
+
         [Authorize]
         [HttpPost]
         public ActionResult ImportFacebookEvent(ImportFacebookEventViewModel model)
@@ -1612,23 +1644,12 @@ namespace EDR.Controllers
             {
                 if (model.FacebookLink != null)
                 {
-                    Uri fbUri = new Uri(model.FacebookLink);
-
-                    var id = "";
-                    var val = "";
-                    foreach (var s in fbUri.Segments)
-                    {
-                        val = s.Replace("/", "").Replace("events", "").Replace("pages", "").Replace("groups", "");
-                        if (val != "")
-                        {
-                            id = val;
-                        }
-                    }
+                    var id = ParseFacebookLink(model.FacebookLink);
 
                     var evt = DataContext.Events.Where(e => e.FacebookId == id).FirstOrDefault();
                     if (evt == null)
                     {
-                        return RedirectToAction("ConfirmFacebookEvent", "Event", new { id = val, eventType = model.Type });
+                        return RedirectToAction("ConfirmFacebookEvent", "Event", new { id = id, eventType = model.Type });
                     }
                     else
                     {
@@ -2570,7 +2591,7 @@ namespace EDR.Controllers
         public ActionResult GetAvailableFacebookEvents(int id, EventType eventType)
         {
             var model = new EventLinkedFacebookEventContainer();
-            model.EventType = eventType;
+            model.Type = eventType;
             var userid = User.Identity.GetUserId();
             var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
             var evt = DataContext.Events.Where(e => e.Id == id).FirstOrDefault();
@@ -2600,7 +2621,7 @@ namespace EDR.Controllers
         public ActionResult GetAvailableFacebookGroups(int id, EventType eventType)
         {
             var model = new EventLinkedFacebookGroupContainer();
-            model.EventType = eventType;
+            model.Type = eventType;
             var userid = User.Identity.GetUserId();
             var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
             var evt = DataContext.Events.Where(e => e.Id == id).FirstOrDefault();
@@ -2627,30 +2648,84 @@ namespace EDR.Controllers
         }
 
         [Authorize]
-        public ActionResult RemoveLinkedFacebookObject(string id, string returnUrl)
+        public ActionResult RemoveLinkedFacebookObject(int id, string returnUrl)
         {
-            DataContext.LinkedFacebookObjects.Remove(DataContext.LinkedFacebookObjects.Where(o => o.FacebookId == id).FirstOrDefault());
+            DataContext.LinkedFacebookObjects.Remove(DataContext.LinkedFacebookObjects.Where(o => o.Id == id).FirstOrDefault());
             DataContext.SaveChanges();
             return Redirect(returnUrl);
         }
 
         [Authorize]
-        public ActionResult LinkFacebookEvent(string id, int eventId, string returnUrl)
+        public ActionResult LinkFacebookEvent(int id, string fbId, string facebookLink)
         {
-            var fbEvent = ((List<FacebookEvent>)Session["ExternalFacebookEvents"]).Where(f => f.Id == id).FirstOrDefault();
-            DataContext.Events.Where(e => e.Id == eventId).Include("LinkedFacebookObjects").FirstOrDefault().LinkedFacebookObjects.Add(new LinkedFacebookObject { FacebookId = id, MediaSource = MediaSource.Facebook, Name = fbEvent.Name, Url = fbEvent.EventLink, ObjectType = FacebookObjectType.Event });
-            DataContext.SaveChanges();
-            return Redirect(returnUrl);
+            var userid = User.Identity.GetUserId();
+            var user = UserManager.FindById(userid);
+
+            if (fbId != null)
+            {
+                var fbEvent = ((List<FacebookEvent>)Session["ExternalFacebookEvents"]).Where(f => f.Id == fbId).FirstOrDefault();
+                DataContext.Events.Where(e => e.Id == id).Include("LinkedFacebookObjects").FirstOrDefault().LinkedFacebookObjects.Add(new LinkedFacebookObject { FacebookId = fbId, MediaSource = MediaSource.Facebook, Name = fbEvent.Name, Url = fbEvent.EventLink, ObjectType = FacebookObjectType.Event });
+                DataContext.SaveChanges();
+            }
+            else if (facebookLink != null)
+            {
+                fbId = ParseFacebookLink(facebookLink);
+                if (fbId != "")
+                {
+                    var fbEvent = FacebookHelper.GetEvent(fbId, user.FacebookToken);
+                    DataContext.Events.Where(e => e.Id == id).Include("LinkedFacebookObjects").FirstOrDefault().LinkedFacebookObjects.Add(new LinkedFacebookObject { FacebookId = fbId, MediaSource = MediaSource.Facebook, Name = fbEvent.Name, Url = fbEvent.EventLink, ObjectType = FacebookObjectType.Event });
+                    DataContext.SaveChanges();
+                }
+            }
+            var evt = DataContext.Events.Where(e => e.Id == id).FirstOrDefault();
+            return RedirectToAction("View", "Event", new { id = id, eventType = evt is Class ? EventType.Class : EventType.Social });
         }
 
         [Authorize]
-        public ActionResult LinkFacebookGroup(string id, int eventId, string returnUrl)
+        public ActionResult LinkFacebookGroup(int id, string fbId, string facebookLink)
         {
-            var fbGroup = ((List<FacebookGroup>)Session["ExternalFacebookGroups"]).Where(f => f.Id == id).FirstOrDefault();
-            DataContext.Events.Where(e => e.Id == eventId).Include("LinkedFacebookObjects").FirstOrDefault().LinkedFacebookObjects.Add(new LinkedFacebookObject { FacebookId = id, MediaSource = MediaSource.Facebook, Name = fbGroup.Name, Url = "https://www.facebook.com/groups/" + fbGroup.Id, ObjectType = FacebookObjectType.Group });
-            DataContext.SaveChanges();
-            return Redirect(returnUrl);
+            var userid = User.Identity.GetUserId();
+            var user = UserManager.FindById(userid);
+
+            if (fbId != null)
+            {
+                var fbGroup = ((List<FacebookGroup>)Session["ExternalFacebookGroups"]).Where(f => f.Id == fbId).FirstOrDefault();
+                DataContext.Events.Where(e => e.Id == id).Include("LinkedFacebookObjects").FirstOrDefault().LinkedFacebookObjects.Add(new LinkedFacebookObject { FacebookId = fbId, MediaSource = MediaSource.Facebook, Name = fbGroup.Name, Url = "https://www.facebook.com/groups/" + fbGroup.Id, ObjectType = FacebookObjectType.Group });
+                DataContext.SaveChanges();
+            }
+            else if (facebookLink != null)
+            {
+                fbId = ParseFacebookLink(facebookLink);
+                if (fbId != "")
+                {
+                    var fbGroup = FacebookHelper.GetGroup(fbId, user.FacebookToken);
+                    DataContext.Events.Where(e => e.Id == id).Include("LinkedFacebookObjects").FirstOrDefault().LinkedFacebookObjects.Add(new LinkedFacebookObject { FacebookId = fbId, MediaSource = MediaSource.Facebook, Name = fbGroup.Name, Url = "https://www.facebook.com/groups/" + fbGroup.Id, ObjectType = FacebookObjectType.Group });
+                    DataContext.SaveChanges();
+                }
+            }
+            var evt = DataContext.Events.Where(e => e.Id == id).FirstOrDefault();
+            return RedirectToAction("View", "Event", new { id = id, eventType = evt is Class ? EventType.Class : EventType.Social });
         }
+
+        //[Authorize]
+        //public ActionResult LinkFacebookPage(int id, string facebookLink)
+        //{
+        //    var userid = User.Identity.GetUserId();
+        //    var user = UserManager.FindById(userid);
+
+        //    if (facebookLink != null)
+        //    {
+        //        fbId = ParseFacebookLink(facebookLink);
+        //        if (fbId != "")
+        //        {
+        //            var fbGroup = FacebookHelper.GetGroup(fbId, user.FacebookToken);
+        //            DataContext.Events.Where(e => e.Id == id).Include("LinkedFacebookObjects").FirstOrDefault().LinkedFacebookObjects.Add(new LinkedFacebookObject { FacebookId = fbId, MediaSource = MediaSource.Facebook, Name = fbGroup.Name, Url = "https://www.facebook.com/groups/" + fbGroup.Id, ObjectType = FacebookObjectType.Group });
+        //            DataContext.SaveChanges();
+        //        }
+        //    }
+        //    var evt = DataContext.Events.Where(e => e.Id == id).FirstOrDefault();
+        //    return RedirectToAction("View", "Event", new { id = id, eventType = evt is Class ? EventType.Class : EventType.Social });
+        //}
 
         public ActionResult GetRelatedEvents(int id, EventType eventType)
         {

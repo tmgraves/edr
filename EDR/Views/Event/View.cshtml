@@ -110,11 +110,29 @@
                                 @ee.Name
                             </div>
                         </a>
-                        @if (ee.FacebookId != Model.Event.FacebookId && (User.Identity != null && ((Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)) || (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)))
+                        @if (ee.FacebookId != Model.Event.FacebookId)
                         {
-                            <a class="btn btn-danger" href="@Url.Action("RemoveLinkedFacebookObject", "Event", new { id = ee.Id, returnUrl = Request.Url.AbsolutePath })">
-                                <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
-                            </a>
+                            if (User.Identity != null)
+                            {
+                                if (Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)
+                                {
+                                    <a class="btn btn-danger" href="@Url.Action("RemoveLinkedFacebookObject", "Event", new { id = ee.Id, returnUrl = Request.Url.AbsolutePath })">
+                                        <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
+                                    </a>
+                                }
+                                else if (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)
+                                {
+                                    <a class="btn btn-danger" href="@Url.Action("RemoveLinkedFacebookObject", "Event", new { id = ee.Id, returnUrl = Request.Url.AbsolutePath })">
+                                        <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
+                                    </a>
+                                }
+                                else if (Model.Event.Creator.UserName == User.Identity.Name)
+                                {
+                                    <a class="btn btn-danger" href="@Url.Action("RemoveLinkedFacebookObject", "Event", new { id = ee.Id, returnUrl = Request.Url.AbsolutePath })">
+                                        <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
+                                    </a>
+                                }
+                            }
                         }
                     </div>
                 }

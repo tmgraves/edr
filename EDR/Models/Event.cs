@@ -63,6 +63,7 @@ namespace EDR.Models
         [Required]
         [Display(Name = "Does This Event Repeat?")]
         public bool Recurring { get; set; }
+        [DefaultValue(1)]
         public Frequency Frequency { get; set; }
         [DefaultValue(1)]
         [Range(1, 100)]

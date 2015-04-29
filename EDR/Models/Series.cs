@@ -4,17 +4,10 @@ using System.ComponentModel.DataAnnotations;
 using System.EnterpriseServices;
 using System.Linq;
 using System.Web;
+using EDR.Enums;
 
 namespace EDR.Models
 {
-    public enum Frequency
-    {
-        Daily,
-        Weekly,
-        Monthly,
-        Yearly
-    }
-
     public class Series : Entity
     {
         [Required]

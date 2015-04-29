@@ -77,6 +77,10 @@ namespace EDR.Models.ViewModels
         public string HiddenMonthDay { get; set; }
         [Display(Name = "Save this Place")]
         public bool AddtoMyPlaces { get; set; }
+        [Display(Name = "Skill Level")]
+        [DefaultValue(1)]
+        [Range(1, 100)]
+        public int SkillLevel { get; set; }
     }
 
     public class EventNewViewModel
@@ -215,14 +219,30 @@ namespace EDR.Models.ViewModels
         public int SkillLevel { get; set; }
     }
 
-    public class EventLinkedFacebookEventContainer : EventBaseViewModel
+    public class EventLinkedFacebookEventContainer
     {
         public IEnumerable<FacebookEvent> FacebookEvents { get; set; }
+        [Display(Name = "Enter Facebook Url")]
+        public string FacebookLink { get; set; }
+        public EventType? Type { get; set; }
+        public Event Event { get; set; }
     }
 
-    public class EventLinkedFacebookGroupContainer : EventBaseViewModel
+    public class EventLinkedFacebookGroupContainer
     {
         public IEnumerable<FacebookGroup> FacebookGroups { get; set; }
+        [Display(Name = "Enter Facebook Url")]
+        public string FacebookLink { get; set; }
+        public EventType? Type { get; set; }
+        public Event Event { get; set; }
+    }
+
+    public class EventLinkedFacebookPageContainer
+    {
+        [Display(Name = "Enter Facebook Url")]
+        public string FacebookLink { get; set; }
+        public EventType? Type { get; set; }
+        public Event Event { get; set; }
     }
 
     public class RelatedEvents : EventBaseViewModel

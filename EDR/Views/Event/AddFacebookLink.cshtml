@@ -38,6 +38,12 @@
                         Groups
                     </a>
                 </li>
+                <li>
+                    <a href="#pages" data-toggle="tab">
+                        <img class="img-rounded" style="height: 20px;" src="@Url.Content("~/Content/images/facebookSmall.png")" />
+                        Pages
+                    </a>
+                </li>
             </ul>
         </div>
         <div class="tab-content panel-body">
@@ -50,6 +56,9 @@
                 <div class="partialContents" data-url="/Event/@Model.Event.Id/GetAvailableFacebookGroups?eventType=@Model.EventType">
                     <img src="~/Content/images/indicator.white.gif" />Loading...
                 </div>
+            </div>
+            <div id="pages" class="tab-pane">
+                @Html.Partial("~/Views/Shared/Events/_AddLinkedFacebookPagesPartial.cshtml", new EDR.Models.ViewModels.EventLinkedFacebookPageContainer())
             </div>
         </div>
 

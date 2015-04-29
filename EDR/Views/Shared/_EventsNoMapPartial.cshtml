@@ -26,8 +26,12 @@
                         </span>
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-9 col-xs-9">
-                        <strong>@(rowNo += 1). @item.Name</strong><br />
-                        <span class="text-success"> @@@item.Place.Name</span>
+                        <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            <strong>@(rowNo += 1). @item.Name</strong>
+                        </div>
+                        <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            <span class="text-success"> @@@item.Place.Name</span>
+                        </div>
                         @if (item is Class)
                         {
                             if (((Class)item).Teachers != null)
@@ -37,17 +41,19 @@
                                 if (teacherset.Count() > 0)
                                 {
                                     var teachers = "";
-                                    <br /><text>w/</text><span class="text-primary">
-                                        @foreach (var t in teacherset)
-                                        {
-                                            if (teachers != "")
+                                    <div>
+                                        w/<span class="text-primary">
+                                            @foreach (var t in teacherset)
                                             {
-                                                teachers += ", ";
+                                                if (teachers != "")
+                                                {
+                                                    teachers += ", ";
+                                                }
+                                                teachers += t.ApplicationUser.FirstName;
                                             }
-                                            teachers += t.ApplicationUser.FirstName;
-                                        }
-                                        @teachers
-                                    </span>
+                                            @teachers
+                                        </span>
+                                    </div>
                                 }
                             }
                         }
@@ -57,16 +63,18 @@
                         }
                         @if (item.Price != null)
                         {
-                            <br />
-                            @(item.Price == 0 ? "FREE" : ((decimal)item.Price).ToString("C"))
+                            <div>
+                                @(item.Price == 0 ? "FREE" : ((decimal)item.Price).ToString("C"))
+                            </div>
                         }
                         @if (item.DanceStyles != null)
                         {
-                            <br />
-                            foreach (var s in item.DanceStyles)
-                            {
+                            <div>
+                                @foreach (var s in item.DanceStyles)
+                                {
                                 <span class="label label-info">@s.Name</span>
-                            }
+                                }
+                            </div>
                         }
                     </div>
                     <div class="col-lg-3 col-md-3 col-sm-9 col-xs-9">

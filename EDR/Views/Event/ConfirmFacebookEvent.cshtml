@@ -387,25 +387,25 @@
                                             @Html.ValidationMessageFor(model => model.Event.Interval, "", new { @class = "text-danger" })
                                         </div>
                                         <label class="text-warning" id="frequency" style="font-weight: normal; height: 30px; vertical-align: bottom;">
-                                            @if (Model.Event.Frequency == EDR.Models.Frequency.Daily)
+                                            @if (Model.Event.Frequency == Frequency.Daily)
                                             {
                                                 @: Day(s)
                                         }
-                                            else if (Model.Event.Frequency == EDR.Models.Frequency.Weekly)
+                                            else if (Model.Event.Frequency == Frequency.Weekly)
                                             {
                                                 @: Week(s)
                                         }
-                                            else if (Model.Event.Frequency == EDR.Models.Frequency.Monthly)
+                                            else if (Model.Event.Frequency == Frequency.Monthly)
                                             {
                                                 @: Month(s)
                                         }
-                                            else if (Model.Event.Frequency == EDR.Models.Frequency.Yearly)
+                                            else if (Model.Event.Frequency == Frequency.Yearly)
                                             {
                                                 @: Year(s)
                                         }
                                         </label>
                                     </div>
-                                    <div class="row col-lg-12 col-md-12" id="monthly" style="padding-top: 5px; margin-top: 5px;" @(Model.Event.Frequency == EDR.Models.Frequency.Monthly ? "" : "hidden='hidden'")>
+                                    <div class="row col-lg-12 col-md-12" id="monthly" style="padding-top: 5px; margin-top: 5px;" @(Model.Event.Frequency == Frequency.Monthly ? "" : "hidden='hidden'")>
                                         <div class="panel panel-info">
                                             <div class="panel-body">
                                                 <div class="row">

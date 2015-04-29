@@ -516,6 +516,26 @@ namespace EDR.Utilities
             return (groupsList);
         }
 
+        public static FacebookGroup GetGroup(string id, string token, string fields = "id,description,email,icon,link,name,owner,privacy,updated_time")
+        {
+            var fb = new FacebookClient(token);
+            dynamic fbgroup = fb.Get(id + "?fields=" + fields);
+
+            var group = new FacebookGroup()
+            {
+                Id = fbgroup.id,
+                Description = fbgroup.description,
+                Email = fbgroup.email,
+                Icon = fbgroup.icon,
+                Link = fbgroup.link,
+                Name = fbgroup.name,
+                Privacy = fbgroup.privacy,
+                Updated_Time = Convert.ToDateTime(fbgroup.updated_time),
+                Posts = ParsePosts(fbgroup.feed)
+            };
+            return (group);
+        }
+
         public static List<FacebookPost> ParsePosts(dynamic feed)
         {
             var posts = new List<FacebookPost>();

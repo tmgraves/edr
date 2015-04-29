@@ -3,6 +3,14 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EDR.Enums
 {
+    public enum Frequency
+    {
+        Weekly = 1,
+        Monthly = 2,
+        Yearly = 3,
+        Daily = 0
+    }
+
     public enum ClassType
     {
         [Display(Name = "Class")]

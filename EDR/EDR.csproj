@@ -463,6 +463,7 @@
     <Content Include="Areas\Admin\Views\DanceStyle\TestUpload2.cshtml" />
     <Content Include="Areas\Admin\Views\DanceStyle\TestUpload.cshtml" />
     <Content Include="Areas\Admin\Views\DanceStyle\_FacebookVideosPartial.cshtml" />
+    <Content Include="Areas\Admin\Views\DanceStyle\Edit.cshtml" />
     <None Include="Properties\PublishProfiles\SmarterASP.pubxml" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Library\DayPilot.Web.Mvc.dll" />
@@ -699,6 +700,7 @@
     <Content Include="Views\Event\AddTeacher.cshtml" />
     <Content Include="Views\Home\PrivacyPolicy.cshtml" />
     <Content Include="Views\Home\TermsofService.cshtml" />
+    <Content Include="Views\Shared\Events\_AddLinkedFacebookPagesPartial.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>
