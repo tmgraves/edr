@@ -16,6 +16,7 @@ namespace EDR.Models
         public Event()
         {
             Interval = 1;
+            Frequency = Enums.Frequency.Weekly;
         }
 
         [Required]
