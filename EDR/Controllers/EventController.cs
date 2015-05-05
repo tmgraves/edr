@@ -151,7 +151,7 @@ namespace EDR.Controllers
                         //  Look up place in database
                         var newplace = DataContext.Places.Where(p => p.FacebookId == evt.Address.FacebookId).FirstOrDefault();
 
-                        //  if exists, assign to event
+                        //  if not exists, create new place
                         if (newplace == null)
                         {
                             //  Create New Place from Facebook
@@ -202,6 +202,7 @@ namespace EDR.Controllers
 
                             newplace = new Place() { Name = evt.Location, Address = evt.Address.Street, City = evt.Address.City, State = evt.Address.State != null ? (State)Enum.Parse(typeof(State), evt.Address.State) : State.CA, Zip = evt.Address.ZipCode, Country = evt.Address.Country, Latitude = evt.Address.Latitude, Longitude = evt.Address.Longitude, FacebookId = evt.Address.FacebookId, PlaceType = placetype, Public = true, Website = evt.Address.WebsiteUrl, FacebookLink = evt.Address.FacebookUrl, Filename = fbplace.cover != null ? fbplace.cover.source : null, ThumbnailFilename = fbplace.cover != null ? fbplace.cover.source : null };
                         }
+
                         var oldplace = rEvent.Place;
                         rEvent.Place = newplace;
 
@@ -1384,7 +1385,7 @@ namespace EDR.Controllers
 
                 if (model.PostedMonthDays != null)
                 {
-                    evt.MonthDays = String.Join("-", model.PostedMonthDays) + "-" + model.HiddenMonthDay;
+                    evt.MonthDays = String.Join("-", model.PostedMonthDays) + (model.HiddenMonthDay != "" ? ("-" + model.HiddenMonthDay) : "");
                 }
                 else
                 {
@@ -2007,7 +2008,7 @@ namespace EDR.Controllers
             //  Update Month Days
             if (model.PostedMonthDays != null)
             {
-                model.Event.MonthDays = String.Join("-", model.PostedMonthDays) + "-" + model.HiddenMonthDay;
+                model.Event.MonthDays = String.Join("-", model.PostedMonthDays) + (model.HiddenMonthDay != "" ? ("-" + model.HiddenMonthDay) : "");
             }
             else
             {
@@ -2324,33 +2325,34 @@ namespace EDR.Controllers
                             {
                                 foreach (dynamic category in fbplace.category_list)
                                 {
+                                    string cat = category.name;
                                     //  Search for Dance Instruction category
-                                    if (category.name == "Dance Instruction" || category.id == "203916779633178")
+                                    if (cat.Contains("Dance Instruction") || category.id == "203916779633178")
                                     {
                                         placetype = PlaceType.Studio;
                                         break;
                                     }
-                                    else if (category.name == "Dance Club" || category.id == "176139629103647")
+                                    else if (cat.Contains("Dance Club") || category.id == "176139629103647")
                                     {
                                         placetype = PlaceType.Nightclub;
                                         break;
                                     }
-                                    else if (category.name == "Restaurant" || category.id == "273819889375819")
+                                    else if (category.id == "273819889375819" || cat.Contains("Restaurant"))
                                     {
                                         placetype = PlaceType.Restaurant;
                                         break;
                                     }
-                                    else if (category.name == "Hotel" || category.id == "164243073639257")
+                                    else if (cat.Contains("Hotel") || category.id == "164243073639257")
                                     {
                                         placetype = PlaceType.Hotel;
                                         break;
                                     }
-                                    else if (category.name == "Meeting Room" || category.id == "210261102322291")
+                                    else if (cat.Contains("Meeting Room") || category.id == "210261102322291")
                                     {
                                         placetype = PlaceType.ConferenceCenter;
                                         break;
                                     }
-                                    else if (category.name == "Theater" || category.id == "173883042668223")
+                                    else if (cat.Contains("Theater") || category.id == "173883042668223")
                                     {
                                         placetype = PlaceType.Theater;
                                         break;

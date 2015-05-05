@@ -59,14 +59,14 @@ namespace EDR.Controllers
             {
                 viewModel.Dancer = dancer;
 
-                if (viewModel.Dancer.ZipCode != null)
-                {
-                    viewModel.Address = Geolocation.ParseAddress(viewModel.Dancer.ZipCode);
-                }
-                else
-                {
-                    viewModel.Address = Geolocation.ParseAddress("90065");
-                }
+                //if (viewModel.Dancer.ZipCode != null)
+                //{
+                //    viewModel.Address = Geolocation.ParseAddress(viewModel.Dancer.ZipCode);
+                //}
+                //else
+                //{
+                //    viewModel.Address = Geolocation.ParseAddress("90065");
+                //}
             }
 
             //  Load Roles
@@ -241,7 +241,7 @@ namespace EDR.Controllers
             ////  Media Updates
 
             viewModel.SuggestedClasses = new List<Class>();
-            var myLocation = DbGeography.FromText("POINT(" + viewModel.Address.Longitude.ToString() + " " + viewModel.Address.Latitude.ToString() + ")");
+            var myLocation = DbGeography.FromText("POINT(" + viewModel.Dancer.Longitude.ToString() + " " + viewModel.Dancer.Latitude.ToString() + ")");
             var arrStyles = viewModel.Dancer.DanceStyles.Select(s => s.Id).ToArray();
             var suggestedClasses = DataContext.Events.OfType<Class>()
                                         .Where(y => y.DanceStyles.Any(d => arrStyles.Contains(d.Id))
@@ -337,7 +337,7 @@ namespace EDR.Controllers
                                     .Include("Reviews")
                                     .ToList();
             viewModel.Classes.Events = classes.Where(e => e.NextDate >= today);
-            viewModel.Classes.Location = viewModel.Address;
+            viewModel.Classes.Location = new Address() { City = viewModel.Dancer.City, State = viewModel.Dancer.State, ZipCode = viewModel.Dancer.ZipCode, Longitude = viewModel.Dancer.Longitude, Latitude = viewModel.Dancer.Latitude };
 
             //var scheduler = new DHXScheduler(this) { Skin = DHXScheduler.Skins.Terrace };
             //scheduler.Templates.map_time = "{start_date.toLocaleString()}"; //   "{start_date.toLocaleTimeString()}";    // "{start_date:date(%d.%m.%Y)}";
@@ -423,7 +423,7 @@ namespace EDR.Controllers
                                             .Include("Videos")
                                             .Include("Reviews")
                                             .Where(x => x.EventMembers.Any(m => m.Member.UserName == username)).ToList();
-            viewModel.Socials.Location = viewModel.Address;
+            viewModel.Socials.Location = new Address() { City = viewModel.Dancer.City, State = viewModel.Dancer.State, ZipCode = viewModel.Dancer.ZipCode, Longitude = viewModel.Dancer.Longitude, Latitude = viewModel.Dancer.Latitude };
 
             return View(viewModel);
         }
@@ -554,16 +554,16 @@ namespace EDR.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var location = Geolocation.ParseAddress(dancer.ZipCode);
+            //var location = Geolocation.ParseAddress(dancer.ZipCode);
 
-            if (dancer.ZipCode != null)
-            {
-                viewModel.Address = Geolocation.ParseAddress(dancer.ZipCode);
-            }
-            else
-            {
-                viewModel.Address = Geolocation.ParseAddress("90065");
-            }
+            //if (dancer.ZipCode != null)
+            //{
+            //    viewModel.Address = Geolocation.ParseAddress(dancer.ZipCode);
+            //}
+            //else
+            //{
+            //    viewModel.Address = Geolocation.ParseAddress("90065");
+            //}
 
             //  Return Spotify Playlists
             if (viewModel.Dancer.SpotifyId != null)

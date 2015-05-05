@@ -16,53 +16,61 @@ namespace EDR.Utilities
     {
         public static DateTime GetNextDate(DateTime start, Frequency frequency, int interval, DayOfWeek day, DateTime? today = null, string monthDays = null)
         {
-            if (monthDays == null)
+            try
             {
-                monthDays = "1";
-            }
-            DateTime date = start;
-            DateTime begin = (DateTime)(today == null ? DateTime.Today : today);
-            int[] daysarray = Array.ConvertAll(monthDays.Split(new char[] { '-' }), d => int.Parse(d));
-
-            if (start < begin)
-            {
-                TimeSpan diff = Convert.ToDateTime(begin.ToShortDateString()) - Convert.ToDateTime(start.ToShortDateString());
-                switch (frequency)
+                if (monthDays == null)
                 {
-                    case Frequency.Daily:
-                        date = start.AddDays(Convert.ToInt32(diff.TotalDays));
-                        break;
-                    case Frequency.Weekly:
-                        var weekdiff = Convert.ToInt32(diff.TotalDays) / 7 * interval;
-                        if ((diff.TotalDays % (7 * interval)) > 0)
-                        {
-                            weekdiff += 1;
-                        }
-                        int totalIntervals = Convert.ToInt32(weekdiff);
-                        date = start.AddDays(7 * interval * totalIntervals);
-                        break;
-                    case Frequency.Monthly:
-                        var nth = Convert.ToInt32(start.Day / 7);
-
-                        var dates = new List<DateTime>();
-                        DateTime month = new DateTime(begin.Year, begin.Month, 1);
-                        for (int i = 0; i < daysarray.Count(); i++)
-	                    {
-                            dates.Add(month.AddDays((((int)day - (int)month.DayOfWeek + 7) % 7)).AddDays((daysarray[i] - 1) * 7));
-                        }
-                        dates.Add(month.AddMonths(1).AddDays((((int)day - (int)month.AddMonths(1).DayOfWeek + 7) % 7)));
-                        date = dates.Where(d => d > begin).OrderBy(d => d).FirstOrDefault();
-                        //  date = month.AddDays((((int)day - (int)month.DayOfWeek + 7) % 7)).AddDays(nth * 7);
-                        break;
-                    case Frequency.Yearly:
-                        var yearNth = Convert.ToInt32(start.Day / 7);
-                        DateTime yearMonth = new DateTime(start.AddYears(interval).Year, start.Month, 1);
-                        date = yearMonth.AddDays((((int)day - (int)yearMonth.DayOfWeek + 7) % 7)).AddDays(yearNth * 7);
-                        break;
+                    monthDays = "1";
                 }
+                DateTime date = start;
+                DateTime begin = (DateTime)(today == null ? DateTime.Today : today);
+                int[] daysarray = Array.ConvertAll(monthDays.Split(new char[] { '-' }), d => int.Parse(d));
+
+                if (start < begin)
+                {
+                    TimeSpan diff = Convert.ToDateTime(begin.ToShortDateString()) - Convert.ToDateTime(start.ToShortDateString());
+                    switch (frequency)
+                    {
+                        case Frequency.Daily:
+                            date = start.AddDays(Convert.ToInt32(diff.TotalDays));
+                            break;
+                        case Frequency.Weekly:
+                            var weekdiff = Convert.ToInt32(diff.TotalDays) / 7 * interval;
+                            if ((diff.TotalDays % (7 * interval)) > 0)
+                            {
+                                weekdiff += 1;
+                            }
+                            int totalIntervals = Convert.ToInt32(weekdiff);
+                            date = start.AddDays(7 * interval * totalIntervals);
+                            break;
+                        case Frequency.Monthly:
+                            var nth = Convert.ToInt32(start.Day / 7);
+
+                            var dates = new List<DateTime>();
+                            DateTime month = new DateTime(begin.Year, begin.Month, 1);
+                            for (int i = 0; i < daysarray.Count(); i++)
+                            {
+                                dates.Add(month.AddDays((((int)day - (int)month.DayOfWeek + 7) % 7)).AddDays((daysarray[i] - 1) * 7));
+                            }
+                            dates.Add(month.AddMonths(1).AddDays((((int)day - (int)month.AddMonths(1).DayOfWeek + 7) % 7)));
+                            date = dates.Where(d => d > begin).OrderBy(d => d).FirstOrDefault();
+                            //  date = month.AddDays((((int)day - (int)month.DayOfWeek + 7) % 7)).AddDays(nth * 7);
+                            break;
+                        case Frequency.Yearly:
+                            var yearNth = Convert.ToInt32(start.Day / 7);
+                            DateTime yearMonth = new DateTime(start.AddYears(interval).Year, start.Month, 1);
+                            date = yearMonth.AddDays((((int)day - (int)yearMonth.DayOfWeek + 7) % 7)).AddDays(yearNth * 7);
+                            break;
+                    }
+                }
+
+                return (date);
+            }
+            catch(Exception ex)
+            {
+                return (DateTime.Today);
             }
 
-            return (date);
         }
 
         public static int CalculateTime(int days, int hours, int minutes)

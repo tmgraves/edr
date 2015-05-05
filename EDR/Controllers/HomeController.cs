@@ -31,6 +31,11 @@ namespace EDR.Controllers
         //    return View();
         //}
 
+        public ActionResult AddJobCache()
+        {
+            return null;
+        }
+
         public ActionResult Explore()
         {
             var viewModel = new HomeExploreViewModel();

@@ -17,7 +17,7 @@ namespace EDR.Controllers
     {
         public ActionResult List(PlaceListViewModel model)
         {
-            model.Places = DataContext.Places.Include("Events").Include("Events.DanceStyles").Include("Events.Reviews").Where(p => p.PlaceType != PlaceType.OtherPlace).ToList();
+            model.Places = DataContext.Places.Include("Events").Include("Events.DanceStyles").Include("Events.Reviews").Where(p => p.Public).ToList();
             model.DanceStyles = DataContext.DanceStyles;
             model.Zoom = model.Zoom == 0 ? 10 : model.Zoom;
 
@@ -266,6 +266,75 @@ namespace EDR.Controllers
             //viewModel.OpenHouses = Events.OfType<OpenHouse>();
 
             return View(viewModel);
+        }
+
+        protected void UpdatePlace(Place place, string token)
+        {
+            //  Get Place from Facebook
+            var fbplace = FacebookHelper.GetData(token, place.FacebookId);
+
+            var placetype = new PlaceType();
+            if (fbplace.category_list != null)
+            {
+                foreach (dynamic category in fbplace.category_list)
+                {
+                    string cat = category.name;
+                    //  Search for Dance Instruction category
+                    if (cat.Contains("Dance Instruction") || category.id == "203916779633178")
+                    {
+                        placetype = PlaceType.Studio;
+                        break;
+                    }
+                    else if (cat.Contains("Dance Club") || category.id == "176139629103647")
+                    {
+                        placetype = PlaceType.Nightclub;
+                        break;
+                    }
+                    else if (category.id == "273819889375819" || cat.Contains("Restaurant"))
+                    {
+                        placetype = PlaceType.Restaurant;
+                        break;
+                    }
+                    else if (cat.Contains("Hotel") || category.id == "164243073639257")
+                    {
+                        placetype = PlaceType.Hotel;
+                        break;
+                    }
+                    else if (cat.Contains("Meeting Room") || category.id == "210261102322291")
+                    {
+                        placetype = PlaceType.ConferenceCenter;
+                        break;
+                    }
+                    else if (cat.Contains("Theater") || category.id == "173883042668223")
+                    {
+                        placetype = PlaceType.Theater;
+                        break;
+                    }
+                    else
+                    {
+                        placetype = PlaceType.OtherPlace;
+                    }
+                }
+            }
+
+            place.Name = fbplace.name;
+            place.Address = fbplace.location.street;
+            place.City = fbplace.location.city;
+            place.State = fbplace.location.state != null ? (State)Enum.Parse(typeof(State), fbplace.location.state) : State.CA;
+            place.Zip = fbplace.location.zip;
+            place.Country = fbplace.location.country;
+            place.Latitude = fbplace.location.latitude;
+            place.Longitude = fbplace.location.longitude;
+            place.PlaceType = placetype;
+            place.Public = true;
+            place.Website = fbplace.website;
+            place.FacebookLink = fbplace.link;
+            place.Filename = fbplace.cover != null ? fbplace.cover.source : null;
+            place.ThumbnailFilename = fbplace.cover != null ? fbplace.cover.source : null;
+            place.Name = fbplace.name;
+
+            DataContext.Entry(place).State = EntityState.Modified;
+            DataContext.SaveChanges();
         }
 
         public PartialViewResult SearchClasses(int id, PlaceViewModel model, string[] classdays)
