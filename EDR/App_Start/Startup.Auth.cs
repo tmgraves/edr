@@ -11,6 +11,8 @@ using EDR.Models;
 using EDR.Data;
 using Microsoft.Owin.Security.Facebook;
 using System.Configuration;
+using Hangfire;
+using EDR.Utilities;
 
 namespace EDR
 {
@@ -92,6 +94,14 @@ namespace EDR
             //    ClientId = "",
             //    ClientSecret = ""
             //});
+
+            GlobalConfiguration.Configuration.UseSqlServerStorage("DefaultConnection");
+
+
+            app.UseHangfireDashboard();
+            app.UseHangfireServer();
+
+            RecurringJob.AddOrUpdate(() => FacebookHelper.RefreshEvents(), Cron.Minutely);
         }
     }
 }

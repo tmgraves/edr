@@ -598,5 +598,12 @@ namespace EDR.Utilities
                 return null;
             }
         }
+
+        public static void RefreshEvents()
+        {
+            ApplicationDbContext context = new ApplicationDbContext();
+            var evts = context.Events.Where(e => e.FacebookId != null);
+        }
+
     }
 }
