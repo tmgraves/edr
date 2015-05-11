@@ -96,12 +96,11 @@ namespace EDR
             //});
 
             GlobalConfiguration.Configuration.UseSqlServerStorage("DefaultConnection");
+            
+            //app.UseHangfireDashboard();
+            //app.UseHangfireServer();
 
-
-            app.UseHangfireDashboard();
-            app.UseHangfireServer();
-
-            RecurringJob.AddOrUpdate(() => FacebookHelper.RefreshEvents(), Cron.Minutely);
+            //RecurringJob.AddOrUpdate(() => FacebookHelper.RefreshEvents(), Cron.Minutely);
         }
     }
 }

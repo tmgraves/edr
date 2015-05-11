@@ -10,14 +10,181 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
+using EDR.Areas.Admin.Models.ViewModels;
 
 namespace EDR.Areas.Admin.Controllers
 {
     public class RolesController : BaseController
     {
         // GET: Admin/Roles
+        [Authorize(Roles = "Admin")]
         public ActionResult Index()
         {
+            var model = new RolesViewModel();
+            model.Role = new IdentityRole();
+            model.Roles = DataContext.Roles.ToList();
+
+            return View(model);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public ActionResult Index(RolesViewModel model)
+        {
+            model.Roles = DataContext.Roles.ToList();
+
+            model.FirstName = model.FirstName == null ? "" : model.FirstName;
+            model.LastName = model.LastName == null ? "" : model.LastName;
+
+            if (model.Role != null)
+            {
+                model.Users = DataContext.Users.Include("UserPictures").Where(u => u.Roles.Any(r => r.RoleId == model.Role.Id) && u.FirstName.Contains(model.FirstName) && u.LastName.Contains(model.LastName));
+            }
+            return View(model);
+        }
+
+        [Authorize(Roles = "Admin")]
+        public ActionResult AddUser(string roleId)
+        {
+            var model = new AddUserViewModel();
+            model.Roles = DataContext.Roles.ToList();
+            return View(model);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public ActionResult AddUser(AddUserViewModel model)
+        {
+            model.Roles = DataContext.Roles.ToList();
+            model.FirstName = model.FirstName == null ? "" : model.FirstName;
+            model.LastName = model.LastName == null ? "" : model.LastName;
+
+            if (model.FirstName != "" || model.LastName != "")
+            {
+                model.SearchUsers = DataContext.Users.Include("UserPictures").Where(u => u.FirstName.Contains(model.FirstName) && u.LastName.Contains(model.LastName));
+            }
+
+            return View(model);
+        }
+
+        [Authorize(Roles = "Admin")]
+        public ActionResult PostRoleUser(string id, string role)
+        {
+            try
+            {
+                var user = DataContext.Users.Where(u => u.Id == id).FirstOrDefault();
+
+                if (user != null)
+                {
+                    if (role == "Teacher")
+                    {
+                        if (DataContext.Teachers.Where(t => t.ApplicationUser.Id == id).Count() == 0)
+                        {
+                            DataContext.Teachers.Add(new Teacher() { ApplicationUser = user, Approved = true, ApproveDate = DateTime.Today });
+                            DataContext.SaveChanges();
+                        }
+
+                        if (!UserManager.IsInRole(id, "Teacher"))
+                        {
+                            UserManager.AddToRole(id, "Teacher");
+                        }
+                        return RedirectToAction("Index");
+                    }
+                    else if (role == "Promoter")
+                    {
+                        if (DataContext.Promoters.Where(t => t.ApplicationUser.Id == id).Count() == 0)
+                        {
+                            DataContext.Promoters.Add(new Promoter() { ApplicationUser = user, Approved = true, ApproveDate = DateTime.Today });
+                            DataContext.SaveChanges();
+                        }
+
+                        if (!UserManager.IsInRole(id, "Promoter"))
+                        {
+                            UserManager.AddToRole(id, "Promoter");
+                        }
+                        return RedirectToAction("Index");
+                    }
+                    else if (role == "Owner")
+                    {
+                        if (DataContext.Owners.Where(t => t.ApplicationUser.Id == id).Count() == 0)
+                        {
+                            DataContext.Owners.Add(new Owner() { ApplicationUser = user, Approved = true, ApproveDate = DateTime.Today });
+                            DataContext.SaveChanges();
+                        }
+
+                        if (!UserManager.IsInRole(id, "Owner"))
+                        {
+                            UserManager.AddToRole(id, "Owner");
+                        }
+                        return RedirectToAction("Index");
+                    }
+                    else if (role == "Admin")
+                    {
+                        if (!UserManager.IsInRole(id, "Admin"))
+                        {
+                            UserManager.AddToRole(id, "Admin");
+                        }
+                        return RedirectToAction("Index");
+                    }
+                }
+            }
+            catch (DbEntityValidationException ex)
+            {
+                return View();
+            }
+
+
+            return View();
+        }
+
+        [Authorize(Roles = "Admin")]
+        public ActionResult RemoveRoleUser(string id, string role)
+        {
+            try
+            {
+                var userManager = new ApplicationUserManager(new UserStore<ApplicationUser>(DataContext));
+                var user = DataContext.Users.Where(u => u.Id == id).FirstOrDefault();
+
+                if (user != null)
+                {
+                    if (UserManager.IsInRole(id, role))
+                    {
+                        userManager.RemoveFromRole(id, role);
+                    }
+
+                    if (role == "Teacher")
+                    {
+                        var teacher = DataContext.Teachers.Where(t => t.ApplicationUser.Id == id).FirstOrDefault();
+                        teacher.Approved = false;
+                        teacher.ApproveDate = null;
+                        DataContext.Entry(teacher).State = EntityState.Modified;
+                        DataContext.SaveChanges();
+                    }
+                    else if (role == "Promoter")
+                    {
+                        var promoter = DataContext.Promoters.Where(t => t.ApplicationUser.Id == id).FirstOrDefault();
+                        promoter.Approved = false;
+                        promoter.ApproveDate = null;
+                        DataContext.Entry(promoter).State = EntityState.Modified;
+                        DataContext.SaveChanges();
+                    }
+                    else if (role == "Owner")
+                    {
+                        var owner = DataContext.Owners.Where(t => t.ApplicationUser.Id == id).FirstOrDefault();
+                        owner.Approved = false;
+                        owner.ApproveDate = null;
+                        DataContext.Entry(owner).State = EntityState.Modified;
+                        DataContext.SaveChanges();
+                    }
+                    return RedirectToAction("Index");
+                }
+            }
+            catch (DbEntityValidationException ex)
+            {
+                return View();
+            }
+
+
             return View();
         }
 

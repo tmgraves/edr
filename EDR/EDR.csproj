@@ -281,6 +281,7 @@
     <Compile Include="Areas\Admin\Controllers\DanceStyleController.cs" />
     <Compile Include="Areas\Admin\Controllers\RolesController.cs" />
     <Compile Include="Areas\Admin\Models\ViewModels\DanceStyleViewModels.cs" />
+    <Compile Include="Areas\Admin\Models\ViewModels\RolesViewModels.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\ClassController.cs" />
@@ -402,6 +403,9 @@
     <Compile Include="Utilities\YouTubeHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Areas\Admin\Views\Roles\Index.cshtml">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
@@ -472,6 +476,7 @@
     <Content Include="Areas\Admin\Views\DanceStyle\TestUpload.cshtml" />
     <Content Include="Areas\Admin\Views\DanceStyle\_FacebookVideosPartial.cshtml" />
     <Content Include="Areas\Admin\Views\DanceStyle\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\Roles\AddUser.cshtml" />
     <None Include="Properties\PublishProfiles\SmarterASP.pubxml" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Library\DayPilot.Web.Mvc.dll" />

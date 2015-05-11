@@ -1,0 +1,92 @@
+﻿@model EDR.Areas.Admin.Models.ViewModels.AddUserViewModel
+
+@{
+    ViewBag.Title = "AddUser";
+}
+
+<h2>Add User</h2>
+
+        @using (Html.BeginForm("AddUser"))
+        {
+            <div class="row col-lg-12 col-md-12">
+                <div class="col-lg-12 col-md-12" style="margin-bottom: 5px;">
+                    <div class="row">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.FirstName, htmlAttributes: new { @class = "control-label col-md-2 col-lg-2" })
+                            <div class="col-md-10 col-lg-10">
+                                @Html.TextBoxFor(m => m.FirstName, null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12 col-md-12" style="margin-bottom: 5px;">
+                    <div class="row">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.LastName, htmlAttributes: new { @class = "control-label col-md-2 col-lg-2" })
+                            <div class="col-md-10 col-lg-10">
+                                @Html.TextBoxFor(m => m.LastName, null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row col-lg-12 col-md-12" style="margin: 5px;">
+                <input type="submit" value="Search" class="btn btn-warning" />
+                <a class="btn btn-info" href="@Url.Action("Index")">Back to Roles</a>
+            </div>
+        }
+
+        <div class="row">
+            @if (Model != null && Model.SearchUsers != null && Model.SearchUsers.Count() != 0)
+            {
+                <table class="table table-striped">
+                    <tr>
+                        <th>
+                        </th>
+                        <th>
+                            Name
+                        </th>
+                        <th>
+                            Role
+                        </th>
+                    </tr>
+                    @foreach (var u in Model.SearchUsers)
+                    {
+                        <tr>
+                            <td>
+                                <div class="captionpic" style="display: inline-block;">
+                                    @if (u.UserPictures != null && u.UserPictures.Count > 0)
+                                    {
+                                        <img class="pull-left" src="@Url.Content(u.UserPictures.First().ThumbnailFilename)" />
+                                    }
+                                    else
+                                    {
+                                        <img class="pull-left" style="width: 40px;" src="@Url.Content("~/Content/images/NoPic.png")" />
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                <div style="display: inline-block; vertical-align: top;">
+                                    <span class="text-primary" style="vertical-align: top;">@u.FullName</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-primary">Add to...</button>
+                                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                        <span class="caret"></span>
+                                        <span class="sr-only">Toggle Dropdown</span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="@Url.Action("PostRoleUser", new { role = "Teacher", id = u.Id })">Teacher Role</a></li>
+                                        <li><a href="@Url.Action("PostRoleUser", new { role = "Promoter", id = u.Id })">Promoter Role</a></li>
+                                        <li><a href="@Url.Action("PostRoleUser", new { role = "Owner", id = u.Id })">Owner Role</a></li>
+                                        <li><a href="@Url.Action("PostRoleUser", new { role = "Admin", id = u.Id })">Admin Role</a></li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </table>
+            }
+        </div>

@@ -17,8 +17,6 @@ namespace EDR
 {
     public class MvcApplication : System.Web.HttpApplication
     {
-        private static CacheItemRemovedCallback OnCacheRemove = null;
-
         protected void Application_Start()
         {
             Database.SetInitializer<ApplicationDbContext>(new ApplicationDbInitializer());
@@ -44,25 +42,5 @@ namespace EDR
             }
         }
 
-        protected void Application_BeginRequest(object sender, EventArgs e)
-        {
-            HttpContext.Current.Cache.Add("jobkey", "jobvalue", null, DateTime.MaxValue, TimeSpan.FromSeconds(30), CacheItemPriority.Default, CacheItemRemoved);
-        }
-
-        public void CacheItemRemoved(string task, object value, CacheItemRemovedReason reason)
-        {
-            // do stuff here if it matches our taskname, like WebRequest
-            // re-add our task so it recurs
-            RefreshFacebookEvents();
-        }
-
-        private static void RefreshFacebookEvents()
-        {
-            //var context = new ApplicationDbContext();
-            //var events = context.Events.Where(e => e.FacebookId != null);
-            //var fbids = events.Select(ev => ev.FacebookId).ToArray();
-            //var par = String.Join(",", fbids);
-            //var evts = FacebookHelper.GetData(FacebookHelper.GetGlobalToken(), "?ids=" + par);
-        }
     }
 }

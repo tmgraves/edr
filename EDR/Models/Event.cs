@@ -17,6 +17,7 @@ namespace EDR.Models
         {
             Interval = 1;
             Frequency = Enums.Frequency.Weekly;
+            UpdatedDate = DateTime.Now;
         }
 
         [Required]
@@ -55,6 +56,11 @@ namespace EDR.Models
         [Display(Name = "End Date")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? EndDate { get; set; }
+
+        [DataType(DataType.Date)]
+        [Display(Name = "Updated Date")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime? UpdatedDate { get; set; }
 
         [DataType(DataType.Currency)]
         public Nullable<decimal> Price { get; set; }
