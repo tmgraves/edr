@@ -1259,6 +1259,13 @@ namespace EDR.Controllers
         [HttpPost]
         public ActionResult Edit(EventEditViewModel model)
         {
+            ModelState["Event.Place.Id"].Errors.Clear();
+            ModelState["Event.Place.Name"].Errors.Clear();
+            ModelState["Event.Place.Address"].Errors.Clear();
+            ModelState["Event.Place.City"].Errors.Clear();
+            ModelState["Event.Place.State"].Errors.Clear();
+            ModelState["Event.Place.Zip"].Errors.Clear();
+
             if (model.Event.Place.Id != 0)
             {
                 ModelState["NewPlace.Name"].Errors.Clear();
@@ -1266,15 +1273,6 @@ namespace EDR.Controllers
                 ModelState["NewPlace.City"].Errors.Clear();
                 ModelState["NewPlace.State"].Errors.Clear();
                 ModelState["NewPlace.Zip"].Errors.Clear();
-            }
-            else
-            {
-                ModelState["Event.Place.Id"].Errors.Clear();
-                ModelState["Event.Place.Name"].Errors.Clear();
-                ModelState["Event.Place.Address"].Errors.Clear();
-                ModelState["Event.Place.City"].Errors.Clear();
-                ModelState["Event.Place.State"].Errors.Clear();
-                ModelState["Event.Place.Zip"].Errors.Clear();
             }
 
             //  Remove Validation for Socials
@@ -1294,13 +1292,13 @@ namespace EDR.Controllers
                 {
                     if (model.EventType == EventType.Class)
                     {
-                        var cls = new Class() { ClassType = model.ClassType, Teachers = new List<Teacher>(), Owners = new List<Owner>() };
+                        var cls = new Class() { ClassType = model.ClassType, Teachers = new List<Teacher>(), Owners = new List<Owner>(), Creator = user };
 
-                        if (user.CurrentRole.Name == "Teacher")
+                        if (DataContext.Teachers.Where(t => t.ApplicationUser.Id == userid).Count() == 1)
                         {
                             cls.Teachers.Add(DataContext.Teachers.Where(t => t.ApplicationUser.Id == userid).FirstOrDefault());
                         }
-                        else
+                        else if (DataContext.Owners.Where(t => t.ApplicationUser.Id == userid).Count() == 1)
                         {
                             cls.Owners.Add(DataContext.Owners.Where(t => t.ApplicationUser.Id == userid).FirstOrDefault());
                         }
@@ -1308,12 +1306,12 @@ namespace EDR.Controllers
                     }
                     else
                     {
-                        var soc = new Social() { SocialType = model.SocialType, Promoters = new List<Promoter>(), Owners = new List<Owner>() };
-                        if (user.CurrentRole.Name == "Promoter")
+                        var soc = new Social() { SocialType = model.SocialType, Promoters = new List<Promoter>(), Owners = new List<Owner>(), Creator = user };
+                        if (DataContext.Promoters.Where(t => t.ApplicationUser.Id == userid).Count() == 1)
                         {
                             soc.Promoters.Add(DataContext.Promoters.Where(t => t.ApplicationUser.Id == userid).FirstOrDefault());
                         }
-                        else
+                        else if (DataContext.Owners.Where(t => t.ApplicationUser.Id == userid).Count() == 1)
                         {
                             soc.Owners.Add(DataContext.Owners.Where(t => t.ApplicationUser.Id == userid).FirstOrDefault());
                         }
@@ -1377,7 +1375,7 @@ namespace EDR.Controllers
                 //  Remove old place
                 var oldplace = evt.Place;
                 evt.Place = place;
-                if (oldplace.Id != place.Id && !oldplace.Public && oldplace.PlaceType == PlaceType.OtherPlace && user.Places.Where(p => p.Id == oldplace.Id).Count() == 0)
+                if (oldplace != null && oldplace.Id != place.Id && !oldplace.Public && oldplace.PlaceType == PlaceType.OtherPlace && user.Places.Where(p => p.Id == oldplace.Id).Count() == 0)
                 {
                     DataContext.Places.Remove(oldplace);
                 }

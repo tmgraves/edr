@@ -420,16 +420,6 @@
                         }
                     </div>
                 </div>
-                @Html.HiddenFor(x => x.Event.Place.Id)
-                @Html.HiddenFor(x => x.Event.Place.Public)
-                @Html.HiddenFor(x => x.Event.Place.PlaceType)
-                @Html.HiddenFor(x => x.Event.Place.Name)
-                @Html.HiddenFor(x => x.Event.Place.Address)
-                @Html.HiddenFor(x => x.Event.Place.City)
-                @Html.HiddenFor(x => x.Event.Place.State)
-                @Html.HiddenFor(x => x.Event.Place.Zip)
-                @Html.HiddenFor(x => x.Event.Place.Latitude)
-                @Html.HiddenFor(x => x.Event.Place.Longitude)
                 @if (Model.Event.FacebookId != null)
                 {
                     <div class="row col-lg-12 col-md-12">
@@ -502,6 +492,19 @@
                     }
                 </div>
             </div>
+            @if (Model.Event.Id != 0)
+            {
+                @Html.HiddenFor(x => x.Event.Place.Id)
+                @Html.HiddenFor(x => x.Event.Place.Public)
+                @Html.HiddenFor(x => x.Event.Place.PlaceType)
+                @Html.HiddenFor(x => x.Event.Place.Name)
+                @Html.HiddenFor(x => x.Event.Place.Address)
+                @Html.HiddenFor(x => x.Event.Place.City)
+                @Html.HiddenFor(x => x.Event.Place.State)
+                @Html.HiddenFor(x => x.Event.Place.Zip)
+                @Html.HiddenFor(x => x.Event.Place.Latitude)
+                @Html.HiddenFor(x => x.Event.Place.Longitude)
+            }
             @if (Model.Event.FacebookId == null)
             {
                 <div class="col-lg-12 col-md-12 radio-list">

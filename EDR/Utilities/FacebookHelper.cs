@@ -9,6 +9,8 @@ using System.Linq;
 using System.Web;
 using EDR.Controllers;
 using System.Configuration;
+using EDR.Enums;
+using System.Data.Entity;
 
 namespace EDR.Utilities
 {
@@ -602,7 +604,115 @@ namespace EDR.Utilities
         public static void RefreshEvents()
         {
             ApplicationDbContext context = new ApplicationDbContext();
-            var evts = context.Events.Where(e => e.FacebookId != null);
+            var users = context.Users.Where(u => context.Events.Any(e => e.Creator.Id == u.Id)).ToList();
+
+            foreach (var u in users)
+            {
+                var eventList = new List<FacebookEvent>();
+                var evts = context.Events.Where(e => e.FacebookId != null && e.Creator.Id == u.Id).OrderBy(e => e.CheckedDate).Take(20).ToList();
+                var uevts = String.Join(",", evts.Where(e => e.Creator.Id == u.Id).Select(s => s.FacebookId));
+                
+                var fb = new FacebookClient(u.FacebookToken);
+                dynamic fevts = fb.Get("?ids=" + uevts + "&fields=id,cover,description,end_time,is_date_only,location,name,owner,privacy,start_time,ticket_uri,timezone,updated_time,venue,parent_group");
+
+                if (fevts != null)
+                {
+                    foreach (dynamic ev in fevts)
+                    {
+                        eventList.Add(BuildEvent(fb, ev.Value));
+                    }
+                }
+
+                foreach (var fevt in eventList)
+                {
+                    var evnt = evts.Where(e => e.FacebookId == fevt.Id).FirstOrDefault();
+                    if (evnt.UpdatedDate < fevt.Updated)
+                    {
+                        var available = (fevt.Privacy == "OPEN" || fevt.Privacy == "FRIENDS") ? true : false;
+                        evnt.Name = fevt.Name;
+                        evnt.Description = fevt.Description;
+                        evnt.StartDate = fevt.StartTime;
+                        evnt.StartTime = fevt.StartTime;
+                        evnt.EndDate = fevt.EndTime;
+                        evnt.EndTime = fevt.EndTime;
+                        evnt.PhotoUrl = fevt.CoverPhoto.LargeSource;
+                        evnt.FacebookLink = fevt.EventLink;
+                        evnt.IsAvailable = available;
+                        evnt.UpdatedDate = fevt.Updated;
+
+                        //  Place is a Page in Facebook
+                        if (fevt.Address.FacebookId != null)
+                        {
+                            var place = context.Places.Where(p => p.FacebookId == fevt.Address.FacebookId).FirstOrDefault();
+
+                            //  Existing Facebook place in the database
+                            if (place != null)
+                            {
+                                evnt.Place = place;
+                            }
+                            //  New Place from Facebook
+                            else
+                            {
+                                //  Place has a Page in Facebook
+                                if (fevt.Address.FacebookId != null)
+                                {
+                                    var fbplace = FacebookHelper.GetData(u.FacebookToken, fevt.Address.FacebookId);
+
+                                    var placetype = new PlaceType();
+                                    if (fbplace.category_list != null)
+                                    {
+                                        foreach (dynamic category in fbplace.category_list)
+                                        {
+                                            string cat = category.name;
+                                            //  Search for Dance Instruction category
+                                            if (cat.Contains("Dance Instruction") || category.id == "203916779633178")
+                                            {
+                                                placetype = PlaceType.Studio;
+                                                break;
+                                            }
+                                            else if (cat.Contains("Dance Club") || category.id == "176139629103647")
+                                            {
+                                                placetype = PlaceType.Nightclub;
+                                                break;
+                                            }
+                                            else if (category.id == "273819889375819" || cat.Contains("Restaurant"))
+                                            {
+                                                placetype = PlaceType.Restaurant;
+                                                break;
+                                            }
+                                            else if (cat.Contains("Hotel") || category.id == "164243073639257")
+                                            {
+                                                placetype = PlaceType.Hotel;
+                                                break;
+                                            }
+                                            else if (cat.Contains("Meeting Room") || category.id == "210261102322291")
+                                            {
+                                                placetype = PlaceType.ConferenceCenter;
+                                                break;
+                                            }
+                                            else if (cat.Contains("Theater") || category.id == "173883042668223")
+                                            {
+                                                placetype = PlaceType.Theater;
+                                                break;
+                                            }
+                                            else
+                                            {
+                                                placetype = PlaceType.OtherPlace;
+                                            }
+                                        }
+                                    }
+
+                                    evnt.Place = new Place() { Name = fevt.Location, Address = fevt.Address.Street, City = fevt.Address.City, State = fevt.Address.State != null ? (State)Enum.Parse(typeof(State), fevt.Address.State) : State.CA, Zip = fevt.Address.ZipCode, Country = fevt.Address.Country, Latitude = fevt.Address.Latitude, Longitude = fevt.Address.Longitude, FacebookId = fevt.Address.FacebookId, PlaceType = placetype, Public = true, Website = fevt.Address.WebsiteUrl, FacebookLink = fevt.Address.FacebookUrl, Filename = fbplace.cover != null ? fbplace.cover.source : null, ThumbnailFilename = fbplace.cover != null ? fbplace.cover.source : null };
+                                }
+                            }
+                        }
+
+                    }
+                    evnt.CheckedDate = DateTime.Now;
+                    context.Entry(evnt).State = EntityState.Modified;
+                    context.SaveChanges();
+                }
+            }
         }
 
     }
