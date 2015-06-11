@@ -134,6 +134,7 @@ namespace EDR.Models
         public ICollection<EventVideo> Videos { get; set; }
         public ICollection<EventPlaylist> Playlists { get; set; }
         public ICollection<EventAlbum> Albums { get; set; }
+        public ICollection<EventAttendee> Attendees { get; set; }
     }
 
     public class LinkedFacebookObject : Entity
@@ -152,5 +153,13 @@ namespace EDR.Models
         Group,
         Event,
         Page
+    }
+
+    public class EventAttendee : Entity
+    {
+        public virtual Event Event { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
     }
 }

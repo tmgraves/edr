@@ -1,0 +1,37 @@
+﻿@model EDR.Models.ViewModels.EventAttendeesViewModel
+
+@{
+    ViewBag.Title = Model.Event.Name + " Attendees";
+}
+
+@using (Html.BeginForm("Attendees", "Event", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @Html.HiddenFor(e => e.Event.Id)
+    @Html.HiddenFor(e => e.Event.Name)
+    @Html.AntiForgeryToken()
+    <h2 class="page-header">Please enter your information for @Model.Event.Name</h2>
+    @Html.ValidationSummary("", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.LabelFor(m => m.Name, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.ConfirmEmail, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.ConfirmEmail, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" class="btn btn-primary" value="Check-In" />
+        </div>
+    </div>
+}

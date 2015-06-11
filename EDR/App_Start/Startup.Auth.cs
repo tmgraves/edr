@@ -100,7 +100,7 @@ namespace EDR
             app.UseHangfireDashboard();
             app.UseHangfireServer();
 
-            RecurringJob.AddOrUpdate(() => FacebookHelper.RefreshEvents(), Cron.Hourly);
+            RecurringJob.AddOrUpdate(() => FacebookHelper.RefreshEvents(), Cron.Daily);
         }
     }
 }

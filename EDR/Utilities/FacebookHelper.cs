@@ -289,7 +289,7 @@ namespace EDR.Utilities
             return (eventList);
         }
 
-        private static FacebookEvent BuildEvent(FacebookClient client, dynamic eventdata)
+        private static FacebookEvent BuildEvent(FacebookClient client, dynamic eventdata, bool rebuild = false)
         {
             FacebookPhoto coverPic = new FacebookPhoto();
             if (eventdata.cover != null)
@@ -312,27 +312,30 @@ namespace EDR.Utilities
 
                 var address = new Address();
 
-                if (add.City == null || add.State == null)
+                if (!rebuild)
                 {
-                    if (eventdata.location != null)
+                    if (add.City == null || add.State == null)
                     {
-                        address = Geolocation.ParseAddress(eventdata.location);
-
-                        if (address != null)
+                        if (eventdata.location != null)
                         {
-                            add.City = address.City;
-                            add.Country = address.Country;
-                            add.Latitude = address.Latitude;
-                            add.Longitude = address.Longitude;
-                            add.State = address.State != null ? address.State.ToString() : null;
-                            add.Street = address.Street;
-                            add.ZipCode = address.ZipCode;
+                            address = Geolocation.ParseAddress(eventdata.location);
+
+                            if (address != null)
+                            {
+                                add.City = address.City;
+                                add.Country = address.Country;
+                                add.Latitude = address.Latitude;
+                                add.Longitude = address.Longitude;
+                                add.State = address.State != null ? address.State.ToString() : null;
+                                add.Street = address.Street;
+                                add.ZipCode = address.ZipCode;
+                            }
                         }
                     }
-                }
-                else
-                {
-                    address = Geolocation.ParseAddress(add.Street + " " + add.City + " " + add.State + " " + add.ZipCode);
+                    else
+                    {
+                        address = Geolocation.ParseAddress(add.Street + " " + add.City + " " + add.State + " " + add.ZipCode);
+                    }
                 }
 
                 if (address != null)
@@ -352,20 +355,23 @@ namespace EDR.Utilities
                 //  Place is not a Page
                 else
                 {
-                    if (eventdata.venue.name != null)
+                    if (!rebuild)
                     {
-                        add.Location = eventdata.venue.name;
-                        address = Geolocation.ParseAddress(eventdata.venue.name);
-
-                        if (address != null)
+                        if (eventdata.venue.name != null)
                         {
-                            add.City = address.City;
-                            add.Country = address.Country;
-                            add.Latitude = address.Latitude;
-                            add.Longitude = address.Longitude;
-                            add.State = address.State != null ? address.State.ToString() : null;
-                            add.Street = address.Street;
-                            add.ZipCode = address.ZipCode;
+                            add.Location = eventdata.venue.name;
+                            address = Geolocation.ParseAddress(eventdata.venue.name);
+
+                            if (address != null)
+                            {
+                                add.City = address.City;
+                                add.Country = address.Country;
+                                add.Latitude = address.Latitude;
+                                add.Longitude = address.Longitude;
+                                add.State = address.State != null ? address.State.ToString() : null;
+                                add.Street = address.Street;
+                                add.ZipCode = address.ZipCode;
+                            }
                         }
                     }
                 }
@@ -619,7 +625,7 @@ namespace EDR.Utilities
                 {
                     foreach (dynamic ev in fevts)
                     {
-                        eventList.Add(BuildEvent(fb, ev.Value));
+                        eventList.Add(BuildEvent(fb, ev.Value, true));
                     }
                 }
 

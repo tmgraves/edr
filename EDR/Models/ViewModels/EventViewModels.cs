@@ -16,6 +16,27 @@ namespace EDR.Models.ViewModels
         public Review Review { get; set; }
     }
 
+    public class EventAttendeesViewModel
+    {
+        public Event Event { get; set; }
+
+        [Required]
+        [Display(Name = "Name")]
+        public string Name { get; set; }
+
+        [Required]
+        [EmailAddress]
+        [Display(Name = "Email")]
+        public string Email { get; set; }
+
+        [DataType(DataType.EmailAddress)]
+        [Display(Name = "Confirm Email")]
+        [System.ComponentModel.DataAnnotations.Compare("Email", ErrorMessage = "Email Addresses do not match.")]
+        public string ConfirmEmail{ get; set; }
+
+        public string Phone { get; set; }
+    }
+
     public class EventDetailViewModel
     {
         public Event Event { get; set; }

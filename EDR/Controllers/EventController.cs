@@ -64,6 +64,54 @@ namespace EDR.Controllers
         }
         #endregion
 
+        #region attendees
+        [Authorize]
+        public ActionResult Attendees(int id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var model = new EventAttendeesViewModel();
+
+            model.Event = DataContext.Events.Where(e => e.Id == id).FirstOrDefault();
+
+            if (model.Event == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View(model);
+        }
+        [HttpPost]
+        [Authorize]
+        public ActionResult Attendees(EventAttendeesViewModel model)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var ev = DataContext.Events.Where(e => e.Id == model.Event.Id).Include("Attendees").FirstOrDefault();
+                    ev.Attendees.Add(new EventAttendee() { Name = model.Name, Email = model.Email });
+                    DataContext.Entry(ev).State = EntityState.Modified;
+                    DataContext.SaveChanges();
+
+                    var eventType = ev is Class ? EventType.Class : EventType.Social;
+                    return RedirectToAction("Attendees", new { id = ev.Id, eventType = eventType });
+                }
+                else
+                {
+                    return View(model);
+                }
+            }
+            catch
+            {
+                return View(model);
+            }
+        }
+        #endregion
+
         //public ActionResult Details(int id, EventType eventType)
         //{
         //    if (id == null)
@@ -104,7 +152,7 @@ namespace EDR.Controllers
             model.EventType = eventType;
 
             //  Update Facebook Event with Current Info
-            if (model.Event.FacebookId != null)
+            if (model.Event.FacebookId != null && model.Event.UpdatedDate < DateTime.Now.AddDays(-7))
             {
                 UpdateFacebookEvent(model.Event);
             }
