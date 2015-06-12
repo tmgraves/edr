@@ -151,12 +151,12 @@ namespace EDR.Controllers
 
             model.EventType = eventType;
 
-            //  Update Facebook Event with Current Info
-            if (model.Event.FacebookId != null && model.Event.UpdatedDate < DateTime.Now.AddDays(-7))
-            {
-                UpdateFacebookEvent(model.Event);
-            }
-            //  Get Current Facebook Picture/Video
+            ////  Update Facebook Event with Current Info
+            //if (model.Event.FacebookId != null && model.Event.UpdatedDate < DateTime.Now.AddDays(-7))
+            //{
+            //    UpdateFacebookEvent(model.Event);
+            //}
+            ////  Get Current Facebook Picture/Video
 
             model.LinkedFacebookObjects = DataContext.Events.Where(e => e.Id == id).Include("LinkedFacebookObjects").FirstOrDefault().LinkedFacebookObjects;
 
