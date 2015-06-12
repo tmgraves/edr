@@ -11,6 +11,7 @@ using Microsoft.AspNet.Identity;
 
 using YelpSharp;
 using System.Data.Entity.Spatial;
+using System.Web.Security;
 
 namespace EDR.Controllers
 {
