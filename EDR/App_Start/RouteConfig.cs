@@ -16,7 +16,7 @@ namespace EDR
 
             routes.MapRoute(
                 name: "DancerHome",
-                url: "{username}",
+                url: "Dancer/{username}",
                 defaults: new { controller = "Dancer", action = "Home" }
             );
 
