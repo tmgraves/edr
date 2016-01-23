@@ -65,7 +65,6 @@ namespace EDR.Controllers
         #endregion
 
         #region attendees
-        [Authorize]
         public ActionResult Attendees(int id)
         {
             if (id == null)
@@ -85,7 +84,6 @@ namespace EDR.Controllers
             return View(model);
         }
         [HttpPost]
-        [Authorize]
         public ActionResult Attendees(EventAttendeesViewModel model)
         {
             try

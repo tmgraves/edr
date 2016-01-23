@@ -4,7 +4,22 @@
     ViewBag.Title = Model.Event.Name + " Attendees";
 }
 
-@using (Html.BeginForm("Attendees", "Event", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+<style type="text/css">
+    input::-webkit-input-placeholder, textarea::-webkit-input-placeholder { 
+    color:    Red;
+}
+input:-moz-placeholder, textarea:-moz-placeholder { 
+    color:    Red;
+}
+input::-moz-placeholder, textarea::-moz-placeholder { 
+    color:    Red;
+}
+input:-ms-input-placeholder, textarea:-ms-input-placeholder { 
+    color:    Red;
+}
+</style>
+
+@using (Html.BeginForm("Attendees", "Event", FormMethod.Post, new { @class = "form-horizontal", role = "form", autocomplete = "off" }))
 {
     @Html.HiddenFor(e => e.Event.Id)
     @Html.HiddenFor(e => e.Event.Name)
@@ -14,19 +29,19 @@
     <div class="form-group">
         @Html.LabelFor(m => m.Name, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+            @Html.TextBoxFor(m => m.Name, new { @class = "form-control", autofocus = "autofocus", placeholder = "Joe Smith" })
         </div>
     </div>
     <div class="form-group">
         @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", placeholder = "joesmith@email.com" })
         </div>
     </div>
     <div class="form-group">
         @Html.LabelFor(m => m.ConfirmEmail, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.TextBoxFor(m => m.ConfirmEmail, new { @class = "form-control" })
+            @Html.TextBoxFor(m => m.ConfirmEmail, new { @class = "form-control", placeholder = "joesmith@email.com" })
         </div>
     </div>
     <div class="form-group">

@@ -48,11 +48,16 @@ namespace EDR.Utilities
 
                             var dates = new List<DateTime>();
                             DateTime month = new DateTime(begin.Year, begin.Month, 1);
+                            //  Calc days for Current Month
                             for (int i = 0; i < daysarray.Count(); i++)
                             {
                                 dates.Add(month.AddDays((((int)day - (int)month.DayOfWeek + 7) % 7)).AddDays((daysarray[i] - 1) * 7));
                             }
-                            dates.Add(month.AddMonths(1).AddDays((((int)day - (int)month.AddMonths(1).DayOfWeek + 7) % 7)));
+                            //  Calc days for Next Month
+                            for (int i = 0; i < daysarray.Count(); i++)
+                            {
+                                dates.Add(month.AddMonths(1).AddDays((((int)day - (int)month.AddMonths(1).DayOfWeek + 7) % 7)).AddDays((daysarray[i] - 1) * 7));
+                            }
                             date = dates.Where(d => d > begin).OrderBy(d => d).FirstOrDefault();
                             //  date = month.AddDays((((int)day - (int)month.DayOfWeek + 7) % 7)).AddDays(nth * 7);
                             break;

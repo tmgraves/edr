@@ -21,16 +21,16 @@ namespace EDR.Models.ViewModels
         public Event Event { get; set; }
 
         [Required]
-        [Display(Name = "Name")]
+        [Display(Name = "Your Name")]
         public string Name { get; set; }
 
         [Required]
         [EmailAddress]
-        [Display(Name = "Email")]
+        [Display(Name = "Your Email Address")]
         public string Email { get; set; }
 
         [DataType(DataType.EmailAddress)]
-        [Display(Name = "Confirm Email")]
+        [Display(Name = "Confirm Your Email")]
         [System.ComponentModel.DataAnnotations.Compare("Email", ErrorMessage = "Email Addresses do not match.")]
         public string ConfirmEmail{ get; set; }
 
