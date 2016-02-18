@@ -583,43 +583,48 @@ namespace EDR.Controllers
         public ActionResult GetUpdates(int id)
         {
             //  Media Updates
-            var lstMedia = new List<Media>();
-            var updates = new EventUpdates();
-            var rebuild = false;
+            var lstMedia = new List<EventMedia>();
+            //var updates = new EventUpdates();
+            //var rebuild = false;
 
-            if (Session["Event" + id.ToString() + "Updates"] != null)
-            {
-                updates = (EventUpdates)Session["Event" + id.ToString() + "Updates"];
-                if (updates.Created < DateTime.Now.AddMinutes(-5))
-                {
-                    rebuild = true;
-                }
-            }
-            else
-            {
-                rebuild = true;
-            }
+            //if (Session["Event" + id.ToString() + "Updates"] != null)
+            //{
+            //    updates = (EventUpdates)Session["Event" + id.ToString() + "Updates"];
+            //    if (updates.Created < DateTime.Now.AddMinutes(-5))
+            //    {
+            //        rebuild = true;
+            //    }
+            //}
+            //else
+            //{
+            //    rebuild = true;
+            //}
 
-            if (rebuild)
-            {
-                var evt = DataContext.Events.Where(e => e.Id == id)
-                        .Include("Creator")
-                        .Include("Pictures")
-                        .Include("Pictures.PostedBy")
-                        .Include("Albums")
-                        .Include("Albums.PostedBy")
-                        .Include("Videos")
-                        .Include("Videos.Author")
-                        .Include("Playlists")
-                        .Include("Playlists.Author")
-                        .Include("LinkedFacebookObjects")
-                        .FirstOrDefault();
+            //if (rebuild)
+            //{
+            //    var evt = DataContext.Events.Where(e => e.Id == id)
+            //            .Include("Creator")
+            //            .Include("Pictures")
+            //            .Include("Pictures.PostedBy")
+            //            .Include("Albums")
+            //            .Include("Albums.PostedBy")
+            //            .Include("Videos")
+            //            .Include("Videos.Author")
+            //            .Include("Playlists")
+            //            .Include("Playlists.Author")
+            //            .Include("LinkedFacebookObjects")
+            //            .FirstOrDefault();
 
-                EventHelper.BuildUpdates(evt, MediaTarget.Event, ref lstMedia);
-                Session["Event" + id.ToString() + "Updates"] = new EventUpdates() { Media = lstMedia, Created = DateTime.Now };
-            }
-            updates = (EventUpdates)Session["Event" + id.ToString() + "Updates"];
-            lstMedia = updates.Media;
+            //EventHelper.BuildUpdates(evt, MediaTarget.Event, ref lstMedia);
+            //Session["Event" + id.ToString() + "Updates"] = new EventUpdates() { Media = lstMedia, Created = DateTime.Now };
+            //}
+            //updates = (EventUpdates)Session["Event" + id.ToString() + "Updates"];
+            //lstMedia = updates.Media;
+
+            //  Test code
+            var evt = DataContext.Events.Where(e => e.Id == id).Include("Feeds").FirstOrDefault();
+            lstMedia =  evt.Feeds.Select(f => new EventMedia() { Event = evt, MediaUrl = f.Link, Text= f.Message, Title = f.Message, MediaType = MediaType.Comment, MediaDate = DateTime.Today }).ToList();
+            //  Test code
 
             return PartialView("~/Views/Shared/_MediaUpdatesPartial.cshtml", lstMedia);
 
@@ -1599,13 +1604,15 @@ namespace EDR.Controllers
                     .Include("Reviews")
                     .Include("LinkedFacebookObjects")
                     .Include("EventMembers")
+                    .Include("Feeds")
                     .FirstOrDefault();
 
             evt.Videos.Clear();
             evt.Pictures.Clear();
             evt.Playlists.Clear();
-            evt.Reviews.Clear();
-            evt.LinkedFacebookObjects.Clear();
+            DataContext.Reviews.RemoveRange(evt.Reviews);
+            DataContext.LinkedFacebookObjects.RemoveRange(evt.LinkedFacebookObjects);
+            DataContext.EventFeeds.RemoveRange(evt.Feeds);
             DataContext.EventMembers.RemoveRange(evt.EventMembers);
             DataContext.Events.Remove(evt);
             DataContext.SaveChanges();
@@ -2061,7 +2068,7 @@ namespace EDR.Controllers
             //  Update Month Days
 
             //  Update Lon/Lat for Place
-            if (model.Event.Place.Latitude == null || model.Event.Place.Longitude == null)
+            if (model.Event.Place.Latitude == 0.0 || model.Event.Place.Longitude == 0.0)
             {
                 var address = Geolocation.ParseAddress(model.Event.Place.Address + " " + model.Event.Place.City + " " + model.Event.Place.State + " " + model.Event.Place.Zip);
                 model.Event.Place.Latitude = address.Latitude;
@@ -2136,6 +2143,10 @@ namespace EDR.Controllers
                             cls.Teachers = new List<Teacher>();
                             cls.Owners = new List<Owner>();
                             cls.EventMembers.Add(new EventMember() { Event = cls, Member = user, Admin = true });
+                            //  Get Feed
+                            var feeds = FacebookHelper.GetFeed(evt.FacebookId, user.FacebookToken).Where(f => f.Link != null || f.Message != null).ToList();
+                            cls.Feeds = feeds.Where(f => f.Message != null || f.Link != null).Select(f => new Feed() { Link = f.Link, Message = f.Message, UpdateTime = f.Updated_Time }).ToList();
+                            //  Get Feed
                             DataContext.Events.Add(cls);
                             DataContext.SaveChanges();
 
@@ -2167,6 +2178,10 @@ namespace EDR.Controllers
                             social.Promoters = new List<Promoter>();
                             social.Owners = new List<Owner>();
                             social.EventMembers.Add(new EventMember() { Event = social, Member = user, Admin = true });
+                            //  Get Feed
+                            var feeds = FacebookHelper.GetFeed(evt.FacebookId, user.FacebookToken).Where(f => f.Link != null || f.Message != null).ToList();
+                            social.Feeds = feeds.Where(f => f.Message != null || f.Link != null).Select(f => new Feed() { Link = f.Link, Message = f.Message, UpdateTime = f.Updated_Time }).ToList();
+                            //  Get Feed
                             DataContext.Events.Add(social);
                             DataContext.SaveChanges();
 

@@ -82,6 +82,8 @@ namespace EDR.Models
         public DateTime Updated;
         public string EventLink;
         public FacebookAddress Address;
+        public List<FacebookPost> Feeds;
+        public string UserToken;
     }
 
     public class FacebookAddress : Address
@@ -137,11 +139,6 @@ namespace EDR.Models
         //  The last time the group was updated (this includes changes in the group's properties and changes in posts and comments if the session user can see them).
         public DateTime Updated_Time;
         public List<FacebookPost> Posts;
-    }
-
-    public class FacebookFeed
-    {
-        public string Message;
     }
 
     public class FacebookPost

@@ -63,6 +63,7 @@ namespace EDR.Data
             modelBuilder.Entity<Party>().ToTable("Parties");
             modelBuilder.Entity<LinkedFacebookObject>().ToTable("LinkedFacebookObjects");
             modelBuilder.Entity<EventAttendee>().ToTable("EventAttendees");
+            modelBuilder.Entity<Feed>().ToTable("EventFeeds");
 
             // Groups
             modelBuilder.Entity<Team>().ToTable("Teams");
@@ -115,6 +116,7 @@ namespace EDR.Data
         public DbSet<Playlist> Playlists { get; set; }
         public DbSet<EventMember> EventMembers { get; set; }
         public DbSet<EventAttendee> EventAttendees { get; set; }
+        public DbSet<Feed> EventFeeds { get; set; }
 
         public DbSet<ClassTeacherInvitation> ClassTeacherInvitations { get; set; }
         public DbSet<SocialPromoterInvitation> SocialPromoterInvitations { get; set; }

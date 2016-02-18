@@ -22,6 +22,22 @@ namespace EDR.Controllers
             return View();
         }
 
+        public ActionResult Test()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                var eventList = new List<FacebookEvent>();
+                var userid = User.Identity.GetUserId();
+                var user = DataContext.Users.Where(u => u.Id == userid).Include("Events").FirstOrDefault();
+                var evts = DataContext.Events.Where(e => e.FacebookId != null && e.Creator.Id == user.Id).OrderBy(e => e.CheckedDate).ToList();
+                var uevts = String.Join(",", evts.Where(e => e.Creator.Id == user.Id).Select(s => s.FacebookId));
+                eventList = FacebookHelper.GetEvents(uevts, user.FacebookToken, eventList);
+            }
+
+            FacebookHelper.RefreshEvents();
+            return View();
+        }
+
         //public ActionResult Index2()
         //{
         //    return View();

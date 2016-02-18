@@ -715,6 +715,7 @@
     <Content Include="Views\Home\TermsofService.cshtml" />
     <Content Include="Views\Shared\Events\_AddLinkedFacebookPagesPartial.cshtml" />
     <Content Include="Views\Event\Attendees.cshtml" />
+    <Content Include="Views\Home\Test.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>
@@ -758,7 +759,6 @@
     <Content Include="Views\Class\CreateReview.cshtml" />
     <Content Include="Views\Home\Teachers.cshtml" />
     <Content Include="Views\Home\Social.cshtml" />
-    <Content Include="Views\Account\DancerProfile.cshtml" />
     <Content Include="Views\Account\TeacherProfile.cshtml" />
     <Content Include="Views\Teacher\Apply.cshtml" />
     <Content Include="Views\Teacher\Edit.cshtml" />

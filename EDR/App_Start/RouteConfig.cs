@@ -15,6 +15,12 @@ namespace EDR
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
+                name: "Test",
+                url: "Home/Test",
+                defaults: new { controller = "Home", action = "Test" }
+            );
+
+            routes.MapRoute(
                 name: "DancerHome",
                 url: "Dancer/{username}",
                 defaults: new { controller = "Dancer", action = "Home" }
