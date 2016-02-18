@@ -739,8 +739,10 @@ namespace EDR.Utilities
             }
             //  Set Update Date for missing facebook events
             //  var eIds = videos.Where(v => v.FacebookId != null).Select(v => v.FacebookId).ToArray(); 
-            var che = context.Events.Where(e => evtList.Any(el => el.Id == e.Id) && !eventList.Any(fe => fe.Id == e.FacebookId)).ToList();
-            context.Events.Where(e => evtList.Any(el => el.Id == e.Id) && !eventList.Any(fe => fe.Id == e.FacebookId)).ForEachAsync(e => e.UpdatedDate = DateTime.Now);
+            //  var che = context.Events.Where(e => evtList.Any(el => el.Id == e.Id) && !eventList.Any(fe => fe.Id == e.FacebookId)).ToList();
+            var evntids = evtList.Select(e => e.Id).ToArray();
+            var fevntids = eventList.Select(e => e.Id).ToArray();
+            context.Events.Where(e => evntids.Contains(e.Id) && !fevntids.Contains(e.FacebookId)).ToList().ForEach(e => { e.UpdatedDate = DateTime.Now; e.CheckedDate = DateTime.Now; });
             context.SaveChanges();
             //  Set Update Date for missing facebook events
 

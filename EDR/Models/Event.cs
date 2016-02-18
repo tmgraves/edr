@@ -144,9 +144,11 @@ namespace EDR.Models
         public MediaSource MediaSource { get; set; }
         public string Url { get; set; }
         public string Name { get; set; }
+        [Required]
         public virtual Event Event { get; set; }
         [Required]
         public FacebookObjectType ObjectType { get; set; }
+        //public ICollection<ObjectFeed> Feeds { get; set; }
     }
 
     public enum FacebookObjectType
@@ -166,9 +168,19 @@ namespace EDR.Models
 
     public class Feed : Entity
     {
+        [Required]
         public virtual Event Event { get; set; }
         public DateTime UpdateTime { get; set; }
         public string Message { get; set; }
         public string Link { get; set; }
     }
+
+    //public class ObjectFeed : Entity
+    //{
+    //    [Required]
+    //    public virtual LinkedFacebookObject Object { get; set; }
+    //    public DateTime UpdateTime { get; set; }
+    //    public string Message { get; set; }
+    //    public string Link { get; set; }
+    //}
 }
