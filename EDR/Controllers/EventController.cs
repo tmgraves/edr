@@ -346,6 +346,16 @@ namespace EDR.Controllers
             {
                     lstVideos.Add(new EventVideo() { Event = model.Event, Id = m.Id, Author = m.Author, PublishDate = m.MediaDate, PhotoUrl = m.PhotoUrl, VideoUrl = m.MediaUrl, Title = m.Title, MediaSource = m.MediaSource, PlayList = m.Playlist });
             }
+
+            var vidids = lstVideos.Select(v => v.YoutubeId).ToArray();
+
+            //  Get Playlist Videos
+            foreach(var l in evt.Playlists)
+            {
+                var pvids = YouTubeHelper.GetPlaylistVideos(l.YouTubeId);
+                lstVideos.AddRange(pvids.Where(v => !vidids.Contains(v.Id)).Select(v => new EventVideo() { Event = evt, Id = evt.Id, Author = evt.Creator, PublishDate = v.PubDate, PhotoUrl = v.Thumbnail.ToString(), VideoUrl = v.VideoLink.ToString(), Title = v.Title, MediaSource = MediaSource.YouTube, PlayList = l }));
+            }
+            
             model.Videos = lstVideos;
             return PartialView("~/Views/Shared/Events/_VideosPartial.cshtml", model);
         }
