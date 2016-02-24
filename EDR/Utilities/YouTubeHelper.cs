@@ -81,7 +81,8 @@ namespace EDR.Utilities
             try
             {
                 List<YouTubeVideo> vidList = new List<YouTubeVideo>();
-                string url = "https://gdata.youtube.com/feeds/api/playlists/" + listId + "?orderby=published";    //string url1 = "https://www.googleapis.com/youtube/v3/users/" + youTubeUsername + "/uploads?orderby=published";
+                //  string url = "https://gdata.youtube.com/feeds/api/playlists/" + listId + "?orderby=published";    //string url1 = "https://www.googleapis.com/youtube/v3/users/" + youTubeUsername + "/uploads?orderby=published";
+                string url = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + listId + "&key=AIzaSyCQZYhgRAjXZdBM2qCEYbZ9vO0T9eyyfjc";
                 XDocument ytDoc = XDocument.Load(url);
                 var movies = ytDoc.Descendants().Where(p => p.Name.LocalName == "entry").ToList();
                 foreach (var movie in movies)
