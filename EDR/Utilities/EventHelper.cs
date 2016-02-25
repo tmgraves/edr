@@ -87,15 +87,18 @@ namespace EDR.Utilities
 
                 if (evt.Playlists != null)
                 {
+                    var videos = new List<YouTubeVideo>();
                     foreach (var lst in evt.Playlists)
                     {
-                        var videos = YouTubeHelper.GetPlaylistVideos(lst.YouTubeId);
-
-                        foreach (var movie in videos)
-                        {
-                            lstMedia.Add(new EventMedia() { Event = evt, SourceName = movie.Title, SourceLink = movie.VideoLink.ToString(), Author = lst.Author, MediaDate = movie.PubDate, MediaType = Enums.MediaType.Video, PhotoUrl = movie.Thumbnail.ToString(), MediaUrl = movie.VideoLink.ToString(), Title = movie.Title, MediaSource = lst.MediaSource, Target = target, Playlist = lst });
-                        }
+                        var ytids = videos.Select(v => v.Id).ToArray();
+                        videos.AddRange(YouTubeHelper.GetPlaylistVideos(lst.YouTubeId).Where(v => !ytids.Contains(v.Id)).ToList());
+                        lstMedia.AddRange(videos.Select(v => new EventMedia() { Event = evt, SourceName = v.Title, SourceLink = v.VideoLink.ToString(), MediaDate = v.PubDate, MediaType = Enums.MediaType.Video, PhotoUrl = v.Thumbnail.ToString(), MediaUrl = v.VideoLink.ToString(), Title = v.Title, MediaSource = MediaSource.YouTube, Target = target, Playlist = lst, Author = lst.Author } ).ToList());
                     }
+
+                    //foreach (var movie in videos)
+                    //{
+                    //    lstMedia.Add(new EventMedia() { Event = evt, SourceName = movie.Title, SourceLink = movie.VideoLink.ToString(), Author = lst.Author, MediaDate = movie.PubDate, MediaType = Enums.MediaType.Video, PhotoUrl = movie.Thumbnail.ToString(), MediaUrl = movie.VideoLink.ToString(), Title = movie.Title, MediaSource = lst.MediaSource, Target = target, Playlist = lst });
+                    //}
                 }
             }
 

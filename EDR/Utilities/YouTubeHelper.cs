@@ -5,6 +5,13 @@ using System.Linq;
 using System.Web;
 using System.Xml.Linq;
 
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Services;
+using Google.Apis.Upload;
+using Google.Apis.Util.Store;
+using Google.Apis.YouTube.v3;
+using Google.Apis.YouTube.v3.Data;
+
 namespace EDR.Utilities
 {
     public class YouTubeHelper
@@ -80,18 +87,41 @@ namespace EDR.Utilities
         {
             try
             {
-                List<YouTubeVideo> vidList = new List<YouTubeVideo>();
-                //  string url = "https://gdata.youtube.com/feeds/api/playlists/" + listId + "?orderby=published";    //string url1 = "https://www.googleapis.com/youtube/v3/users/" + youTubeUsername + "/uploads?orderby=published";
-                string url = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + listId + "&key=AIzaSyCQZYhgRAjXZdBM2qCEYbZ9vO0T9eyyfjc";
-                XDocument ytDoc = XDocument.Load(url);
-                var movies = ytDoc.Descendants().Where(p => p.Name.LocalName == "entry").ToList();
-                foreach (var movie in movies)
+                var youtubeService = new YouTubeService(new BaseClientService.Initializer()
                 {
-                    var vidPath = movie.Descendants().Where(p => p.Name.LocalName == "link").FirstOrDefault().Attribute("href").Value;
-                    Uri vidUri = new Uri(vidPath);//  new Uri("http://www.example.com?param1=good&param2=bad");
-                    string vidId = HttpUtility.ParseQueryString(vidUri.Query).Get("v");
-                    vidList.Add(new YouTubeVideo() { Id = vidId, Title = movie.Descendants().Where(p => p.Name.LocalName == "title").FirstOrDefault().Value, PubDate = Convert.ToDateTime(movie.Descendants().Where(p => p.Name.LocalName == "published").FirstOrDefault().Value), Thumbnail = new Uri("https://img.youtube.com/vi/" + vidId + "/mqdefault.jpg"), VideoLink = vidUri });
+                    ApiKey = "AIzaSyCQZYhgRAjXZdBM2qCEYbZ9vO0T9eyyfjc",
+                    ApplicationName = "EatDanceRepeat"
+                });
+
+                var listVideos = youtubeService.PlaylistItems.List("snippet");
+                listVideos.PlaylistId = listId;
+                listVideos.MaxResults = 50;
+
+                var response = listVideos.Execute();
+                List<YouTubeVideo> vidList = response.Items.Select(i => new YouTubeVideo() { Id = i.Snippet.ResourceId.VideoId, PubDate = Convert.ToDateTime(i.Snippet.PublishedAt), Title = i.Snippet.Title, Thumbnail = new Uri(i.Snippet.Thumbnails.Default.Url), VideoLink = new Uri("https://youtu.be/" + i.Snippet.ResourceId.VideoId) }).ToList();
+                
+                foreach (var playlistItem in response.Items)
+                {
+                    // Print information about each video.
+                    var title = playlistItem.Snippet.Title;
+                    var vidid = playlistItem.Snippet.ResourceId.VideoId;
+                    var path = "https://youtu.be/" + playlistItem.Snippet.ResourceId.VideoId;
                 }
+
+                //  List<YouTubeVideo> vidList = new List<YouTubeVideo>();
+
+                ////  string url = "https://gdata.youtube.com/feeds/api/playlists/" + listId + "?orderby=published";    //string url1 = "https://www.googleapis.com/youtube/v3/users/" + youTubeUsername + "/uploads?orderby=published";
+                //string url = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=" + listId + "&key=AIzaSyCQZYhgRAjXZdBM2qCEYbZ9vO0T9eyyfjc";
+
+                //XDocument ytDoc = XDocument.Load(url);
+                //var movies = ytDoc.Descendants().Where(p => p.Name.LocalName == "entry").ToList();
+                //foreach (var movie in movies)
+                //{
+                //    var vidPath = movie.Descendants().Where(p => p.Name.LocalName == "link").FirstOrDefault().Attribute("href").Value;
+                //    Uri vidUri = new Uri(vidPath);//  new Uri("http://www.example.com?param1=good&param2=bad");
+                //    string vidId = HttpUtility.ParseQueryString(vidUri.Query).Get("v");
+                //    vidList.Add(new YouTubeVideo() { Id = vidId, Title = movie.Descendants().Where(p => p.Name.LocalName == "title").FirstOrDefault().Value, PubDate = Convert.ToDateTime(movie.Descendants().Where(p => p.Name.LocalName == "published").FirstOrDefault().Value), Thumbnail = new Uri("https://img.youtube.com/vi/" + vidId + "/mqdefault.jpg"), VideoLink = vidUri });
+                //}
 
                 return vidList;
             }

@@ -16,5 +16,6 @@ namespace EDR.Models
         public string YouTubeId { get; set; }
         public MediaSource MediaSource { get; set; }
         public virtual ICollection<Video> Videos { get; set; }
+        public DateTime UpdatedDate { get; set; }
     }
 }
