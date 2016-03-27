@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
@@ -92,6 +93,11 @@ namespace EDR.Models
         public string PhotoUrl { get; set; }
         public string VideoUrl { get; set; }
 
+        [Index("IX_Events_ChildEvents")]
+        public int? ParentEventId { get; set; }
+        [ForeignKey("ParentEventId")]
+        public virtual Event ParentEvent { get; set; }
+
         [Display(Name = "Next Date")]
         public DateTime NextDate
         {
@@ -136,6 +142,7 @@ namespace EDR.Models
         public ICollection<EventAlbum> Albums { get; set; }
         public ICollection<EventAttendee> Attendees { get; set; }
         public ICollection<Feed> Feeds { get; set; }
+        public ICollection<Event> ChildEvents { get; set; }
     }
 
     public class LinkedFacebookObject : Entity

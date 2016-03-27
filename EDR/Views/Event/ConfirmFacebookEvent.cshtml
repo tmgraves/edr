@@ -315,7 +315,7 @@
                 @if (Model.Event.EndDate != null)
                 {
                     <div class="row" style="margin-bottom: 5px;">
-                        @Html.HiddenFor(m => m.Event.EndDate)
+                        @*@Html.HiddenFor(m => m.Event.EndDate)*@
                         @Html.LabelFor(model => model.Event.EndDate, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
                         <div class="col-md-10 col-lg-9">
                             @Html.EditorFor(model => model.Event.EndDate, new { htmlAttributes = new { @class = "form-control" } })

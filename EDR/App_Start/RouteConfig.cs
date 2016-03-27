@@ -21,6 +21,24 @@ namespace EDR
             );
 
             routes.MapRoute(
+                name: "Store",
+                url: "Store/Index",
+                defaults: new { controller = "Store", action = "Index" }
+            );
+
+            routes.MapRoute(
+                name: "ShoppingCart",
+                url: "ShoppingCart/{action}",
+                defaults: new { controller = "ShoppingCart", action = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
+                name: "Checkout",
+                url: "Checkout/{action}",
+                defaults: new { controller = "Checkout", action = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
                 name: "DancerHome",
                 url: "Dancer/{username}",
                 defaults: new { controller = "Dancer", action = "Home" }

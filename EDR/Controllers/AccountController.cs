@@ -61,6 +61,9 @@ namespace EDR.Controllers
                     }
                     
                     await SignInAsync(user, model.RememberMe);
+
+                    //  Migrate the Shopping Cart
+                    MigrateShoppingCart(model.Email); 
                     if (user.CurrentRole != null)
                     {
                         Session["CurrentRole"] = DataContext.Roles.Where(r => r.Id == user.CurrentRole.Id).FirstOrDefault().Name;
@@ -97,6 +100,8 @@ namespace EDR.Controllers
             {
                 var user = new ApplicationUser() { UserName = model.UserName, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, ZipCode = model.ZipCode };
                 IdentityResult result = await UserManager.CreateAsync(user, model.Password);
+                //  Migrate the Shopping Cart
+                MigrateShoppingCart(model.UserName);
                 if (result.Succeeded)
                 {
                     //  await SignInAsync(user, isPersistent: false);
@@ -390,6 +395,10 @@ namespace EDR.Controllers
                 {
                     Session["CurrentRole"] = DataContext.Roles.Where(r => r.Id == user.CurrentRole.Id).FirstOrDefault().Name;
                 }
+
+                //  Migrate the Shopping Cart
+                MigrateShoppingCart(user.UserName);
+
                 returnUrl = returnUrl != null ? returnUrl.Replace("NotLoggedIn", user.UserName) : null;
                 return RedirectToLocal(returnUrl);
             }
@@ -579,6 +588,8 @@ namespace EDR.Controllers
                 }
             }
 
+            //  Migrate the Shopping Cart
+            MigrateShoppingCart(model.UserName);
             ViewBag.ReturnUrl = returnUrl;
             return View(model);
         }
@@ -664,7 +675,15 @@ namespace EDR.Controllers
             return callbackUrl;
         }
 
+        private void MigrateShoppingCart(string UserName)
+        {
+            // Associate shopping cart items with logged-in user
+            var cart = ShoppingCart.GetCart(this.HttpContext);
 
+            cart.MigrateCart(UserName);
+            Session[ShoppingCart.CartSessionKey] = UserName;
+        }
+        
         //public ActionResult Backend()
         //{
         //    return new Dpm().CallBack(this);

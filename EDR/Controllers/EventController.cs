@@ -2156,6 +2156,23 @@ namespace EDR.Controllers
                             var feeds = FacebookHelper.GetFeed(evt.FacebookId, user.FacebookToken).Where(f => f.Link != null || f.Message != null).ToList();
                             cls.Feeds = feeds.Where(f => f.Message != null || f.Link != null).Select(f => new Feed() { Link = f.Link, Message = f.Message, UpdateTime = f.Updated_Time }).ToList();
                             //  Get Feed
+
+                            //  Add Recurring Events
+                            if (evt.Recurring)
+                            {
+                                var sdate = evt.StartDate;
+                                var edate = evt.EndDate;
+                                cls.ChildEvents = new List<Event>();
+
+                                while (sdate <= edate)
+                                {
+                                    sdate = ApplicationUtility.GetNextDate(sdate, evt.Frequency, (int)evt.Interval, evt.Day, null, evt.MonthDays);
+                                    cls.ChildEvents.Add(new Class() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = sdate, EndDate = sdate, StartTime = evt.StartTime, EndTime = evt.EndTime, ClassType = model.ClassType != null ? (ClassType)Enum.Parse(typeof(ClassType), model.ClassType.ToString()) : ClassType.Class, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, IsAvailable = evt.IsAvailable, Recurring = false, SkillLevel = model.SkillLevel, UpdatedDate = evt.UpdatedDate });
+                                    sdate = ApplicationUtility.GetNextDate(sdate.AddDays(1), evt.Frequency, (int)evt.Interval, evt.Day, null, evt.MonthDays);
+                                }
+                            }
+                            //  Add Recurring Events
+
                             DataContext.Events.Add(cls);
                             DataContext.SaveChanges();
 
@@ -2191,6 +2208,23 @@ namespace EDR.Controllers
                             var feeds = FacebookHelper.GetFeed(evt.FacebookId, user.FacebookToken).Where(f => f.Link != null || f.Message != null).ToList();
                             social.Feeds = feeds.Where(f => f.Message != null || f.Link != null).Select(f => new Feed() { Link = f.Link, Message = f.Message, UpdateTime = f.Updated_Time }).ToList();
                             //  Get Feed
+
+                            //  Add Recurring Events
+                            if (evt.Recurring)
+                            {
+                                var sdate = evt.StartDate;
+                                var edate = evt.EndDate;
+                                social.ChildEvents = new List<Event>();
+
+                                while (sdate <= edate)
+                                {
+                                    sdate = ApplicationUtility.GetNextDate(sdate, evt.Frequency, (int)evt.Interval, evt.Day, null, evt.MonthDays);
+                                    social.ChildEvents.Add(new Social() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = sdate, EndDate = sdate, StartTime = evt.StartTime, EndTime = evt.EndTime, SocialType = model.SocialType != null ? (SocialType)Enum.Parse(typeof(SocialType), model.SocialType.ToString()) : SocialType.Social, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, IsAvailable = evt.IsAvailable, Recurring = false, UpdatedDate = evt.UpdatedDate });
+                                    sdate = ApplicationUtility.GetNextDate(sdate.AddDays(1), evt.Frequency, (int)evt.Interval, evt.Day, null, evt.MonthDays);
+                                }
+                            }
+                            //  Add Recurring Events
+
                             DataContext.Events.Add(social);
                             DataContext.SaveChanges();
 

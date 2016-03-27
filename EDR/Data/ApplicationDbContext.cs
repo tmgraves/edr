@@ -104,6 +104,23 @@ namespace EDR.Data
             modelBuilder.Entity<ClassTeacherInvitation>().ToTable("ClassTeacherInvitations");
             modelBuilder.Entity<SocialPromoterInvitation>().ToTable("SocialPromoterInvitations");
             modelBuilder.Entity<PlaceOwnerInvitation>().ToTable("PlaceOwnerInvitations");
+
+            //Store
+            modelBuilder.Entity<DancePack>().ToTable("DancePacks");
+            modelBuilder.Entity<Cart>().ToTable("Carts")
+                        .HasRequired(f => f.DancePack)
+                        .WithMany(f => f.Carts)
+                        .WillCascadeOnDelete(true);
+            modelBuilder.Entity<Order>().ToTable("Orders");
+            modelBuilder.Entity<OrderDetail>().ToTable("OrderDetails");
+            modelBuilder.Entity<OrderDetail>()
+                        .HasRequired(f => f.Order)
+                        .WithMany(f => f.OrderDetails)
+                        .WillCascadeOnDelete(true);
+            modelBuilder.Entity<OrderDetail>()
+                        .HasRequired(f => f.DancePack)
+                        .WithMany(f => f.OrderDetails)
+                        .WillCascadeOnDelete(true);
         }
 
         public DbSet<Place> Places { get; set; }
@@ -132,6 +149,12 @@ namespace EDR.Data
         public DbSet<SocialPromoterInvitation> SocialPromoterInvitations { get; set; }
         public DbSet<PlaceOwnerInvitation> PlaceOwnerInvitations { get; set; }
         public DbSet<LinkedFacebookObject> LinkedFacebookObjects { get; set; }
+
+        //Store
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<OrderDetail> OrderDetails { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<DancePack> DancePacks { get; set; }
 
         //// TODO: REMOVE THESE DBSETS
         //public DbSet<Class> Classes { get; set; }
