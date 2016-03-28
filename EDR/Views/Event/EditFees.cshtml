@@ -1,0 +1,54 @@
+﻿@model EDR.Models.Event
+
+@{
+    ViewBag.Title = "Event Fees";
+}
+
+<h2>Event Fees</h2>
+
+<div>
+    <hr />
+
+    @using (Html.BeginForm("AddFee", "Event", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(e => e.Id)
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="editor-label">
+            @Html.Label("Amount")
+        </div>
+        <div class="editor-field">
+            @Html.TextBox("Fee")
+        </div>
+
+        <div class="editor-label">
+            @Html.Label("Quantity")
+        </div>
+        <div class="editor-field">
+            @Html.TextBox("Quantity")
+        </div>
+
+                <div class="form-group">
+            <div class="col-lg-3 col-md-3">
+            </div>
+            <div class="col-md-9 col-lg-9">
+                <input id="submit" type="submit" class="btn btn-primary" value="Add Fee" />
+            </div>
+        </div>
+    }
+
+@foreach (var tic in Model.EventTickets.OrderBy(t => t.Ticket.Quantity))
+{
+    <div class="row" style="padding: 2px;">
+        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="padding-right: 2px; font-size: 12pt;">
+            <span>@tic.Ticket.Quantity</span>
+        </div>
+        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 text-right" style="padding-right: 2px; font-size: 12pt;">
+            <span>@String.Format("{0:c}", tic.Ticket.Price)</span>
+        </div>
+    </div>
+}
+</div>
+<p>
+    @Html.ActionLink("Back to Event", "View", new { id = Model.Id, eventType = (Model is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social) })
+</p>

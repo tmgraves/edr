@@ -95,6 +95,21 @@ namespace EDR.Models
         public Order Order { get; set; }
     }
 
+    [Bind(Exclude = "Id")]
+    public class UserTicket : Entity
+    {
+        [Required]
+        public string UserId { get; set; }
+        [ForeignKey("UserId")]
+        public ApplicationUser User { get; set; }
+        [Required]
+        public int TicketId { get; set; }
+        [ForeignKey("TicketId")]
+        public Ticket Ticket { get; set; }
+        [Required]
+        public decimal Quantity { get; set; }
+    }
+
     public partial class ShoppingCart
     {
         ApplicationDbContext context = new ApplicationDbContext();

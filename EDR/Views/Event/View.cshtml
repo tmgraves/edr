@@ -58,6 +58,24 @@
         <div class="partialContents" data-url="/Event/@Model.Event.Id/GetRelatedEvents?eventType=@Model.EventType">
             <img src="~/Content/images/indicator.white.gif" />Loading...
         </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4>Upcoming Dates</h4>
+            </div>
+            <div class="panel-body">
+                @foreach (var evt in Model.Event.ChildEvents.Where(e => e.StartDate >= DateTime.Today).OrderBy(c => c.StartDate))
+                {
+                    <div style="width: 100%;">
+                        <div class="col-lg-10 col-md-8 col-sm-6 col-xs-6">
+                            <span class="text-primary"><b>@evt.StartDate.ToLongDateString()</b></span>
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-sm-6 col-xs-6">
+                            <a class="btn btn-primary">Register</a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
         <div class="well" style="white-space: pre-line">
             @Html.Raw(EDR.Utilities.ApplicationUtility.WithActiveLinks(Model.Event.Description))
         </div>

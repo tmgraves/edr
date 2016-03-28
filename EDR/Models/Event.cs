@@ -8,6 +8,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace EDR.Models
 {
@@ -143,6 +144,7 @@ namespace EDR.Models
         public ICollection<EventAttendee> Attendees { get; set; }
         public ICollection<Feed> Feeds { get; set; }
         public ICollection<Event> ChildEvents { get; set; }
+        public ICollection<EventTicket> EventTickets { get; set; }
     }
 
     public class LinkedFacebookObject : Entity
@@ -180,6 +182,52 @@ namespace EDR.Models
         public DateTime UpdateTime { get; set; }
         public string Message { get; set; }
         public string Link { get; set; }
+    }
+
+    public class EventRegistration : Entity
+    {
+        [Required]
+        public string UserId { get; set; }
+        [ForeignKey("UserId")]
+        public ApplicationUser Member { get; set; }
+        [Required]
+        public int EventId { get; set; }
+        [ForeignKey("EventId")]
+        public Event Event { get; set; }
+        private DateTime _date = DateTime.Now;
+        public DateTime DateRegistered
+        {
+            get { return _date; }
+            set { _date = value; }
+        }
+    }
+
+    [Bind(Exclude = "Id")]
+    public class EventTicket : Entity
+    {
+        [Required]
+        public int EventId { get; set; }
+        [ForeignKey("EventId")]
+        public Event Event { get; set; }
+        [Required]
+        public int TicketId { get; set; }
+        [ForeignKey("TicketId")]
+        public Ticket Ticket { get; set; }
+    }
+
+    [Bind(Exclude = "Id")]
+    public class Ticket : Entity
+    {
+        [Required]
+        public decimal Quantity { get; set; }
+        [Required]
+        public decimal Price { get; set; }
+        public int? TeacherId { get; set; }
+        [ForeignKey("TeacherId")]
+        public Teacher Teacher { get; set; }
+        public int? StudioId { get; set; }
+        [ForeignKey("StudioId")]
+        public Studio Studio { get; set; }
     }
 
     //public class ObjectFeed : Entity

@@ -121,10 +121,19 @@ namespace EDR.Data
                         .HasRequired(f => f.DancePack)
                         .WithMany(f => f.OrderDetails)
                         .WillCascadeOnDelete(true);
+            modelBuilder.Entity<Ticket>().ToTable("Tickets");
+            modelBuilder.Entity<EventTicket>().ToTable("EventTickets");
+            modelBuilder.Entity<UserTicket>().ToTable("UserTickets");
         }
 
         public DbSet<Place> Places { get; set; }
+
+        //  Events
         public DbSet<Event> Events { get; set; }
+        public DbSet<Ticket> Tickets { get; set; }
+        public DbSet<EventTicket> EventTickets { get; set; }
+        public DbSet<UserTicket> UserTickets { get; set; }
+
         public DbSet<Series> Series { get; set; }
         public DbSet<Group> Groups { get; set; }
         public DbSet<DanceStyle> DanceStyles { get; set; }

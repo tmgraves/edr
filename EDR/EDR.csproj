@@ -726,6 +726,7 @@
     <Content Include="Views\Store\Index.cshtml" />
     <Content Include="Views\Checkout\AddressAndPayment.cshtml" />
     <Content Include="Views\Checkout\Complete.cshtml" />
+    <Content Include="Views\Event\EditFees.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>
@@ -756,7 +757,6 @@
     <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Home\Explore.cshtml" />
-    <Content Include="Views\Event\Details.cshtml" />
     <Content Include="Views\Place\Details.cshtml" />
     <Content Include="Views\Home\Learn.cshtml" />
     <Content Include="Views\Class\Details.cshtml" />

@@ -691,6 +691,7 @@ namespace EDR.Controllers
                     .Include("Reviews")
                     .Include("EventMembers")
                     .Include("EventMembers.Member")
+                    .Include("ChildEvents")
                     .Include("Creator")
                     .FirstOrDefault();
 
@@ -2163,12 +2164,12 @@ namespace EDR.Controllers
                                 var sdate = evt.StartDate;
                                 var edate = evt.EndDate;
                                 cls.ChildEvents = new List<Event>();
+                                sdate = ApplicationUtility.GetNextDate(sdate, evt.Frequency, (int)evt.Interval, evt.Day, sdate, evt.MonthDays);
 
                                 while (sdate <= edate)
                                 {
-                                    sdate = ApplicationUtility.GetNextDate(sdate, evt.Frequency, (int)evt.Interval, evt.Day, null, evt.MonthDays);
                                     cls.ChildEvents.Add(new Class() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = sdate, EndDate = sdate, StartTime = evt.StartTime, EndTime = evt.EndTime, ClassType = model.ClassType != null ? (ClassType)Enum.Parse(typeof(ClassType), model.ClassType.ToString()) : ClassType.Class, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, IsAvailable = evt.IsAvailable, Recurring = false, SkillLevel = model.SkillLevel, UpdatedDate = evt.UpdatedDate });
-                                    sdate = ApplicationUtility.GetNextDate(sdate.AddDays(1), evt.Frequency, (int)evt.Interval, evt.Day, null, evt.MonthDays);
+                                    sdate = ApplicationUtility.GetNextDate(sdate, evt.Frequency, (int)evt.Interval, evt.Day, sdate.AddDays(1), evt.MonthDays);
                                 }
                             }
                             //  Add Recurring Events
@@ -2215,12 +2216,12 @@ namespace EDR.Controllers
                                 var sdate = evt.StartDate;
                                 var edate = evt.EndDate;
                                 social.ChildEvents = new List<Event>();
+                                sdate = ApplicationUtility.GetNextDate(sdate, evt.Frequency, (int)evt.Interval, evt.Day, sdate, evt.MonthDays);
 
                                 while (sdate <= edate)
                                 {
-                                    sdate = ApplicationUtility.GetNextDate(sdate, evt.Frequency, (int)evt.Interval, evt.Day, null, evt.MonthDays);
                                     social.ChildEvents.Add(new Social() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = sdate, EndDate = sdate, StartTime = evt.StartTime, EndTime = evt.EndTime, SocialType = model.SocialType != null ? (SocialType)Enum.Parse(typeof(SocialType), model.SocialType.ToString()) : SocialType.Social, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, IsAvailable = evt.IsAvailable, Recurring = false, UpdatedDate = evt.UpdatedDate });
-                                    sdate = ApplicationUtility.GetNextDate(sdate.AddDays(1), evt.Frequency, (int)evt.Interval, evt.Day, null, evt.MonthDays);
+                                    sdate = ApplicationUtility.GetNextDate(sdate, evt.Frequency, (int)evt.Interval, evt.Day, sdate.AddDays(1), evt.MonthDays);
                                 }
                             }
                             //  Add Recurring Events
@@ -2979,6 +2980,50 @@ namespace EDR.Controllers
             return RedirectToAction("View", "Event", new { id = id, eventType = EventType.Class });
         }
 
+        [Authorize]
+        public ActionResult EditFees(int id)
+        {
+            var evt = DataContext.Events.Where(e => e.Id == id).Include("EventTickets").Include("EventTickets.Ticket").FirstOrDefault();
+
+            return View(evt);
+        }
+
+        [Authorize]
+        [HttpPost]
+        public ActionResult EditFees(Event evnt)
+        {
+            return RedirectToAction("View", "Event", new { id = evnt.Id, eventType = (evnt is Class ? EventType.Class : EventType.Social) });
+        }
+
+        //
+        // POST: /Checkout/AddressAndPayment
+        [HttpPost]
+        public ActionResult AddFee(FormCollection values)
+        {
+            var ticket = new Ticket();
+
+            var eid = Convert.ToInt32(values["Id"]);
+            var evnt = DataContext.Events.Where(e => e.Id == eid).Include("EventTickets").FirstOrDefault();
+
+            try
+            {
+                ticket.Price = Convert.ToDecimal(values["Fee"]);
+                ticket.Quantity = Convert.ToDecimal(values["Quantity"]);
+
+                evnt.EventTickets.Add(new EventTicket() { Ticket = ticket });
+
+                DataContext.Entry(evnt).State = EntityState.Modified;
+                DataContext.SaveChanges();
+
+                return RedirectToAction("EditFees", "Event", new { id = evnt.Id, eventType = (evnt is Class ? EventType.Class : EventType.Social) });
+            }
+            catch
+            {
+                //Invalid - redisplay with errors
+                return View(ticket);
+            }
+        }
+        
         //public Class ConvertToClass(Event event1)
         //{
         //    var class1 = new Class()
