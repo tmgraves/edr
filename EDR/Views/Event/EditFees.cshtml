@@ -1,4 +1,4 @@
-﻿@model EDR.Models.Event
+﻿@model EDR.Models.ViewModels.EventFeeViewModel
 
 @{
     ViewBag.Title = "Event Fees";
@@ -12,7 +12,8 @@
     @using (Html.BeginForm("AddFee", "Event", FormMethod.Post))
     {
         @Html.AntiForgeryToken()
-        @Html.HiddenFor(e => e.Id)
+        @Html.HiddenFor(e => e.Event.Id)
+        @Html.HiddenFor(e => e.SchoolId)
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="editor-label">
             @Html.Label("Amount")
@@ -37,7 +38,7 @@
         </div>
     }
 
-@foreach (var tic in Model.EventTickets.OrderBy(t => t.Ticket.Quantity))
+@foreach (var tic in Model.Event.EventTickets.OrderBy(t => t.Ticket.Quantity))
 {
     <div class="row" style="padding: 2px;">
         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="padding-right: 2px; font-size: 12pt;">
@@ -50,5 +51,5 @@
 }
 </div>
 <p>
-    @Html.ActionLink("Back to Event", "View", new { id = Model.Id, eventType = (Model is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social) })
+    @Html.ActionLink("Back to Event", "View", new { id = Model.Event.Id, eventType = (Model.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social) })
 </p>

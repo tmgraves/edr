@@ -298,4 +298,9 @@ namespace EDR.Models.ViewModels
         [Display(Name = "Location")]
         public string Location { get; set; }
     }
+
+    public class EventFeeViewModel : EventBaseViewModel
+    {
+        public int SchoolId { get; set; }
+    }
 }

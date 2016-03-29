@@ -7,5 +7,6 @@ namespace EDR.Models
 {
     public class Studio : Place
     {
+        public ICollection<School> Schools { get; set; }
     }
 }

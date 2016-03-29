@@ -2983,9 +2983,11 @@ namespace EDR.Controllers
         [Authorize]
         public ActionResult EditFees(int id)
         {
-            var evt = DataContext.Events.Where(e => e.Id == id).Include("EventTickets").Include("EventTickets.Ticket").FirstOrDefault();
+            var model = new EventFeeViewModel();
+            model.Event = DataContext.Events.Where(e => e.Id == id).Include("EventTickets").Include("EventTickets.Ticket").FirstOrDefault();
+            model.SchoolId = DataContext.Classes.Where(c => c.Id == id).FirstOrDefault().SchoolId;
 
-            return View(evt);
+            return View(model);
         }
 
         [Authorize]
@@ -3002,13 +3004,14 @@ namespace EDR.Controllers
         {
             var ticket = new Ticket();
 
-            var eid = Convert.ToInt32(values["Id"]);
+            var eid = Convert.ToInt32(values["Event.Id"]);
             var evnt = DataContext.Events.Where(e => e.Id == eid).Include("EventTickets").FirstOrDefault();
 
             try
             {
                 ticket.Price = Convert.ToDecimal(values["Fee"]);
                 ticket.Quantity = Convert.ToDecimal(values["Quantity"]);
+                ticket.SchoolId = Convert.ToInt32(values["SchoolId"]);
 
                 evnt.EventTickets.Add(new EventTicket() { Ticket = ticket });
 

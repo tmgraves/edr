@@ -6,9 +6,5 @@ using System.Web;
 
 namespace EDR.Models
 {
-    [Table("Teams")]
-    public class Team : Group
-    {
-        public string TeamManagerName { get; set; }
-    }
+
 }

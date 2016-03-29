@@ -39,6 +39,24 @@ namespace EDR
             );
 
             routes.MapRoute(
+                name: "SchoolList",
+                url: "School/List",
+                defaults: new { controller = "School", action = "List" }
+            );
+
+            routes.MapRoute(
+                name: "SchoolCreate",
+                url: "School/Create",
+                defaults: new { controller = "School", action = "Create" }
+            );
+
+            routes.MapRoute(
+                name: "SchoolAction",
+                url: "School/{id}/{action}",
+                defaults: new { controller = "School", id = UrlParameter.Optional, action = "View" }
+            );
+
+            routes.MapRoute(
                 name: "DancerHome",
                 url: "Dancer/{username}",
                 defaults: new { controller = "Dancer", action = "Home" }

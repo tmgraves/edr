@@ -292,6 +292,7 @@
     <Compile Include="Controllers\DayPilotController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\SchoolController.cs" />
     <Compile Include="Controllers\ShoppingCartController.cs" />
     <Compile Include="Controllers\SocialMediaController.cs" />
     <Compile Include="Controllers\OwnerController.cs" />
@@ -314,6 +315,9 @@
     <Compile Include="Models\Facebook.cs" />
     <Compile Include="Models\Friend.cs" />
     <Compile Include="Models\Instagram.cs" />
+    <Compile Include="Models\Organization.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Models\OtherPlace.cs" />
     <Compile Include="Models\Picture.cs" />
     <Compile Include="Models\Playlist.cs">
@@ -369,13 +373,10 @@
     <Compile Include="Models\DanceStyle.cs" />
     <Compile Include="Models\Entity.cs" />
     <Compile Include="Models\Event.cs" />
-    <Compile Include="Models\Group.cs" />
     <Compile Include="Models\ApplicationUser.cs" />
     <Compile Include="Models\Nightclub.cs" />
     <Compile Include="Models\Place.cs" />
-    <Compile Include="Models\School.cs" />
     <Compile Include="Models\Studio.cs" />
-    <Compile Include="Models\Team.cs" />
     <Compile Include="Areas\Admin\Models\ViewModels\RoleApprovalsViewModel.cs" />
     <Compile Include="Models\ViewModels\EventSignupViewModel.cs" />
     <Compile Include="Models\ViewModels\HomeExploreViewModel.cs" />
@@ -727,6 +728,11 @@
     <Content Include="Views\Checkout\AddressAndPayment.cshtml" />
     <Content Include="Views\Checkout\Complete.cshtml" />
     <Content Include="Views\Event\EditFees.cshtml" />
+    <Content Include="Views\School\List.cshtml" />
+    <Content Include="Views\School\Create.cshtml" />
+    <Content Include="Views\School\View.cshtml" />
+    <Content Include="Views\School\Delete.cshtml" />
+    <Content Include="Views\School\Edit.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

@@ -5,7 +5,4 @@ using System.Web;
 
 namespace EDR.Models
 {
-    public class School : Group
-    {
-    }
 }

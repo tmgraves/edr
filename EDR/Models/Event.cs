@@ -202,7 +202,6 @@ namespace EDR.Models
         }
     }
 
-    [Bind(Exclude = "Id")]
     public class EventTicket : Entity
     {
         [Required]
@@ -215,19 +214,16 @@ namespace EDR.Models
         public Ticket Ticket { get; set; }
     }
 
-    [Bind(Exclude = "Id")]
     public class Ticket : Entity
     {
         [Required]
         public decimal Quantity { get; set; }
         [Required]
         public decimal Price { get; set; }
-        public int? TeacherId { get; set; }
-        [ForeignKey("TeacherId")]
-        public Teacher Teacher { get; set; }
-        public int? StudioId { get; set; }
-        [ForeignKey("StudioId")]
-        public Studio Studio { get; set; }
+        [Required]
+        public int SchoolId { get; set; }
+        [ForeignKey("SchoolId")]
+        public School School { get; set; }
     }
 
     //public class ObjectFeed : Entity

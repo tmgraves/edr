@@ -74,9 +74,9 @@ namespace EDR.Data
             //            .WithMany(f => f.Feeds)
             //            .WillCascadeOnDelete(true);
 
-            // Groups
-            modelBuilder.Entity<Team>().ToTable("Teams");
-            modelBuilder.Entity<School>().ToTable("Schools");
+            //// Groups
+            //modelBuilder.Entity<Team>().ToTable("Teams");
+            //modelBuilder.Entity<School>().ToTable("Schools");
 
             // Reviews
             modelBuilder.Entity<Review>().ToTable("Reviews");
@@ -124,18 +124,24 @@ namespace EDR.Data
             modelBuilder.Entity<Ticket>().ToTable("Tickets");
             modelBuilder.Entity<EventTicket>().ToTable("EventTickets");
             modelBuilder.Entity<UserTicket>().ToTable("UserTickets");
+
+            //Organizations
+            modelBuilder.Entity<Organization>().ToTable("Organizations");
+            modelBuilder.Entity<OrganizationMember>().ToTable("OrganizationMembers");
         }
 
         public DbSet<Place> Places { get; set; }
 
         //  Events
         public DbSet<Event> Events { get; set; }
+        public DbSet<Class> Classes { get; set; }
+        public DbSet<Social> Socials { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<EventTicket> EventTickets { get; set; }
         public DbSet<UserTicket> UserTickets { get; set; }
 
         public DbSet<Series> Series { get; set; }
-        public DbSet<Group> Groups { get; set; }
+        //  public DbSet<Group> Groups { get; set; }
         public DbSet<DanceStyle> DanceStyles { get; set; }
         public DbSet<Review> Reviews { get; set; }
 
@@ -164,6 +170,11 @@ namespace EDR.Data
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<DancePack> DancePacks { get; set; }
+
+        //Organization
+        public DbSet<Organization> Organizations { get; set; }
+        public DbSet<OrganizationMember> OrganizationMembers { get; set; }
+        public DbSet<School> Schools { get; set; }
 
         //// TODO: REMOVE THESE DBSETS
         //public DbSet<Class> Classes { get; set; }

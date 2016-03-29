@@ -135,13 +135,13 @@ namespace EDR.Data
             socials.Add(new Social() { SocialType = Enums.SocialType.Social, Name = "Monday Zanzibar Salsa Social", Description = "Zanzibar Social", Place = places[10], StartDate = Convert.ToDateTime("7/1/14 8:00pm"), EndDate = null, Price = 0, IsAvailable = true, DanceStyles = latinstyles, Duration = ApplicationUtility.CalculateTime(0, 5, 0), Recurring = true, Frequency = Frequency.Weekly, Interval = 1, Promoters = proms });
             context.Events.AddRange(socials);
 
-            // Seed groups
-            var groups = new List<Group>()
-            {
-                new Team() { GroupName = "Christian Team 1 Salsa", GroupDescription = "Level 1 Salsa Performance Team", SkillLevel = 2, TeamManagerName = "Fred Smith", Public = true, FacebookLink = "www.facebook.com/profiles/team1salsa" },
-                new Team() { GroupName = "Christian Advanced Bachata", GroupDescription = "Advanced Bachata Performance Team", SkillLevel = 3, TeamManagerName = "Jerry Jones", Public = true, FacebookLink = "www.facebook.com/profiles/bachata3team" },
-                new School() { GroupName = "Bachata Caliente", GroupDescription = "Bachata School", SkillLevel = 0, Public = true, FacebookLink = "www.facebook.com/profiles/bachatacaliente" }
-            };
+            //// Seed groups
+            //var groups = new List<Group>()
+            //{
+            //    new Team() { GroupName = "Christian Team 1 Salsa", GroupDescription = "Level 1 Salsa Performance Team", SkillLevel = 2, TeamManagerName = "Fred Smith", Public = true, FacebookLink = "www.facebook.com/profiles/team1salsa" },
+            //    new Team() { GroupName = "Christian Advanced Bachata", GroupDescription = "Advanced Bachata Performance Team", SkillLevel = 3, TeamManagerName = "Jerry Jones", Public = true, FacebookLink = "www.facebook.com/profiles/bachata3team" },
+            //    new School() { GroupName = "Bachata Caliente", GroupDescription = "Bachata School", SkillLevel = 0, Public = true, FacebookLink = "www.facebook.com/profiles/bachatacaliente" }
+            //};
 
             //  Seed Reviews
             var reviews = new List<Review>()
@@ -161,7 +161,7 @@ namespace EDR.Data
             context.Places.AddRange(places);
             context.Events.AddRange(salsaclasses);
             context.Events.AddRange(events);
-            context.Groups.AddRange(groups);
+            //  context.Groups.AddRange(groups);
             var errors = context.GetValidationErrors();
             context.SaveChanges();
         }
