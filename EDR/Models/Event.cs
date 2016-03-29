@@ -224,6 +224,7 @@ namespace EDR.Models
         public int SchoolId { get; set; }
         [ForeignKey("SchoolId")]
         public School School { get; set; }
+        public ICollection<EventTicket> EventTickets { get; set; }
     }
 
     //public class ObjectFeed : Entity

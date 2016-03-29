@@ -6,49 +6,70 @@
 
 <h2>Event Fees</h2>
 
-<div>
+<div class="row">
     <hr />
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        @using (Html.BeginForm("AddFee", "Event", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(e => e.Event.Id)
+            @Html.HiddenFor(e => e.SchoolId)
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="panel panel-default" style="margin-top: 5px;">
+                <div class="panel-body">
+                    <div class="form-group col-lg-12 col-md-12">
+                        <div class="col-md-3 col-lg-3">
+                            @Html.Label("Amount", new { @class = "control-label" }):
+                        </div>
+                        <div class="col-md-9 col-lg-9">
+                            @Html.TextBox("Fee", null, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="form-group col-lg-12 col-md-12">
+                        <div class="col-md-3 col-lg-3">
+                            @Html.Label("Quantity", new { @class = "form-label" }):
+                        </div>
+                        <div class="col-md-9 col-lg-9">
+                            @Html.TextBox("Quantity", null, new { @class = "form-control", @type = "number" })
+                        </div>
+                    </div>
 
-    @using (Html.BeginForm("AddFee", "Event", FormMethod.Post))
-    {
-        @Html.AntiForgeryToken()
-        @Html.HiddenFor(e => e.Event.Id)
-        @Html.HiddenFor(e => e.SchoolId)
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="editor-label">
-            @Html.Label("Amount")
-        </div>
-        <div class="editor-field">
-            @Html.TextBox("Fee")
-        </div>
-
-        <div class="editor-label">
-            @Html.Label("Quantity")
-        </div>
-        <div class="editor-field">
-            @Html.TextBox("Quantity")
-        </div>
-
-                <div class="form-group">
-            <div class="col-lg-3 col-md-3">
+                    <div class="form-group col-lg-12 col-md-12">
+                        <input id="submit" type="submit" class="btn btn-primary" value="Add Fee" />
+                    </div>
+                </div>
             </div>
-            <div class="col-md-9 col-lg-9">
-                <input id="submit" type="submit" class="btn btn-primary" value="Add Fee" />
-            </div>
-        </div>
-    }
-
-@foreach (var tic in Model.Event.EventTickets.OrderBy(t => t.Ticket.Quantity))
-{
-    <div class="row" style="padding: 2px;">
-        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="padding-right: 2px; font-size: 12pt;">
-            <span>@tic.Ticket.Quantity</span>
-        </div>
-        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 text-right" style="padding-right: 2px; font-size: 12pt;">
-            <span>@String.Format("{0:c}", tic.Ticket.Price)</span>
+        }
+        <div style="margin-top: 5px;">
+            <h3>Available Tickets</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            Quantity
+                        </th>
+                        <th>
+                            Price
+                        </th>
+                    </tr>
+                </thead>
+                @foreach (var tic in Model.Event.EventTickets.OrderBy(t => t.Ticket.Quantity))
+                {
+                    <tr>
+                        <td>
+                            <span>@String.Format("{0:n0}", tic.Ticket.Quantity)</span>
+                        </td>
+                        <td>
+                            <span>@String.Format("{0:c}", tic.Ticket.Price)</span>
+                        </td>
+                    </tr>
+                }
+            </table>
         </div>
     </div>
-}
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <h3>School Tickets</h3>
+    </div>
 </div>
 <p>
     @Html.ActionLink("Back to Event", "View", new { id = Model.Event.Id, eventType = (Model.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social) })

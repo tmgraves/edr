@@ -1,0 +1,52 @@
+﻿@model EDR.Models.ViewModels.ViewTicketViewModel
+@using MvcCheckBoxList.Model
+@using EDR.Models
+
+@{
+    ViewBag.Title = "ViewTicket";
+}
+
+<h2>ViewTicket</h2>
+
+<div>
+    <h4>Ticket</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Ticket.Quantity)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Ticket.Quantity)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Ticket.Price)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Ticket.Price)
+        </dd>
+
+    </dl>
+</div>
+
+<div class="row">
+    <div class="col-lg-6 col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-body ">
+                <h3>Classes</h3>
+                    @Html.CheckBoxListFor(model => model.PostedClasses,
+                                    model => model.AvailableClasses,
+                                    style => style.Id,
+                                    style => style.Name,
+                                    model => model.SelectedClasses,
+                                    new HtmlListInfo(HtmlTag.table, 1, new { @class = "checkboxlist" }, TextLayout.Default))
+            </div>
+        </div>
+    </div>
+
+</div>
+<p>
+    @Html.ActionLink("Back to Event", "View", new { id = Model.Ticket.SchoolId })
+</p>

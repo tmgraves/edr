@@ -235,6 +235,9 @@
     <Reference Include="TweetSharp">
       <HintPath>..\packages\TweetSharp.2.3.1\lib\4.0\TweetSharp.dll</HintPath>
     </Reference>
+    <Reference Include="WebActivator">
+      <HintPath>..\packages\WebActivator.1.0.0.0\lib\WebActivator.dll</HintPath>
+    </Reference>
     <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
@@ -343,6 +346,7 @@
     <Compile Include="Models\ViewModels\PlaceEditViewModel.cs" />
     <Compile Include="Models\ViewModels\PlaceViewModels.cs" />
     <Compile Include="Models\ViewModels\PromoterListViewModel.cs" />
+    <Compile Include="Models\ViewModels\SchoolViewModels.cs" />
     <Compile Include="Models\ViewModels\StoreViewModels.cs" />
     <Compile Include="Models\ViewModels\TeacherViewModels.cs" />
     <Compile Include="Models\ViewModels\VisitorViewViewModel.cs" />
@@ -733,6 +737,8 @@
     <Content Include="Views\School\View.cshtml" />
     <Content Include="Views\School\Delete.cshtml" />
     <Content Include="Views\School\Edit.cshtml" />
+    <Content Include="Views\School\AddTicket.cshtml" />
+    <Content Include="Views\School\ViewTicket.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

@@ -1,4 +1,5 @@
 ﻿using EDR.Models;
+using EDR.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -59,6 +60,7 @@ namespace EDR.Controllers
                         .Include("Members")
                         .Include("Members.User")
                         .Include("Classes")
+                        .Include("Tickets")
                         .FirstOrDefault();
             return View(model);
         }
@@ -104,6 +106,46 @@ namespace EDR.Controllers
             {
                 return View(school);
             }
+        }
+
+        // GET: School
+        public ActionResult AddTicket(int id)
+        {
+            var ticket = new Ticket();
+            ticket.SchoolId = id;
+            return View(ticket);
+        }
+
+        // POST: School
+        [HttpPost]
+        public ActionResult AddTicket(Ticket ticket)
+        {
+            if (ModelState.IsValid)
+            {
+                //Save Ticket
+                DataContext.Tickets.Add(ticket);
+                DataContext.SaveChanges();
+
+                return RedirectToAction("View", new { id = ticket.SchoolId });
+            }
+            else
+            {
+                return View(ticket);
+            }
+        }
+
+        // GET: School
+        public ActionResult ViewTicket(int id)
+        {
+            var model = new ViewTicketViewModel();
+            model.Ticket = DataContext.Tickets
+                                .Where(t => t.Id == id)
+                                .Include("EventTickets")
+                                .Include("EventTickets.Event")
+                                .FirstOrDefault();
+            model.AvailableClasses = DataContext.Classes.Where(c => c.SchoolId == model.Ticket.SchoolId).Select(c => new ListItem() { Id = c.Id, Name = c.Name });
+            model.SelectedClasses = model.Ticket.EventTickets.Select(t => new ListItem() { Id = t.EventId, Name = t.Event.Name, IsSelected = true });
+            return View(model);
         }
     }
 }

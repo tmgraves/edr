@@ -32,6 +32,7 @@ namespace EDR.Models
         public ICollection<Teacher> Teachers { get; set; }
         public ICollection<Studio> Studios { get; set; }
         public ICollection<Class> Classes { get; set; }
+        public ICollection<Ticket> Tickets { get; set; }
     }
     
     public class Team : Organization
