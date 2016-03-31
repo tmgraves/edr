@@ -1,7 +1,112 @@
-﻿
+﻿@model IEnumerable<EDR.Models.OrganizationMember>
+
 @{
-    ViewBag.Title = "Test";
+    ViewBag.Title = "Index";
+    WebGrid grid = new WebGrid(source: Model, canPage: false);
 }
 
-<h2>Test</h2>
+@* Here  I am going to add some css for better looks *@
+
+<style type="text/css">
+    table.gridtable {
+        font-family: verdana,arial,sans-serif;
+        font-size: 11px;
+        color: #333333;
+        border-width: 1px;
+        border-color: #666666;
+        border-collapse: collapse;
+    }
+
+        table.gridtable th {
+            border-width: 1px;
+            padding: 8px;
+            border-style: solid;
+            border-color: #666666;
+            background-color: #dedede;
+        }
+
+        table.gridtable td {
+            border-width: 1px;
+            padding: 8px;
+            border-style: solid;
+            border-color: #666666;
+            background-color: #ffffff;
+        }
+</style>
+
+<h2>Customer Data</h2>
+
+@using (Html.BeginForm("Index", "Webgrid", FormMethod.Post))
+{
+    <div>
+        @grid.GetHtml(
+                    tableStyle: "gridtable",
+                    htmlAttributes: new { id = "checkableGrid" },
+                    columns: grid.Columns
+                        (
+        //Here I am going to add checkbox column
+                            grid.Column(
+                                format: @<text> <input type="checkbox" value="@item.Id" name="ids" /> </text>,
+                     header: "{checkall}"
+                 ),
+                  grid.Column("User.FullName", "Name")
+              )
+          )
+    </div>
+    <div>
+        <input type="submit" value="Get Selected Record" />
+    </div>
+}
+
+@if (ViewBag.Message != null)
+{
+    <div>
+        @ViewBag.Message
+    </div>
+}
+
+    @* Here I am going to add some Jquery Code *@
+
+    @section Scripts{
+        <script>
+            $(document).ready(function () {
+
+                // 1st replace first column header text with checkbox
+
+                $("#checkableGrid th").each(function () {
+                    if ($.trim($(this).text().toString().toLowerCase()) === "{checkall}") {
+                        $(this).text('');
+                        $("<input/>", { type: "checkbox", id: "cbSelectAll", value: "" }).appendTo($(this));
+                        $(this).append("<span>Select All</span>");
+                    }
+                });
+
+                //2nd click event for header checkbox for select /deselect all
+                $(document).on("click", "#cbSelectAll", function () {
+                    var ischecked = this.checked;
+                    $('#checkableGrid').find("input:checkbox").each(function () {
+                        this.checked = ischecked;
+                    });
+                });
+
+
+                //3rd click event for checkbox of each row
+                $("input[name='ids']").click(function () {
+                    var totalRows = $("#checkableGrid td :checkbox").length;
+                    var checked = $("#checkableGrid td :checkbox:checked").length;
+
+                    if (checked == totalRows) {
+                        $("#checkableGrid").find("input:checkbox").each(function () {
+                            this.checked = true;
+                        });
+                    }
+                    else {
+                        $("#cbSelectAll").removeAttr("checked");
+                    }
+                });
+
+            });
+        </script>
+
+    }
 

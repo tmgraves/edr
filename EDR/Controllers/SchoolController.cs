@@ -147,5 +147,15 @@ namespace EDR.Controllers
             model.SelectedClasses = model.Ticket.EventTickets.Select(t => new ListItem() { Id = t.EventId, Name = t.Event.Name, IsSelected = true });
             return View(model);
         }
+
+        // POST: School
+        [HttpPost]
+        public ActionResult UpdateMembers(FormCollection values)
+        {
+            var schoolId = values["Id"];
+            var ids = values["userids"];
+
+            return RedirectToAction("View", new { id = schoolId });
+        }
     }
 }

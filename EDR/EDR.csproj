@@ -707,6 +707,7 @@
     </Content>
     <Content Include="Views\Event\ImportFacebookEvent.cshtml" />
     <Content Include="Views\Event\PostVideo.cshtml" />
+    <Content Include="Views\Home\Test.cshtml" />
     <Content Include="Views\Teacher\_TeacherLayout.cshtml">
       <SubType>Code</SubType>
     </Content>
@@ -726,7 +727,6 @@
     <Content Include="Views\Home\TermsofService.cshtml" />
     <Content Include="Views\Shared\Events\_AddLinkedFacebookPagesPartial.cshtml" />
     <Content Include="Views\Event\Attendees.cshtml" />
-    <Content Include="Views\Home\Test.cshtml" />
     <Content Include="Views\ShoppingCart\Index.cshtml" />
     <Content Include="Views\Store\Index.cshtml" />
     <Content Include="Views\Checkout\AddressAndPayment.cshtml" />

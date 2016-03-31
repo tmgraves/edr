@@ -109,6 +109,64 @@
         <div class="panel panel-default">
             <div class="panel-body ">
                 <h3>Members</h3>
+
+@using (@Html.BeginForm("Index", "User", FormMethod.Post))
+{
+    <table>
+        <tr>
+            <th>
+            </th>
+            <th>
+                Admin
+            </th>
+            <th>
+                Name
+            </th>
+        </tr>
+        @foreach (var item in Model.Members)
+        {
+            <tr>
+                <td>
+                    @Html.HiddenFor(user => item.UserId)
+                </td>
+                <td>
+                    @Html.EditorFor(user => item.Admin)
+                </td>
+                <td>
+                    @Html.DisplayFor(user => item.User.FullName)
+                </td>
+            </tr>
+        }
+    </table>
+    <p>
+        <input type="submit" value="Update" onclick="javascript:return ConfirmUpdate();" />
+    </p>
+    <p style="color: green; font-size: 12px;">
+        @ViewBag.Message
+    </p>
+}                @{
+                    WebGrid grid = new WebGrid(source: Model.Members, canPage: false);                   
+                }
+                @using (Html.BeginForm("UpdateMembers", "School", FormMethod.Post))
+                {
+                    @Html.HiddenFor(model => model.Id)
+                    <div>
+                        @grid.GetHtml(
+                                    tableStyle: "gridtable",
+                                    htmlAttributes: new { id = "checkableGrid" },
+                                    columns: grid.Columns
+                                    (
+                                    grid.Column(format: @<text> <input type="checkbox" value="@item.UserId" @(item.Admin ? "checked='checked'" : "") name="userids" /> </text>, header: "Admin"
+                                    ),
+                                    grid.Column("User.FullName", "Name")
+                                    )
+                                )
+                    </div>
+                    <div>
+                        <input type="submit" value="Update Members" />
+                    </div>
+                }
+
                 <table class="table">
                     <thead>
                         <tr>
