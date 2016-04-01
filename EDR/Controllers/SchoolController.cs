@@ -61,6 +61,7 @@ namespace EDR.Controllers
                         .Include("Members.User")
                         .Include("Classes")
                         .Include("Tickets")
+                        .Include("Tickets.EventTickets")
                         .FirstOrDefault();
             return View(model);
         }

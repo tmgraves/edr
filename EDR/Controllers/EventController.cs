@@ -2163,14 +2163,14 @@ namespace EDR.Controllers
                             {
                                 var sdate = evt.StartDate;
                                 var edate = evt.EndDate;
-                                cls.ChildEvents = new List<Event>();
-                                sdate = ApplicationUtility.GetNextDate(sdate, evt.Frequency, (int)evt.Interval, evt.Day, sdate, evt.MonthDays);
+                                //cls.ChildEvents = new List<Event>();
+                                //sdate = ApplicationUtility.GetNextDate(sdate, evt.Frequency, (int)evt.Interval, evt.Day, sdate, evt.MonthDays);
 
-                                while (sdate <= edate)
-                                {
-                                    cls.ChildEvents.Add(new Class() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = sdate, EndDate = sdate, StartTime = evt.StartTime, EndTime = evt.EndTime, ClassType = model.ClassType != null ? (ClassType)Enum.Parse(typeof(ClassType), model.ClassType.ToString()) : ClassType.Class, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, IsAvailable = evt.IsAvailable, Recurring = false, SkillLevel = model.SkillLevel, UpdatedDate = evt.UpdatedDate });
-                                    sdate = ApplicationUtility.GetNextDate(sdate, evt.Frequency, (int)evt.Interval, evt.Day, sdate.AddDays(1), evt.MonthDays);
-                                }
+                                //while (sdate <= edate)
+                                //{
+                                //    cls.ChildEvents.Add(new Class() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = sdate, EndDate = sdate, StartTime = evt.StartTime, EndTime = evt.EndTime, ClassType = model.ClassType != null ? (ClassType)Enum.Parse(typeof(ClassType), model.ClassType.ToString()) : ClassType.Class, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, IsAvailable = evt.IsAvailable, Recurring = false, SkillLevel = model.SkillLevel, UpdatedDate = evt.UpdatedDate });
+                                //    sdate = ApplicationUtility.GetNextDate(sdate, evt.Frequency, (int)evt.Interval, evt.Day, sdate.AddDays(1), evt.MonthDays);
+                                //}
                             }
                             //  Add Recurring Events
 
@@ -2215,14 +2215,14 @@ namespace EDR.Controllers
                             {
                                 var sdate = evt.StartDate;
                                 var edate = evt.EndDate;
-                                social.ChildEvents = new List<Event>();
-                                sdate = ApplicationUtility.GetNextDate(sdate, evt.Frequency, (int)evt.Interval, evt.Day, sdate, evt.MonthDays);
+                                //social.ChildEvents = new List<Event>();
+                                //sdate = ApplicationUtility.GetNextDate(sdate, evt.Frequency, (int)evt.Interval, evt.Day, sdate, evt.MonthDays);
 
-                                while (sdate <= edate)
-                                {
-                                    social.ChildEvents.Add(new Social() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = sdate, EndDate = sdate, StartTime = evt.StartTime, EndTime = evt.EndTime, SocialType = model.SocialType != null ? (SocialType)Enum.Parse(typeof(SocialType), model.SocialType.ToString()) : SocialType.Social, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, IsAvailable = evt.IsAvailable, Recurring = false, UpdatedDate = evt.UpdatedDate });
-                                    sdate = ApplicationUtility.GetNextDate(sdate, evt.Frequency, (int)evt.Interval, evt.Day, sdate.AddDays(1), evt.MonthDays);
-                                }
+                                //while (sdate <= edate)
+                                //{
+                                //    social.ChildEvents.Add(new Social() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = sdate, EndDate = sdate, StartTime = evt.StartTime, EndTime = evt.EndTime, SocialType = model.SocialType != null ? (SocialType)Enum.Parse(typeof(SocialType), model.SocialType.ToString()) : SocialType.Social, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, IsAvailable = evt.IsAvailable, Recurring = false, UpdatedDate = evt.UpdatedDate });
+                                //    sdate = ApplicationUtility.GetNextDate(sdate, evt.Frequency, (int)evt.Interval, evt.Day, sdate.AddDays(1), evt.MonthDays);
+                                //}
                             }
                             //  Add Recurring Events
 
