@@ -14,6 +14,7 @@ namespace EDR.Models.ViewModels
         public IEnumerable<ListItem> SelectedClasses { get; set; }
         [RequiredStringArrayValue(ErrorMessage = "Select at least (1) Class")]
         public string[] PostedClasses { get; set; }
+        public List<EventTicketPlaceholder> EventTickets { get; set; }
     }
 
     public class ListItem

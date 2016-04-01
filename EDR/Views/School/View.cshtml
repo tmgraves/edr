@@ -109,42 +109,49 @@
         <div class="panel panel-default">
             <div class="panel-body ">
                 <h3>Members</h3>
+                @using (Html.BeginForm("UpdateMembers", "School", FormMethod.Post))
+                {
+                    @Html.HiddenFor(model => model.Id)
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Admin</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        @Html.EditorFor(model => model.Members)
+                    </table>
+                    @*<table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Admin</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        @for (int i = 0; i < Model.Members.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.HiddenFor(model => model.Members.ToList()[i].Id)
+                                </td>
+                                <td>
+                                    @Html.EditorFor(model => model.Members.ToList()[i].User.FirstName)
+                                </td>
+                                <td>
+                                    @Html.EditorFor(model => model.Members.ToList()[i].Admin)
+                                </td>
+                            </tr>
+                        }
+                    </table>*@
+                    <div>
+                        <input type="submit" value="Update Members" />
+                    </div>
+                }
+                @*@Html.Partial("~/Views/School/_UpdateMembersPartial.cshtml", Model.Members, new ViewDataDictionary { TemplateInfo = new TemplateInfo { HtmlFieldPrefix = "Members" }})
 
-@using (@Html.BeginForm("Index", "User", FormMethod.Post))
-{
-    <table>
-        <tr>
-            <th>
-            </th>
-            <th>
-                Admin
-            </th>
-            <th>
-                Name
-            </th>
-        </tr>
-        @foreach (var item in Model.Members)
-        {
-            <tr>
-                <td>
-                    @Html.HiddenFor(user => item.UserId)
-                </td>
-                <td>
-                    @Html.EditorFor(user => item.Admin)
-                </td>
-                <td>
-                    @Html.DisplayFor(user => item.User.FullName)
-                </td>
-            </tr>
-        }
-    </table>
-    <p>
-        <input type="submit" value="Update" onclick="javascript:return ConfirmUpdate();" />
-    </p>
-    <p style="color: green; font-size: 12px;">
-        @ViewBag.Message
-    </p>
-}                @{
+               @{
                     WebGrid grid = new WebGrid(source: Model.Members, canPage: false);                   
                 }
                 @using (Html.BeginForm("UpdateMembers", "School", FormMethod.Post))
@@ -191,7 +198,7 @@
                             </td>
                         </tr>
                     }
-                </table>
+                </table>*@
             </div>
         </div>
     </div>

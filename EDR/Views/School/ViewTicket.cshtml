@@ -3,13 +3,41 @@
 @using EDR.Models
 
 @{
-    ViewBag.Title = "ViewTicket";
+    ViewBag.Title = "View Ticket";
 }
 
-<h2>ViewTicket</h2>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
 
+    <script type="text/javascript">
+
+        function toggleChecked(status) {
+            $("#events input").each(function () {
+                // Set the checked status of each to match the
+                // checked status of the check all checkbox:
+                $(this).prop("checked", status);
+            });
+        }
+
+        $(document).ready(function () {
+
+            // Grab a reference to the check all box:
+            var checkAllBox = $("#checkall");
+
+            //Set the default value of the global checkbox to true:
+            //checkAllBox.prop('checked', true);
+
+            // Attach the call to toggleChecked to the
+            // click event of the global checkbox:
+            checkAllBox.click(function () {
+                var status = checkAllBox.prop('checked');
+                toggleChecked(status);
+            });
+        });
+    </script>
+}
 <div>
-    <h4>Ticket</h4>
+    <h3>Ticket</h3>
     <hr />
     <dl class="dl-horizontal">
         <dt>
@@ -35,18 +63,54 @@
     <div class="col-lg-6 col-md-6">
         <div class="panel panel-default">
             <div class="panel-body ">
-                <h3>Classes</h3>
-                    @Html.CheckBoxListFor(model => model.PostedClasses,
+                <h3>Events linked to this ticket</h3>
+                @using (Html.BeginForm("UpdateTickets", "School", FormMethod.Post))
+                {
+                    @Html.HiddenFor(model => model.Ticket.Id)
+                    <table id="events">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Event
+                                </th>
+                                <th>
+                                    Select All<input type="checkbox" id="checkall" />
+                                </th>
+                            </tr>
+                            <tr>
+                                <th colspan="2">
+                                    <hr />
+                                </th>
+                            </tr>
+                        </thead>
+                        @for (int i = 0; i < Model.EventTickets.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.HiddenFor(model => model.EventTickets[i].EventTicket.Event.Id)
+                                    @Html.DisplayFor(model => model.EventTickets[i].EventTicket.Event.Name)
+                                </td>
+                                <td>
+                                    @Html.EditorFor(model => model.EventTickets[i].Connect, new { })
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                    <div>
+                        <input type="submit" value="Update Ticket" />
+                    </div>
+                }
+                    @*@Html.CheckBoxListFor(model => model.PostedClasses,
                                     model => model.AvailableClasses,
                                     style => style.Id,
                                     style => style.Name,
                                     model => model.SelectedClasses,
-                                    new HtmlListInfo(HtmlTag.table, 1, new { @class = "checkboxlist" }, TextLayout.Default))
+                                    new HtmlListInfo(HtmlTag.table, 1, new { @class = "checkboxlist" }, TextLayout.Default))*@
             </div>
         </div>
     </div>
 
 </div>
 <p>
-    @Html.ActionLink("Back to Event", "View", new { id = Model.Ticket.SchoolId })
+    @Html.ActionLink("Back to School", "View", new { id = Model.Ticket.SchoolId })
 </p>

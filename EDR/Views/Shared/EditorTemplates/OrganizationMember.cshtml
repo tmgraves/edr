@@ -1,0 +1,12 @@
+﻿@model EDR.Models.OrganizationMember
+
+<tr>
+    @Html.HiddenFor(model => model.Id)
+    <td>
+        @Html.DisplayFor(model => model.User.FullName)
+    </td>
+    <td>
+        @Html.EditorFor(model => model.Admin)
+    </td>
+</tr>
+

@@ -49,4 +49,9 @@ namespace EDR.Models.ViewModels
         public IEnumerable<Social> Socials { get; set; }
         public ApplicationUser User { get; set; }
     }
+
+    public class Test2
+    {
+        public List<OrganizationMember> Members { get; set; }
+    }
 }

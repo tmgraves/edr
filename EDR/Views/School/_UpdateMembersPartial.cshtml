@@ -1,0 +1,38 @@
+﻿@model ICollection<EDR.Models.OrganizationMember>
+
+@using (@Html.BeginForm("UpdateMembers", "School", FormMethod.Post))
+{
+    <table>
+        <tr>
+            <th>
+            </th>
+            <th>
+                Admin
+            </th>
+            <th>
+                Name
+            </th>
+        </tr>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.HiddenFor(user => item.UserId)
+                </td>
+                <td>
+                    @Html.EditorFor(user => item.Admin)
+                </td>
+                <td>
+                    @Html.DisplayFor(user => item.User.FullName)
+                </td>
+            </tr>
+        }
+    </table>
+    <p>
+        <input type="submit" value="Update" onclick="javascript:return ConfirmUpdate();" />
+    </p>
+    <p style="color: green; font-size: 12px;">
+        @ViewBag.Message
+    </p>
+}         
+

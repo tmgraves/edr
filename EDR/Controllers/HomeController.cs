@@ -305,5 +305,16 @@ namespace EDR.Controllers
         {
             return View(DataContext.Teachers.Include("DanceStyles").ToList());
         }
+        public ActionResult Test2()
+        {
+            var model = new Test2();
+            model.Members = DataContext.OrganizationMembers.Include("User").ToList();
+            return View(model);
+        }
+        [HttpPost]
+        public ActionResult Test2(Test2 model)
+        {
+            return View(model);
+        }
     }
 }

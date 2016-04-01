@@ -227,6 +227,12 @@ namespace EDR.Models
         public ICollection<EventTicket> EventTickets { get; set; }
     }
 
+    public class EventTicketPlaceholder
+    {
+        public bool Connect { get; set; }
+        public EventTicket EventTicket { get; set; }
+    }
+
     //public class ObjectFeed : Entity
     //{
     //    [Required]
