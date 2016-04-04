@@ -20,5 +20,12 @@ namespace EDR.Models
         public ICollection<Teacher> Teachers { get; set; }
         public ICollection<ClassTeacherInvitation> ClassTeacherInvitations { get; set; }
         public ICollection<Owner> Owners { get; set; }
+
+        public Class()
+        {
+            Teachers = new List<Teacher>();
+            ClassTeacherInvitations = new List<ClassTeacherInvitation>();
+            Owners = new List<Owner>();
+        }
     }
 }

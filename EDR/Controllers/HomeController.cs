@@ -13,6 +13,7 @@ using YelpSharp;
 using System.Data.Entity.Spatial;
 using System.Web.Security;
 using System.Collections.ObjectModel;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace EDR.Controllers
 {
@@ -97,6 +98,21 @@ namespace EDR.Controllers
             //    Quantity = 370
             //});
             //return View(inventoryList);
+
+            //var userManager = new ApplicationUserManager(new UserStore<ApplicationUser>(DataContext));
+            //var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(DataContext));
+            ////roleManager.Create(new IdentityRole("Owner"));
+            ////roleManager.Create(new IdentityRole("Teacher"));
+            ////roleManager.Create(new IdentityRole("Promoter"));
+            ////roleManager.Create(new IdentityRole("Admin"));
+
+            //// Assign users to role
+            //var userid = User.Identity.GetUserId();
+            //userManager.AddToRole(userid, "Admin");
+            //userManager.AddToRole(userid, "Teacher");
+            //userManager.AddToRole(userid, "Owner");
+            //userManager.AddToRole(userid, "Promoter");
+
 
             //Here  MyDatabaseEntities  is our datacontext 
             List<OrganizationMember> members = DataContext.OrganizationMembers.Where(m => m.OrganizationId == 2).Include("User").ToList();

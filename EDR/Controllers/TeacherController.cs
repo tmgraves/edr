@@ -66,6 +66,7 @@ namespace EDR.Controllers
                                     .Include("Classes.Playlists")
                                     .Include("Classes.Playlists.Author")
                                     .Include("Places")
+                                    .Include("Schools")
                                     .Where(x => x.ApplicationUser.UserName == username)
                                     .FirstOrDefault();
             viewModel.Events = new EventListViewModel();

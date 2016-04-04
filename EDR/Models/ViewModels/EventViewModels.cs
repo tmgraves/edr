@@ -46,28 +46,46 @@ namespace EDR.Models.ViewModels
 
     public class EventCreateViewModel : EventBaseViewModel
     {
-        [DataType(DataType.Time)]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:H:mm tt}")]
-        public DateTime Time { get; set; }
+        public int SchoolId { get; set; }
         public RoleName Role { get; set; }
-        [Display(Name = "Your Skill Level")]
-        public SkillLevel SkillLevel { get; set; }
-        [Display(Name = "Prerequisite(s)")]
-        public string Prerequisite { get; set; }
-        public List<SelectListItem> PlaceList { get; set; }
-        public int PlaceId { get; set; }
-        [Display(Name = "Name of the Location")]
-        public string Name { get; set; }
-        public string Address { get; set; }
-        public string Address2 { get; set; }
-        public string City { get; set; }
-        public State State { get; set; }
-        public string Zip { get; set; }
-        public IEnumerable<DanceStyleListItem> AvailableStyles { get; set; }
-        public IEnumerable<DanceStyleListItem> SelectedStyles { get; set; }
-        public PostedStyles PostedStyles { get; set; }
+        public ClassType ClassType { get; set; }
+        public SocialType SocialType { get; set; }
+        public Place NewPlace { get; set; }
+        public List<PlaceItem> Places { get; set; }
+        public MultiCheckBox MonthDays { get; set; }
+        public string MonthDay { get; set; }
+        public string HiddenMonthDay { get; set; }
+        public MultiCheckBox StylesCheckboxList { get; set; }
         public IEnumerable<FacebookEvent> FacebookEvents { get; set; }
-        public ApplicationUser User { get; set; }
+        public string FacebookId { get; set; }
+        public string SelectedFacebookEventId { get; set; }
+        [Display(Name = "Enter Facebook Url")]
+        public string FacebookLink { get; set; }
+        [Display(Name = "Skill Level")]
+        [DefaultValue(1)]
+        [Range(1, 100)]
+        public int SkillLevel { get; set; }
+        public bool AddtoMyPlaces { get; set; }
+        public string CreateAction { get; set; }
+
+        public EventCreateViewModel()
+        {
+            MonthDays = new MultiCheckBox();
+            StylesCheckboxList = new MultiCheckBox();
+        }
+    }
+
+    public class MultiCheckBox
+    {
+        public IEnumerable<SelectListItem> AvailableItems { get; set; }
+        public IEnumerable<SelectListItem> SelectedItems { get; set; }
+        public string[] PostedItems { get; set; }
+
+        public MultiCheckBox()
+        {
+            AvailableItems = new List<SelectListItem>();
+            SelectedItems = new List<SelectListItem>();
+        }
     }
 
     public class ImportFacebookEventViewModel
@@ -82,7 +100,8 @@ namespace EDR.Models.ViewModels
     {
         public ApplicationUser User { get; set; }
         public UpdateType UpdateType { get; set; }
-        public int PlaceId { get; set; }
+        public int SchoolId { get; set; }
+        public int? PlaceId { get; set; }
         public List<PlaceItem> Places { get; set; }
         public RoleName Role { get; set; }
         public ClassType ClassType { get; set; }
@@ -103,6 +122,30 @@ namespace EDR.Models.ViewModels
         [Range(1, 100)]
         public int SkillLevel { get; set; }
     }
+
+    //public class EventCreateViewModel : EventBaseViewModel
+    //{
+    //    public int SchoolId { get; set; }
+    //    public List<PlaceItem> Places { get; set; }
+    //    public RoleName Role { get; set; }
+    //    public ClassType ClassType { get; set; }
+    //    public SocialType SocialType { get; set; }
+    //    public Place NewPlace { get; set; }
+    //    public IEnumerable<DanceStyleListItem> AvailableStyles { get; set; }
+    //    public IEnumerable<DanceStyleListItem> SelectedStyles { get; set; }
+    //    public PostedStyles PostedStyles { get; set; }
+    //    public List<SelectListItem> MonthDays { get; set; }
+    //    public List<SelectListItem> SelectedMonthDays { get; set; }
+    //    public string[] PostedMonthDays { get; set; }
+    //    public string MonthDay { get; set; }
+    //    public string HiddenMonthDay { get; set; }
+    //    [Display(Name = "Save this Place")]
+    //    public bool AddtoMyPlaces { get; set; }
+    //    [Display(Name = "Skill Level")]
+    //    [DefaultValue(1)]
+    //    [Range(1, 100)]
+    //    public int SkillLevel { get; set; }
+    //}
 
     public class EventNewViewModel
     {
@@ -141,6 +184,18 @@ namespace EDR.Models.ViewModels
         public IEnumerable<FacebookEvent> FacebookEvents { get; set; }
         public IEnumerable<LinkedFacebookObject> LinkedFacebookObjects { get; set; }
         public RoleName Role { get; set; }
+
+        public EventViewModel()
+        {
+            ClassTeacherInvitations = new List<ClassTeacherInvitation>();
+            MediaUpdates = new List<EventMedia>();
+            Reviews = new EventReviewsViewModel();
+            YoutubeVideos = new List<YouTubeVideo>();
+            FacebookVideos = new List<FacebookVideo>();
+            YouTubePlaylists = new List<YouTubePlaylist>();
+            FacebookEvents = new List<FacebookEvent>();
+            LinkedFacebookObjects = new List<LinkedFacebookObject>();
+        }
     }
 
     public class EventFacebookPictureContainer : EventBaseViewModel

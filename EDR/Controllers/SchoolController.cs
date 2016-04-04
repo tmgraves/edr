@@ -20,6 +20,7 @@ namespace EDR.Controllers
         }
 
         // GET: School
+        [Authorize(Roles = "Teacher")]
         public ActionResult Create()
         {
             var model = new School();
@@ -28,6 +29,7 @@ namespace EDR.Controllers
 
         // GET: School
         [HttpPost]
+        [Authorize(Roles = "Teacher")]
         public ActionResult Create(School school)
         {
             if (ModelState.IsValid)
@@ -36,6 +38,10 @@ namespace EDR.Controllers
                 TryUpdateModel(model);
 
                 var userid = User.Identity.GetUserId();
+
+                var teacher = DataContext.Teachers.Where(t => t.ApplicationUser.Id == userid).FirstOrDefault();
+                model.Teachers = new List<Teacher>();
+                model.Teachers.Add(teacher);
 
                 model.Members = new List<OrganizationMember>();
                 model.Members.Add(new OrganizationMember() { UserId = userid, Admin = true });

@@ -77,6 +77,7 @@ namespace EDR.Data
             //// Groups
             //modelBuilder.Entity<Team>().ToTable("Teams");
             //modelBuilder.Entity<School>().ToTable("Schools");
+            modelBuilder.Entity<EventInstance>().ToTable("EventInstances");
 
             // Reviews
             modelBuilder.Entity<Review>().ToTable("Reviews");
@@ -139,6 +140,7 @@ namespace EDR.Data
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<EventTicket> EventTickets { get; set; }
         public DbSet<UserTicket> UserTickets { get; set; }
+        public DbSet<EventInstance> EventInstances { get; set; }
 
         public DbSet<Series> Series { get; set; }
         //  public DbSet<Group> Groups { get; set; }

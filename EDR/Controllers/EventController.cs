@@ -691,7 +691,7 @@ namespace EDR.Controllers
                     .Include("Reviews")
                     .Include("EventMembers")
                     .Include("EventMembers.Member")
-                    .Include("ChildEvents")
+                    .Include("EventInstances")
                     .Include("Creator")
                     .FirstOrDefault();
 
@@ -702,6 +702,7 @@ namespace EDR.Controllers
                     .Include("Teachers.ApplicationUser")
                     .Include("Owners")
                     .Include("Owners.ApplicationUser")
+                    .Include("School")
                     .FirstOrDefault();
                 model.ClassTeacherInvitations = DataContext.ClassTeacherInvitations.Where(i => i.ClassId == id)
                                                         .Include("Teacher")
@@ -1271,6 +1272,213 @@ namespace EDR.Controllers
             return Redirect(returnUrl);
         }
 
+        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        public ActionResult Create(EventType eventType, int schoolId, RoleName role)
+        {
+            var model = new EventCreateViewModel();
+            model.EventType = eventType;
+            model.SchoolId = schoolId;
+            var userid = User.Identity.GetUserId();
+            var user = DataContext.Users.Where(u => u.Id == userid).Include("Places").FirstOrDefault();
+            model.Places = new List<PlaceItem>();
+            model.NewPlace = new Place() { Id = 0, Latitude = 0.0, Longitude = 0.0, Public = false, PlaceType = PlaceType.OtherPlace };
+
+            //  New Event
+            if (model.Event == null)
+            {
+                if (model.EventType == EventType.Class)
+                {
+                    model.Event = new Class() { StartDate = DateTime.Today, Place = new Place(), SchoolId = schoolId };
+                }
+                else
+                {
+                    model.Event = new Social() { StartDate = DateTime.Today, Place = new Place() };
+                }
+            }
+            //  New Event
+
+            //  Fill Places
+            var places = new List<Place>();
+            int? placeid = model.Event.Place != null ? (int?)model.Event.Place.Id : null;
+            //  Fill Places
+            places = DataContext.Places.Where(p => p.Teachers.Any(t => t.ApplicationUser.Id == userid) || p.Owners.Any(o => o.ApplicationUser.Id == userid) || p.Promoters.Any(pr => pr.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == model.Event.Place.Id).ToList();
+            model.Places = new List<PlaceItem>();
+            model.Places.Add(new PlaceItem() { Id = 0, Latitude = 0.0, Longitude = 0.0 });
+            model.Places.AddRange(DataContext.Places.Where(p => p.Teachers.Any(t => t.ApplicationUser.Id == userid) || p.Owners.Any(o => o.ApplicationUser.Id == userid) || p.Promoters.Any(pr => pr.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == model.Event.Place.Id).AsEnumerable().Select(p => new PlaceItem() { Address = p.Address, Address2 = p.Address2, City = p.City, Country = p.Country, FacebookId = p.FacebookId, FacebookLink = p.FacebookLink, Filename = p.Filename, Id = p.Id, Latitude = p.Latitude, Longitude = p.Longitude, Name = p.Name, PlaceType = p.PlaceType, State = p.State, ThumbnailFilename = p.ThumbnailFilename, Website = p.Website, Zip = p.Zip, Selected = (model.Event.Place != null && model.Event.Place.Id == p.Id) ? true : false }));
+            //  Fill Places
+
+            //  For Dance Styles Checkbox List
+            model.StylesCheckboxList.AvailableItems = DataContext.DanceStyles.Select(s => new SelectListItem() { Value = s.Id.ToString(), Text = s.Name }).OrderBy(s => s.Text).ToList();
+            //  For Dance Styles Checkbox List
+
+            //  For Month Days Checkbox List
+            if (model.Event.MonthDays != null)
+            {
+                model.MonthDays.SelectedItems = model.Event.MonthDays.Split(new char[] { '-' }).Select(d => new SelectListItem() { Text = d, Value = d }).ToList();
+            }
+            model.MonthDays.AvailableItems = new List<SelectListItem>() { new SelectListItem() { Value = "1", Text = "1st" }, new SelectListItem() { Value = "2", Text = "2nd" }, new SelectListItem() { Value = "3", Text = "3rd" }, new SelectListItem() { Value = "4", Text = "4th" } };
+
+            //  Set Month day text
+            var daysofmonth = new string[] { "blank", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th", "13th", "14th", "15th", "16th", "17th", "18th", "19th", "20th", "21st", "22nd", "23rd", "24th", "25th", "26th", "27th", "28th", "29th", "30th", "31st" };
+            model.MonthDay = daysofmonth[model.Event.StartDate.Day];
+            //  Set Month day text
+
+            //  Set Facebook List
+            if (user.FacebookToken != null)
+            {
+                model.FacebookEvents = FacebookHelper.GetEvents(user.FacebookToken, DateTime.Now).Where(fe => !DataContext.Events.Select(e => e.FacebookId).Contains(fe.Id));
+            }
+            //  Set Facebook List
+
+            return View(model);
+        }
+
+        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        [HttpPost]
+        public ActionResult CreateFacebookEvent(EventCreateViewModel model)
+        {
+            var userid = User.Identity.GetUserId();
+            var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+            var f = new FacebookEvent();
+            if (model.FacebookLink != null)
+            {
+                f = FacebookHelper.GetEvent(ParseFacebookLink(model.FacebookLink), user.FacebookToken);
+            }
+            else
+            {
+                f = FacebookHelper.GetEvent(model.SelectedFacebookEventId, user.FacebookToken);
+            }
+            model.Event = new Event() { Description = f.Description, Name = f.Name, StartDate = f.StartTime, StartTime = f.StartTime, FacebookId = f.Id, FacebookLink = f.EventLink, Place = new Place() { Name = f.Address.Location, Address = f.Address.Street, City = f.Address.City, State = f.Address.State != null ? (State)Enum.Parse(typeof(State), f.Address.State) : State.CA, Zip = f.Address.ZipCode, Country = f.Address.Country, Latitude = f.Address.Latitude, Longitude = f.Address.Longitude, FacebookId = f.Address.FacebookId, PlaceType = FacebookHelper.ParsePlaceType(f.Address.Categories), Public = true, Website = f.Address.WebsiteUrl, FacebookLink = f.Address.FacebookUrl, Filename = f.Address.CoverPhotoUrl, ThumbnailFilename = f.Address.ThumbnailUrl } };
+            model.CreateAction = "Facebook";
+            return RedirectToAction("Create", model);
+        }
+
+        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        [HttpPost]
+        public ActionResult Create(EventCreateViewModel model)
+        {
+            var userid = User.Identity.GetUserId();
+            var user = DataContext.Users.Single(u => u.Id == userid);
+
+            //  Pick a Facebook Event
+            if (model.FacebookId != null)
+            {
+                var f = FacebookHelper.GetEvent(model.FacebookId, user.FacebookToken, null);
+                model.Event = new Event() { Description = f.Description, Name = f.Name, StartDate = f.StartTime, StartTime = f.StartTime, FacebookId = f.Id, FacebookLink = f.EventLink, Place = new Place() { Name = f.Address.Location, Address = f.Address.Street, City = f.Address.City, State = f.Address.State != null && Enum.IsDefined(typeof(State), f.Address.State) ? (State)Enum.Parse(typeof(State), f.Address.State) : State.CA, Zip = f.Address.ZipCode, Country = f.Address.Country, Latitude = f.Address.Latitude, Longitude = f.Address.Longitude, FacebookId = f.Address.FacebookId, PlaceType = FacebookHelper.ParsePlaceType(f.Address.Categories), Public = true, Website = f.Address.WebsiteUrl, FacebookLink = f.Address.FacebookUrl, Filename = f.Address.CoverPhotoUrl, ThumbnailFilename = f.Address.ThumbnailUrl } };
+                model.FacebookId = null;
+                ModelState.Clear();
+                return View(model);
+            }
+            //  Pick a Facebook Event
+
+            int id = 0;
+            var add = Geolocation.ParseAddress(model.Event.Place.Address + ", " + model.Event.Place.City + ", " + model.Event.Place.State + ", " + model.Event.Place.Zip);
+            model.Event.Place.Latitude = add.Latitude;
+            model.Event.Place.Longitude = add.Longitude;
+
+            if (ModelState.IsValid)
+            {
+                if (model.EventType == EventType.Class)
+                {
+                    var cls = new Class();
+                    UpdateModel(cls, "Event");
+                    TryUpdateModel(cls);
+                    TryUpdateModel(cls.EventInstances, "EventInstances");
+                    if (model.Role == RoleName.Teacher)
+                    {
+                        cls.Teachers.Add(DataContext.Teachers.Single(t => t.ApplicationUser.Id == userid));
+                    }
+                    else
+                    {
+                        cls.Owners.Add(DataContext.Owners.Single(o => o.ApplicationUser.Id == userid));
+                    }
+                    cls.Creator = user;
+                    cls.Place.Latitude = add.Latitude;
+                    cls.Place.Longitude = add.Longitude;
+                    cls.DanceStyles = DataContext.DanceStyles.Where(s => model.StylesCheckboxList.PostedItems.Contains(s.Id.ToString())).ToList();
+
+                    //  Add Recurring Events
+                    if (model.Event.Recurring)
+                    {
+                        var sdate = model.Event.StartDate;
+                        var edate = model.Event.EndDate;
+                        sdate = ApplicationUtility.GetNextDate(sdate, model.Event.Frequency, (int)model.Event.Interval, model.Event.Day, sdate, model.Event.MonthDays);
+
+                        while (sdate <= edate)
+                        {
+                            cls.EventInstances.Add(new EventInstance() { Event = cls, DateTime = sdate });
+                            sdate = ApplicationUtility.GetNextDate(sdate, model.Event.Frequency, (int)model.Event.Interval, model.Event.Day, sdate.AddDays(1), model.Event.MonthDays);
+                        }
+                    }
+                    //  Add Recurring Events
+
+                    DataContext.Classes.Add(cls);
+                    DataContext.SaveChanges();
+                    id = cls.Id;
+                }
+                if (model.EventType == EventType.Social)
+                {
+                    var soc = new Social();
+                    UpdateModel(soc, "Event");
+                    TryUpdateModel(soc);
+                    TryUpdateModel(soc.EventInstances, "EventInstances");
+                    if (model.Role == RoleName.Promoter)
+                    {
+                        soc.Promoters.Add(DataContext.Promoters.Single(t => t.ApplicationUser.Id == userid));
+                    }
+                    else
+                    {
+                        soc.Owners.Add(DataContext.Owners.Single(o => o.ApplicationUser.Id == userid));
+                    }
+                    soc.Creator = user;
+                    soc.Place.Latitude = add.Latitude;
+                    soc.Place.Longitude = add.Longitude;
+                    soc.DanceStyles = DataContext.DanceStyles.Where(s => model.StylesCheckboxList.PostedItems.Contains(s.Id.ToString())).ToList();
+
+                    //  Add Recurring Events
+                    if (model.Event.Recurring)
+                    {
+                        var sdate = model.Event.StartDate;
+                        var edate = model.Event.EndDate;
+                        sdate = ApplicationUtility.GetNextDate(sdate, model.Event.Frequency, (int)model.Event.Interval, model.Event.Day, sdate, model.Event.MonthDays);
+
+                        while (sdate <= edate)
+                        {
+                            soc.EventInstances.Add(new EventInstance() { Event = soc, DateTime = sdate });
+                            sdate = ApplicationUtility.GetNextDate(sdate, model.Event.Frequency, (int)model.Event.Interval, model.Event.Day, sdate.AddDays(1), model.Event.MonthDays);
+                        }
+                    }
+                    //  Add Recurring Events
+
+                    DataContext.Socials.Add(soc);
+                    DataContext.SaveChanges();
+                    id = soc.Id;
+                }
+
+                return RedirectToAction("View", new { id = id, eventType = model.EventType });
+            }
+            else
+            {
+                return View(model);
+            }
+        }
+
+        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        [HttpPost]
+        public ActionResult ImportFromFacebook(EventCreateViewModel model)
+        {
+            var userid = User.Identity.GetUserId();
+            var user = DataContext.Users.Single(u => u.Id == userid);
+
+            if (model.FacebookId != null)
+            {
+                var fbevent = FacebookHelper.GetEvent(model.FacebookId, user.FacebookToken, null);
+                model.Event = new Event() { Name = fbevent.Name, Description = fbevent.Description, StartDate = fbevent.StartTime, StartTime = fbevent.StartTime, EndDate = fbevent.EndTime, EndTime = fbevent.EndTime, PhotoUrl = fbevent.CoverPhoto.LargeSource, FacebookId = fbevent.Id, FacebookLink = fbevent.EventLink, Interval = 1, IsAvailable = true, UpdatedDate = fbevent.Updated };
+            }
+
+            return RedirectToAction("Create", model);
+        }
+
         [Authorize]
         public ActionResult Edit(int? id, EventType eventType, int? placeId)
         {
@@ -1315,6 +1523,149 @@ namespace EDR.Controllers
 
             return View(model);
         }
+
+        //[Authorize(Roles = "Owner,Promoter,Teacher")]
+        //[HttpPost]
+        //public ActionResult Create(EventCreateViewModel model)
+        //{
+        //    ModelState["Event.Place.Id"].Errors.Clear();
+        //    ModelState["Event.Place.Name"].Errors.Clear();
+        //    ModelState["Event.Place.Address"].Errors.Clear();
+        //    ModelState["Event.Place.City"].Errors.Clear();
+        //    ModelState["Event.Place.State"].Errors.Clear();
+        //    ModelState["Event.Place.Zip"].Errors.Clear();
+
+        //    if (model.Event.Place.Id != 0)
+        //    {
+        //        ModelState["NewPlace.Name"].Errors.Clear();
+        //        ModelState["NewPlace.Address"].Errors.Clear();
+        //        ModelState["NewPlace.City"].Errors.Clear();
+        //        ModelState["NewPlace.State"].Errors.Clear();
+        //        ModelState["NewPlace.Zip"].Errors.Clear();
+        //    }
+
+        //    //  Remove Validation for Socials
+        //    if (model.EventType == EventType.Social)
+        //    {
+        //        ModelState["SkillLevel"].Errors.Clear();
+        //    }
+
+        //    if (ModelState.IsValid)
+        //    {
+        //        var userid = User.Identity.GetUserId();
+        //        var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+
+        //        //  New Event
+        //        var evt = new Event();
+        //        if (model.Event.Id == 0)
+        //        {
+        //            if (model.EventType == EventType.Class)
+        //            {
+        //                var cls = new Class();
+        //                TryUpdateModel(cls);
+        //                cls.ClassType = model.ClassType;
+        //                cls.Teachers = new List<Teacher>();
+        //                cls.Owners = new List<Owner>();
+
+        //                if (model.Role == RoleName.Teacher)
+        //                {
+        //                    cls.Teachers.Add(DataContext.Teachers.Single(s => s.ApplicationUser.Id == userid));
+        //                }
+        //                if (model.Role == RoleName.Owner)
+        //                {
+        //                    cls.Owners.Add(DataContext.Owners.Single(s => s.ApplicationUser.Id == userid));
+        //                }
+        //                cls.SkillLevel = (int)model.SkillLevel;
+        //                //  var cls = new Class() { ClassType = model.ClassType, Teachers = new List<Teacher>(), Owners = new List<Owner>(), Creator = user, Recurring = model.Event.Recurring, Interval };
+
+        //                evt = cls;
+        //            }
+        //            else
+        //            {
+        //                var soc = new Social();
+        //                TryUpdateModel(soc);
+        //                soc.SocialType = model.SocialType;
+        //                soc.Promoters = new List<Promoter>();
+        //                soc.Owners = new List<Owner>();
+
+        //                if (model.Role == RoleName.Promoter)
+        //                {
+        //                    soc.Promoters.Add(DataContext.Promoters.Single(s => s.ApplicationUser.Id == userid));
+        //                }
+        //                if (model.Role == RoleName.Owner)
+        //                {
+        //                    soc.Owners.Add(DataContext.Owners.Single(s => s.ApplicationUser.Id == userid));
+        //                }
+
+        //                evt = soc;
+        //            }
+        //            evt.DanceStyles = new List<DanceStyle>();
+        //        }
+        //        //evt.Name = model.Event.Name;
+        //        //evt.StartDate = model.Event.StartDate;
+        //        //evt.AllDay = model.Event.AllDay;
+        //        //evt.StartTime = model.Event.StartTime;
+        //        //evt.EndTime = model.Event.EndTime;
+        //        //evt.EndDate = model.Event.EndDate;
+        //        //evt.Description = model.Event.Description;
+        //        //evt.Recurring = model.Event.Recurring;
+        //        //evt.Frequency = model.Event.Frequency;
+        //        //evt.Interval = model.Event.Interval;
+
+
+        //        var place = new Place();
+        //        if (model.Event.Place.Id == 0)
+        //        {
+        //            var address = Geolocation.ParseAddress(model.NewPlace.Address + " " + model.NewPlace.City + " " + model.NewPlace.State + " " + model.NewPlace.Zip);
+        //            place = (Place)model.NewPlace;
+        //            place.Latitude = address.Latitude;
+        //            place.Longitude = address.Longitude;
+        //            if (model.AddtoMyPlaces)
+        //            {
+        //                user.Places.Add(place);
+        //                DataContext.Entry(user).State = EntityState.Modified;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            place = DataContext.Places.Where(p => p.Id == model.Event.Place.Id).FirstOrDefault();
+        //        }
+
+
+        //        //  Remove old place
+        //        var oldplace = evt.Place;
+        //        evt.Place = place;
+        //        if (oldplace != null && oldplace.Id != place.Id && !oldplace.Public && oldplace.PlaceType == PlaceType.OtherPlace && user.Places.Where(p => p.Id == oldplace.Id).Count() == 0)
+        //        {
+        //            DataContext.Places.Remove(oldplace);
+        //        }
+        //        //  Remove old place
+
+        //        if (model.PostedMonthDays != null)
+        //        {
+        //            evt.MonthDays = String.Join("-", model.PostedMonthDays) + (model.HiddenMonthDay != "" ? ("-" + model.HiddenMonthDay) : "");
+        //        }
+        //        else
+        //        {
+        //            evt.MonthDays = model.HiddenMonthDay;
+        //        }
+        //        //  Dance Styles
+        //        evt.DanceStyles.Clear();
+        //        var styles = DataContext.DanceStyles.Where(s => model.PostedStyles.DanceStyleIds.Contains(s.Id.ToString()));
+        //        evt.DanceStyles = styles.ToList();
+        //        //  Dance Styles
+
+        //        DataContext.Events.Add(evt);
+        //        DataContext.SaveChanges();
+        //        model.Event.Id = evt.Id;
+
+        //        return RedirectToAction("View", "Event", new { id = model.Event.Id, eventType = model.EventType });
+        //    }
+        //    else
+        //    {
+        //        return View(model);
+        //    }
+        //}
 
         [Authorize]
         [HttpPost]
@@ -1604,6 +1955,77 @@ namespace EDR.Controllers
             //  Set Month day text
         }
 
+        private EventEditViewModel BuildEditModel(int schoolId)
+        {
+            var model = new EventEditViewModel();
+            model.Places = new List<PlaceItem>();
+            model.NewPlace = new Place() { Id = 0, Latitude = 0.0, Longitude = 0.0, Public = false, PlaceType = PlaceType.OtherPlace };
+            var userid = User.Identity.GetUserId();
+
+            //  Fill Places
+            var places = new List<Place>();
+            int? placeid = model.Event.Place != null ? (int?)model.Event.Place.Id : null;
+            //  Fill Places
+            places = DataContext.Places.Where(p => p.Teachers.Any(t => t.ApplicationUser.Id == userid) || p.Owners.Any(o => o.ApplicationUser.Id == userid) || p.Promoters.Any(pr => pr.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == model.Event.Place.Id).ToList();
+
+            model.Places = new List<PlaceItem>();
+            model.Places.Add(new PlaceItem() { Id = 0, Latitude = 0.0, Longitude = 0.0 });
+
+            foreach (var pl in places)
+            {
+                model.Places.Add(new PlaceItem() { Address = pl.Address, Address2 = pl.Address2, City = pl.City, Country = pl.Country, FacebookId = pl.FacebookId, FacebookLink = pl.FacebookLink, Filename = pl.Filename, Id = pl.Id, Latitude = pl.Latitude, Longitude = pl.Longitude, Name = pl.Name, PlaceType = pl.PlaceType, State = pl.State, ThumbnailFilename = pl.ThumbnailFilename, Website = pl.Website, Zip = pl.Zip, Selected = (model.Event.Place != null && model.Event.Place.Id == pl.Id) ? true : false });
+            }
+            //  Fill Places
+
+            //  For Dance Styles Checkbox List
+            var styles = new List<DanceStyleListItem>();
+            foreach (DanceStyle s in DataContext.DanceStyles)
+            {
+                styles.Add(new DanceStyleListItem { Id = s.Id, Name = s.Name });
+            }
+            model.AvailableStyles = styles.OrderBy(x => x.Name);
+
+            var selectedStyles = new List<DanceStyleListItem>();
+            if (model.PostedStyles != null)
+            {
+                model.SelectedStyles = model.AvailableStyles.Where(s => model.PostedStyles.DanceStyleIds.Contains(s.Id.ToString()));
+            }
+            else
+            {
+                if (model.Event.DanceStyles != null)
+                {
+                    foreach (DanceStyle ss in model.Event.DanceStyles)
+                    {
+                        selectedStyles.Add(new DanceStyleListItem { Id = ss.Id, Name = ss.Name });
+                    }
+                }
+                model.SelectedStyles = selectedStyles;
+            }
+            //  For Dance Styles Checkbox List
+
+            //  For Month Days Checkbox List
+            var selectedMonthDays = new List<SelectListItem>();
+            string[] daysarray;
+            model.SelectedMonthDays = new List<SelectListItem>();
+            if (model.Event.MonthDays != null)
+            {
+                daysarray = model.Event.MonthDays.Split(new char[] { '-' });
+                foreach (var day in daysarray)
+                {
+                    model.SelectedMonthDays.Add(new SelectListItem() { Value = day, Text = day });
+                }
+            }
+            model.MonthDays = new List<SelectListItem>() { new SelectListItem() { Value = "1", Text = "1st" }, new SelectListItem() { Value = "2", Text = "2nd" }, new SelectListItem() { Value = "3", Text = "3rd" }, new SelectListItem() { Value = "4", Text = "4th" } };
+            //  For Month Days Checkbox List
+
+            //  Set Month day text
+            var daysofmonth = new string[] { "blank", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th", "13th", "14th", "15th", "16th", "17th", "18th", "19th", "20th", "21st", "22nd", "23rd", "24th", "25th", "26th", "27th", "28th", "29th", "30th", "31st" };
+            model.MonthDay = daysofmonth[model.Event.StartDate.Day];
+            //  Set Month day text
+
+            return model;
+        }
+
         [Authorize]
         public ActionResult Delete(int id)
         {
@@ -1615,6 +2037,8 @@ namespace EDR.Controllers
                     .Include("LinkedFacebookObjects")
                     .Include("EventMembers")
                     .Include("Feeds")
+                    .Include("EventTickets")
+                    .Include("EventInstances")
                     .FirstOrDefault();
 
             evt.Videos.Clear();
@@ -1624,6 +2048,8 @@ namespace EDR.Controllers
             DataContext.LinkedFacebookObjects.RemoveRange(evt.LinkedFacebookObjects);
             DataContext.EventFeeds.RemoveRange(evt.Feeds);
             DataContext.EventMembers.RemoveRange(evt.EventMembers);
+            DataContext.EventTickets.RemoveRange(evt.EventTickets);
+            DataContext.EventInstances.RemoveRange(evt.EventInstances);
             DataContext.Events.Remove(evt);
             DataContext.SaveChanges();
 
@@ -2163,14 +2589,14 @@ namespace EDR.Controllers
                             {
                                 var sdate = evt.StartDate;
                                 var edate = evt.EndDate;
-                                //cls.ChildEvents = new List<Event>();
-                                //sdate = ApplicationUtility.GetNextDate(sdate, evt.Frequency, (int)evt.Interval, evt.Day, sdate, evt.MonthDays);
+                                cls.EventInstances = new List<EventInstance>();
+                                sdate = ApplicationUtility.GetNextDate(sdate, evt.Frequency, (int)evt.Interval, evt.Day, sdate, evt.MonthDays);
 
-                                //while (sdate <= edate)
-                                //{
-                                //    cls.ChildEvents.Add(new Class() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = sdate, EndDate = sdate, StartTime = evt.StartTime, EndTime = evt.EndTime, ClassType = model.ClassType != null ? (ClassType)Enum.Parse(typeof(ClassType), model.ClassType.ToString()) : ClassType.Class, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, IsAvailable = evt.IsAvailable, Recurring = false, SkillLevel = model.SkillLevel, UpdatedDate = evt.UpdatedDate });
-                                //    sdate = ApplicationUtility.GetNextDate(sdate, evt.Frequency, (int)evt.Interval, evt.Day, sdate.AddDays(1), evt.MonthDays);
-                                //}
+                                while (sdate <= edate)
+                                {
+                                    cls.EventInstances.Add(new EventInstance() { EventId = cls.Id, DateTime = sdate });
+                                    sdate = ApplicationUtility.GetNextDate(sdate, evt.Frequency, (int)evt.Interval, evt.Day, sdate.AddDays(1), evt.MonthDays);
+                                }
                             }
                             //  Add Recurring Events
 
@@ -2215,14 +2641,14 @@ namespace EDR.Controllers
                             {
                                 var sdate = evt.StartDate;
                                 var edate = evt.EndDate;
-                                //social.ChildEvents = new List<Event>();
-                                //sdate = ApplicationUtility.GetNextDate(sdate, evt.Frequency, (int)evt.Interval, evt.Day, sdate, evt.MonthDays);
+                                social.EventInstances = new List<EventInstance>();
+                                sdate = ApplicationUtility.GetNextDate(sdate, evt.Frequency, (int)evt.Interval, evt.Day, sdate, evt.MonthDays);
 
-                                //while (sdate <= edate)
-                                //{
-                                //    social.ChildEvents.Add(new Social() { Name = evt.Name, Description = evt.Description, FacebookId = evt.FacebookId, PhotoUrl = evt.PhotoUrl, StartDate = sdate, EndDate = sdate, StartTime = evt.StartTime, EndTime = evt.EndTime, SocialType = model.SocialType != null ? (SocialType)Enum.Parse(typeof(SocialType), model.SocialType.ToString()) : SocialType.Social, Place = evt.Place, FacebookLink = evt.FacebookLink, Creator = user, IsAvailable = evt.IsAvailable, Recurring = false, UpdatedDate = evt.UpdatedDate });
-                                //    sdate = ApplicationUtility.GetNextDate(sdate, evt.Frequency, (int)evt.Interval, evt.Day, sdate.AddDays(1), evt.MonthDays);
-                                //}
+                                while (sdate <= edate)
+                                {
+                                    social.EventInstances.Add(new EventInstance() { EventId = social.Id, DateTime = sdate });
+                                    sdate = ApplicationUtility.GetNextDate(sdate, evt.Frequency, (int)evt.Interval, evt.Day, sdate.AddDays(1), evt.MonthDays);
+                                }
                             }
                             //  Add Recurring Events
 
@@ -2551,35 +2977,35 @@ namespace EDR.Controllers
             return View(model);
         }
 
-        private void LoadCreateModel(EventCreateViewModel model)
-        {
-            var id = User.Identity.GetUserId();
-            var user = UserManager.FindById(id);
-            model.User = user;
+        //private void LoadCreateModel(EventCreateViewModel model)
+        //{
+        //    var id = User.Identity.GetUserId();
+        //    var user = UserManager.FindById(id);
+        //    //  model.User = user;
 
-            var selectedStyles = new List<DanceStyleListItem>();
-            model.SelectedStyles = selectedStyles;
+        //    var selectedStyles = new List<DanceStyleListItem>();
+        //    model.SelectedStyles = selectedStyles;
 
-            var styles = new List<DanceStyleListItem>();
-            foreach (DanceStyle s in DataContext.DanceStyles)
-            {
-                styles.Add(new DanceStyleListItem { Id = s.Id, Name = s.Name });
-            }
-            model.AvailableStyles = styles.OrderBy(x => x.Name);
+        //    var styles = new List<DanceStyleListItem>();
+        //    foreach (DanceStyle s in DataContext.DanceStyles)
+        //    {
+        //        styles.Add(new DanceStyleListItem { Id = s.Id, Name = s.Name });
+        //    }
+        //    model.AvailableStyles = styles.OrderBy(x => x.Name);
 
-            if (user.CurrentRole.Name == "Teacher")
-            {
-                model.PlaceList = DataContext.Places.Where(x => x.Teachers.Any(t => t.ApplicationUser.Id == id)).Select(p => new SelectListItem() { Text = p.Name, Value = p.Id.ToString() }).ToList();
-            }
-            else if (user.CurrentRole.Name == "Owner")
-            {
-                model.PlaceList = DataContext.Places.Where(x => x.Owners.Any(t => t.ApplicationUser.Id == id)).Select(p => new SelectListItem() { Text = p.Name, Value = p.Id.ToString() }).ToList();
-            }
-            else if (user.CurrentRole.Name == "Promoter")
-            {
-                model.PlaceList = DataContext.Places.Where(x => x.Promoters.Any(t => t.ApplicationUser.Id == id)).Select(p => new SelectListItem() { Text = p.Name, Value = p.Id.ToString() }).ToList();
-            }
-        }
+        //    if (user.CurrentRole.Name == "Teacher")
+        //    {
+        //        model.PlaceList = DataContext.Places.Where(x => x.Teachers.Any(t => t.ApplicationUser.Id == id)).Select(p => new SelectListItem() { Text = p.Name, Value = p.Id.ToString() }).ToList();
+        //    }
+        //    else if (user.CurrentRole.Name == "Owner")
+        //    {
+        //        model.PlaceList = DataContext.Places.Where(x => x.Owners.Any(t => t.ApplicationUser.Id == id)).Select(p => new SelectListItem() { Text = p.Name, Value = p.Id.ToString() }).ToList();
+        //    }
+        //    else if (user.CurrentRole.Name == "Promoter")
+        //    {
+        //        model.PlaceList = DataContext.Places.Where(x => x.Promoters.Any(t => t.ApplicationUser.Id == id)).Select(p => new SelectListItem() { Text = p.Name, Value = p.Id.ToString() }).ToList();
+        //    }
+        //}
 
         //[Authorize]
         //[HttpPost]

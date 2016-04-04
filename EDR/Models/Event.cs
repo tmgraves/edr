@@ -21,6 +21,7 @@ namespace EDR.Models
             Frequency = Enums.Frequency.Weekly;
             UpdatedDate = DateTime.Now;
             CheckedDate = DateTime.Now;
+            EventInstances = new List<EventInstance>();
         }
 
         [Required]
@@ -145,6 +146,15 @@ namespace EDR.Models
         public ICollection<Feed> Feeds { get; set; }
         //public ICollection<Event> ChildEvents { get; set; }
         public ICollection<EventTicket> EventTickets { get; set; }
+        public ICollection<EventInstance> EventInstances { get; set; }
+    }
+
+    public class EventInstance : Entity
+    {
+        public int? EventId { get; set; }
+        [ForeignKey("EventId")]
+        public virtual Event Event { get; set; }
+        public DateTime DateTime { get; set; }
     }
 
     public class LinkedFacebookObject : Entity

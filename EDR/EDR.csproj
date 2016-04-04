@@ -743,6 +743,8 @@
     <Content Include="Views\Home\Test2.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Members.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\OrganizationMember.cshtml" />
+    <Content Include="Views\Event\Create old2.cshtml" />
+    <Content Include="Views\Event\Create.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>
@@ -794,7 +796,7 @@
     <Content Include="Views\Owner\Edit.cshtml" />
     <Content Include="Views\Dancer\Edit.cshtml" />
     <Content Include="Views\Class\Create.cshtml" />
-    <Content Include="Views\Event\Create.cshtml" />
+    <Content Include="Views\Event\Create old.cshtml" />
     <Content Include="Views\Teacher\List.cshtml" />
     <Content Include="Views\Place\List.cshtml" />
     <Content Include="Views\Owner\List.cshtml" />
@@ -828,7 +830,6 @@
     <Content Include="Views\Shared\Events\_AddClassPartial.cshtml" />
     <Content Include="Views\Event\Class.cshtml" />
     <Content Include="Views\Event\Social.cshtml" />
-    <Content Include="Views\Shared\Events\_EventLayout.cshtml" />
     <Content Include="Views\Shared\Events\_ReviewsPartial.cshtml" />
     <Content Include="Views\Shared\_DanceStyleListPartial.cshtml" />
     <Content Include="Views\DanceStyle\Index.cshtml" />

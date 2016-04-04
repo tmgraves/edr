@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using EDR.Enums;
 
 namespace EDR.Models
 {
@@ -92,6 +93,20 @@ namespace EDR.Models
         public string FacebookId;
         public string WebsiteUrl;
         public string FacebookUrl;
+        public string CoverPhotoUrl;
+        public string ThumbnailUrl;
+        public List<FacebookCategory> Categories;
+
+        public FacebookAddress()
+        {
+            Categories = new List<FacebookCategory>();
+        }
+    }
+
+    public class FacebookCategory
+    {
+        public string Id;
+        public string Name;
     }
 
     public class FacebookVideo

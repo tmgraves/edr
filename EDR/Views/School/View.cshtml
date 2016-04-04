@@ -243,6 +243,7 @@
         <div class="panel panel-default">
             <div class="panel-body ">
                 <h3>Classes</h3>
+                @Html.ActionLink("Add a Class", "Create", "Event", new { eventType = EDR.Enums.EventType.Class, schoolId = Model.Id, role = EDR.Enums.RoleName.Teacher }, null)
                 <table class="table">
                     <thead>
                         <tr>

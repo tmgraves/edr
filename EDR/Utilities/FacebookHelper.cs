@@ -309,6 +309,21 @@ namespace EDR.Utilities
                 add.Street = eventdata.venue.street;
                 add.ZipCode = eventdata.venue.zip;
                 add.FacebookId = eventdata.venue.id;
+                add.Location = eventdata.venue.name;
+                if (add.FacebookId != null)
+                {
+                    dynamic placedata = client.Get(add.FacebookId);
+                    add.CoverPhotoUrl = placedata.cover != null ? placedata.cover.source : null;
+                    add.ThumbnailUrl = placedata.cover != null ? placedata.cover.source : null;
+                    if (placedata.category_list != null)
+                    {
+                        foreach (dynamic category in placedata.category_list)
+                        {
+                            add.Categories.Add(new FacebookCategory() { Id = category.id, Name = category.name });
+                        }
+                    }
+                    //  add.Categories = placedata.category_list != null ? placedata.category_list.Select(new FacebookCategory() { Id = placedata.category_list.id, Name = placedata.category_list.name }) : null;
+                }
 
                 var address = new Address();
 
@@ -768,6 +783,51 @@ namespace EDR.Utilities
             {
                 return eventList;
             }
+        }
+
+        public static PlaceType ParsePlaceType(List<FacebookCategory> list)
+        {
+            var type = new PlaceType();
+            foreach (var cat in list)
+            {
+                //  Search for Dance Instruction category
+                if (cat.Name.Contains("Dance Instruction") || cat.Id == "203916779633178")
+                {
+                    type = PlaceType.Studio;
+                    break;
+                }
+                else if (cat.Name.Contains("Dance Club") || cat.Id == "176139629103647")
+                {
+                    type = PlaceType.Nightclub;
+                    break;
+                }
+                else if (cat.Id == "273819889375819" || cat.Name.Contains("Restaurant"))
+                {
+                    type = PlaceType.Restaurant;
+                    break;
+                }
+                else if (cat.Name.Contains("Hotel") || cat.Id == "164243073639257")
+                {
+                    type = PlaceType.Hotel;
+                    break;
+                }
+                else if (cat.Name.Contains("Meeting Room") || cat.Id == "210261102322291")
+                {
+                    type = PlaceType.ConferenceCenter;
+                    break;
+                }
+                else if (cat.Name.Contains("Theater") || cat.Id == "173883042668223")
+                {
+                    type = PlaceType.Theater;
+                    break;
+                }
+                else
+                {
+                    type = PlaceType.OtherPlace;
+                    break;
+                }
+            }
+            return type;
         }
     }
 }
