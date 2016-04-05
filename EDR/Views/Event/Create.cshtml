@@ -288,7 +288,6 @@
         });
     });
 </script>
-@Html.HiddenFor(m => m.Role)
 <div class="row" style="margin: 10px;">
     <div class="col-lg-6 col-md-6">
         @Html.ValidationSummary("", new { @class = "text-danger" })
@@ -316,6 +315,21 @@
         </div>
         @using (Html.BeginForm())
         {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.Role)
+        @Html.HiddenFor(x => x.Event.PhotoUrl)
+        @Html.HiddenFor(x => x.Event.FacebookLink)
+        @Html.HiddenFor(x => x.Event.FacebookId)
+        @Html.HiddenFor(x => x.Event.Interval)
+        @Html.HiddenFor(x => x.Event.IsAvailable)
+        @Html.HiddenFor(x => x.Event.UpdatedDate)
+        @Html.HiddenFor(m => m.Event.Place.FacebookId)
+        @Html.HiddenFor(m => m.Event.Place.Public)
+        @Html.HiddenFor(m => m.Event.Place.Country)
+        @Html.HiddenFor(m => m.Event.Place.Longitude)
+        @Html.HiddenFor(m => m.Event.Place.Latitude)
+        @Html.HiddenFor(m => m.Event.Place.Filename)
+        @Html.HiddenFor(m => m.Event.Place.ThumbnailFilename)
         <div id="wizard" class="wizard" style="display: none;">
             <div class="step active" title="New Event">
                 <h2>Step: Type of Event</h2>

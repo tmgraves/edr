@@ -65,12 +65,13 @@
             <div class="panel-body">
                 @foreach (var evt in Model.Event.EventInstances.Where(e => e.DateTime >= DateTime.Today).OrderBy(c => c.DateTime))
                 {
-                    <div style="width: 100%;">
-                        <div class="col-lg-10 col-md-8 col-sm-6 col-xs-6">
-                            <span class="text-primary"><b>@evt.DateTime.ToLongDateString()</b></span>
+                    <div class="col-lg-12 col-md-12" style="margin-bottom: 2px;">
+                        <div class="col-lg-6 col-md-6">
+                            <span class="text-primary"><b>@evt.DateTime.ToShortDateString()</b></span>
                         </div>
-                        <div class="col-lg-2 col-md-4 col-sm-6 col-xs-6">
+                        <div class="col-lg-6 col-md-6">
                             <a class="btn btn-primary">Register</a>
+                            <a class="btn btn-danger" href="@Url.Action("DeleteInstance", "Event", new { id = evt.Id, eventId = evt.EventId })"><span class="glyphicon glyphicon-remove"></span></a>
                         </div>
                     </div>
                 }
