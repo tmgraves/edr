@@ -28,8 +28,9 @@
             $("#dayofweek").text(weekdays[date.getDay()]);
             //  $("#eventday").text(daysofmonth[date.getDate()] + " of the Month");
             var nth = parseInt(date.getDate() / 7) + 1;
-
+            alert(nth);
             var cb = $('input[type=checkbox][name="PostedMonthDays"][value="' + nth.toString() + '"]');
+            alert(cb.val());
             //  var test = $('input[type=checkbox][name="cbtest"]');
             //  alert(cb.attr("value").valueOf());
             //  alert(test.attr("value").valueOf());

@@ -139,6 +139,20 @@
     });
 
     $(document).ready(function () {
+        if ('@Model.Event.FacebookId' != "")
+        {
+            var createevent = $('#createevent');
+            $('.step.active', createevent).hide();
+
+            var wizard = $('#wizard');
+            wizard.addClass('active');
+            wizard.show();
+
+            createevent.hide();
+
+            $('.next', wizard).show();
+        }
+
         var eventtype = $("#EventType option:selected").val();
         //  Class Type
         if (eventtype == "1") {
@@ -174,6 +188,11 @@
             $('#socialtype').hide();
             $('#skilllevel').hide();
         }
+
+        if ('@Model.EventType' != "")
+        {
+            $('#EventType').prop("disabled", true);
+        }
     });
 </script>
 <script type="text/javascript">
@@ -190,8 +209,7 @@
             $("#dayofweek").text(weekdays[date.getDay()]);
             //  $("#eventday").text(daysofmonth[date.getDate()] + " of the Month");
             var nth = parseInt(date.getDate() / 7) + 1;
-
-            var cb = $('input[type=checkbox][name="PostedMonthDays"][value="' + nth.toString() + '"]');
+            var cb = $('input[type=checkbox][name="MonthDays.PostedItems"][value="' + nth.toString() + '"]');
             //  var test = $('input[type=checkbox][name="cbtest"]');
             //  alert(cb.attr("value").valueOf());
             //  alert(test.attr("value").valueOf());
@@ -206,20 +224,20 @@
             $("#dayofweek").text(weekdays[date.getDay()]);
             //  $("#eventday").text(daysofmonth[date.getDate()] + " of the Month");
             var nth = parseInt(date.getDate() / 7) + 1;
-            var cb1 = $('input[type=checkbox][name="PostedMonthDays"][value="1"]');
+            var cb1 = $('input[type=checkbox][name="MonthDays.PostedItems"][value="1"]');
             cb1.prop("disabled", false);
-            var cb2 = $('input[type=checkbox][name="PostedMonthDays"][value="2"]');
+            var cb2 = $('input[type=checkbox][name="MonthDays.PostedItems"][value="2"]');
             cb2.prop("disabled", false);
-            var cb3 = $('input[type=checkbox][name="PostedMonthDays"][value="3"]');
+            var cb3 = $('input[type=checkbox][name="MonthDays.PostedItems"][value="3"]');
             cb3.prop("disabled", false);
-            var cb4 = $('input[type=checkbox][name="PostedMonthDays"][value="4"]');
+            var cb4 = $('input[type=checkbox][name="MonthDays.PostedItems"][value="4"]');
             cb4.prop("disabled", false);
             cb1.prop("checked", "");
             cb2.prop("checked", "");
             cb3.prop("checked", "");
             cb4.prop("checked", "");
 
-            var cb = $('input[type=checkbox][name="PostedMonthDays"][value="' + nth.toString() + '"]');
+            var cb = $('input[type=checkbox][name="MonthDays.PostedItems"][value="' + nth.toString() + '"]');
             //  var test = $('input[type=checkbox][name="cbtest"]');
             //  alert(cb.attr("value").valueOf());
             //  alert(test.attr("value").valueOf());
@@ -300,7 +318,7 @@
         {
         <div id="wizard" class="wizard" style="display: none;">
             <div class="step active" title="New Event">
-                <h2>Step: Class or Social</h2>
+                <h2>Step: Type of Event</h2>
                 <div class="row" style="margin-bottom: 5px;">
                     <div class="col-md-10 col-lg-9">
                         @Html.EnumDropDownListFor(model => model.EventType, "-- Select a Event Type --", htmlAttributes: new { @class = "form-control" })

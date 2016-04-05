@@ -1364,8 +1364,25 @@ namespace EDR.Controllers
             if (model.FacebookId != null)
             {
                 var f = FacebookHelper.GetEvent(model.FacebookId, user.FacebookToken, null);
-                model.Event = new Event() { Description = f.Description, Name = f.Name, StartDate = f.StartTime, StartTime = f.StartTime, FacebookId = f.Id, FacebookLink = f.EventLink, Place = new Place() { Name = f.Address.Location, Address = f.Address.Street, City = f.Address.City, State = f.Address.State != null && Enum.IsDefined(typeof(State), f.Address.State) ? (State)Enum.Parse(typeof(State), f.Address.State) : State.CA, Zip = f.Address.ZipCode, Country = f.Address.Country, Latitude = f.Address.Latitude, Longitude = f.Address.Longitude, FacebookId = f.Address.FacebookId, PlaceType = FacebookHelper.ParsePlaceType(f.Address.Categories), Public = true, Website = f.Address.WebsiteUrl, FacebookLink = f.Address.FacebookUrl, Filename = f.Address.CoverPhotoUrl, ThumbnailFilename = f.Address.ThumbnailUrl } };
+                model.Event = new Event() { Description = f.Description, Name = f.Name, StartDate = f.StartTime, StartTime = f.StartTime, EndDate = f.EndTime, EndTime = f.EndTime, FacebookId = f.Id, FacebookLink = f.EventLink, Place = new Place() { Name = f.Address.Location, Address = f.Address.Street, City = f.Address.City, State = f.Address.State != null && Enum.IsDefined(typeof(State), f.Address.State) ? (State)Enum.Parse(typeof(State), f.Address.State) : State.CA, Zip = f.Address.ZipCode, Country = f.Address.Country, Latitude = f.Address.Latitude, Longitude = f.Address.Longitude, FacebookId = f.Address.FacebookId, PlaceType = FacebookHelper.ParsePlaceType(f.Address.Categories), Public = true, Website = f.Address.WebsiteUrl, FacebookLink = f.Address.FacebookUrl, Filename = f.Address.CoverPhotoUrl, ThumbnailFilename = f.Address.ThumbnailUrl } };
                 model.FacebookId = null;
+
+                //  For Dance Styles Checkbox List
+                model.StylesCheckboxList.AvailableItems = DataContext.DanceStyles.Select(s => new SelectListItem() { Value = s.Id.ToString(), Text = s.Name }).OrderBy(s => s.Text).ToList();
+                //  For Dance Styles Checkbox List
+
+                //  For Month Days Checkbox List
+                if (model.Event.MonthDays != null)
+                {
+                    model.MonthDays.SelectedItems = model.Event.MonthDays.Split(new char[] { '-' }).Select(d => new SelectListItem() { Text = d, Value = d }).ToList();
+                }
+                model.MonthDays.AvailableItems = new List<SelectListItem>() { new SelectListItem() { Value = "1", Text = "1st" }, new SelectListItem() { Value = "2", Text = "2nd" }, new SelectListItem() { Value = "3", Text = "3rd" }, new SelectListItem() { Value = "4", Text = "4th" } };
+
+                //  Set Month day text
+                var daysofmonth = new string[] { "blank", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th", "13th", "14th", "15th", "16th", "17th", "18th", "19th", "20th", "21st", "22nd", "23rd", "24th", "25th", "26th", "27th", "28th", "29th", "30th", "31st" };
+                model.MonthDay = daysofmonth[model.Event.StartDate.Day];
+                //  Set Month day text
+                
                 ModelState.Clear();
                 return View(model);
             }
@@ -1384,6 +1401,18 @@ namespace EDR.Controllers
                     UpdateModel(cls, "Event");
                     TryUpdateModel(cls);
                     TryUpdateModel(cls.EventInstances, "EventInstances");
+
+                    //  Update Month Days
+                    if (model.MonthDays.PostedItems != null)
+                    {
+                        cls.MonthDays = String.Join("-", model.MonthDays.PostedItems) + (model.HiddenMonthDay != "" ? ("-" + model.HiddenMonthDay) : "");
+                    }
+                    else
+                    {
+                        cls.MonthDays = model.HiddenMonthDay;
+                    }
+                    //  Update Month Days
+
                     if (model.Role == RoleName.Teacher)
                     {
                         cls.Teachers.Add(DataContext.Teachers.Single(t => t.ApplicationUser.Id == userid));
@@ -1422,6 +1451,18 @@ namespace EDR.Controllers
                     UpdateModel(soc, "Event");
                     TryUpdateModel(soc);
                     TryUpdateModel(soc.EventInstances, "EventInstances");
+
+                    //  Update Month Days
+                    if (model.MonthDays.PostedItems != null)
+                    {
+                        soc.MonthDays = String.Join("-", model.MonthDays.PostedItems) + (model.HiddenMonthDay != "" ? ("-" + model.HiddenMonthDay) : "");
+                    }
+                    else
+                    {
+                        soc.MonthDays = model.HiddenMonthDay;
+                    }
+                    //  Update Month Days
+
                     if (model.Role == RoleName.Promoter)
                     {
                         soc.Promoters.Add(DataContext.Promoters.Single(t => t.ApplicationUser.Id == userid));
