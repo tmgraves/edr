@@ -125,7 +125,10 @@ namespace EDR.Models
             }
         }
 
-        public virtual Place Place { get; set; }
+        [Required]
+        public int PlaceId { get; set; }
+        [ForeignKey("PlaceId")]
+        public Place Place { get; set; }
         public ApplicationUser Creator { get; set; }
         public ICollection<EventMember> EventMembers { get; set; }
         public ICollection<LinkedFacebookObject> LinkedFacebookObjects { get; set; }

@@ -1389,18 +1389,30 @@ namespace EDR.Controllers
             //  Pick a Facebook Event
 
             int id = 0;
-            var add = Geolocation.ParseAddress(model.Event.Place.Address + ", " + model.Event.Place.City + ", " + model.Event.Place.State + ", " + model.Event.Place.Zip);
-            model.Event.Place.Latitude = add.Latitude;
-            model.Event.Place.Longitude = add.Longitude;
+            if (model.Event.PlaceId >= 0)
+            {
+                ModelState["Event.Place.Name"].Errors.Clear();
+                ModelState["Event.Place.Address"].Errors.Clear();
+                ModelState["Event.Place.City"].Errors.Clear();
+                ModelState["Event.Place.State"].Errors.Clear();
+                ModelState["Event.Place.Zip"].Errors.Clear();
+            }
 
             if (ModelState.IsValid)
             {
+                if (model.Event.PlaceId == 0)
+                {
+                    var add = Geolocation.ParseAddress(model.Event.Place.Address + ", " + model.Event.Place.City + ", " + model.Event.Place.State + ", " + model.Event.Place.Zip);
+                    model.Event.Place.Latitude = add.Latitude;
+                    model.Event.Place.Longitude = add.Longitude;
+                }
+
                 if (model.EventType == EventType.Class)
                 {
                     var cls = new Class();
-                    UpdateModel(cls, "Event");
+                    TryUpdateModel(cls, "Event");
                     TryUpdateModel(cls);
-                    TryUpdateModel(cls.EventInstances, "EventInstances");
+                    //  TryUpdateModel(cls.EventInstances, "EventInstances");
 
                     //  Update Month Days
                     if (model.MonthDays.PostedItems != null)
@@ -1422,8 +1434,16 @@ namespace EDR.Controllers
                         cls.Owners.Add(DataContext.Owners.Single(o => o.ApplicationUser.Id == userid));
                     }
                     cls.Creator = user;
-                    cls.Place.Latitude = add.Latitude;
-                    cls.Place.Longitude = add.Longitude;
+                    if (cls.PlaceId == 0)
+                    {
+                        cls.Place.Latitude = model.Event.Place.Latitude;
+                        cls.Place.Longitude = model.Event.Place.Longitude;
+                    }
+                    else
+                    {
+                        cls.Place = null;
+                    }
+
                     cls.DanceStyles = DataContext.DanceStyles.Where(s => model.StylesCheckboxList.PostedItems.Contains(s.Id.ToString())).ToList();
 
                     //  Add Recurring Events
@@ -1444,13 +1464,15 @@ namespace EDR.Controllers
                     DataContext.Classes.Add(cls);
                     DataContext.SaveChanges();
                     id = cls.Id;
+
                 }
-                if (model.EventType == EventType.Social)
+                //  Social
+                else
                 {
                     var soc = new Social();
-                    UpdateModel(soc, "Event");
+                    TryUpdateModel(soc, "Event");
                     TryUpdateModel(soc);
-                    TryUpdateModel(soc.EventInstances, "EventInstances");
+                    //  TryUpdateModel(soc.EventInstances, "EventInstances");
 
                     //  Update Month Days
                     if (model.MonthDays.PostedItems != null)
@@ -1472,8 +1494,15 @@ namespace EDR.Controllers
                         soc.Owners.Add(DataContext.Owners.Single(o => o.ApplicationUser.Id == userid));
                     }
                     soc.Creator = user;
-                    soc.Place.Latitude = add.Latitude;
-                    soc.Place.Longitude = add.Longitude;
+                    if (soc.PlaceId == 0)
+                    {
+                        soc.Place.Latitude = model.Event.Place.Latitude;
+                        soc.Place.Longitude = model.Event.Place.Longitude;
+                    }
+                    else
+                    {
+                        soc.Place = null;
+                    }
                     soc.DanceStyles = DataContext.DanceStyles.Where(s => model.StylesCheckboxList.PostedItems.Contains(s.Id.ToString())).ToList();
 
                     //  Add Recurring Events
@@ -1495,13 +1524,19 @@ namespace EDR.Controllers
                     DataContext.SaveChanges();
                     id = soc.Id;
                 }
-
-                return RedirectToAction("View", new { id = id, eventType = model.EventType });
             }
             else
             {
+                //  Set Facebook List
+                if (user.FacebookToken != null)
+                {
+                    model.FacebookEvents = FacebookHelper.GetEvents(user.FacebookToken, DateTime.Now).Where(fe => !DataContext.Events.Select(e => e.FacebookId).Contains(fe.Id));
+                }
+                //  Set Facebook List
                 return View(model);
             }
+
+            return RedirectToAction("View", new { id = id, eventType = model.EventType });
         }
 
         [Authorize(Roles = "Owner,Promoter,Teacher")]

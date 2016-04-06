@@ -157,6 +157,10 @@ namespace EDR.Models.ViewModels
     {
 
     }
+    public class EventInstancesViewModel : EventBaseViewModel
+    {
+
+    }
 
     public class EventUpdates : EventBaseViewModel
     {

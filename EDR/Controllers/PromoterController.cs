@@ -31,6 +31,7 @@ namespace EDR.Controllers
                                     .Where(x => x.ApplicationUser.UserName == username)
                                     .Include("Socials")
                                     .Include("Places")
+                                    .Include("Socials.Place")
                                     .Include("Socials.DanceStyles")
                                     .Include("Socials.Videos")
                                     .Include("Socials.Pictures")

@@ -65,6 +65,7 @@ namespace EDR.Controllers
                                     .Include("Students.Dancer.UserPictures")
                                     .Include("Classes.Playlists")
                                     .Include("Classes.Playlists.Author")
+                                    .Include("Classes.Place")
                                     .Include("Places")
                                     .Include("Schools")
                                     .Where(x => x.ApplicationUser.UserName == username)

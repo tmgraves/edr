@@ -250,6 +250,7 @@ namespace EDR.Controllers
                                         .Include("DanceStyles")
                                         .Include("Teachers")
                                         .Include("Teachers.ApplicationUser")
+                                        .Include("Place")
                                         .ToList();
             viewModel.SuggestedClasses = suggestedClasses.Where(e => e.NextDate >= today).Take(5);
             viewModel.SuggestedSocials = new List<Social>();
@@ -258,6 +259,7 @@ namespace EDR.Controllers
                                             && DbGeography.FromText("POINT(" + y.Place.Longitude.ToString() + " " + y.Place.Latitude.ToString() + ")").Distance(myLocation) * .00062 < 50 
                                             && !y.EventMembers.Any(u => u.Member.Id == id))
                                         .Include("DanceStyles")
+                                        .Include("Place")
                                         .ToList();
             viewModel.SuggestedSocials = suggestedSocials.Where(e => e.NextDate >= today).Take(5);
 
@@ -335,6 +337,7 @@ namespace EDR.Controllers
                                     .Include("Pictures")
                                     .Include("Videos")
                                     .Include("Reviews")
+                                    .Include("Place")
                                     .ToList();
             viewModel.Classes.Events = classes.Where(e => e.NextDate >= today);
             viewModel.Classes.Location = new Address() { City = viewModel.Dancer.City, State = viewModel.Dancer.State, ZipCode = viewModel.Dancer.ZipCode, Longitude = viewModel.Dancer.Longitude, Latitude = viewModel.Dancer.Latitude };
@@ -422,6 +425,7 @@ namespace EDR.Controllers
                                             .Include("EventMembers.Member")
                                             .Include("Videos")
                                             .Include("Reviews")
+                                            .Include("Place")
                                             .Where(x => x.EventMembers.Any(m => m.Member.UserName == username)).ToList();
             viewModel.Socials.Location = new Address() { City = viewModel.Dancer.City, State = viewModel.Dancer.State, ZipCode = viewModel.Dancer.ZipCode, Longitude = viewModel.Dancer.Longitude, Latitude = viewModel.Dancer.Latitude };
 
