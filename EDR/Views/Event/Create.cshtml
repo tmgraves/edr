@@ -9,6 +9,34 @@
 <h2>New Event</h2>
 <script type="text/javascript">
     $(function () {
+        function SetFirstScreen(action) {
+            if (action == "New")
+            {
+                $('#CreateAction').prop("value", "New");
+                var createevent = $('#createevent');
+                $('.step.active', createevent).hide();
+                var wizard = $('#wizard');
+                wizard.addClass('active');
+                wizard.show();
+                createevent.hide();
+                $('.next', wizard).show();
+            }
+            else
+            {
+                $('#CreateAction').prop("value", "Facebook");
+                var createevent = $('#createevent');
+                $('.pickfacebook', createevent).addClass('active');
+                $('.pickfacebook', createevent).show();
+                $('.newevent', createevent).hide();
+            }
+        }
+        if ('@Model.CreateAction' == "New") {
+            SetFirstScreen("New");
+        }
+        else if ('@Model.CreateAction' == "Facebook") {
+            SetFirstScreen("Facebook");
+        }
+
         $('#createevent .newbtn').click(function () {
             SetFirstScreen("New");
         });
@@ -104,28 +132,6 @@
     });
 
     $(document).ready(function () {
-        function SetFirstScreen(action)
-        {
-            if (action == "New")
-            {
-                $('#CreateAction').prop("value", "New");
-                var createevent = $('#createevent');
-                $('.step.active', createevent).hide();
-                var wizard = $('#wizard');
-                wizard.addClass('active');
-                wizard.show();
-                createevent.hide();
-                $('.next', wizard).show();
-            }
-            else
-            {
-                $('#CreateAction').prop("value", "Facebook");
-                var createevent = $('#createevent');
-                $('.pickfacebook', createevent).addClass('active');
-                $('.pickfacebook', createevent).show();
-                $('.newevent', createevent).hide();
-            }
-        }
         function SetEventType(eventtype)
         {
             //  Class Type
@@ -178,15 +184,6 @@
             createevent.hide();
 
             $('.next', wizard).show();
-        }
-
-        if ('@Model.CreateAction' == "New")
-        {
-            SetFirstScreen("New");
-        }
-        else if ('@Model.CreateAction' == "Facebook")
-        {
-            SetFirstScreen("Facebook");
         }
 
         var eventtype = $("#EventType option:selected").val();
