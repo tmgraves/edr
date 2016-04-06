@@ -1297,6 +1297,36 @@ namespace EDR.Controllers
             }
             //  New Event
 
+            LoadCreateModel(model);
+
+            return View(model);
+        }
+
+        //[Authorize(Roles = "Owner,Promoter,Teacher")]
+        //[HttpPost]
+        //public ActionResult CreateFacebookEvent(EventCreateViewModel model)
+        //{
+        //    var userid = User.Identity.GetUserId();
+        //    var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+        //    var f = new FacebookEvent();
+        //    if (model.FacebookLink != null)
+        //    {
+        //        f = FacebookHelper.GetEvent(ParseFacebookLink(model.FacebookLink), user.FacebookToken);
+        //    }
+        //    else
+        //    {
+        //        f = FacebookHelper.GetEvent(model.SelectedFacebookEventId, user.FacebookToken);
+        //    }
+        //    model.Event = new Event() { Description = f.Description, Name = f.Name, StartDate = f.StartTime, StartTime = f.StartTime, FacebookId = f.Id, FacebookLink = f.EventLink, Place = new Place() { Name = f.Address.Location, Address = f.Address.Street, City = f.Address.City, State = f.Address.State != null ? (State)Enum.Parse(typeof(State), f.Address.State) : State.CA, Zip = f.Address.ZipCode, Country = f.Address.Country, Latitude = f.Address.Latitude, Longitude = f.Address.Longitude, FacebookId = f.Address.FacebookId, PlaceType = FacebookHelper.ParsePlaceType(f.Address.Categories), Public = true, Website = f.Address.WebsiteUrl, FacebookLink = f.Address.FacebookUrl, Filename = f.Address.CoverPhotoUrl, ThumbnailFilename = f.Address.ThumbnailUrl } };
+        //    model.CreateAction = "Facebook";
+        //    return RedirectToAction("Create", model);
+        //}
+
+        private void LoadCreateModel(EventCreateViewModel model)
+        {
+            var userid = User.Identity.GetUserId();
+            var user = DataContext.Users.Single(u => u.Id == userid);
+
             //  Fill Places
             var places = new List<Place>();
             int? placeid = model.Event.Place != null ? (int?)model.Event.Place.Id : null;
@@ -1307,6 +1337,7 @@ namespace EDR.Controllers
             model.Places.AddRange(DataContext.Places.Where(p => p.Teachers.Any(t => t.ApplicationUser.Id == userid) || p.Owners.Any(o => o.ApplicationUser.Id == userid) || p.Promoters.Any(pr => pr.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == model.Event.Place.Id).AsEnumerable().Select(p => new PlaceItem() { Address = p.Address, Address2 = p.Address2, City = p.City, Country = p.Country, FacebookId = p.FacebookId, FacebookLink = p.FacebookLink, Filename = p.Filename, Id = p.Id, Latitude = p.Latitude, Longitude = p.Longitude, Name = p.Name, PlaceType = p.PlaceType, State = p.State, ThumbnailFilename = p.ThumbnailFilename, Website = p.Website, Zip = p.Zip, Selected = (model.Event.Place != null && model.Event.Place.Id == p.Id) ? true : false }));
             //  Fill Places
 
+            //  Load Facebook Events
             //  For Dance Styles Checkbox List
             model.StylesCheckboxList.AvailableItems = DataContext.DanceStyles.Select(s => new SelectListItem() { Value = s.Id.ToString(), Text = s.Name }).OrderBy(s => s.Text).ToList();
             //  For Dance Styles Checkbox List
@@ -1330,27 +1361,6 @@ namespace EDR.Controllers
             }
             //  Set Facebook List
 
-            return View(model);
-        }
-
-        [Authorize(Roles = "Owner,Promoter,Teacher")]
-        [HttpPost]
-        public ActionResult CreateFacebookEvent(EventCreateViewModel model)
-        {
-            var userid = User.Identity.GetUserId();
-            var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
-            var f = new FacebookEvent();
-            if (model.FacebookLink != null)
-            {
-                f = FacebookHelper.GetEvent(ParseFacebookLink(model.FacebookLink), user.FacebookToken);
-            }
-            else
-            {
-                f = FacebookHelper.GetEvent(model.SelectedFacebookEventId, user.FacebookToken);
-            }
-            model.Event = new Event() { Description = f.Description, Name = f.Name, StartDate = f.StartTime, StartTime = f.StartTime, FacebookId = f.Id, FacebookLink = f.EventLink, Place = new Place() { Name = f.Address.Location, Address = f.Address.Street, City = f.Address.City, State = f.Address.State != null ? (State)Enum.Parse(typeof(State), f.Address.State) : State.CA, Zip = f.Address.ZipCode, Country = f.Address.Country, Latitude = f.Address.Latitude, Longitude = f.Address.Longitude, FacebookId = f.Address.FacebookId, PlaceType = FacebookHelper.ParsePlaceType(f.Address.Categories), Public = true, Website = f.Address.WebsiteUrl, FacebookLink = f.Address.FacebookUrl, Filename = f.Address.CoverPhotoUrl, ThumbnailFilename = f.Address.ThumbnailUrl } };
-            model.CreateAction = "Facebook";
-            return RedirectToAction("Create", model);
         }
 
         [Authorize(Roles = "Owner,Promoter,Teacher")]
@@ -1367,22 +1377,6 @@ namespace EDR.Controllers
                 model.Event = new Event() { Description = f.Description, Name = f.Name, StartDate = f.StartTime, StartTime = f.StartTime, EndDate = f.EndTime, EndTime = f.EndTime, FacebookId = f.Id, FacebookLink = f.EventLink, PhotoUrl = f.CoverPhoto.LargeSource, Place = new Place() { Name = f.Address.Location, Address = f.Address.Street, City = f.Address.City, State = f.Address.State != null && Enum.IsDefined(typeof(State), f.Address.State) ? (State)Enum.Parse(typeof(State), f.Address.State) : State.CA, Zip = f.Address.ZipCode, Country = f.Address.Country, Latitude = f.Address.Latitude, Longitude = f.Address.Longitude, FacebookId = f.Address.FacebookId, PlaceType = FacebookHelper.ParsePlaceType(f.Address.Categories), Public = true, Website = f.Address.WebsiteUrl, FacebookLink = f.Address.FacebookUrl, Filename = f.Address.CoverPhotoUrl, ThumbnailFilename = f.Address.ThumbnailUrl } };
                 model.FacebookId = null;
 
-                //  For Dance Styles Checkbox List
-                model.StylesCheckboxList.AvailableItems = DataContext.DanceStyles.Select(s => new SelectListItem() { Value = s.Id.ToString(), Text = s.Name }).OrderBy(s => s.Text).ToList();
-                //  For Dance Styles Checkbox List
-
-                //  For Month Days Checkbox List
-                if (model.Event.MonthDays != null)
-                {
-                    model.MonthDays.SelectedItems = model.Event.MonthDays.Split(new char[] { '-' }).Select(d => new SelectListItem() { Text = d, Value = d }).ToList();
-                }
-                model.MonthDays.AvailableItems = new List<SelectListItem>() { new SelectListItem() { Value = "1", Text = "1st" }, new SelectListItem() { Value = "2", Text = "2nd" }, new SelectListItem() { Value = "3", Text = "3rd" }, new SelectListItem() { Value = "4", Text = "4th" } };
-
-                //  Set Month day text
-                var daysofmonth = new string[] { "blank", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th", "13th", "14th", "15th", "16th", "17th", "18th", "19th", "20th", "21st", "22nd", "23rd", "24th", "25th", "26th", "27th", "28th", "29th", "30th", "31st" };
-                model.MonthDay = daysofmonth[model.Event.StartDate.Day];
-                //  Set Month day text
-                
                 ModelState.Clear();
                 return View(model);
             }
@@ -1527,12 +1521,8 @@ namespace EDR.Controllers
             }
             else
             {
-                //  Set Facebook List
-                if (user.FacebookToken != null)
-                {
-                    model.FacebookEvents = FacebookHelper.GetEvents(user.FacebookToken, DateTime.Now).Where(fe => !DataContext.Events.Select(e => e.FacebookId).Contains(fe.Id));
-                }
-                //  Set Facebook List
+                LoadCreateModel(model);
+
                 return View(model);
             }
 

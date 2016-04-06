@@ -10,24 +10,11 @@
 <script type="text/javascript">
     $(function () {
         $('#createevent .newbtn').click(function () {
-            var createevent = $('#createevent');
-            $('.step.active', createevent).hide();
-
-            var wizard = $('#wizard');
-            wizard.addClass('active');
-            wizard.show();
-
-            createevent.hide();
-
-            $('.next', wizard).show();
+            SetFirstScreen("New");
         });
 
         $('#createevent .facebookbtn').click(function () {
-            var createevent = $('#createevent');
-            $('.pickfacebook', createevent).addClass('active');
-            $('.pickfacebook', createevent).show();
-
-            $('.newevent', createevent).hide();
+            SetFirstScreen("Facebook");
         });
 
         $('.wizard .prev').click(function () {
@@ -117,6 +104,28 @@
     });
 
     $(document).ready(function () {
+        function SetFirstScreen(action)
+        {
+            if (action == "New")
+            {
+                $('#CreateAction').prop("value", "New");
+                var createevent = $('#createevent');
+                $('.step.active', createevent).hide();
+                var wizard = $('#wizard');
+                wizard.addClass('active');
+                wizard.show();
+                createevent.hide();
+                $('.next', wizard).show();
+            }
+            else
+            {
+                $('#CreateAction').prop("value", "Facebook");
+                var createevent = $('#createevent');
+                $('.pickfacebook', createevent).addClass('active');
+                $('.pickfacebook', createevent).show();
+                $('.newevent', createevent).hide();
+            }
+        }
         function SetEventType(eventtype)
         {
             //  Class Type
@@ -169,6 +178,15 @@
             createevent.hide();
 
             $('.next', wizard).show();
+        }
+
+        if ('@Model.CreateAction' == "New")
+        {
+            SetFirstScreen("New");
+        }
+        else if ('@Model.CreateAction' == "Facebook")
+        {
+            SetFirstScreen("Facebook");
         }
 
         var eventtype = $("#EventType option:selected").val();
@@ -344,6 +362,7 @@
         @using (Html.BeginForm())
         {
         @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.CreateAction)
         @Html.HiddenFor(m => m.Role)
         @Html.HiddenFor(x => x.Event.PhotoUrl)
         @Html.HiddenFor(x => x.Event.FacebookLink)
@@ -380,6 +399,45 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+            <div class="step" style="display:none">
+                <h2>Step: Details</h2>
+                <div class="row" style="margin-bottom: 5px;">
+                    @Html.LabelFor(model => model.Event.Name, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
+                    <div class="col-md-10 col-lg-9">
+                        @Html.EditorFor(model => model.Event.Name, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Event.Name, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div id="skilllevel" class="row" style="margin-bottom: 5px;" hidden="hidden">
+                    @Html.LabelFor(m => m.SkillLevel, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
+                    <div class="col-md-10 col-lg-9">
+                        @{
+            var list = new SelectList(new List<int> { 1, 2, 3, 4, 5 });
+                        }
+                        @Html.DropDownListFor(m => m.SkillLevel, new SelectList(new List<int> { 1, 2, 3, 4, 5 }), "-- Select a Skill Level --", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.SkillLevel, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row" style="margin-bottom: 5px;">
+                    @Html.LabelFor(model => model.Event.Name, "Dance Styles", htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
+                    <div class="col-md-10 col-lg-9">
+                        @Html.CheckBoxListFor(model => model.StylesCheckboxList.PostedItems,
+                                    model => model.StylesCheckboxList.AvailableItems,
+                                    style => style.Value,
+                                    style => style.Text,
+                                    model => model.StylesCheckboxList.SelectedItems,
+                                    new HtmlListInfo(HtmlTag.table, 2, new { @class = "checkboxlist" }, TextLayout.Default))
+                        @Html.ValidationMessageFor(model => model.StylesCheckboxList.PostedItems, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row" style="margin-bottom: 5px;">
+                    @Html.LabelFor(model => model.Event.Description, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
+                    <div class="col-md-10 col-lg-9">
+                        @Html.EditorFor(model => model.Event.Description, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Event.Description, "", new { @class = "text-danger" })
                     </div>
                 </div>
             </div>
@@ -618,45 +676,6 @@
                                 <img src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Event.Place.Latitude,@Model.Event.Place.Longitude&zoom=10&size=200x100&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Event.Place.Latitude, @Model.Event.Place.Longitude">
                             </div>
                         }
-                    </div>
-                </div>
-            </div>
-            <div class="step" style="display:none">
-                <h2>Step: Confirm Event</h2>
-                <div class="row" style="margin-bottom: 5px;">
-                    @Html.LabelFor(model => model.Event.Name, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
-                    <div class="col-md-10 col-lg-9">
-                        @Html.EditorFor(model => model.Event.Name, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.Event.Name, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div id="skilllevel" class="row" style="margin-bottom: 5px;" hidden="hidden">
-                    @Html.LabelFor(m => m.SkillLevel, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
-                    <div class="col-md-10 col-lg-9">
-                        @{
-                            var list = new SelectList(new List<int> { 1, 2, 3, 4, 5 });
-                        }
-                        @Html.DropDownListFor(m => m.SkillLevel, new SelectList(new List<int> { 1, 2, 3, 4, 5 }), "-- Select a Skill Level --", new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.SkillLevel, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="row" style="margin-bottom: 5px;">
-                    @Html.LabelFor(model => model.Event.Name, "Dance Styles", htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
-                    <div class="col-md-10 col-lg-9">
-                        @Html.CheckBoxListFor(model => model.StylesCheckboxList.PostedItems,
-                                    model => model.StylesCheckboxList.AvailableItems,
-                                    style => style.Value,
-                                    style => style.Text,
-                                    model => model.StylesCheckboxList.SelectedItems,
-                                    new HtmlListInfo(HtmlTag.table, 2, new { @class = "checkboxlist" }, TextLayout.Default))
-                        @Html.ValidationMessageFor(model => model.StylesCheckboxList.PostedItems, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="row" style="margin-bottom: 5px;">
-                    @Html.LabelFor(model => model.Event.Description, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
-                    <div class="col-md-10 col-lg-9">
-                        @Html.EditorFor(model => model.Event.Description, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.Event.Description, "", new { @class = "text-danger" })
                     </div>
                 </div>
             </div>
