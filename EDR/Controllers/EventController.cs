@@ -1361,6 +1361,9 @@ namespace EDR.Controllers
             }
             //  Set Facebook List
 
+            //  Set Tikcets
+            model.Tickets = DataContext.Tickets.Where(t => t.SchoolId == model.SchoolId).ToList();
+            //  Set Tickets
         }
 
         [Authorize(Roles = "Owner,Promoter,Teacher")]
@@ -1459,6 +1462,11 @@ namespace EDR.Controllers
                     DataContext.Classes.Add(cls);
                     DataContext.SaveChanges();
                     id = cls.Id;
+                    //  Add Tickets
+
+                    cls.EventTickets = DataContext.Tickets.Where(t => model.TicketId.Contains(t.Id.ToString())).AsEnumerable().Select(t => new EventTicket() { TicketId = t.Id, EventId = cls.Id }).ToList();
+                    DataContext.SaveChanges();
+
 
                 }
                 //  Social
@@ -1518,6 +1526,9 @@ namespace EDR.Controllers
                     DataContext.Socials.Add(soc);
                     DataContext.SaveChanges();
                     id = soc.Id;
+                    //  Add Tickets
+                    soc.EventTickets = DataContext.Tickets.Where(t => model.TicketId.Contains(t.Id.ToString())).AsEnumerable().Select(t => new EventTicket() { TicketId = t.Id, EventId = soc.Id }).ToList();
+                    DataContext.SaveChanges();
                 }
             }
             else

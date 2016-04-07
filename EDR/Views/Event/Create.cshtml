@@ -138,6 +138,17 @@
             $('#wizdatetimediv').show();
             $('#wizlocationdiv').hide();
         });
+        $('#btnlocationnext').click(function () {
+            var form = $('#createform.main');
+            if (form.valid()) {
+                $('#wizlocationdiv').hide();
+                $('#wizticketsdiv').show();
+            }
+        });
+        $('#btnticketsprev').click(function () {
+            $('#wizlocationdiv').show();
+            $('#wizticketsdiv').hide();
+        });
     });
 
     $(function () {
@@ -180,6 +191,15 @@
             else {
                 $('#newplace').show();
             }
+        });
+    });
+
+    $(function () {
+        $('#checkall').click(function () {
+            var status = $('#checkall').prop('checked');
+            $('input[name="TicketId"]').each(function () {
+                $(this).prop('checked', status);
+            });
         });
     });
 
@@ -743,9 +763,48 @@
                 </div>
                 <div class="col-md-10 col-lg-9" style="margin-top: 5px;">
                 <input id="btnlocationprev" type="button" class="prev btn btn-primary" value="Previous" />
-                <input type="submit" id="finish" value="Save Event" class="btn btn-primary" />
+                <input id="btnlocationnext" type="button" class="next btn btn-primary" style="display: none" value="Next" disabled="disabled" />
         </div>
     </div>
+            <div id="wizticketsdiv" class="step" style="display:none">
+                <h2>Step: Tickets</h2>
+                <div class="col-lg-12 col-md-12" style="margin-bottom: 5px;">
+                    <h3>Available Tickets for this Event</h3>
+                    <table id="tickets" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th class="text-center">
+                                    Quantity
+                                </th>
+                                <th class="text-center">
+                                    Price
+                                </th>
+                                <th class="text-center">
+                                    <input type="checkbox" id="checkall" /> Select All
+                                </th>
+                            </tr>
+                        </thead>
+                        @foreach (var tic in Model.Tickets.OrderBy(t => t.Quantity))
+                        {
+                            <tr>
+                                <td class="text-right">
+                                    @Html.DisplayFor(m => tic.Quantity)
+                                </td>
+                                <td class="text-right">
+                                    @Html.DisplayFor(m => tic.Price)
+                                </td>
+                                <td class="text-center">
+                                    <input type="checkbox" value="@tic.Id" name="TicketId" checked="checked" />
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+                <div class="col-md-10 col-lg-9" style="margin-top: 5px;">
+                    <input id="btnticketsprev" type="button" class="prev btn btn-primary" value="Previous" />
+                    <input type="submit" id="finish" value="Save Event" class="btn btn-primary" />
+                </div>
+            </div>
 
     @*<input type="button" class="prev btn btn-primary" style="display: none" value="Previous" />
     <input type="button" class="next btn btn-primary" style="display: none" value="Next" disabled="disabled" />*@

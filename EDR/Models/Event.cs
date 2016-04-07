@@ -22,6 +22,7 @@ namespace EDR.Models
             UpdatedDate = DateTime.Now;
             CheckedDate = DateTime.Now;
             EventInstances = new List<EventInstance>();
+            EventTickets = new List<EventTicket>();
         }
 
         [Required]
@@ -70,6 +71,7 @@ namespace EDR.Models
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? CheckedDate { get; set; }
 
+        [DisplayFormat(DataFormatString = "{0:C}")]
         [DataType(DataType.Currency)]
         public Nullable<decimal> Price { get; set; }
 
@@ -230,8 +232,10 @@ namespace EDR.Models
     public class Ticket : Entity
     {
         [Required]
+        [DisplayFormat(DataFormatString = "{0:G0}")]
         public decimal Quantity { get; set; }
         [Required]
+        [DisplayFormat(DataFormatString = "{0:C}")]
         public decimal Price { get; set; }
         [Required]
         public int SchoolId { get; set; }

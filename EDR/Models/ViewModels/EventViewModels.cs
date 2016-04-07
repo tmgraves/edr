@@ -67,19 +67,25 @@ namespace EDR.Models.ViewModels
         public int SkillLevel { get; set; }
         public bool AddtoMyPlaces { get; set; }
         public string CreateAction { get; set; }
+        public List<Ticket> Tickets { get; set; }
+        public string[] TicketId { get; set; }
 
         public EventCreateViewModel()
         {
             Places = new List<PlaceItem>();
             MonthDays = new MultiCheckBox();
             StylesCheckboxList = new MultiCheckBox();
+            Tickets = new List<Ticket>();
         }
         public EventCreateViewModel(EventType eventType, int schoolId, RoleName role)
         {
+            SchoolId = schoolId;
             EventType = eventType;
             Places = new List<PlaceItem>();
             MonthDays = new MultiCheckBox();
             StylesCheckboxList = new MultiCheckBox();
+            Tickets = new List<Ticket>();
+
             NewPlace = new Place() { Id = 0, Latitude = 0.0, Longitude = 0.0, Public = false, PlaceType = PlaceType.OtherPlace };
 
             //  New Event
