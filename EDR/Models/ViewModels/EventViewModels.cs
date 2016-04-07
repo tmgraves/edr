@@ -70,8 +70,27 @@ namespace EDR.Models.ViewModels
 
         public EventCreateViewModel()
         {
+            Places = new List<PlaceItem>();
             MonthDays = new MultiCheckBox();
             StylesCheckboxList = new MultiCheckBox();
+        }
+        public EventCreateViewModel(EventType eventType, int schoolId, RoleName role)
+        {
+            EventType = eventType;
+            Places = new List<PlaceItem>();
+            MonthDays = new MultiCheckBox();
+            StylesCheckboxList = new MultiCheckBox();
+            NewPlace = new Place() { Id = 0, Latitude = 0.0, Longitude = 0.0, Public = false, PlaceType = PlaceType.OtherPlace };
+
+            //  New Event
+            if (eventType == EDR.Enums.EventType.Class)
+            {
+                Event = new Class() { StartDate = DateTime.Today, EndDate = DateTime.Today, StartTime = DateTime.Today.Add(new TimeSpan(20, 00, 0)), EndTime = DateTime.Today.Add(new TimeSpan(21, 00, 0)), Place = new Place(), SchoolId = schoolId };
+            }
+            else
+            {
+                Event = new Social() { StartDate = DateTime.Today, EndDate = DateTime.Today, StartTime = DateTime.Today.Add(new TimeSpan(20, 00, 0)), EndTime = DateTime.Today.Add(new TimeSpan(24, 00, 0)), Place = new Place() };
+            }
         }
     }
 

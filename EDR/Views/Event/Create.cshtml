@@ -6,6 +6,11 @@
     ViewBag.Title = "Create";
 }
 
+@section Scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
 <h2>New Event</h2>
 <script type="text/javascript">
     $(function () {
@@ -45,46 +50,93 @@
             SetFirstScreen("Facebook");
         });
 
-        $('.wizard .prev').click(function () {
-            $('#finish').hide();
-            var wizard = $(this).parent('.wizard');
+        //$('.wizard .prev').click(function () {
+        //    $('#finish').hide();
+        //    var wizard = $(this).parent('.wizard');
 
-            $('.step.active', wizard).hide();
+        //    $('.step.active', wizard).hide();
 
-            var currentStep = $('.step.active', wizard);
-            currentStep.hide();
-            currentStep.removeClass('active');
+        //    var currentStep = $('.step.active', wizard);
+        //    currentStep.hide();
+        //    currentStep.removeClass('active');
 
-            var newStep = currentStep.prev('.step', wizard);
-            newStep.addClass('active');
-            newStep.show();
+        //    var newStep = currentStep.prev('.step', wizard);
+        //    newStep.addClass('active');
+        //    newStep.show();
 
-            if ($('.step:first', wizard)[0] == newStep[0]) {
-                $(this).hide();
-            }
+        //    if ($('.step:first', wizard)[0] == newStep[0]) {
+        //        $(this).hide();
+        //    }
 
-            $('.next', wizard).show();
+        //    $('.next', wizard).show();
+        //});
+
+        //$('.wizard .next').click(function () {
+        //    var wizard = $(this).parent('.wizard');
+
+        //    $('.step.active', wizard).hide();
+
+        //    var currentStep = $('.step.active', wizard);
+        //    currentStep.hide();
+        //    currentStep.removeClass('active');
+
+        //    var newStep = currentStep.next('.step', wizard);
+        //    newStep.addClass('active');
+        //    newStep.show();
+
+        //    if ($('.step:last', wizard)[0] == newStep[0]) {
+        //        $(this).hide();
+        //        $('#finish').show();
+        //    }
+
+        //    $('.prev', wizard).show();
+        //});
+        //var form = $('#createform.main');
+        //alert(form.prop('id'));
+        $('#btneventtypenext').click(function () {
+            $('#wizeventtypediv').hide();
+            $('#wizdetaildiv').show();
         });
+        $('#btndetailprev').click(function () {
+            $('#wizeventtypediv').show();
+            $('#wizdetaildiv').hide();
+        });
+        $('#btndetailnext').click(function () {
+            var form = $('#createform.main');
+            var count = $('input[name="StylesCheckboxList.PostedItems"]:checked').length;
 
-        $('.wizard .next').click(function () {
-            var wizard = $(this).parent('.wizard');
+            var valid = form.valid();
 
-            $('.step.active', wizard).hide();
-
-            var currentStep = $('.step.active', wizard);
-            currentStep.hide();
-            currentStep.removeClass('active');
-
-            var newStep = currentStep.next('.step', wizard);
-            newStep.addClass('active');
-            newStep.show();
-
-            if ($('.step:last', wizard)[0] == newStep[0]) {
-                $(this).hide();
-                $('#finish').show();
+            if (count == 0)
+            {
+                $('#validationMessage').show();
+                valid = false;
+            }
+            else
+            {
+                $('#validationMessage').hide();
             }
 
-            $('.prev', wizard).show();
+            if (valid) {
+                $('#validationMessage').hide();
+                $('#wizdetaildiv').hide();
+                $('#wizdatetimediv').show();
+            }
+        });
+        $('#btndatetimeprev').click(function () {
+            $('#wizdetaildiv').show();
+            $('#wizdatetimediv').hide();
+        });
+        $('#btndatetimenext').click(function () {
+            var form = $('#createform.main');
+            if (form.valid()) {
+                $('#wizdatetimediv').hide();
+                $('#wizlocationdiv').show();
+            }
+        });
+        $('#btnlocationprev').click(function () {
+            $('#wizdatetimediv').show();
+            $('#wizlocationdiv').hide();
         });
     });
 
@@ -184,6 +236,8 @@
             createevent.hide();
 
             $('.next', wizard).show();
+
+            $('#existinglocationdiv').hide();
         }
 
         var eventtype = $("#EventType option:selected").val();
@@ -356,11 +410,12 @@
             }
             </div>
         </div>
-        @using (Html.BeginForm())
+        @using (Html.BeginForm("Create", "Event", FormMethod.Post, new { @id = "createform", @class = "main" }))
         {
         @Html.AntiForgeryToken()
         @Html.HiddenFor(m => m.CreateAction)
         @Html.HiddenFor(m => m.Role)
+        @Html.HiddenFor(m => m.SchoolId)
         @Html.HiddenFor(x => x.Event.PhotoUrl)
         @Html.HiddenFor(x => x.Event.FacebookLink)
         @Html.HiddenFor(x => x.Event.FacebookId)
@@ -375,7 +430,7 @@
         @Html.HiddenFor(m => m.Event.Place.Filename)
         @Html.HiddenFor(m => m.Event.Place.ThumbnailFilename)
         <div id="wizard" class="wizard" style="display: none;">
-            <div class="step active" title="New Event">
+            <div id="wizeventtypediv" class="step active" title="New Event">
                 <h2>Step: Type of Event</h2>
                 <div class="row" style="margin-bottom: 5px;">
                     <div class="col-md-10 col-lg-9">
@@ -397,9 +452,12 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-10 col-lg-9" style="margin-top: 5px;">
+                        <input id="btneventtypenext" type="button" class="next btn btn-primary" style="display: none" value="Next" disabled="disabled" />
+                    </div>
                 </div>
             </div>
-            <div class="step" style="display:none">
+            <div id="wizdetaildiv" class="step" style="display:none">
                 <h2>Step: Details</h2>
                 <div class="row" style="margin-bottom: 5px;">
                     @Html.LabelFor(model => model.Event.Name, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
@@ -411,9 +469,6 @@
                 <div id="skilllevel" class="row" style="margin-bottom: 5px;" hidden="hidden">
                     @Html.LabelFor(m => m.SkillLevel, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
                     <div class="col-md-10 col-lg-9">
-                        @{
-            var list = new SelectList(new List<int> { 1, 2, 3, 4, 5 });
-                        }
                         @Html.DropDownListFor(m => m.SkillLevel, new SelectList(new List<int> { 1, 2, 3, 4, 5 }), "-- Select a Skill Level --", new { @class = "form-control" })
                         @Html.ValidationMessageFor(m => m.SkillLevel, "", new { @class = "text-danger" })
                     </div>
@@ -427,7 +482,8 @@
                                     style => style.Text,
                                     model => model.StylesCheckboxList.SelectedItems,
                                     new HtmlListInfo(HtmlTag.table, 2, new { @class = "checkboxlist" }, TextLayout.Default))
-                        @Html.ValidationMessageFor(model => model.StylesCheckboxList.PostedItems, "", new { @class = "text-danger" })
+                        <span id="validationMessage" class="text-danger" style="display: none;" >Please choose at least one style</span>
+                        @*@Html.ValidationMessageFor(model => model.StylesCheckboxList.PostedItems, "Please choose at least one style", new { @class = "text-danger" })*@
                     </div>
                 </div>
                 <div class="row" style="margin-bottom: 5px;">
@@ -437,8 +493,12 @@
                         @Html.ValidationMessageFor(model => model.Event.Description, "", new { @class = "text-danger" })
                     </div>
                 </div>
+                <div class="col-md-10 col-lg-9" style="margin-top: 5px;">
+                    <input id="btndetailprev" type="button" class="prev btn btn-primary" value="Previous" />
+                    <input id="btndetailnext" type="button" class="next btn btn-primary" style="display: none" value="Next" disabled="disabled" />
+                </div>
             </div>
-            <div class="step" style="display:none">
+            <div id="wizdatetimediv" class="step" style="display:none">
                 <h2>Step: Date & Time</h2>
                 <div class="row" style="margin-bottom: 5px;">
                     @if (Model.Event.FacebookId != null)
@@ -565,8 +625,12 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-md-10 col-lg-9" style="margin-top: 5px;">
+                    <input id="btndatetimeprev" type="button" class="prev btn btn-primary" value="Previous" />
+                    <input id="btndatetimenext" type="button" class="next btn btn-primary" style="display: none" value="Next" disabled="disabled" />
+                </div>
             </div>
-            <div class="step" style="display:none">
+            <div id="wizlocationdiv" class="step" style="display:none">
                 <h2>Step: Location</h2>
                 <div class="col-lg-12 col-md-12" style="margin-bottom: 5px;">
                     @Html.HiddenFor(m => m.Event.Place.FacebookId)
@@ -577,15 +641,17 @@
                     @Html.HiddenFor(m => m.Event.Place.Filename)
                     @Html.HiddenFor(m => m.Event.Place.ThumbnailFilename)
                     <div class="col-md-10 col-lg-9">
-                        <div class="row">
-                            <h3>Pick an Existing Location</h3><br />
-                            @if (Model.Places != null)
-                            {
-                                @Html.DropDownListFor(model => model.Event.PlaceId, Model.Places.Select(p => new SelectListItem() { Text = p.Name, Value = p.Id.ToString() }), null, new { @class = "form-control", @id = "ExistingPlace" })
-                            }
-                        </div>
-                        <div class="row">
-                            <h3>Or</h3>
+                        <div id="existinglocationdiv">
+                            <div class="row">
+                                <h3>Pick an Existing Location</h3><br />
+                                @if (Model.Places != null)
+                                {
+                                    @Html.DropDownListFor(model => model.Event.PlaceId, Model.Places.Select(p => new SelectListItem() { Text = p.Name, Value = p.Id.ToString() }), null, new { @class = "form-control", @id = "ExistingPlace" })
+                                }
+                            </div>
+                            <div class="row">
+                                <h3>Or</h3>
+                            </div>
                         </div>
                         <div class="row">
                             <h3>Create a New Location</h3>
@@ -675,11 +741,15 @@
                         }
                     </div>
                 </div>
-            </div>
+                <div class="col-md-10 col-lg-9" style="margin-top: 5px;">
+                <input id="btnlocationprev" type="button" class="prev btn btn-primary" value="Previous" />
+                <input type="submit" id="finish" value="Save Event" class="btn btn-primary" />
+        </div>
+    </div>
 
-            <input type="button" class="prev btn btn-primary" style="display: none" value="Previous" />
-            <input type="button" class="next btn btn-primary" style="display: none" value="Next" disabled="disabled" />
-            <input type="submit" id="finish" value="Save Event" class="btn btn-primary" style="display: none;" />
+    @*<input type="button" class="prev btn btn-primary" style="display: none" value="Previous" />
+    <input type="button" class="next btn btn-primary" style="display: none" value="Next" disabled="disabled" />*@
+            @*<input type="submit" id="finish" value="Save Event" class="btn btn-primary" style="display: none;" />*@
         </div>
         }
         <a class="btn btn-warning" href="@Url.Action("Home", Session["CurrentRole"] != null ? Session["CurrentRole"].ToString() : "Dancer", new { username = User.Identity.Name })" style="float: right;">Cancel</a>

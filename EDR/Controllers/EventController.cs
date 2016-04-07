@@ -1275,27 +1275,27 @@ namespace EDR.Controllers
         [Authorize(Roles = "Owner,Promoter,Teacher")]
         public ActionResult Create(EventType eventType, int schoolId, RoleName role)
         {
-            var model = new EventCreateViewModel();
-            model.EventType = eventType;
-            model.SchoolId = schoolId;
-            var userid = User.Identity.GetUserId();
-            var user = DataContext.Users.Where(u => u.Id == userid).Include("Places").FirstOrDefault();
-            model.Places = new List<PlaceItem>();
-            model.NewPlace = new Place() { Id = 0, Latitude = 0.0, Longitude = 0.0, Public = false, PlaceType = PlaceType.OtherPlace };
+            var model = new EventCreateViewModel(eventType, schoolId, role);
+            //model.EventType = eventType;
+            //model.SchoolId = schoolId;
+            //var userid = User.Identity.GetUserId();
+            //var user = DataContext.Users.Where(u => u.Id == userid).Include("Places").FirstOrDefault();
+            //  model.Places = new List<PlaceItem>();
+            //model.NewPlace = new Place() { Id = 0, Latitude = 0.0, Longitude = 0.0, Public = false, PlaceType = PlaceType.OtherPlace };
 
-            //  New Event
-            if (model.Event == null)
-            {
-                if (model.EventType == EventType.Class)
-                {
-                    model.Event = new Class() { StartDate = DateTime.Today, Place = new Place(), SchoolId = schoolId };
-                }
-                else
-                {
-                    model.Event = new Social() { StartDate = DateTime.Today, Place = new Place() };
-                }
-            }
-            //  New Event
+            ////  New Event
+            //if (model.Event == null)
+            //{
+            //    if (model.EventType == EventType.Class)
+            //    {
+            //        model.Event = new Class() { StartDate = DateTime.Today, Place = new Place(), SchoolId = schoolId };
+            //    }
+            //    else
+            //    {
+            //        model.Event = new Social() { StartDate = DateTime.Today, Place = new Place() };
+            //    }
+            //}
+            ////  New Event
 
             LoadCreateModel(model);
 
@@ -1378,6 +1378,7 @@ namespace EDR.Controllers
                 model.FacebookId = null;
 
                 ModelState.Clear();
+                LoadCreateModel(model);
                 return View(model);
             }
             //  Pick a Facebook Event
