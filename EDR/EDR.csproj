@@ -22,6 +22,7 @@
     <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -468,6 +469,7 @@
     <Content Include="Content\images\www.png" />
     <Content Include="Content\images\yelp.png" />
     <Content Include="Content\images\youtube.png" />
+    <Content Include="Content\sidebar.bootstrap.css" />
     <Content Include="favicon.ico" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -745,6 +747,7 @@
     <Content Include="Views\Shared\EditorTemplates\OrganizationMember.cshtml" />
     <Content Include="Views\Event\Create old2.cshtml" />
     <Content Include="Views\Event\Create.cshtml" />
+    <Content Include="Views\Shared\_HomeLayout.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

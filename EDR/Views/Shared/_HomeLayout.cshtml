@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Eat. Dance. Repeat.</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+</head>
+<body>
+    <div id="fb-root"></div>
+    <script>
+(function (d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&appId=304042686436920&version=v2.0";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<script>
+window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0], t = window.twttr || {}; if (d.getElementById(id)) return; js = d.createElement(s); js.id = id; js.src = "https://platform.twitter.com/widgets.js"; fjs.parentNode.insertBefore(js, fjs); t._e = []; t.ready = function (f) { t._e.push(f); }; return t; }(document, "script", "twitter-wjs"));
+</script>
+    <div class="row" style="margin-bottom: 40px;">
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <a href="@Url.Action("Index", "Home")" class="navbar-brand">
+                        <img src="~/Content/images/eatdancerepeat.png" style="height: 100%;" />
+                    </a>
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li>@Html.ActionLink("Explore", "Explore", "Home")</li>
+                        <li>@Html.ActionLink("Learn", "Learn", "Home")</li>
+                        <li>@Html.ActionLink("Dance", "Social", "Home")</li>
+                        @*<li>@Html.ActionLink("Perform", "Perform", "Home")</li>*@
+                    </ul>
+                    @Html.Partial("_LoginPartial")
+                </div>
+                <div>
+                    <div class="pull-right" style="display: inline-block; vertical-align: bottom !important; margin: 1px;">
+                        <a class="twitter-share-button"
+                           data-count="none"
+                           href="https://twitter.com/share"
+                           data-url="http://www.eatdancerepeat.com"
+                           data-text="Check out Eat. Dance. Repeat.">
+                            Tweet
+                        </a>
+                    </div>
+                    <div class="pull-right" style="display: inline-block; margin: 1px;">
+                        <div class="fb-share-button" data-href="http://www.eatdancerepeat.com" data-layout="button" style="margin-bottom: 5px !important;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @RenderSection("jumbotron", required: false)
+
+    <div class="container">
+        <div>
+            @RenderBody()
+        </div>
+        <hr />
+        <footer>
+            <div style="text-align: center;">
+                <a href="@Url.Action("PrivacyPolicy", "Home")" class="btn btn-link">
+                    Privacy Policy
+                </a>
+                <a href="@Url.Action("TermsofService", "Home")" class="btn btn-link">
+                    Terms of Service
+                </a>
+            </div>
+            <p>&copy; @DateTime.Now.Year - Eat. Dance. Repeat.</p>
+        </footer>
+    </div>
+
+    @*@Scripts.Render("~/bundles/jquery")*@
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

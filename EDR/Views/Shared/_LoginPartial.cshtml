@@ -16,7 +16,24 @@
     {
     @Html.AntiForgeryToken()
 
-    <ul class="nav navbar-nav navbar-right">
+        <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-user"></i> @User.Identity.Name<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a href="@Url.Action("Home", "Dancer", new { username = User.Identity.Name })"><i class="glyphicon glyphicon-user"></i> @User.Identity.Name</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="#">My Teacher Profile</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="#">My Owner Profile</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="#">My Promoter Profile</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+                </ul>
+            </li>
+        </ul>
+
+    @*<ul class="nav navbar-nav navbar-right">
         <li>
             <a href="@Url.Action("Home", Session["CurrentRole"] != null ? Session["CurrentRole"].ToString() : "Dancer", new { username = User.Identity.Name })"><i class="glyphicon glyphicon-user"></i> @User.Identity.Name</a>
         </li>
@@ -42,7 +59,7 @@
             </li>
         }
         <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
-    </ul>
+    </ul>*@
     }
 }
 else

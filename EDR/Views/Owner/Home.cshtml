@@ -29,6 +29,34 @@
     </div>
 </div>
 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+    <div class="panel panel-info">
+        <h4 class="col-lg-6 col-md-6 col-sm-6 col-xs-6">My Schools</h4>
+        @if (Model.Owner.ApplicationUser.UserName == User.Identity.Name)
+        {
+            @Html.ActionLink("Add School", "Create", "School", null, new { @class = "btn btn-text" })
+        }
+        <div class="panel-body">
+            <div class="row">
+            </div>
+            @if (Model.Owner.Schools != null && Model.Owner.Schools.Count() > 0)
+            {
+                foreach (var sch in Model.Owner.Schools.OrderBy(s => s.Name))
+                {
+                    <div class="row" style="padding: 2px;">
+                        @Html.ActionLink(sch.Name, "View", "School", new { id = sch.Id }, new { @class = "btn btn-link" })
+                    </div>
+                }
+            }
+            else
+            {
+                @: No Facebook Events to Import
+            }
+            @*<a class="btn btn-primary" href="@Url.Action("ImportClassFromFacebook", "Event")">
+                    <h4>More Events...</h4>
+                </a>*@
+        </div>
+    </div>
+
     <div class="panel panel-success">
         <h4 class="col-lg-12 col-md-12 col-sm-12 col-xs-12">Latest Classes/Workshops...</h4>
         <div class="panel-body">
