@@ -1466,8 +1466,6 @@ namespace EDR.Controllers
 
                     cls.EventTickets = DataContext.Tickets.Where(t => model.TicketId.Contains(t.Id.ToString())).AsEnumerable().Select(t => new EventTicket() { TicketId = t.Id, EventId = cls.Id }).ToList();
                     DataContext.SaveChanges();
-
-
                 }
                 //  Social
                 else
