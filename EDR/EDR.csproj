@@ -748,6 +748,10 @@
     <Content Include="Views\Event\Create old2.cshtml" />
     <Content Include="Views\Event\Create.cshtml" />
     <Content Include="Views\Shared\_HomeLayout.cshtml" />
+    <Content Include="Views\Teacher\Manage.cshtml" />
+    <Content Include="Views\Promoter\Manage.cshtml" />
+    <Content Include="Views\Owner\Manage.cshtml" />
+    <Content Include="Views\Dancer\Manage.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

@@ -33,6 +33,14 @@ namespace EDR.Controllers
 {
     public class DancerController : BaseController
     {
+        public ActionResult Manage()
+        {
+            var userid = User.Identity.GetUserId();
+            var model = DataContext.Users.Single(s => s.Id == userid);
+
+            return View(model);
+        }
+
         public ActionResult List()
         {
             var model = new DancerListViewModel();

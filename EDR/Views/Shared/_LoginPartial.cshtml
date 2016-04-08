@@ -20,13 +20,13 @@
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-user"></i> @User.Identity.Name<span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                    <li><a href="@Url.Action("Home", "Dancer", new { username = User.Identity.Name })"><i class="glyphicon glyphicon-user"></i> @User.Identity.Name</a></li>
+                    <li><a href="@Url.Action("Manage", "Dancer")"><i class="glyphicon glyphicon-user"></i> @User.Identity.Name</a></li>
                     <li role="separator" class="divider"></li>
-                    <li><a href="#">My Teacher Profile</a></li>
+                    <li>@Html.ActionLink("My Teacher Profile", "Manage", "Teacher")</li>
                     <li role="separator" class="divider"></li>
-                    <li><a href="#">My Owner Profile</a></li>
+                    <li>@Html.ActionLink("My Owner Profile", "Manage", "Owner")</li>
                     <li role="separator" class="divider"></li>
-                    <li><a href="#">My Promoter Profile</a></li>
+                    <li>@Html.ActionLink("My Promoter Profile", "Manage", "Promoter")</li>
                     <li role="separator" class="divider"></li>
                     <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
                 </ul>

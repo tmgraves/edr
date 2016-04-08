@@ -18,6 +18,14 @@ namespace EDR.Controllers
 {
     public class TeacherController : BaseController
     {
+        [Authorize]
+        public ActionResult Manage()
+        {
+            var id = User.Identity.GetUserId();
+            var teacher = DataContext.Teachers.Single(t => t.ApplicationUser.Id == id);
+            return View(teacher);
+        }
+
         public ActionResult List(TeacherListViewModel model)
         {
             model.Teachers = DataContext.Teachers.Include("ApplicationUser").Include("DanceStyles").Include("ApplicationUser.UserPictures").Include("Classes").Include("Classes.Reviews");

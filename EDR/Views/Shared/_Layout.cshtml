@@ -39,17 +39,20 @@ window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Learn<span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <li><a href="#">Search Classes</a></li>
+                                <li>@Html.ActionLink("Search Classes", "Learn", "Home")</li>
+                                <li><a href="#">+Add a Class</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="#">Schools</a></li>
+                                <li><a href="#">+Add a School</a></li>
                                 <li role="separator" class="divider"></li>
                                 <li><a href="#">Studios</a></li>
-                                <li><a href="#">Schools</a></li>
-                                <li><a href="#"><i class="glyphicon glyphicon-arrow-right"></i> Add a School</a></li>
                             </ul>
                         </li>
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dance<span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <li><a href="#">Search Socials</a></li>
+                                <li>@Html.ActionLink("Search Socials", "Social", "Home")</li>
+                                <li><a href="#">+Add a Social</a></li>
                                 <li role="separator" class="divider"></li>
                                 <li><a href="#">Dance Venues</a></li>
                             </ul>
@@ -57,19 +60,20 @@ window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">People<span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <li><a href="#">Dancers</a></li>
+                                <li>@Html.ActionLink("Dancers", "List", "Dancer")</li>
                                 <li role="separator" class="divider"></li>
-                                <li><a href="#">Teachers</a></li>
+                                <li>@Html.ActionLink("Teachers", "List", "Teacher")</li>
                                 <li role="separator" class="divider"></li>
-                                <li><a href="#">Owners</a></li>
+                                <li>@Html.ActionLink("Owners", "List", "Owner")</li>
                                 <li role="separator" class="divider"></li>
-                                <li><a href="#">Promoters</a></li>
+                                <li>@Html.ActionLink("Promoters", "List", "Promoter")</li>
                             </ul>
                         </li>
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Performance<span class="caret"></span></a>
                             <ul class="dropdown-menu">
                                 <li><a href="#">Teams</a></li>
+                                <li><a href="#">+Add a Team</a></li>
                                 <li><a href="#">Performances</a></li>
                             </ul>
                         </li>

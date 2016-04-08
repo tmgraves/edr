@@ -1,0 +1,54 @@
+﻿@model EDR.Models.Teacher
+
+@{
+    ViewBag.Title = "Manage";
+}
+
+<h2>Manage</h2>
+
+<div class="row">
+    <div class="col-lg-6 col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-body ">
+                <dl class="dl-horizontal">
+                    <dt>
+                        @Html.DisplayNameFor(model => model.ApplicationUser.FullName)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.ApplicationUser.FullName)
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-body ">
+                <h3>Classes</h3>
+                @Html.ActionLink("Create Class", "Create", "Event", new { eventType = EDR.Enums.EventType.Class }, null)
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Class</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    @foreach (var item in Model.Classes)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(member => item.Name)
+                            </td>
+                            <td>
+                                @Html.ActionLink("Edit", "EditTicket", new { id = item.Id }) |
+                                @Html.ActionLink("Details", "ViewTicket", new { id = item.Id }) |
+                                @Html.ActionLink("Delete", "DeleteTicket", new { id = item.Id })
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

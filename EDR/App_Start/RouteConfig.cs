@@ -15,6 +15,18 @@ namespace EDR
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
+                name: "GenericNoID",
+                url: "{controller}/{action}",
+                defaults: new { controller = "Home", action = "Index" }
+            );
+
+            routes.MapRoute(
+                name: "Generic",
+                url: "{controller}/{action}/{id}",
+                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
                 name: "Test",
                 url: "Home/Test",
                 defaults: new { controller = "Home", action = "Test" }
@@ -54,6 +66,12 @@ namespace EDR
                 name: "SchoolAction",
                 url: "School/{id}/{action}",
                 defaults: new { controller = "School", id = UrlParameter.Optional, action = "View" }
+            );
+
+            routes.MapRoute(
+                name: "DancerList",
+                url: "Dancer/List",
+                defaults: new { controller = "Dancer", action = "List" }
             );
 
             routes.MapRoute(
@@ -343,11 +361,6 @@ namespace EDR
                 defaults: new { controller = "Owner", action = "Home" }
             );
 
-            routes.MapRoute(
-                name: "DancerList",
-                url: "Dancer/List",
-                defaults: new { controller = "Dancer", action = "List" }
-            );
             routes.MapRoute(
                 name: "DancerProfilePic",
                 url: "Dancer/ProfilePicture",

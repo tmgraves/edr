@@ -15,6 +15,14 @@ namespace EDR.Controllers
 {
     public class PromoterController : BaseController
     {
+        public ActionResult Manage()
+        {
+            var userid = User.Identity.GetUserId();
+            var model = DataContext.Promoters.Single(s => s.ApplicationUser.Id == userid);
+
+            return View(model);
+        }
+
         public ActionResult List()
         {
             var model = new PromoterListViewModel();
