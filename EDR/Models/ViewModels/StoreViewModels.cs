@@ -39,10 +39,11 @@ namespace EDR.Models.ViewModels
 
         public BuyTicketViewModel()
         {
-
+            Quantity = 1;
         }
         public BuyTicketViewModel(Ticket ticket)
         {
+            Quantity = 1;
             Ticket = ticket;
         }
     }

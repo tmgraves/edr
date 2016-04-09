@@ -1266,7 +1266,7 @@ namespace EDR.Controllers
         [Authorize]
         public ActionResult Register(int id)
         {
-            //var instance = DataContext.EventInstances.Where(i => i.Id == id).Include("Event");
+            var instance = DataContext.EventInstances.Where(i => i.Id == id).Include("Event").FirstOrDefault();
             //var userId = User.Identity.GetUserId();
             //var user = DataContext.Users.Single(x => x.Id == userId);
             //var evt = DataContext.Events.Where(e => e.Id == id).FirstOrDefault();
@@ -1288,8 +1288,7 @@ namespace EDR.Controllers
             //    }
             //}
             //DataContext.SaveChanges();
-            //return Redirect(returnUrl);
-            return View();
+            return RedirectToAction("View", new { id = instance.EventId, instance.Event is Class ? EventType.Class : EventType.Social });
         }
 
         [Authorize]

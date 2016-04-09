@@ -102,7 +102,7 @@
                             <span class="text-primary"><b>@evt.DateTime.ToShortDateString()</b></span>
                         </div>
                         <div class="col-lg-6 col-md-6">
-                            <a class="btn btn-primary">Register</a>
+                            @Html.ActionLink("Register", "Register", new { id = evt.Id }, new { @class = "btn btn-primary" })
                             @*<a class="btn btn-danger" href="@Url.Action("DeleteInstance", "Event", new { id = evt.Id, eventId = evt.EventId })"><span class="glyphicon glyphicon-remove"></span></a>*@
                         </div>
                     </div>
