@@ -752,6 +752,7 @@
     <Content Include="Views\Promoter\Manage.cshtml" />
     <Content Include="Views\Owner\Manage.cshtml" />
     <Content Include="Views\Dancer\Manage.cshtml" />
+    <Content Include="Views\Store\BuyTicket.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

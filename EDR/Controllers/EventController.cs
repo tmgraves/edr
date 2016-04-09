@@ -693,6 +693,8 @@ namespace EDR.Controllers
                     .Include("EventMembers.Member")
                     .Include("EventInstances")
                     .Include("Creator")
+                    .Include("EventTickets")
+                    .Include("EventTickets.Ticket")
                     .FirstOrDefault();
 
             if (eventType == EventType.Class)
@@ -1259,6 +1261,35 @@ namespace EDR.Controllers
             }
             DataContext.SaveChanges();
             return Redirect(returnUrl);
+        }
+
+        [Authorize]
+        public ActionResult Register(int id)
+        {
+            //var instance = DataContext.EventInstances.Where(i => i.Id == id).Include("Event");
+            //var userId = User.Identity.GetUserId();
+            //var user = DataContext.Users.Single(x => x.Id == userId);
+            //var evt = DataContext.Events.Where(e => e.Id == id).FirstOrDefault();
+            //if (DataContext.EventMembers.Where(x => x.Member.Id == user.Id && x.Event.Id == id).ToList().Count == 0)
+            //{
+            //    var newMember = new EventMember() { Event = evt, Member = user };
+            //    DataContext.EventMembers.Add(newMember);
+            //}
+
+            //if (evt is Class)
+            //{
+            //    var teachers = DataContext.Teachers.Where(t => t.Classes.Any(c => c.Id == id)).ToList();
+            //    foreach (Teacher t in teachers)
+            //    {
+            //        if (DataContext.Students.Where(x => x.DancerId == user.Id && x.TeacherId == t.Id).ToList().Count == 0)
+            //        {
+            //            DataContext.Students.Add(new Student() { Teacher = t, Dancer = user });
+            //        }
+            //    }
+            //}
+            //DataContext.SaveChanges();
+            //return Redirect(returnUrl);
+            return View();
         }
 
         [Authorize]

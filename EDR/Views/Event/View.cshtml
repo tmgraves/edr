@@ -55,8 +55,40 @@
         </div>*@
     </div>
     <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-        <div class="partialContents" data-url="/Event/@Model.Event.Id/GetRelatedEvents?eventType=@Model.EventType">
-            <img src="~/Content/images/indicator.white.gif" />Loading...
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4>Buy Tickets</h4>
+            </div>
+            <div class="panel-body">
+                <table class="table table-striped">
+                    <thead style="margin-bottom: 2px;">
+                        <tr>
+                            <th class="text-center">
+                                Quantity
+                            </th>
+                            <th class="text-center">
+                                Price
+                            </th>
+                            <th>
+                            </th>
+                        </tr>
+                    </thead>
+                    @foreach (var tic in Model.Event.EventTickets.OrderBy(t => t.Ticket.Quantity))
+                    {
+                        <tr>
+                            <td class="text-center">
+                                <span class="text-primary"><b>@String.Format("{0:N0}", tic.Ticket.Quantity)</b></span>
+                            </td>
+                            <td class="text-center">
+                                <span class="text-primary"><b>@String.Format("{0:C}", tic.Ticket.Price)</b></span>
+                            </td>
+                            <td>
+                                @Html.ActionLink("Buy", "BuyTicket", "Store", new { id = tic.Ticket.Id }, new { @class = "btn btn-primary" })
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
         </div>
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -71,11 +103,14 @@
                         </div>
                         <div class="col-lg-6 col-md-6">
                             <a class="btn btn-primary">Register</a>
-                            <a class="btn btn-danger" href="@Url.Action("DeleteInstance", "Event", new { id = evt.Id, eventId = evt.EventId })"><span class="glyphicon glyphicon-remove"></span></a>
+                            @*<a class="btn btn-danger" href="@Url.Action("DeleteInstance", "Event", new { id = evt.Id, eventId = evt.EventId })"><span class="glyphicon glyphicon-remove"></span></a>*@
                         </div>
                     </div>
                 }
             </div>
+        </div>
+        <div class="partialContents" data-url="/Event/@Model.Event.Id/GetRelatedEvents?eventType=@Model.EventType">
+            <img src="~/Content/images/indicator.white.gif" />Loading...
         </div>
         <div class="well" style="white-space: pre-line">
             @Html.Raw(EDR.Utilities.ApplicationUtility.WithActiveLinks(Model.Event.Description))

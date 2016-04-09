@@ -206,9 +206,9 @@ namespace EDR.Models
         [ForeignKey("UserId")]
         public ApplicationUser Member { get; set; }
         [Required]
-        public int EventId { get; set; }
-        [ForeignKey("EventId")]
-        public Event Event { get; set; }
+        public int EventInstanceId { get; set; }
+        [ForeignKey("EventInstanceId")]
+        public EventInstance Instance { get; set; }
         private DateTime _date = DateTime.Now;
         public DateTime DateRegistered
         {

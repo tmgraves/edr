@@ -68,6 +68,7 @@ namespace EDR.Data
                         .HasRequired(f => f.Event)
                         .WithMany(f => f.Feeds)
                         .WillCascadeOnDelete(true);
+            modelBuilder.Entity<EventRegistration>().ToTable("EventRegistrations");
             //modelBuilder.Entity<ObjectFeed>()
             //            .ToTable("ObjectFeeds")
             //            .HasRequired(f => f.Object)
@@ -141,6 +142,7 @@ namespace EDR.Data
         public DbSet<EventTicket> EventTickets { get; set; }
         public DbSet<UserTicket> UserTickets { get; set; }
         public DbSet<EventInstance> EventInstances { get; set; }
+        public DbSet<EventRegistration> EventRegistrations { get; set; }
 
         public DbSet<Series> Series { get; set; }
         //  public DbSet<Group> Groups { get; set; }
