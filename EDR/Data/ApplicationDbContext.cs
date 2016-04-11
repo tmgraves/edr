@@ -124,7 +124,7 @@ namespace EDR.Data
                         .WithMany(f => f.OrderDetails)
                         .WillCascadeOnDelete(true);
             modelBuilder.Entity<Ticket>().ToTable("Tickets");
-            modelBuilder.Entity<EventTicket>().ToTable("EventTickets");
+            //modelBuilder.Entity<EventTicket>().ToTable("EventTickets");
             modelBuilder.Entity<UserTicket>().ToTable("UserTickets");
 
             //Organizations
@@ -139,7 +139,7 @@ namespace EDR.Data
         public DbSet<Class> Classes { get; set; }
         public DbSet<Social> Socials { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
-        public DbSet<EventTicket> EventTickets { get; set; }
+        //public DbSet<EventTicket> EventTickets { get; set; }
         public DbSet<UserTicket> UserTickets { get; set; }
         public DbSet<EventInstance> EventInstances { get; set; }
         public DbSet<EventRegistration> EventRegistrations { get; set; }

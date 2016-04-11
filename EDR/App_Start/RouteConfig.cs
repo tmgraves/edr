@@ -14,18 +14,23 @@ namespace EDR
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
-            routes.MapMvcAttributeRoutes();
-            
+            //  routes.MapMvcAttributeRoutes();
             routes.MapRoute(
-                name: "GenericNoID",
-                url: "{controller}/{action}",
-                defaults: new { controller = "Home", action = "Index" }
+                name: "EventCreate",
+                url: "{eventType}/Create",
+                defaults: new { controller = "Event", action = "Create", eventType = UrlParameter.Optional }
             );
 
             routes.MapRoute(
                 name: "Generic",
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
+                name: "GenericNoID",
+                url: "{controller}/{action}",
+                defaults: new { controller = "Home", action = "Index" }
             );
 
             routes.MapRoute(

@@ -212,7 +212,7 @@
                         <tr>
                             <th>Quantity</th>
                             <th>Price</th>
-                            <th>Related Events</th>
+                            <th>Related Event</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -226,11 +226,12 @@
                                 @Html.DisplayFor(member => item.Price)
                             </td>
                             <td>
-                                @item.EventTickets.Count()
+                                @if (item.Event != null)
+                                {
+                                    @item.Event.Name
+                                }
                             </td>
                             <td>
-                                @Html.ActionLink("Edit", "EditTicket", new { id = item.Id }) |
-                                @Html.ActionLink("Details", "ViewTicket", new { id = item.Id }) |
                                 @Html.ActionLink("Delete", "DeleteTicket", new { id = item.Id })
                             </td>
                         </tr>

@@ -7,16 +7,16 @@ using System.Web;
 
 namespace EDR.Models.ViewModels
 {
-    public class ViewTicketViewModel
-    {
-        public Ticket Ticket { get; set; }
+    //public class ViewTicketViewModel
+    //{
+    //    public Ticket Ticket { get; set; }
 
-        public IEnumerable<ListItem> AvailableClasses { get; set; }
-        public IEnumerable<ListItem> SelectedClasses { get; set; }
-        [RequiredStringArrayValue(ErrorMessage = "Select at least (1) Class")]
-        public string[] PostedClasses { get; set; }
-        public List<EventTicketPlaceholder> EventTickets { get; set; }
-    }
+    //    public IEnumerable<ListItem> AvailableClasses { get; set; }
+    //    public IEnumerable<ListItem> SelectedClasses { get; set; }
+    //    [RequiredStringArrayValue(ErrorMessage = "Select at least (1) Class")]
+    //    public string[] PostedClasses { get; set; }
+    //    public List<EventTicketPlaceholder> EventTickets { get; set; }
+    //}
 
     public class ListItem
     {

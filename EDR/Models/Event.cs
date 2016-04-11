@@ -22,7 +22,7 @@ namespace EDR.Models
             UpdatedDate = DateTime.Now;
             CheckedDate = DateTime.Now;
             EventInstances = new List<EventInstance>();
-            EventTickets = new List<EventTicket>();
+            Tickets = new List<Ticket>();
         }
 
         [Required]
@@ -150,8 +150,9 @@ namespace EDR.Models
         public ICollection<EventAttendee> Attendees { get; set; }
         public ICollection<Feed> Feeds { get; set; }
         //public ICollection<Event> ChildEvents { get; set; }
-        public ICollection<EventTicket> EventTickets { get; set; }
+        //  public ICollection<EventTicket> EventTickets { get; set; }
         public ICollection<EventInstance> EventInstances { get; set; }
+        public ICollection<Ticket> Tickets { get; set; }
     }
 
     public class EventInstance : Entity
@@ -160,6 +161,7 @@ namespace EDR.Models
         [ForeignKey("EventId")]
         public virtual Event Event { get; set; }
         public DateTime DateTime { get; set; }
+        public ICollection<EventRegistration> EventRegistrations { get; set; }
     }
 
     public class LinkedFacebookObject : Entity
@@ -217,17 +219,17 @@ namespace EDR.Models
         }
     }
 
-    public class EventTicket : Entity
-    {
-        [Required]
-        public int EventId { get; set; }
-        [ForeignKey("EventId")]
-        public Event Event { get; set; }
-        [Required]
-        public int TicketId { get; set; }
-        [ForeignKey("TicketId")]
-        public Ticket Ticket { get; set; }
-    }
+    //public class EventTicket : Entity
+    //{
+    //    [Required]
+    //    public int EventId { get; set; }
+    //    [ForeignKey("EventId")]
+    //    public Event Event { get; set; }
+    //    [Required]
+    //    public int TicketId { get; set; }
+    //    [ForeignKey("TicketId")]
+    //    public Ticket Ticket { get; set; }
+    //}
 
     public class Ticket : Entity
     {
@@ -237,18 +239,20 @@ namespace EDR.Models
         [Required]
         [DisplayFormat(DataFormatString = "{0:C}")]
         public decimal Price { get; set; }
-        [Required]
-        public int SchoolId { get; set; }
+        public int? SchoolId { get; set; }
         [ForeignKey("SchoolId")]
         public School School { get; set; }
-        public ICollection<EventTicket> EventTickets { get; set; }
+        public int? EventId { get; set; }
+        [ForeignKey("EventId")]
+        public Event Event { get; set; }
+        //public ICollection<EventTicket> EventTickets { get; set; }
     }
 
-    public class EventTicketPlaceholder
-    {
-        public bool Connect { get; set; }
-        public EventTicket EventTicket { get; set; }
-    }
+    //public class EventTicketPlaceholder
+    //{
+    //    public bool Connect { get; set; }
+    //    public EventTicket EventTicket { get; set; }
+    //}
 
     //public class ObjectFeed : Entity
     //{

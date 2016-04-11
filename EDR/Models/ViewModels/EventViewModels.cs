@@ -67,15 +67,16 @@ namespace EDR.Models.ViewModels
         public int SkillLevel { get; set; }
         public bool AddtoMyPlaces { get; set; }
         public string CreateAction { get; set; }
-        public List<Ticket> Tickets { get; set; }
-        public string[] TicketId { get; set; }
+        public Ticket EventTicket { get; set; }
+        //  public List<Ticket> Tickets { get; set; }
+        //  public string[] TicketId { get; set; }
 
         public EventCreateViewModel()
         {
             Places = new List<PlaceItem>();
             MonthDays = new MultiCheckBox();
             StylesCheckboxList = new MultiCheckBox();
-            Tickets = new List<Ticket>();
+            //  Tickets = new List<Ticket>();
         }
         public EventCreateViewModel(EventType eventType, int? schoolId, RoleName role)
         {
@@ -84,7 +85,7 @@ namespace EDR.Models.ViewModels
             Places = new List<PlaceItem>();
             MonthDays = new MultiCheckBox();
             StylesCheckboxList = new MultiCheckBox();
-            Tickets = new List<Ticket>();
+            //  Tickets = new List<Ticket>();
 
             NewPlace = new Place() { Id = 0, Latitude = 0.0, Longitude = 0.0, Public = false, PlaceType = PlaceType.OtherPlace };
 
@@ -214,6 +215,7 @@ namespace EDR.Models.ViewModels
         public IEnumerable<LinkedFacebookObject> LinkedFacebookObjects { get; set; }
         public RoleName Role { get; set; }
         public int AvailableTickets { get; set; }
+        public IEnumerable<Ticket> Tickets { get; set; }
 
         public EventViewModel()
         {
@@ -225,6 +227,7 @@ namespace EDR.Models.ViewModels
             YouTubePlaylists = new List<YouTubePlaylist>();
             FacebookEvents = new List<FacebookEvent>();
             LinkedFacebookObjects = new List<LinkedFacebookObject>();
+            Tickets = new List<Ticket>();
             AvailableTickets = 0;
         }
     }

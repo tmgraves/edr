@@ -81,7 +81,7 @@ namespace EDR.Controllers
                         .Include("Members.User")
                         .Include("Classes")
                         .Include("Tickets")
-                        .Include("Tickets.EventTickets")
+                        .Include("Tickets.Event")
                         .Include("Owners")
                         .Include("Owners.ApplicationUser")
                         .Include("Teachers")
@@ -99,7 +99,11 @@ namespace EDR.Controllers
                         .Include("Members.User")
                         .Include("Classes")
                         .Include("Tickets")
-                        .Include("Tickets.EventTickets")
+                        .Include("Tickets.Event")
+                        .Include("Owners")
+                        .Include("Owners.ApplicationUser")
+                        .Include("Teachers")
+                        .Include("Teachers.ApplicationUser")
                         .FirstOrDefault();
             return View(model);
         }
@@ -173,33 +177,11 @@ namespace EDR.Controllers
             }
         }
 
-        // GET: School
-        public ActionResult ViewTicket(int id)
-        {
-            var model = new ViewTicketViewModel();
-            model.Ticket = DataContext.Tickets
-                                .Where(t => t.Id == id)
-                                .Include("EventTickets")
-                                .Include("EventTickets.Event")
-                                .FirstOrDefault();
-            //model.AvailableClasses = DataContext.Classes.Where(c => c.SchoolId == model.Ticket.SchoolId).Select(c => new ListItem() { Id = c.Id, Name = c.Name });
-            //model.SelectedClasses = model.Ticket.EventTickets.Select(t => new ListItem() { Id = t.EventId, Name = t.Event.Name, IsSelected = true });
-            var eventTickets = model.Ticket.EventTickets.Where(et => et.TicketId == id);
-            var classes = DataContext.Classes.Where(c => c.SchoolId == model.Ticket.SchoolId);
-            var eids = eventTickets.Select(et => et.EventId).ToArray();
-            model.EventTickets = new List<EventTicketPlaceholder>();
-            foreach(var c in classes)
-            {
-                model.EventTickets.Add(new EventTicketPlaceholder() { Connect = eids.Contains(c.Id), EventTicket = new EventTicket() { Event = c, TicketId = id } });
-            }
-            return View(model);
-        }
-
         // POST: School
         [HttpPost]
         public ActionResult UpdateMembers(School model)
         {
-            foreach(var m in model.Members)
+            foreach (var m in model.Members)
             {
                 var mem = DataContext.OrganizationMembers.Where(om => om.Id == m.Id).FirstOrDefault();
                 mem.Admin = m.Admin;
@@ -219,26 +201,48 @@ namespace EDR.Controllers
             //return RedirectToAction("View", new { id = schoolId });
         }
 
-        // POST: School
-        [HttpPost]
-        public ActionResult UpdateTickets(ViewTicketViewModel model)
-        {
-            DataContext.EventTickets.RemoveRange(DataContext.EventTickets.Where(et => et.TicketId == model.Ticket.Id));
-            //  DataContext.Tickets.Where(t => t.Id == model.Ticket.Id).Include("EventTickets").FirstOrDefault().EventTickets.Clear();
-            DataContext.EventTickets.AddRange(model.EventTickets.Where(et => et.Connect).Select(et => new EventTicket() { EventId = et.EventTicket.Event.Id, TicketId = model.Ticket.Id }));
-            DataContext.SaveChanges();
-            return RedirectToAction("ViewTicket", new { id = model.Ticket.Id });
-            //var members = school.Members;
-            //var schoolId = members.FirstOrDefault().OrganizationId;
-            //foreach(var mbr in members)
-            //{
-            //    var member = DataContext.OrganizationMembers.Single(m => m.Id == mbr.Id);
-            //    member.Admin = mbr.Admin;
-            //}
+        //// GET: School
+        //public ActionResult ViewTicket(int id)
+        //{
+        //    var model = new ViewTicketViewModel();
+        //    model.Ticket = DataContext.Tickets
+        //                        .Where(t => t.Id == id)
+        //                        .Include("EventTickets")
+        //                        .Include("EventTickets.Event")
+        //                        .FirstOrDefault();
+        //    //model.AvailableClasses = DataContext.Classes.Where(c => c.SchoolId == model.Ticket.SchoolId).Select(c => new ListItem() { Id = c.Id, Name = c.Name });
+        //    //model.SelectedClasses = model.Ticket.EventTickets.Select(t => new ListItem() { Id = t.EventId, Name = t.Event.Name, IsSelected = true });
+        //    var eventTickets = model.Ticket.EventTickets.Where(et => et.TicketId == id);
+        //    var classes = DataContext.Classes.Where(c => c.SchoolId == model.Ticket.SchoolId);
+        //    var eids = eventTickets.Select(et => et.EventId).ToArray();
+        //    model.EventTickets = new List<EventTicketPlaceholder>();
+        //    foreach(var c in classes)
+        //    {
+        //        model.EventTickets.Add(new EventTicketPlaceholder() { Connect = eids.Contains(c.Id), EventTicket = new EventTicket() { Event = c, TicketId = id } });
+        //    }
+        //    return View(model);
+        //}
 
-            //DataContext.SaveChanges();
+        //// POST: School
+        //[HttpPost]
+        //public ActionResult UpdateTickets(ViewTicketViewModel model)
+        //{
+        //    DataContext.EventTickets.RemoveRange(DataContext.EventTickets.Where(et => et.TicketId == model.Ticket.Id));
+        //    //  DataContext.Tickets.Where(t => t.Id == model.Ticket.Id).Include("EventTickets").FirstOrDefault().EventTickets.Clear();
+        //    DataContext.EventTickets.AddRange(model.EventTickets.Where(et => et.Connect).Select(et => new EventTicket() { EventId = et.EventTicket.Event.Id, TicketId = model.Ticket.Id }));
+        //    DataContext.SaveChanges();
+        //    return RedirectToAction("ViewTicket", new { id = model.Ticket.Id });
+        //    //var members = school.Members;
+        //    //var schoolId = members.FirstOrDefault().OrganizationId;
+        //    //foreach(var mbr in members)
+        //    //{
+        //    //    var member = DataContext.OrganizationMembers.Single(m => m.Id == mbr.Id);
+        //    //    member.Admin = mbr.Admin;
+        //    //}
 
-            //return RedirectToAction("View", new { id = schoolId });
-        }
+        //    //DataContext.SaveChanges();
+
+        //    //return RedirectToAction("View", new { id = schoolId });
+        //}
     }
 }

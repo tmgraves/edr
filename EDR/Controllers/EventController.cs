@@ -694,33 +694,70 @@ namespace EDR.Controllers
                     .Include("EventMembers.Member")
                     .Include("EventInstances")
                     .Include("Creator")
-                    .Include("EventTickets")
-                    .Include("EventTickets.Ticket")
+                    .Include("Tickets")
                     .FirstOrDefault();
-            var availabletickets =
-                    from    et in DataContext.EventTickets
-                    join    ut in DataContext.UserTickets
-                    on      et.TicketId equals ut.TicketId
-                    join    t in DataContext.Tickets
-                    on      ut.TicketId equals t.Id
-                    where   et.EventId == id
-                    &&      ut.UserId == userid
-                    select  ut.Quantity * t.Quantity;
-            var used =
-                    (from   et in DataContext.EventTickets
-                    join    eta in DataContext.EventTickets
-                    on      et.TicketId equals eta.TicketId
-                    join    evi in DataContext.EventInstances
-                    on      eta.EventId equals evi.EventId
-                    join    er in DataContext.EventRegistrations
-                    on      evi.Id equals er.EventInstanceId
-                    where   er.UserId == userid
-                    &&      et.EventId == id
-                    select  er.Id).Distinct();
 
-            var count = used.Count();
+            //  Get Tickets
+            if (model.Event.Tickets.Count() != 0)
+            {
+                model.Tickets = model.Event.Tickets;
+            }
+            else
+            {
+                model.Tickets = 
+                        from t in DataContext.Tickets
+                        join c in DataContext.Classes
+                        on t.SchoolId equals c.SchoolId
+                        where c.Id == id
+                        select t;
+            }
 
-            model.AvailableTickets = Convert.ToInt32((availabletickets.Count() != 0 ? availabletickets.Sum() : 0) - (used.Count() != 0 ? used.Count() : 0));
+            if (model.Event.Tickets.Count() != 0)
+            {
+                var usertickets =
+                        from ut in DataContext.UserTickets
+                        join t in DataContext.Tickets
+                        on ut.TicketId equals t.Id
+                        where t.EventId == id
+                        && ut.UserId == userid
+                        select ut.Quantity * t.Quantity;
+
+                var used =
+                        (from evi in DataContext.EventInstances
+                         join er in DataContext.EventRegistrations
+                         on evi.Id equals er.EventInstanceId
+                         where er.UserId == userid
+                         && evi.EventId == id
+                         select er.Id).Distinct();
+
+                model.AvailableTickets = Convert.ToInt32((usertickets.Count() != 0 ? usertickets.Sum() : 0) - (used.Count() != 0 ? used.Count() : 0));
+            }
+            else
+            {
+                var usertickets =
+                        from ut in DataContext.UserTickets
+                        join t in DataContext.Tickets
+                        on ut.TicketId equals t.Id
+                        join c in DataContext.Classes
+                        on t.SchoolId equals c.SchoolId
+                        where c.Id == id
+                        && ut.UserId == userid
+                        select ut.Quantity * t.Quantity;
+
+                var used =
+                        (from c in DataContext.Classes
+                         join cr in DataContext.Classes
+                         on c.SchoolId equals cr.SchoolId
+                         join ei in DataContext.EventInstances
+                         on cr.Id equals ei.EventId
+                         join er in DataContext.EventRegistrations
+                         on ei.Id equals er.EventInstanceId
+                         where er.UserId == userid
+                         && c.Id == id
+                         select er.Id).Distinct();
+
+                model.AvailableTickets = Convert.ToInt32((usertickets.Count() != 0 ? usertickets.Sum() : 0) - (used.Count() != 0 ? used.Count() : 0));
+            }
 
             if (eventType == EventType.Class)
             {
@@ -1309,7 +1346,7 @@ namespace EDR.Controllers
             return Redirect(returnUrl);
         }
 
-        [Route("{eventType}/Create")]
+//          [Route("{eventType}/Create")]
         [Authorize(Roles = "Owner,Promoter,Teacher")]
         public ActionResult Create(EventType eventType, int? schoolId, RoleName role)
         {
@@ -1399,9 +1436,9 @@ namespace EDR.Controllers
             }
             //  Set Facebook List
 
-            //  Set Tikcets
-            model.Tickets = DataContext.Tickets.Where(t => t.SchoolId == model.SchoolId).ToList();
-            //  Set Tickets
+            ////  Set Tikcets
+            //model.Tickets = DataContext.Tickets.Where(t => t.SchoolId == model.SchoolId).ToList();
+            ////  Set Tickets
         }
 
         [Authorize(Roles = "Owner,Promoter,Teacher")]
@@ -1414,6 +1451,7 @@ namespace EDR.Controllers
             //  Pick a Facebook Event
             if (model.FacebookId != null)
             {
+                model.CreateAction = "Facebook";
                 var f = FacebookHelper.GetEvent(model.FacebookId, user.FacebookToken);
                 model.Event = new Event() { Description = f.Description, Name = f.Name, StartDate = f.StartTime, StartTime = f.StartTime, EndDate = f.EndTime, EndTime = f.EndTime, FacebookId = f.Id, FacebookLink = f.EventLink, PhotoUrl = f.CoverPhoto.LargeSource, Place = new Place() { Name = f.Address.Location, Address = f.Address.Street, City = f.Address.City, State = f.Address.State != null && Enum.IsDefined(typeof(State), f.Address.State) ? (State)Enum.Parse(typeof(State), f.Address.State) : State.CA, Zip = f.Address.ZipCode, Country = f.Address.Country, Latitude = f.Address.Latitude, Longitude = f.Address.Longitude, FacebookId = f.Address.FacebookId, PlaceType = FacebookHelper.ParsePlaceType(f.Address.Categories), Public = true, Website = f.Address.WebsiteUrl, FacebookLink = f.Address.FacebookUrl, Filename = f.Address.CoverPhotoUrl, ThumbnailFilename = f.Address.ThumbnailUrl } };
                 model.FacebookId = null;
@@ -1504,10 +1542,16 @@ namespace EDR.Controllers
                     DataContext.Classes.Add(cls);
                     DataContext.SaveChanges();
                     id = cls.Id;
-                    //  Add Tickets
 
-                    cls.EventTickets = DataContext.Tickets.Where(t => model.TicketId.Contains(t.Id.ToString())).AsEnumerable().Select(t => new EventTicket() { TicketId = t.Id, EventId = cls.Id }).ToList();
-                    DataContext.SaveChanges();
+                    ////  Add Tickets
+                    //cls.EventTickets = DataContext.Tickets.Where(t => model.TicketId.Contains(t.Id.ToString())).AsEnumerable().Select(t => new EventTicket() { TicketId = t.Id, EventId = cls.Id }).ToList();
+                    //DataContext.SaveChanges();
+                    //  Add Tickets
+                    if (model.EventTicket.Quantity != 0)
+                    {
+                        cls.Tickets.Add(new Ticket() { EventId = cls.Id, Price = model.EventTicket.Price, Quantity = model.EventTicket.Quantity });
+                        DataContext.SaveChanges();
+                    }
                 }
                 //  Social
                 else
@@ -1570,9 +1614,13 @@ namespace EDR.Controllers
                     DataContext.Socials.Add(soc);
                     DataContext.SaveChanges();
                     id = soc.Id;
+
                     //  Add Tickets
-                    soc.EventTickets = DataContext.Tickets.Where(t => model.TicketId.Contains(t.Id.ToString())).AsEnumerable().Select(t => new EventTicket() { TicketId = t.Id, EventId = soc.Id }).ToList();
-                    DataContext.SaveChanges();
+                    if (model.EventTicket.Quantity != 0)
+                    {
+                        soc.Tickets.Add(new Ticket() { EventId = soc.Id, Price = model.EventTicket.Price, Quantity = model.EventTicket.Quantity });
+                        DataContext.SaveChanges();
+                    }
                 }
             }
             else
@@ -2159,7 +2207,7 @@ namespace EDR.Controllers
                     .Include("LinkedFacebookObjects")
                     .Include("EventMembers")
                     .Include("Feeds")
-                    .Include("EventTickets")
+                    .Include("Tickets")
                     .Include("EventInstances")
                     .FirstOrDefault();
 
@@ -2170,7 +2218,7 @@ namespace EDR.Controllers
             DataContext.LinkedFacebookObjects.RemoveRange(evt.LinkedFacebookObjects);
             DataContext.EventFeeds.RemoveRange(evt.Feeds);
             DataContext.EventMembers.RemoveRange(evt.EventMembers);
-            DataContext.EventTickets.RemoveRange(evt.EventTickets);
+            DataContext.Tickets.RemoveRange(evt.Tickets);
             DataContext.EventInstances.RemoveRange(evt.EventInstances);
             DataContext.Events.Remove(evt);
             DataContext.SaveChanges();
@@ -3545,35 +3593,35 @@ namespace EDR.Controllers
             return RedirectToAction("View", "Event", new { id = evnt.Id, eventType = (evnt is Class ? EventType.Class : EventType.Social) });
         }
 
-        //
-        // POST: /Checkout/AddressAndPayment
-        [HttpPost]
-        public ActionResult AddFee(FormCollection values)
-        {
-            var ticket = new Ticket();
+        ////
+        //// POST: /Checkout/AddressAndPayment
+        //[HttpPost]
+        //public ActionResult AddFee(FormCollection values)
+        //{
+        //    var ticket = new Ticket();
 
-            var eid = Convert.ToInt32(values["Event.Id"]);
-            var evnt = DataContext.Events.Where(e => e.Id == eid).Include("EventTickets").FirstOrDefault();
+        //    var eid = Convert.ToInt32(values["Event.Id"]);
+        //    var evnt = DataContext.Events.Where(e => e.Id == eid).Include("EventTickets").FirstOrDefault();
 
-            try
-            {
-                ticket.Price = Convert.ToDecimal(values["Fee"]);
-                ticket.Quantity = Convert.ToDecimal(values["Quantity"]);
-                ticket.SchoolId = Convert.ToInt32(values["SchoolId"]);
+        //    try
+        //    {
+        //        ticket.Price = Convert.ToDecimal(values["Fee"]);
+        //        ticket.Quantity = Convert.ToDecimal(values["Quantity"]);
+        //        ticket.SchoolId = Convert.ToInt32(values["SchoolId"]);
 
-                evnt.EventTickets.Add(new EventTicket() { Ticket = ticket });
+        //        evnt.EventTickets.Add(new EventTicket() { Ticket = ticket });
 
-                DataContext.Entry(evnt).State = EntityState.Modified;
-                DataContext.SaveChanges();
+        //        DataContext.Entry(evnt).State = EntityState.Modified;
+        //        DataContext.SaveChanges();
 
-                return RedirectToAction("EditFees", "Event", new { id = evnt.Id, eventType = (evnt is Class ? EventType.Class : EventType.Social) });
-            }
-            catch
-            {
-                //Invalid - redisplay with errors
-                return View(ticket);
-            }
-        }
+        //        return RedirectToAction("EditFees", "Event", new { id = evnt.Id, eventType = (evnt is Class ? EventType.Class : EventType.Social) });
+        //    }
+        //    catch
+        //    {
+        //        //Invalid - redisplay with errors
+        //        return View(ticket);
+        //    }
+        //}
         
         //public Class ConvertToClass(Event event1)
         //{

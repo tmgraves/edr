@@ -73,17 +73,17 @@
                             </th>
                         </tr>
                     </thead>
-                    @foreach (var tic in Model.Event.EventTickets.OrderBy(t => t.Ticket.Quantity))
+                    @foreach (var tic in Model.Tickets.OrderBy(t => t.Quantity))
                     {
                         <tr>
                             <td class="text-center">
-                                <span class="text-primary"><b>@String.Format("{0:N0}", tic.Ticket.Quantity)</b></span>
+                                <span class="text-primary"><b>@String.Format("{0:N0}", tic.Quantity)</b></span>
                             </td>
                             <td class="text-center">
-                                <span class="text-primary"><b>@String.Format("{0:C}", tic.Ticket.Price)</b></span>
+                                <span class="text-primary"><b>@String.Format("{0:C}", tic.Price)</b></span>
                             </td>
                             <td>
-                                @Html.ActionLink("Buy", "BuyTicket", "Store", new { id = tic.Ticket.Id }, new { @class = "btn btn-primary" })
+                                @Html.ActionLink("Buy", "BuyTicket", "Store", new { id = tic.Id }, new { @class = "btn btn-primary" })
                             </td>
                         </tr>
                     }
