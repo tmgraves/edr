@@ -14,6 +14,9 @@ namespace EDR.Models
         public string Description { get; set; }
         public string FacebookLink { get; set; }
         public bool Public { get; set; }
+        [DataType(DataType.Date)]
+        [Display(Name = "Date Started")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime DateStarted { get; set; }
         public string Address { get; set; }
         public string Address2 { get; set; }
@@ -34,6 +37,16 @@ namespace EDR.Models
         public ICollection<Class> Classes { get; set; }
         public ICollection<Ticket> Tickets { get; set; }
         public ICollection<Owner> Owners { get; set; }
+
+        public School()
+        {
+            Teachers = new List<Teacher>();
+            Studios = new List<Studio>();
+            Classes = new List<Class>();
+            Tickets = new List<Ticket>();
+            Owners = new List<Owner>();
+            Members = new List<OrganizationMember>();
+        }
     }
 
     public class Team : Organization

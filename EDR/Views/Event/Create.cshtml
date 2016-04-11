@@ -152,8 +152,9 @@
     });
 
     $(function () {
-        $('#EventType').change(function () {
-            var eventtype = $("#EventType option:selected").val();
+        $("input[type='checkbox'][name='ProductCode']")
+        $('#EventTypeDD').change(function () {
+            var eventtype = $("#EventTypeDD option:selected").val();
             SetEventType(eventType);
         });
     });
@@ -263,7 +264,7 @@
             $('#ordiv').hide();
         }
 
-        var eventtype = $("#EventType option:selected").val();
+        var eventtype = $("#EventTypeDD option:selected").val();
         //  Class Type
         if (eventtype == "1") {
             $('#classtype').show();
@@ -301,15 +302,16 @@
 
         if ('@Model.EventType' != "")
         {
+            var dd = $('#EventTypeDD');
             var eventType = '@Model.EventType' == "Social" ? "0" : "1";
-            $('#EventType').prop("disabled", true);
+            dd.prop("disabled", true);
             if ('@Model.EventType' == "Social")
             {
-                $('#EventType').prop('selectedIndex', 1);
+                dd.prop('selectedIndex', 1);
             }
             else
             {
-                $('#EventType').prop('selectedIndex', 2);
+                dd.prop('selectedIndex', 2);
             }
             SetEventType(eventType);
         }
@@ -438,6 +440,7 @@
         @Html.AntiForgeryToken()
         @Html.HiddenFor(m => m.CreateAction)
         @Html.HiddenFor(m => m.Role)
+        @Html.HiddenFor(m => m.EventType)
         @Html.HiddenFor(m => m.SchoolId)
         @Html.HiddenFor(x => x.Event.PhotoUrl)
         @Html.HiddenFor(x => x.Event.FacebookLink)
@@ -457,7 +460,7 @@
                 <h2>Step: Type of Event</h2>
                 <div class="row" style="margin-bottom: 5px;">
                     <div class="col-md-10 col-lg-9">
-                        @Html.EnumDropDownListFor(model => model.EventType, "-- Select a Event Type --", htmlAttributes: new { @class = "form-control" })
+                        @Html.EnumDropDownListFor(model => model.EventType, "-- Select a Event Type --", htmlAttributes: new { @class = "form-control", @id = "EventTypeDD" })
                     </div>
                     <div class="col-md-10 col-lg-9">
                         <div class="row" style="margin-top: 5px;">

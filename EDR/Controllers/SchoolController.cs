@@ -7,6 +7,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
+using EDR.Enums;
 
 namespace EDR.Controllers
 {
@@ -20,46 +21,77 @@ namespace EDR.Controllers
         }
 
         // GET: School
-        [Authorize(Roles = "Teacher")]
-        public ActionResult Create()
+        [Authorize(Roles = "Teacher,Owner")]
+        public ActionResult Create(RoleName? role = null)
         {
-            var model = new School();
+            var model = new CreateSchoolViewModel(role);
             return View(model);
         }
 
         // GET: School
         [HttpPost]
-        [Authorize(Roles = "Teacher")]
-        public ActionResult Create(School school)
+        [Authorize(Roles = "Teacher,Owner")]
+        public ActionResult Create(CreateSchoolViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var model = new School();
-                TryUpdateModel(model);
+                var school = new School();
+                TryUpdateModel(school, "School");
 
                 var userid = User.Identity.GetUserId();
 
-                var teacher = DataContext.Teachers.Where(t => t.ApplicationUser.Id == userid).FirstOrDefault();
-                model.Teachers = new List<Teacher>();
-                model.Teachers.Add(teacher);
+                if (model.Role == RoleName.Teacher)
+                {
+                    var teacher = DataContext.Teachers.Where(t => t.ApplicationUser.Id == userid).FirstOrDefault();
+                    if (teacher != null)
+                    {
+                        school.Teachers.Add(teacher);
+                    }
+                }
 
-                model.Members = new List<OrganizationMember>();
-                model.Members.Add(new OrganizationMember() { UserId = userid, Admin = true });
+                if (model.Role == RoleName.Owner)
+                {
+                    var owner = DataContext.Owners.Where(o => o.ApplicationUser.Id == userid).FirstOrDefault();
+                    if (owner != null)
+                    {
+                        school.Owners.Add(owner);
+                    }
+                }
+
+                school.Members.Add(new OrganizationMember() { UserId = userid, Admin = true });
 
                 //Save School
-                DataContext.Schools.Add(model);
+                DataContext.Schools.Add(school);
                 DataContext.SaveChanges();
 
-                return RedirectToAction("View", new { id = model.Id });
+                return RedirectToAction("View", new { id = school.Id });
             }
             else
             {
-                return View(school);
+                return View(model);
             }
         }
 
         // GET: School
         public ActionResult View(int id)
+        {
+            var model = DataContext.Schools
+                        .Where(s => s.Id == id)
+                        .Include("Members")
+                        .Include("Members.User")
+                        .Include("Classes")
+                        .Include("Tickets")
+                        .Include("Tickets.EventTickets")
+                        .Include("Owners")
+                        .Include("Owners.ApplicationUser")
+                        .Include("Teachers")
+                        .Include("Teachers.ApplicationUser")
+                        .FirstOrDefault();
+            return View(model);
+        }
+
+        // GET: School
+        public ActionResult Manage(int id)
         {
             var model = DataContext.Schools
                         .Where(s => s.Id == id)

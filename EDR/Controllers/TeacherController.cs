@@ -22,7 +22,7 @@ namespace EDR.Controllers
         public ActionResult Manage()
         {
             var id = User.Identity.GetUserId();
-            var teacher = DataContext.Teachers.Single(t => t.ApplicationUser.Id == id);
+            var teacher = DataContext.Teachers.Include("Schools").Single(t => t.ApplicationUser.Id == id);
             return View(teacher);
         }
 

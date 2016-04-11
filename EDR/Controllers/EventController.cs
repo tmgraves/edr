@@ -683,6 +683,7 @@ namespace EDR.Controllers
 
         private EventViewModel LoadEvent(int id, EventType eventType)
         {
+            var userid = User.Identity.GetUserId();
             var model = new EventViewModel();
             model.EventType = eventType;
             model.Event = DataContext.Events.Where(x => x.Id == id)
@@ -696,6 +697,30 @@ namespace EDR.Controllers
                     .Include("EventTickets")
                     .Include("EventTickets.Ticket")
                     .FirstOrDefault();
+            var availabletickets =
+                    from    et in DataContext.EventTickets
+                    join    ut in DataContext.UserTickets
+                    on      et.TicketId equals ut.TicketId
+                    join    t in DataContext.Tickets
+                    on      ut.TicketId equals t.Id
+                    where   et.EventId == id
+                    &&      ut.UserId == userid
+                    select  ut.Quantity * t.Quantity;
+            var used =
+                    (from   et in DataContext.EventTickets
+                    join    eta in DataContext.EventTickets
+                    on      et.TicketId equals eta.TicketId
+                    join    evi in DataContext.EventInstances
+                    on      eta.EventId equals evi.EventId
+                    join    er in DataContext.EventRegistrations
+                    on      evi.Id equals er.EventInstanceId
+                    where   er.UserId == userid
+                    &&      et.EventId == id
+                    select  er.Id).Distinct();
+
+            var count = used.Count();
+
+            model.AvailableTickets = Convert.ToInt32((availabletickets.Count() != 0 ? availabletickets.Sum() : 0) - (used.Count() != 0 ? used.Count() : 0));
 
             if (eventType == EventType.Class)
             {
@@ -1266,29 +1291,11 @@ namespace EDR.Controllers
         [Authorize]
         public ActionResult Register(int id)
         {
+            var userid = User.Identity.GetUserId();
             var instance = DataContext.EventInstances.Where(i => i.Id == id).Include("Event").FirstOrDefault();
-            //var userId = User.Identity.GetUserId();
-            //var user = DataContext.Users.Single(x => x.Id == userId);
-            //var evt = DataContext.Events.Where(e => e.Id == id).FirstOrDefault();
-            //if (DataContext.EventMembers.Where(x => x.Member.Id == user.Id && x.Event.Id == id).ToList().Count == 0)
-            //{
-            //    var newMember = new EventMember() { Event = evt, Member = user };
-            //    DataContext.EventMembers.Add(newMember);
-            //}
-
-            //if (evt is Class)
-            //{
-            //    var teachers = DataContext.Teachers.Where(t => t.Classes.Any(c => c.Id == id)).ToList();
-            //    foreach (Teacher t in teachers)
-            //    {
-            //        if (DataContext.Students.Where(x => x.DancerId == user.Id && x.TeacherId == t.Id).ToList().Count == 0)
-            //        {
-            //            DataContext.Students.Add(new Student() { Teacher = t, Dancer = user });
-            //        }
-            //    }
-            //}
-            //DataContext.SaveChanges();
-            return RedirectToAction("View", new { id = instance.EventId, instance.Event is Class ? EventType.Class : EventType.Social });
+            DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = id });
+            DataContext.SaveChanges();
+            return RedirectToAction("View", new { id = instance.EventId, eventType = instance.Event is Class ? EventType.Class : EventType.Social });
         }
 
         [Authorize]
@@ -1302,8 +1309,9 @@ namespace EDR.Controllers
             return Redirect(returnUrl);
         }
 
+        [Route("{eventType}/Create")]
         [Authorize(Roles = "Owner,Promoter,Teacher")]
-        public ActionResult Create(EventType eventType, int schoolId, RoleName role)
+        public ActionResult Create(EventType eventType, int? schoolId, RoleName role)
         {
             var model = new EventCreateViewModel(eventType, schoolId, role);
             //model.EventType = eventType;
@@ -1487,6 +1495,10 @@ namespace EDR.Controllers
                             sdate = ApplicationUtility.GetNextDate(sdate, model.Event.Frequency, (int)model.Event.Interval, model.Event.Day, sdate.AddDays(1), model.Event.MonthDays);
                         }
                     }
+                    else
+                    {
+                        cls.EventInstances.Add(new EventInstance() { Event = cls, DateTime = cls.StartDate });
+                    }
                     //  Add Recurring Events
 
                     DataContext.Classes.Add(cls);
@@ -1548,6 +1560,10 @@ namespace EDR.Controllers
                             soc.EventInstances.Add(new EventInstance() { Event = soc, DateTime = sdate });
                             sdate = ApplicationUtility.GetNextDate(sdate, model.Event.Frequency, (int)model.Event.Interval, model.Event.Day, sdate.AddDays(1), model.Event.MonthDays);
                         }
+                    }
+                    else
+                    {
+                        soc.EventInstances.Add(new EventInstance() { Event = soc, DateTime = soc.StartDate });
                     }
                     //  Add Recurring Events
 

@@ -89,5 +89,7 @@ namespace EDR.Models
         public ICollection<EventMember> EventMembers { get; set; }
         public virtual ICollection<Place> Places { get; set; }
         public ICollection<Order> Orders { get; set; }
+        public ICollection<UserTicket> Tickets { get; set; }
+        public ICollection<EventRegistration> EventRegistrations { get; set; }
     }
 }

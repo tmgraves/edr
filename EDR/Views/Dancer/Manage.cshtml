@@ -6,3 +6,80 @@
 
 <h2>Manage</h2>
 
+<div class="container-fluid">
+    <div class="col-lg-6 col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-body ">
+                <h2>Tickets</h2>
+                <h4>Tickets Purchased</h4>
+                <hr />
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>School</th>
+                            <th class="text-center">Ticket Type</th>
+                            <th class="text-center">Date Purchased</th>
+                            <th class="text-center">Quantity</th>
+                            <th class="text-center">Total</th>
+                        </tr>
+                    </thead>
+                    @foreach (var item in Model.Tickets)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(member => item.Ticket.School.Name)
+                            </td>
+                            <td class="text-center">
+                                @(String.Format("{0:N0}", item.Ticket.Quantity) + " @ " + String.Format("{0:C}", item.Ticket.Price))
+                            </td>
+                            <td class="text-center">
+                                @item.DatePurchased.ToShortDateString()
+                            </td>
+                            <td class="text-right">
+                                @String.Format("{0:N0}", item.Quantity)
+                            </td>
+                            <td class="text-right">
+                                @String.Format("{0:N0}", item.Quantity * item.Ticket.Quantity)
+                            </td>
+                        </tr>
+                    }
+                    <tfoot>
+                        <tr>
+                            <td colspan="5">
+                                Total: @String.Format("{0:N0}", Model.Tickets.Sum(t => t.Quantity * t.Ticket.Quantity))
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <h4>Tickets Used</h4>
+                <hr />
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Event</th>
+                            <th class="text-center">Date Registered</th>
+                        </tr>
+                    </thead>
+                    @foreach (var item in Model.EventRegistrations)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(member => item.Instance.Event.Name)
+                            </td>
+                            <td class="text-center">
+                                @item.DateRegistered.ToShortDateString()
+                            </td>
+                        </tr>
+                    }
+                    <tfoot>
+                        <tr>
+                            <td colspan="2">
+                                Total: @Model.EventRegistrations.Count()
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

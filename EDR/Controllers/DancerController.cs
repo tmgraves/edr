@@ -36,7 +36,13 @@ namespace EDR.Controllers
         public ActionResult Manage()
         {
             var userid = User.Identity.GetUserId();
-            var model = DataContext.Users.Single(s => s.Id == userid);
+            var model = DataContext.Users
+                            .Include("Tickets")
+                            .Include("Tickets.Ticket")
+                            .Include("EventRegistrations")
+                            .Include("EventRegistrations.Instance")
+                            .Include("EventRegistrations.Instance.Event")
+                            .Single(s => s.Id == userid);
 
             return View(model);
         }

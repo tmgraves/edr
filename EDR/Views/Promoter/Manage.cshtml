@@ -6,3 +6,32 @@
 
 <h2>Manage</h2>
 
+<div class="container-fluid">
+    <div class="col-lg-6 col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-body ">
+                <h3>Socials</h3>
+                @Html.ActionLink("Create Social", "Create", "Event", new { eventType = EDR.Enums.EventType.Social, role = EDR.Enums.RoleName.Promoter }, null)
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Social</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    @foreach (var item in Model.Socials)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(member => item.Name)
+                            </td>
+                            <td>
+                                @Html.ActionLink("View", "View", new { id = item.Id })
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

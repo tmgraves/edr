@@ -108,6 +108,13 @@ namespace EDR.Models
         public Ticket Ticket { get; set; }
         [Required]
         public decimal Quantity { get; set; }
+        private DateTime _date = DateTime.Now;
+        [Required]
+        public DateTime DatePurchased
+        {
+            get { return _date; }
+            set { _date = value; }
+        }
     }
 
     public partial class ShoppingCart

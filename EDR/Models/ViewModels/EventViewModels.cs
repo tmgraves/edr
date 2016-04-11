@@ -46,7 +46,7 @@ namespace EDR.Models.ViewModels
 
     public class EventCreateViewModel : EventBaseViewModel
     {
-        public int SchoolId { get; set; }
+        public int? SchoolId { get; set; }
         public RoleName Role { get; set; }
         public ClassType ClassType { get; set; }
         public SocialType SocialType { get; set; }
@@ -77,7 +77,7 @@ namespace EDR.Models.ViewModels
             StylesCheckboxList = new MultiCheckBox();
             Tickets = new List<Ticket>();
         }
-        public EventCreateViewModel(EventType eventType, int schoolId, RoleName role)
+        public EventCreateViewModel(EventType eventType, int? schoolId, RoleName role)
         {
             SchoolId = schoolId;
             EventType = eventType;
@@ -91,7 +91,7 @@ namespace EDR.Models.ViewModels
             //  New Event
             if (eventType == EDR.Enums.EventType.Class)
             {
-                Event = new Class() { StartDate = DateTime.Today, EndDate = DateTime.Today, StartTime = DateTime.Today.Add(new TimeSpan(20, 00, 0)), EndTime = DateTime.Today.Add(new TimeSpan(21, 00, 0)), Place = new Place(), SchoolId = schoolId };
+                Event = new Class() { StartDate = DateTime.Today, EndDate = DateTime.Today, StartTime = DateTime.Today.Add(new TimeSpan(20, 00, 0)), EndTime = DateTime.Today.Add(new TimeSpan(21, 00, 0)), Place = new Place(), SchoolId = (int)schoolId };
             }
             else
             {
@@ -213,6 +213,7 @@ namespace EDR.Models.ViewModels
         public IEnumerable<FacebookEvent> FacebookEvents { get; set; }
         public IEnumerable<LinkedFacebookObject> LinkedFacebookObjects { get; set; }
         public RoleName Role { get; set; }
+        public int AvailableTickets { get; set; }
 
         public EventViewModel()
         {
@@ -224,6 +225,7 @@ namespace EDR.Models.ViewModels
             YouTubePlaylists = new List<YouTubePlaylist>();
             FacebookEvents = new List<FacebookEvent>();
             LinkedFacebookObjects = new List<LinkedFacebookObject>();
+            AvailableTickets = 0;
         }
     }
 

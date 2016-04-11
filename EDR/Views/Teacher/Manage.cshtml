@@ -21,6 +21,30 @@
                 </dl>
             </div>
         </div>
+        <div class="panel panel-info">
+            <h4 class="col-lg-6 col-md-6 col-sm-6 col-xs-6">My Schools</h4>
+            @Html.ActionLink("Add School", "Create", "School", new { role = EDR.Enums.RoleName.Teacher }, new { @class = "btn btn-text" })
+            <div class="panel-body">
+                <div class="row">
+                </div>
+                @if (Model.Schools != null && Model.Schools.Count() > 0)
+                {
+                    foreach (var sch in Model.Schools.OrderBy(s => s.Name))
+                    {
+                        <div class="row" style="padding: 2px;">
+                            @Html.ActionLink(sch.Name, "View", "School", new { id = sch.Id }, new { @class = "btn btn-link" })
+                        </div>
+                    }
+                }
+                else
+                {
+                    @: No Schools
+                }
+                @*<a class="btn btn-primary" href="@Url.Action("ImportClassFromFacebook", "Event")">
+                    <h4>More Events...</h4>
+                </a>*@
+            </div>
+        </div>
     </div>
     <div class="col-lg-6 col-md-6">
         <div class="panel panel-default">

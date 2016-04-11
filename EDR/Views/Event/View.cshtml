@@ -92,7 +92,7 @@
         </div>
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h4>Upcoming Dates</h4>
+                <h4>Upcoming Dates (Available Tickets: @Model.AvailableTickets)</h4>
             </div>
             <div class="panel-body">
                 @foreach (var evt in Model.Event.EventInstances.Where(e => e.DateTime >= DateTime.Today).OrderBy(c => c.DateTime))

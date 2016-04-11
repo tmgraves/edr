@@ -267,58 +267,6 @@
             </div>
         </div>
     </div>
-    <div class="col-lg-6 col-md-6">
-        <div class="panel panel-default">
-            <div class="panel-body ">
-                <h3>Owners</h3>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    @foreach (var item in Model.Owners)
-                    {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(member => item.ApplicationUser.FullName)
-                            </td>
-                            <td>
-                                @Html.ActionLink("View", "Home", "Owner", new { id = item.Id }, null)
-                            </td>
-                        </tr>
-                    }
-                </table>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-6 col-md-6">
-        <div class="panel panel-default">
-            <div class="panel-body ">
-                <h3>Teachers</h3>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    @foreach (var item in Model.Teachers)
-                    {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(member => item.ApplicationUser.FullName)
-                            </td>
-                            <td>
-                                @Html.ActionLink("View", "Home", "Teacher", new { id = item.Id }, null)
-                            </td>
-                        </tr>
-                    }
-                </table>
-            </div>
-        </div>
-    </div>
 </div>
 
 

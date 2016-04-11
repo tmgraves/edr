@@ -18,7 +18,7 @@ namespace EDR.Controllers
         public ActionResult Manage()
         {
             var userid = User.Identity.GetUserId();
-            var model = DataContext.Owners.Single(s => s.ApplicationUser.Id == userid);
+            var model = DataContext.Owners.Include("Schools").Single(o => o.ApplicationUser.Id == userid);
 
             return View(model);
         }

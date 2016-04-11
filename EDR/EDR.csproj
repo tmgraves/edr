@@ -747,12 +747,12 @@
     <Content Include="Views\Shared\EditorTemplates\OrganizationMember.cshtml" />
     <Content Include="Views\Event\Create old2.cshtml" />
     <Content Include="Views\Event\Create.cshtml" />
-    <Content Include="Views\Shared\_HomeLayout.cshtml" />
     <Content Include="Views\Teacher\Manage.cshtml" />
     <Content Include="Views\Promoter\Manage.cshtml" />
     <Content Include="Views\Owner\Manage.cshtml" />
     <Content Include="Views\Dancer\Manage.cshtml" />
     <Content Include="Views\Store\BuyTicket.cshtml" />
+    <Content Include="Views\School\Manage.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>
@@ -762,7 +762,9 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
-    <Content Include="Views\Web.config" />
+    <Content Include="Views\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />

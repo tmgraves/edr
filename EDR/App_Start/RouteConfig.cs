@@ -14,6 +14,8 @@ namespace EDR
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
+            routes.MapMvcAttributeRoutes();
+            
             routes.MapRoute(
                 name: "GenericNoID",
                 url: "{controller}/{action}",

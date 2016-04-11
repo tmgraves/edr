@@ -1,4 +1,5 @@
-﻿using EDR.Utilities.Validators;
+﻿using EDR.Enums;
+using EDR.Utilities.Validators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,5 +24,21 @@ namespace EDR.Models.ViewModels
         public string Name { get; set; }
         public bool IsSelected { get; set; }
         public object Tags { get; set; }
+    }
+
+    public class CreateSchoolViewModel
+    {
+        public School School { get; set; }
+        public RoleName? Role { get; set; }
+
+        public CreateSchoolViewModel()
+        {
+
+        }
+
+        public CreateSchoolViewModel(RoleName? role)
+        {
+            Role = role;
+        }
     }
 }
