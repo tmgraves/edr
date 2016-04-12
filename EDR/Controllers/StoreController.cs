@@ -23,6 +23,7 @@ namespace EDR.Controllers
             return View(viewModel);
         }
 
+        [Authorize]
         public ActionResult BuyTicket(int id)
         {
             var model = new BuyTicketViewModel(DataContext.Tickets.Single(t => t.Id == id));

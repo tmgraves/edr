@@ -2,10 +2,12 @@
 @using EDR.Utilities
 @using EDR.Models
 @using EDR.Enums
+@using Microsoft.AspNet.Identity
 
 @{
     ViewBag.Title = Model.Event.Name;
     Layout = "~/Views/Event/_EventLayout.cshtml";
+    var userid = User.Identity.GetUserId();
 }
 
 <script type="text/javascript">
@@ -102,7 +104,14 @@
                             <span class="text-primary"><b>@evt.DateTime.ToShortDateString()</b></span>
                         </div>
                         <div class="col-lg-6 col-md-6">
-                            @Html.ActionLink("Register", "Register", new { id = evt.Id }, new { @class = "btn btn-primary" })
+                            @if (evt.EventRegistrations.Where(r => r.UserId == userid).Count() == 0)
+                            {
+                                @Html.ActionLink("Register", "Register", new { id = evt.Id }, new { @class = "btn btn-primary" })
+                            }
+                            else
+                            {
+                                @Html.ActionLink("Un-Register", "UnRegister", new { id = evt.Id }, new { @class = "btn btn-danger" })
+                            }
                             @*<a class="btn btn-danger" href="@Url.Action("DeleteInstance", "Event", new { id = evt.Id, eventId = evt.EventId })"><span class="glyphicon glyphicon-remove"></span></a>*@
                         </div>
                     </div>
@@ -115,14 +124,14 @@
         <div class="well" style="white-space: pre-line">
             @Html.Raw(EDR.Utilities.ApplicationUtility.WithActiveLinks(Model.Event.Description))
         </div>
-        <div class="panel panel-default">
+        @*<div class="panel panel-default">
             <div class="panel-heading">
                 <h4>@(Model.EventType == EventType.Class ? "Students" : "Dancers")</h4>
             </div>
             <div class="panel-body">
                 @Html.Partial("~/Views/Shared/Events/_EventMembersPartial.cshtml", Model.Event.EventMembers)
             </div>
-        </div>
+        </div>*@
         <div class="panel panel-primary">
             <div class="panel-heading">
                 <h4 style="width: 100%; vertical-align: bottom;">

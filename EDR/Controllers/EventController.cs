@@ -13,6 +13,7 @@ using System.Data.Entity;
 using EDR.Utilities;
 using System.IO;
 using Microsoft.AspNet.Identity.EntityFramework;
+using System.Data.SqlClient;
 
 namespace EDR.Controllers
 {
@@ -686,16 +687,93 @@ namespace EDR.Controllers
             var userid = User.Identity.GetUserId();
             var model = new EventViewModel();
             model.EventType = eventType;
-            model.Event = DataContext.Events.Where(x => x.Id == id)
-                    .Include("Place")
-                    .Include("DanceStyles")
-                    .Include("Reviews")
-                    .Include("EventMembers")
-                    .Include("EventMembers.Member")
-                    .Include("EventInstances")
-                    .Include("Creator")
-                    .Include("Tickets")
-                    .FirstOrDefault();
+            //  var evq = DataContext.Set<Event>().SqlQuery("usp_Events_Search @Id = {0}, @UserId = {1}", id, userid);
+            //var eins = 
+            //        (from e in (from e in DataContext.Events
+            //        join i in DataContext.EventInstances
+            //        on e.Id equals i.EventId
+            //        join r in DataContext.EventRegistrations
+            //         on new { InstanceId = i.Id, UserId = userid } equals new { InstanceId = r.EventInstanceId, r.UserId } into res
+            //        from reg in res.DefaultIfEmpty()
+            //        join s in DataContext.DanceStyles
+            //        on new { id = 0 } equals new { id = 0 }
+            //        where e.Id == id
+            //        && e.DanceStyles.Select(s => s.Id).Contains(s.Id)
+            //        select new { Event = e, EventInstances = i, EventRegsitrations = reg, DanceStyles = s })
+            //        select e.Event)
+            //        .Include("Place");
+
+            //var qr = (from e in DataContext.Events
+            //        join i in eins
+            //        on e.Id equals i.EventId
+            //        where e.Id == id
+            //        select e)
+            //        .Include("Place")
+            //        .Include("DanceStyles")
+            //        .Include("Reviews")
+            //        .Include("EventMembers")
+            //        .Include("EventMembers.Member")
+            //        .Include("Creator")
+            //        .Include("Tickets")
+            //        .FirstOrDefault();
+
+            //model.Event =
+            //        (from e in DataContext.Events
+            //         join ei in DataContext.EventInstances
+            //         on e.Id equals ei.Event.Id
+            //         join er in DataContext.EventRegistrations
+            //         on new { EventInstanceId = ei.Id, UserId = userid } equals new { EventInstanceId = er.EventInstanceId, UserId = er.UserId }
+            //         into _events
+            //         from ev in _events.DefaultIfEmpty()
+            //         where e.Id == id
+            //         select e)
+            //        .Include("Place")
+            //        .Include("DanceStyles")
+            //        .Include("Reviews")
+            //        .Include("EventMembers")
+            //        .Include("EventMembers.Member")
+            //        .Include("Creator")
+            //        .Include("Tickets")
+            //        .FirstOrDefault();
+            //DataContext.Events.Where(x => x.Id == id)
+            //.Include("Place")
+            //.Include("DanceStyles")
+            //.Include("Reviews")
+            //.Include("EventMembers")
+            //.Include("EventMembers.Member")
+            //.Include("EventInstances")
+            //.Include("Creator")
+            //.Include("Tickets")
+            //.Select(e => new Event
+            //{
+            //    Name = e.Name,
+            //    Description = e.Description,
+
+            //    EventInstances = e.EventInstances
+            //                        .Select(i =>
+            //                            new EventInstance()
+            //                            {
+            //                                DateTime = i.DateTime,
+            //                                EventId = i.EventId,
+            //                                EventRegistrations = i.EventRegistrations.Where(r => r.UserId == userid).ToList()
+            //                            }
+            //                            ).ToList()
+
+            //})
+            //.FirstOrDefault();
+
+            model.Event =
+            DataContext.Events.Where(x => x.Id == id)
+            .Include("Place")
+            .Include("DanceStyles")
+            .Include("Reviews")
+            .Include("EventMembers")
+            .Include("EventMembers.Member")
+            .Include("EventInstances")
+            .Include("EventInstances.EventRegistrations")
+            .Include("Creator")
+            .Include("Tickets")
+            .FirstOrDefault();
 
             //  Get Tickets
             if (model.Event.Tickets.Count() != 0)
@@ -1331,6 +1409,16 @@ namespace EDR.Controllers
             var userid = User.Identity.GetUserId();
             var instance = DataContext.EventInstances.Where(i => i.Id == id).Include("Event").FirstOrDefault();
             DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = id });
+            DataContext.SaveChanges();
+            return RedirectToAction("View", new { id = instance.EventId, eventType = instance.Event is Class ? EventType.Class : EventType.Social });
+        }
+
+        [Authorize]
+        public ActionResult UnRegister(int id)
+        {
+            var userid = User.Identity.GetUserId();
+            var instance = DataContext.EventInstances.Where(i => i.Id == id).Include("Event").FirstOrDefault();
+            DataContext.EventRegistrations.Remove(DataContext.EventRegistrations.Single(s => s.UserId == userid && s.EventInstanceId == id));
             DataContext.SaveChanges();
             return RedirectToAction("View", new { id = instance.EventId, eventType = instance.Event is Class ? EventType.Class : EventType.Social });
         }
