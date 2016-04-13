@@ -58,19 +58,19 @@ namespace EDR.Enums
     public enum PlaceType
     {
         [Display(Name = "Conference Center")]
-        ConferenceCenter,
+        ConferenceCenter = 0,
         [Display(Name = "Hotel")]
-        Hotel,
+        Hotel = 1,
         [Display(Name = "Nightclub")]
-        Nightclub,
+        Nightclub = 2,
         [Display(Name = "Other Place")]
-        OtherPlace,
+        OtherPlace = 3,
         [Display(Name = "Restaurant")]
-        Restaurant,
+        Restaurant = 4,
         [Display(Name = "Studio")]
-        Studio,
+        Studio = 5,
         [Display(Name = "Theater")]
-        Theater
+        Theater = 6
     }
 
     public enum RoleName

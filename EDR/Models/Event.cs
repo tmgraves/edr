@@ -217,6 +217,10 @@ namespace EDR.Models
             get { return _date; }
             set { _date = value; }
         }
+        [Required]
+        public int UserTicketId { get; set; }
+        [ForeignKey("UserTicketId")]
+        public UserTicket UserTicket { get; set; }
     }
 
     //public class EventTicket : Entity

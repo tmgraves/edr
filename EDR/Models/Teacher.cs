@@ -29,6 +29,10 @@ namespace EDR.Models
         [Display(Name = "Contact Email")]
         [EmailAddress(ErrorMessage = "Invalid Email Address")]
         public string ContactEmail { get; set; }
+        [Required(ErrorMessage = "Phone is required")]
+        [StringLength(24)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:###-###-####}")]
+        public string Phone { get; set; }
         public bool? Approved { get; set; }
         public DateTime? ApproveDate { get; set; }
 

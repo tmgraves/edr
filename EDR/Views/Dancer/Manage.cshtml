@@ -5,29 +5,195 @@
 }
 
 <h2>Manage</h2>
+@Html.ActionLink("View Profile", "Home", new { id = User.Identity.Name })
 
 <div class="container-fluid">
     <div class="col-lg-6 col-md-6">
         <div class="panel panel-default">
             <div class="panel-body ">
-                <h2>Tickets</h2>
+                <h3>My Profile Info</h3>
+                <div class="form-group">
+
+                </div>
+                <div class="row">
+                    @Html.Partial("~/Views/Shared/_ProfilePicturePartial.cshtml", new EDR.Models.ViewModels.ProfilePicture() { User = Model })
+                </div>
+                <div class="row form-group">
+                    <div class="col-lg-4">
+                        @Html.LabelFor(model => model.FullName, new { htmlAttributes = new { @class = "control-label" } })
+                    </div>
+                    @Html.DisplayFor(model => model.FullName, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+                <div class="row form-group">
+                    <div class="col-lg-4">
+                        @Html.LabelFor(model => model.City, new { htmlAttributes = new { @class = "control-label" } })
+                    </div>
+                    @Html.DisplayFor(model => model.City, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+                <div class="row form-group">
+                    <div class="col-lg-4">
+                        @Html.LabelFor(model => model.Experience, new { htmlAttributes = new { @class = "control-label" } })
+                    </div>
+                    @Html.DisplayFor(model => model.Experience, new { htmlAttributes = new { @class = "form-control" } }) Year(s)
+                </div>
+                <div class="row form-group">
+                    <div class="col-lg-4">
+                        @Html.LabelFor(model => model.DanceStyles, new { htmlAttributes = new { @class = "control-label" } })
+                    </div>
+                    <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8" style="display: inline-block;">
+                        @if (Model.DanceStyles.Count > 0)
+                        {
+                            @Html.Partial("~/Views/Shared/_DanceStyleLabelPartial.cshtml", Model.DanceStyles)
+                        }
+                        else
+                        {
+                            @: <span class="text-warning">NO DANCE STYLES SELECTED</span>
+                        }
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-lg-4">
+                        @Html.LabelFor(model => model.FacebookUsername, new { htmlAttributes = new { @class = "control-label" } })
+                    </div>
+                    @Html.DisplayFor(model => model.FacebookUsername, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+                <div class="row form-group">
+                    <div class="col-lg-4">
+                        @Html.LabelFor(model => model.InstagramUsername, new { htmlAttributes = new { @class = "control-label" } })
+                    </div>
+                    @Html.DisplayFor(model => model.InstagramUsername, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+                <div class="row form-group">
+                    <div class="col-lg-4">
+                        @Html.LabelFor(model => model.YouTubeUsername, new { htmlAttributes = new { @class = "control-label" } })
+                    </div>
+                    @Html.DisplayFor(model => model.YouTubeUsername, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+                <div class="row form-group">
+                    <div class="col-lg-4">
+                        @Html.LabelFor(model => model.SpotifyId, new { htmlAttributes = new { @class = "control-label" } })
+                    </div>
+                    @Html.DisplayFor(model => model.SpotifyId, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+                <div class="row form-group">
+                    <div class="col-lg-4">
+                        @Html.Label("Spotify Playlist", new { htmlAttributes = new { @class = "control-label" } })
+                    </div>
+                    @Html.DisplayFor(model => model.SpotifyUri, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-body ">
+                <h3>Tickets</h3>
+                <table class="table table-condensed table-bordered">
+                    @foreach (var s in Model.Tickets.Select(t => t.Ticket.School).Distinct().ToList())
+                    {
+                        <tr>
+                            <td>
+                                <h3>(@s.Id)@s.Name</h3>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <h4>Purchased</h4>
+                                <hr />
+                                <table class="table table-condensed table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">Ticket Type</th>
+                                            <th class="text-center">Date Purchased</th>
+                                            <th class="text-center">Quantity</th>
+                                            <th class="text-center">Total</th>
+                                            <th class="text-center">Used</th>
+                                        </tr>
+                                    </thead>
+                                    @foreach (var item in Model.Tickets.Where(t => t.Ticket.EventId == null && t.Ticket.SchoolId == s.Id))
+                                    {
+                                        <tr>
+                                            <td class="text-left">
+                                                @(String.Format("{0:N0}", item.Ticket.Quantity) + " @ " + String.Format("{0:C}", item.Ticket.Price))
+                                            </td>
+                                            <td class="text-center">
+                                                @item.DatePurchased.ToShortDateString()
+                                            </td>
+                                            <td class="text-right">
+                                                @String.Format("{0:N0}", item.Quantity)
+                                            </td>
+                                            <td class="text-right">
+                                                @String.Format("{0:N0}", item.Quantity * item.Ticket.Quantity)
+                                            </td>
+                                            <td class="text-right">
+                                                @String.Format("{0:N0}", item.EventRegistrations.Count())
+                                            </td>
+                                        </tr>
+                                    }
+                                    <tfoot>
+                                        <tr style="font-weight: bold;">
+                                            <td class="text-left">
+                                                Total:
+                                            </td>
+                                            <td>
+                                            </td>
+                                            <td></td>
+                                            <td class="text-right">
+                                                @String.Format("{0:N0}", Model.Tickets.Where(t => t.Ticket.EventId == null && t.Ticket.SchoolId == s.Id).Sum(t => t.Quantity * t.Ticket.Quantity))
+                                            </td>
+                                            <td class="text-right">
+                                                @String.Format("{0:N0}", Model.Tickets.Where(t => t.Ticket.EventId == null && t.Ticket.SchoolId == s.Id).Sum(t => t.EventRegistrations.Count()))
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                                <h4>Registrations</h4>
+                                <hr />
+                                <table class="table table-condensed table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Event</th>
+                                            <th class="text-center">Date Registered</th>
+                                        </tr>
+                                    </thead>
+                                    @foreach (var item in Model.EventRegistrations.Where(r => r.UserTicket.Ticket.SchoolId == s.Id))
+                                    {
+                                        <tr>
+                                            <td>
+                                                @Html.DisplayFor(member => item.Instance.Event.Name)
+                                            </td>
+                                            <td class="text-center">
+                                                @item.DateRegistered.ToShortDateString()
+                                            </td>
+                                        </tr>
+                                    }
+                                </table>
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body ">
+                <h3>Event Tickets</h3>
                 <h4>Tickets Purchased</h4>
                 <hr />
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>School</th>
+                            <th>Event</th>
                             <th class="text-center">Ticket Type</th>
                             <th class="text-center">Date Purchased</th>
                             <th class="text-center">Quantity</th>
                             <th class="text-center">Total</th>
                         </tr>
                     </thead>
-                    @foreach (var item in Model.Tickets)
+                    @foreach (var item in Model.Tickets.Where(t => t.Ticket.EventId != null))
                     {
                         <tr>
                             <td>
-                                @Html.DisplayFor(member => item.Ticket.School.Name)
+                                @Html.DisplayFor(member => item.Ticket.Event.Name)
                             </td>
                             <td class="text-center">
                                 @(String.Format("{0:N0}", item.Ticket.Quantity) + " @ " + String.Format("{0:C}", item.Ticket.Price))
@@ -43,41 +209,6 @@
                             </td>
                         </tr>
                     }
-                    <tfoot>
-                        <tr>
-                            <td colspan="5">
-                                Total: @String.Format("{0:N0}", Model.Tickets.Sum(t => t.Quantity * t.Ticket.Quantity))
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
-                <h4>Tickets Used</h4>
-                <hr />
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Event</th>
-                            <th class="text-center">Date Registered</th>
-                        </tr>
-                    </thead>
-                    @foreach (var item in Model.EventRegistrations)
-                    {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(member => item.Instance.Event.Name)
-                            </td>
-                            <td class="text-center">
-                                @item.DateRegistered.ToShortDateString()
-                            </td>
-                        </tr>
-                    }
-                    <tfoot>
-                        <tr>
-                            <td colspan="2">
-                                Total: @Model.EventRegistrations.Count()
-                            </td>
-                        </tr>
-                    </tfoot>
                 </table>
             </div>
         </div>

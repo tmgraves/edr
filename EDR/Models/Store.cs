@@ -115,6 +115,7 @@ namespace EDR.Models
             get { return _date; }
             set { _date = value; }
         }
+        public ICollection<EventRegistration> EventRegistrations { get; set; }
     }
 
     public partial class ShoppingCart

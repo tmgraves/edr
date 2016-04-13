@@ -75,7 +75,9 @@ namespace EDR.Controllers
         // GET: School
         public ActionResult View(int id)
         {
-            var model = DataContext.Schools
+            var userid = User.Identity.GetUserId();
+            var model = new ViewSchoolViewModel(
+                        DataContext.Schools
                         .Where(s => s.Id == id)
                         .Include("Members")
                         .Include("Members.User")
@@ -86,29 +88,42 @@ namespace EDR.Controllers
                         .Include("Owners.ApplicationUser")
                         .Include("Teachers")
                         .Include("Teachers.ApplicationUser")
-                        .FirstOrDefault();
+                        .FirstOrDefault());
+            model.Member = DataContext.OrganizationMembers.Where(m => m.OrganizationId == id && m.UserId == userid && m.Admin).FirstOrDefault();
             return View(model);
         }
 
+        [Authorize(Roles = "Teacher,Owner")]
         // GET: School
         public ActionResult Manage(int id)
         {
-            var model = DataContext.Schools
-                        .Where(s => s.Id == id)
-                        .Include("Members")
-                        .Include("Members.User")
-                        .Include("Classes")
-                        .Include("Tickets")
-                        .Include("Tickets.Event")
-                        .Include("Owners")
-                        .Include("Owners.ApplicationUser")
-                        .Include("Teachers")
-                        .Include("Teachers.ApplicationUser")
-                        .FirstOrDefault();
-            return View(model);
+            var userid = User.Identity.GetUserId();
+            var admin = DataContext.OrganizationMembers.Where(m => m.OrganizationId == id && m.UserId == userid && m.Admin).Count() != 0 ? true : false;
+            if (admin)
+            {
+                var model = new ManageSchoolViewModel(
+                            DataContext.Schools
+                            .Where(s => s.Id == id)
+                            .Include("Members")
+                            .Include("Members.User")
+                            .Include("Classes")
+                            .Include("Tickets")
+                            .Include("Tickets.Event")
+                            .Include("Owners")
+                            .Include("Owners.ApplicationUser")
+                            .Include("Teachers")
+                            .Include("Teachers.ApplicationUser")
+                            .FirstOrDefault());
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction("View", new { id = id });
+            }
         }
 
         // GET: School
+        [Authorize(Roles = "Teacher,Owner")]
         public ActionResult Delete(int id)
         {
             var model = DataContext.Schools.Where(s => s.Id == id).FirstOrDefault();
@@ -116,6 +131,7 @@ namespace EDR.Controllers
         }
 
         // GET: School
+        [Authorize(Roles = "Teacher,Owner")]
         [HttpPost]
         public ActionResult Delete(School school)
         {
@@ -127,6 +143,7 @@ namespace EDR.Controllers
         }
 
         // GET: School
+        [Authorize(Roles = "Teacher,Owner")]
         public ActionResult Edit(int id)
         {
             var model = DataContext.Schools.Where(s => s.Id == id).FirstOrDefault();
@@ -135,6 +152,7 @@ namespace EDR.Controllers
 
         // GET: School
         [HttpPost]
+        [Authorize(Roles = "Teacher,Owner")]
         public ActionResult Edit(School school)
         {
             if (ModelState.IsValid)
@@ -152,6 +170,7 @@ namespace EDR.Controllers
         }
 
         // GET: School
+        [Authorize(Roles = "Teacher,Owner")]
         public ActionResult AddTicket(int id)
         {
             var ticket = new Ticket();
@@ -161,6 +180,7 @@ namespace EDR.Controllers
 
         // POST: School
         [HttpPost]
+        [Authorize(Roles = "Teacher,Owner")]
         public ActionResult AddTicket(Ticket ticket)
         {
             if (ModelState.IsValid)
@@ -179,6 +199,7 @@ namespace EDR.Controllers
 
         // POST: School
         [HttpPost]
+        [Authorize(Roles = "Teacher,Owner")]
         public ActionResult UpdateMembers(School model)
         {
             foreach (var m in model.Members)
@@ -199,6 +220,17 @@ namespace EDR.Controllers
             //DataContext.SaveChanges();
 
             //return RedirectToAction("View", new { id = schoolId });
+        }
+
+        public ActionResult Join(int id)
+        {
+            var userid = User.Identity.GetUserId();
+            if (DataContext.OrganizationMembers.Where(m => m.OrganizationId == id && m.UserId == userid).Count() == 0)
+            {
+                DataContext.OrganizationMembers.Add(new OrganizationMember() { OrganizationId = id, UserId = userid, Admin = false });
+                DataContext.SaveChanges();
+            }
+            return RedirectToAction("View", new { id = id });
         }
 
         //// GET: School

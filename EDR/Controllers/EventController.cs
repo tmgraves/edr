@@ -1407,10 +1407,27 @@ namespace EDR.Controllers
         public ActionResult Register(int id)
         {
             var userid = User.Identity.GetUserId();
-            var instance = DataContext.EventInstances.Where(i => i.Id == id).Include("Event").FirstOrDefault();
-            DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = id });
+            var instance =
+                    (from i in DataContext.EventInstances
+                     join e in DataContext.Events
+                     on i.EventId equals e.Id
+                    join c in DataContext.Classes
+                    on i.EventId equals c.Id
+                    where i.Id == id
+                    select new { EventInstance = i, Class = c }).FirstOrDefault();
+
+            //  Get Available Tickets
+            var ticket =
+                    (from ut in DataContext.UserTickets
+                    join t in DataContext.Tickets
+                    on ut.TicketId equals t.Id
+                    where ut.UserId == userid
+                    && t.SchoolId == instance.Class.SchoolId
+                    && ut.EventRegistrations.Count() < ut.Quantity * t.Quantity
+                    select ut).FirstOrDefault();
+            DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = id, UserTicketId = ticket.Id });
             DataContext.SaveChanges();
-            return RedirectToAction("View", new { id = instance.EventId, eventType = instance.Event is Class ? EventType.Class : EventType.Social });
+            return RedirectToAction("View", new { id = instance.EventInstance.EventId, eventType = instance.EventInstance.Event is Class ? EventType.Class : EventType.Social });
         }
 
         [Authorize]

@@ -23,7 +23,8 @@ namespace EDR.Models.ViewModels
         public string Location { get; set; }
         public Address SearchAddress { get; set; }
         public int Zoom { get; set; }
+        public PlaceType? TypeParam { get; set; }
         [Display(Name = "Place Type:")]
-        public PlaceType? PlaceType { get; set; }
+        public PlaceType? Type { get; set; }
     }
 }

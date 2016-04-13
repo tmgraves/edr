@@ -38,7 +38,9 @@ namespace EDR.Controllers
             var userid = User.Identity.GetUserId();
             var model = DataContext.Users
                             .Include("Tickets")
+                            .Include("Tickets.EventRegistrations")
                             .Include("Tickets.Ticket")
+                            .Include("Tickets.Ticket.School")
                             .Include("EventRegistrations")
                             .Include("EventRegistrations.Instance")
                             .Include("EventRegistrations.Instance.Event")
@@ -873,7 +875,7 @@ namespace EDR.Controllers
             {
                 string userId = User.Identity.GetUserId();
                 var dancer = DataContext.Users.Where(x => x.Id == userId).Include("UserPictures").FirstOrDefault();
-                dancer.UserPictures.Add(new UserPicture() { Title = name, ThumbnailFilename = source, Filename = largeSource });
+                dancer.UserPictures.Add(new UserPicture() { Title = name, ThumbnailFilename = source, Filename = largeSource, PhotoDate = photodate });
                 DataContext.Entry(dancer).State = EntityState.Modified;
                 DataContext.SaveChanges();
                 return RedirectToAction("ChangePicture", "Dancer", new { username = User.Identity.Name });

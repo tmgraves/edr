@@ -41,4 +41,25 @@ namespace EDR.Models.ViewModels
             Role = role;
         }
     }
+
+    public class ViewSchoolViewModel
+    {
+        public School School { get; set; }
+        public OrganizationMember Member { get; set; }
+
+        public ViewSchoolViewModel(School school)
+        {
+            School = school;
+        }
+    }
+
+    public class ManageSchoolViewModel
+    {
+        public School School { get; set; }
+
+        public ManageSchoolViewModel(School school)
+        {
+            School = school;
+        }
+    }
 }

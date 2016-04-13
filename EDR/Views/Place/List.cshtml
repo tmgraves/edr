@@ -152,6 +152,12 @@
     }
 
     google.maps.event.addDomListener(window, 'load', initialize);
+    $(function () {
+        $(document).ready(function () {
+            //  var dd = $('#PlaceType');
+            //  dd.prop('selectedIndex', '@Model.Type');
+        });
+    });
     </script>
 
     <div class="row">
@@ -193,10 +199,10 @@
                     <div class="col-lg-6 col-md-6">
                         <div class="row">
                             <div class="form-group">
-                                @Html.LabelFor(model => model.PlaceType, htmlAttributes: new { @class = "control-label col-md-3 col-lg-3" })
+                                @Html.LabelFor(model => model.Type, htmlAttributes: new { @class = "control-label col-md-3 col-lg-3" })
                                 <div class="col-md-9 col-lg-9">
-                                    @Html.EnumDropDownListFor(model => model.PlaceType, "Pick a Place Type", htmlAttributes: new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(model => model.PlaceType, "", new { @class = "text-danger" })
+                                    @Html.EnumDropDownListFor(model => model.Type, "Pick a Place Type", htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
                                 </div>
                             </div>
                         </div>

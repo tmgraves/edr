@@ -441,5 +441,16 @@ namespace EDR.Controllers
             DataContext.SaveChanges();
             return RedirectToAction("Home", "Dancer", new { username = User.Identity.Name } );
         }
+
+        [Authorize]
+        public ActionResult ApplyNew()
+        {
+            // TODO: SAVE TEACHER RECORD WITH 'Active=false' ONCE APPROVED SWITCH TO 'True'
+            //       AND ADD USER TO 'Teacher' ROLE
+
+            var model = new Teacher();
+
+            return View(model);
+        }
     }
 }

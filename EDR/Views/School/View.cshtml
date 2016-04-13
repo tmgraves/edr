@@ -1,4 +1,4 @@
-﻿@model EDR.Models.School
+﻿@model EDR.Models.ViewModels.ViewSchoolViewModel
 
 @{
     ViewBag.Title = "View";
@@ -8,97 +8,115 @@
 
 <div>
     <h4>School</h4>
+    @if (Model.Member != null && Model.Member.Admin)
+    {
+        <p>
+            @Html.ActionLink("Manage", "Manage", "School", new { id = Model.School.Id }, null)
+        </p>
+    }
+    @if (Model.Member == null)
+    {
+        <p>
+            @Html.ActionLink("Join", "Join", "School", new { id = Model.School.Id }, null)
+        </p>
+    }
+    else
+    {
+        <p>
+            Member
+        </p>
+    }
     <hr />
     <div class="col-lg-6 col-md-6">
         <div class="panel panel-default">
             <div class="panel-body ">
                 <dl class="dl-horizontal">
                     <dt>
-                        @Html.DisplayNameFor(model => model.Name)
+                        @Html.DisplayNameFor(model => model.School.Name)
                     </dt>
 
                     <dd>
-                        @Html.DisplayFor(model => model.Name)
+                        @Html.DisplayFor(model => model.School.Name)
                     </dd>
 
             <dt>
-                @Html.DisplayNameFor(model => model.Description)
+                @Html.DisplayNameFor(model => model.School.Description)
             </dt>
 
             <dd>
-                @Html.DisplayFor(model => model.Description)
+                @Html.DisplayFor(model => model.School.Description)
             </dd>
 
             <dt>
-                @Html.DisplayNameFor(model => model.FacebookLink)
+                @Html.DisplayNameFor(model => model.School.FacebookLink)
             </dt>
 
             <dd>
-                @Html.DisplayFor(model => model.FacebookLink)
+                @Html.DisplayFor(model => model.School.FacebookLink)
             </dd>
 
             @*<dt>
-        @Html.DisplayNameFor(model => model.Public)
+        @Html.DisplayNameFor(model => model.School.Public)
     </dt>
 
     <dd>
-        @Html.DisplayFor(model => model.Public)
+        @Html.DisplayFor(model => model.School.Public)
     </dd>
 
     <dt>
-        @Html.DisplayNameFor(model => model.DateStarted)
+        @Html.DisplayNameFor(model => model.School.DateStarted)
     </dt>
 
     <dd>
-        @Html.DisplayFor(model => model.DateStarted)
+        @Html.DisplayFor(model => model.School.DateStarted)
     </dd>
 
     <dt>
-        @Html.DisplayNameFor(model => model.Address)
+        @Html.DisplayNameFor(model => model.School.Address)
     </dt>
 
     <dd>
-        @Html.DisplayFor(model => model.Address)
+        @Html.DisplayFor(model => model.School.Address)
     </dd>
 
     <dt>
-        @Html.DisplayNameFor(model => model.Address2)
+        @Html.DisplayNameFor(model => model.School.Address2)
     </dt>
 
     <dd>
-        @Html.DisplayFor(model => model.Address2)
+        @Html.DisplayFor(model => model.School.Address2)
     </dd>
 
     <dt>
-        @Html.DisplayNameFor(model => model.City)
+        @Html.DisplayNameFor(model => model.School.City)
     </dt>
 
     <dd>
-        @Html.DisplayFor(model => model.City)
+        @Html.DisplayFor(model => model.School.City)
     </dd>
 
     <dt>
-        @Html.DisplayNameFor(model => model.State)
+        @Html.DisplayNameFor(model => model.School.State)
     </dt>
 
     <dd>
-        @Html.DisplayFor(model => model.State)
+        @Html.DisplayFor(model => model.School.State)
     </dd>
 
     <dt>
-        @Html.DisplayNameFor(model => model.Zip)
+        @Html.DisplayNameFor(model => model.School.Zip)
     </dt>
 
     <dd>
-        @Html.DisplayFor(model => model.Zip)
+        @Html.DisplayFor(model => model.School.Zip)
     </dd>
 
     <dt>
-        @Html.DisplayNameFor(model => model.Country)
+        @Html.DisplayNameFor(model => model.School.Country)
     </dt>
 
     <dd>
-        @Html.DisplayFor(model => model.Country)
+        @Html.DisplayFor(model => model.School.Country)
     </dd>*@
                 </dl>
             </div>
@@ -106,117 +124,20 @@
     </div>
 
     <div class="col-lg-6 col-md-6">
-        <div class="panel panel-default">
-            <div class="panel-body ">
-                <h3>Members</h3>
-                @using (Html.BeginForm("UpdateMembers", "School", FormMethod.Post))
-                {
-                    @Html.HiddenFor(model => model.Id)
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Admin</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        @Html.EditorFor(model => model.Members)
-                    </table>
-                    @*<table class="table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Admin</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        @for (int i = 0; i < Model.Members.Count; i++)
-                        {
-                            <tr>
-                                <td>
-                                    @Html.HiddenFor(model => model.Members.ToList()[i].Id)
-                                </td>
-                                <td>
-                                    @Html.EditorFor(model => model.Members.ToList()[i].User.FirstName)
-                                </td>
-                                <td>
-                                    @Html.EditorFor(model => model.Members.ToList()[i].Admin)
-                                </td>
-                            </tr>
-                        }
-                    </table>*@
-                    <div>
-                        <input type="submit" value="Update Members" />
-                    </div>
-                }
-                @*@Html.Partial("~/Views/School/_UpdateMembersPartial.cshtml", Model.Members, new ViewDataDictionary { TemplateInfo = new TemplateInfo { HtmlFieldPrefix = "Members" }})
-
-               @{
-                    WebGrid grid = new WebGrid(source: Model.Members, canPage: false);                   
-                }
-                @using (Html.BeginForm("UpdateMembers", "School", FormMethod.Post))
-                {
-                    @Html.HiddenFor(model => model.Id)
-                    <div>
-                        @grid.GetHtml(
-                                    tableStyle: "gridtable",
-                                    htmlAttributes: new { id = "checkableGrid" },
-                                    columns: grid.Columns
-                                    (
-                                    grid.Column(format: @<text> <input type="checkbox" value="@item.UserId" @(item.Admin ? "checked='checked'" : "") name="userids" /> </text>, header: "Admin"
-                                    ),
-                                    grid.Column("User.FullName", "Name")
-                                    )
-                                )
-                    </div>
-                    <div>
-                        <input type="submit" value="Update Members" />
-                    </div>
-                }
-
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Admin</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    @foreach (var item in Model.Members)
-                    {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(member => item.User.FullName)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(member => item.Admin)
-                            </td>
-                            <td>
-                                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                                @Html.ActionLink("Details", "View", new { id = item.Id }) |
-                                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
-                            </td>
-                        </tr>
-                    }
-                </table>*@
-            </div>
-        </div>
     </div>
     <div class="col-lg-6 col-md-6">
         <div class="panel panel-default">
             <div class="panel-body ">
                 <h3>Tickets</h3>
-                @Html.ActionLink("Add Ticket", "AddTicket", "School", new { id = Model.Id }, null)
                 <table class="table">
                     <thead>
                         <tr>
                             <th>Quantity</th>
                             <th>Price</th>
                             <th>Related Event</th>
-                            <th></th>
                         </tr>
                     </thead>
-                    @foreach (var item in Model.Tickets)
+                    @foreach (var item in Model.School.Tickets)
                     {
                         <tr>
                             <td>
@@ -231,9 +152,6 @@
                                     @item.Event.Name
                                 }
                             </td>
-                            <td>
-                                @Html.ActionLink("Delete", "DeleteTicket", new { id = item.Id })
-                            </td>
                         </tr>
                     }
                 </table>
@@ -244,7 +162,6 @@
         <div class="panel panel-default">
             <div class="panel-body ">
                 <h3>Classes</h3>
-                @Html.ActionLink("Add a Class", "Create", "Event", new { eventType = EDR.Enums.EventType.Class, schoolId = Model.Id, role = EDR.Enums.RoleName.Teacher }, null)
                 <table class="table">
                     <thead>
                         <tr>
@@ -252,7 +169,7 @@
                             <th></th>
                         </tr>
                     </thead>
-                    @foreach (var item in Model.Classes)
+                    @foreach (var item in Model.School.Classes)
                     {
                         <tr>
                             <td>
@@ -260,7 +177,6 @@
                             </td>
                             <td>
                                 @Html.ActionLink("View", "View", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Class }, null)
-                                @Html.ActionLink("Manage Dates", "ManageDates", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Class }, null)
                             </td>
                         </tr>
                     }
@@ -279,7 +195,7 @@
                             <th></th>
                         </tr>
                     </thead>
-                    @foreach (var item in Model.Owners)
+                    @foreach (var item in Model.School.Owners)
                     {
                         <tr>
                             <td>
@@ -305,7 +221,7 @@
                             <th></th>
                         </tr>
                     </thead>
-                    @foreach (var item in Model.Teachers)
+                    @foreach (var item in Model.School.Teachers)
                     {
                         <tr>
                             <td>
@@ -322,10 +238,7 @@
     </div>
 </div>
 
-
-
-
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Edit", "Edit", new { id = Model.School.Id }) |
     @Html.ActionLink("Back to List", "List")
 </p>

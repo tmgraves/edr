@@ -21,6 +21,8 @@ namespace EDR.Controllers
             model.DanceStyles = DataContext.DanceStyles;
             model.Zoom = model.Zoom == 0 ? 10 : model.Zoom;
 
+            model.Type = model.TypeParam;
+
             if (model.Location != "" && model.Location != null)
             {
                 var address = new Address();
@@ -43,9 +45,9 @@ namespace EDR.Controllers
                 model.Places = model.Places.Where(p => p.Events.Any(e => e.DanceStyles != null && e.DanceStyles.Any(s => s.Id == model.DanceStyleId)));
             }
 
-            if (model.PlaceType != null)
+            if (model.Type != null)
             {
-                model.Places = model.Places.Where(p => p.PlaceType == model.PlaceType);
+                model.Places = model.Places.Where(p => p.PlaceType == model.Type);
             }
 
             return View(model);
