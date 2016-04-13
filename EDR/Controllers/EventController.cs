@@ -1416,18 +1416,37 @@ namespace EDR.Controllers
                     where i.Id == id
                     select new { EventInstance = i, Class = c }).FirstOrDefault();
 
-            //  Get Available Tickets
-            var ticket =
-                    (from ut in DataContext.UserTickets
-                    join t in DataContext.Tickets
-                    on ut.TicketId equals t.Id
-                    where ut.UserId == userid
-                    && t.SchoolId == instance.Class.SchoolId
-                    && ut.EventRegistrations.Count() < ut.Quantity * t.Quantity
-                    select ut).FirstOrDefault();
-            DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = id, UserTicketId = ticket.Id });
-            DataContext.SaveChanges();
-            return RedirectToAction("View", new { id = instance.EventInstance.EventId, eventType = instance.EventInstance.Event is Class ? EventType.Class : EventType.Social });
+            var credits = DataContext.UserTickets.Where(u => u.UserId == userid && instance.Class.SchoolId == u.Ticket.SchoolId).Include("Ticket").Include("EventRegistrations").ToList();
+
+            if (credits != null)
+            {
+                //  User Has Remaining Credit
+                if (credits.Sum(c => c.Quantity * c.Ticket.Quantity) > credits.Sum(c => c.EventRegistrations.Count()))
+                {
+                    //  Get Available Tickets
+                    var ticket =
+                            (from ut in DataContext.UserTickets
+                             join t in DataContext.Tickets
+                             on ut.TicketId equals t.Id
+                             where ut.UserId == userid
+                             && t.SchoolId == instance.Class.SchoolId
+                             && ut.EventRegistrations.Count() < ut.Quantity * t.Quantity
+                             select ut).FirstOrDefault();
+                    DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = id, UserTicketId = ticket.Id });
+                    DataContext.SaveChanges();
+                    return RedirectToAction("View", new { id = instance.EventInstance.EventId, eventType = instance.EventInstance.Event is Class ? EventType.Class : EventType.Social });
+                }
+                else
+                {
+                    return RedirectToAction("BuyTicket", "Store", new { id = id });
+                }
+            }
+            //  User needs to purchase tickets
+            else
+            {
+                return RedirectToAction("BuyTicket", "Store", new { id = id });
+            }
+            
         }
 
         [Authorize]

@@ -26,7 +26,16 @@ namespace EDR.Controllers
         [Authorize]
         public ActionResult BuyTicket(int id)
         {
-            var model = new BuyTicketViewModel(DataContext.Tickets.Single(t => t.Id == id));
+            var tickets =
+                    (from i in DataContext.EventInstances
+                     join c in DataContext.Classes
+                     on i.EventId equals c.Id
+                     join t in DataContext.Tickets
+                     on c.SchoolId equals t.SchoolId
+                     where i.Id == id
+                     select t).Distinct();
+
+            var model = new BuyTicketViewModel(tickets.ToList());
             return View(model);
         }
         
@@ -37,7 +46,7 @@ namespace EDR.Controllers
             {
                 var userid = User.Identity.GetUserId();
                 var user = DataContext.Users.Single(u => u.Id == userid);
-                DataContext.UserTickets.Add(new UserTicket() { UserId = userid, TicketId = model.Ticket.Id, Quantity = model.Quantity });
+                DataContext.UserTickets.Add(new UserTicket() { UserId = userid, TicketId = model.TicketId, Quantity = model.Quantity });
                 DataContext.SaveChanges();
                 return RedirectToAction("Home", "Dancer", new { id = userid });
             }

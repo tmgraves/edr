@@ -8,7 +8,7 @@
 
 @using (Html.BeginForm(null, null, FormMethod.Post, new { @class = "form-horizontal" }))
 {
-    @Html.HiddenFor(m => m.Ticket.Id)
+    @*@Html.HiddenFor(m => m.Ticket.Id)
     @Html.HiddenFor(m => m.Ticket.Quantity)
     @Html.HiddenFor(m => m.Ticket.Price)
     <div class="form-group">
@@ -16,6 +16,15 @@
         <div class="col-sm-10">
             <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4 text-right">
                 <span class="control-label">@(String.Format("{0:G0}", Model.Ticket.Quantity) + " @ " + String.Format("{0:C}", Model.Ticket.Price))</span>
+            </div>
+        </div>
+    </div>*@
+    <div class="form-group">
+        <label for="inputPassword3" class="col-sm-2 control-label">Pick a Ticket:</label>
+        <div class="col-sm-10">
+            <div class="col-lg-3 col-md-3 col-sm-4 col-xs-4">
+                @Html.DropDownListFor(m => m.TicketId, Model.Tickets.OrderBy(t => t.Quantity).Select(t => new SelectListItem() { Value = t.Id.ToString(), Text = String.Format("{0:N0}", t.Quantity) + " @ " + String.Format("{0:C0}", t.Price) }).ToList(), "-- Select a Ticket --", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.TicketId, "", new { @class = "text-danger" })
             </div>
         </div>
     </div>

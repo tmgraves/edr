@@ -30,21 +30,23 @@ namespace EDR.Models.ViewModels
 
     public class BuyTicketViewModel
     {
-        public Ticket Ticket { get; set; }
+        public ICollection<Ticket> Tickets { get; set; }
         [Required]
         [DefaultValue(1)]
         [Range(1, 100)]
         [Display(Name = "Quantity of Tickets")]
         public int Quantity { get; set; }
+        [Required(ErrorMessage = "Please pick a Ticket")]
+        public int TicketId { get; set; }
 
         public BuyTicketViewModel()
         {
             Quantity = 1;
         }
-        public BuyTicketViewModel(Ticket ticket)
+        public BuyTicketViewModel(List<Ticket> tickets)
         {
             Quantity = 1;
-            Ticket = ticket;
+            Tickets = tickets;
         }
     }
 }

@@ -58,64 +58,24 @@
     </div>
     <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
         <div class="panel panel-default">
-            <div class="panel-heading">
-                <h4>Buy Tickets</h4>
-            </div>
-            <div class="panel-body">
-                <table class="table table-striped">
-                    <thead style="margin-bottom: 2px;">
-                        <tr>
-                            <th class="text-center">
-                                Quantity
-                            </th>
-                            <th class="text-center">
-                                Price
-                            </th>
-                            <th>
-                            </th>
-                        </tr>
-                    </thead>
-                    @foreach (var tic in Model.Tickets.OrderBy(t => t.Quantity))
-                    {
-                        <tr>
-                            <td class="text-center">
-                                <span class="text-primary"><b>@String.Format("{0:N0}", tic.Quantity)</b></span>
-                            </td>
-                            <td class="text-center">
-                                <span class="text-primary"><b>@String.Format("{0:C}", tic.Price)</b></span>
-                            </td>
-                            <td>
-                                @Html.ActionLink("Buy", "BuyTicket", "Store", new { id = tic.Id }, new { @class = "btn btn-primary" })
-                            </td>
-                        </tr>
-                    }
-                </table>
-            </div>
-        </div>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h4>Upcoming Dates (Available Tickets: @Model.AvailableTickets)</h4>
-            </div>
-            <div class="panel-body">
-                @foreach (var evt in Model.Event.EventInstances.Where(e => e.DateTime >= DateTime.Today).OrderBy(c => c.DateTime))
-                {
-                    <div class="col-lg-12 col-md-12" style="margin-bottom: 2px;">
-                        <div class="col-lg-6 col-md-6">
-                            <span class="text-primary"><b>@evt.DateTime.ToShortDateString()</b></span>
-                        </div>
-                        <div class="col-lg-6 col-md-6">
-                            @if (evt.EventRegistrations.Where(r => r.UserId == userid).Count() == 0)
-                            {
-                                @Html.ActionLink("Register", "Register", new { id = evt.Id }, new { @class = "btn btn-primary" })
-                            }
-                            else
-                            {
-                                @Html.ActionLink("Un-Register", "UnRegister", new { id = evt.Id }, new { @class = "btn btn-danger" })
-                            }
-                            @*<a class="btn btn-danger" href="@Url.Action("DeleteInstance", "Event", new { id = evt.Id, eventId = evt.EventId })"><span class="glyphicon glyphicon-remove"></span></a>*@
-                        </div>
-                    </div>
+            <div class="panel-body text-center">
+                @{
+                    var next = Model.Event.EventInstances.Where(e => e.DateTime >= DateTime.Today).OrderBy(c => c.DateTime).FirstOrDefault();
                 }
+                <h2><span class="text-primary">Next Date: </span>@next.DateTime.ToShortDateString()</h2>
+                <p>
+                    (Available Tickets: @Model.AvailableTickets)
+                </p>
+                <p>
+                    @if (next.EventRegistrations.Where(r => r.UserId == userid).Count() == 0)
+                    {
+                        @Html.ActionLink("Register", "Register", new { id = next.Id }, new { @class = "btn btn-primary btn-lg" })
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Un-Register", "UnRegister", new { id = next.Id }, new { @class = "btn btn-danger btn-lg" })
+                    }
+                </p>
             </div>
         </div>
         <div class="partialContents" data-url="/Event/@Model.Event.Id/GetRelatedEvents?eventType=@Model.EventType">
