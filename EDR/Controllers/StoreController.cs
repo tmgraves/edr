@@ -26,28 +26,42 @@ namespace EDR.Controllers
         [Authorize]
         public ActionResult BuyTicket(int? instanceId, int? schoolId)
         {
-            var tickets =
-                    (from i in DataContext.EventInstances
-                     join c in DataContext.Classes
-                     on i.EventId equals c.Id
-                     join t in DataContext.Tickets
-                     on c.SchoolId equals t.SchoolId
-                     where i.Id == instanceId
-                     select t).Distinct();
-
-            var model = new BuyTicketViewModel(tickets.ToList());
+            var model = new BuyTicketViewModel();
             if (instanceId != null)
             {
-                var instance = DataContext.EventInstances.Include("Event").Single(e => e.Id == (int)instanceId);
+                var instance = DataContext.EventInstances.Include("Event").Include("Event.Tickets").Single(e => e.Id == (int)instanceId);
+
+                var tickets = new List<Ticket>();
+                if (instance.Event.Tickets.Count() != 0)
+                {
+                    tickets = instance.Event.Tickets.ToList();
+                }
+                else
+                {
+                    tickets =
+                            (from i in DataContext.EventInstances
+                             join c in DataContext.Classes
+                             on i.EventId equals c.Id
+                             join t in DataContext.Tickets
+                             on c.SchoolId equals t.SchoolId
+                             where i.Id == instanceId
+                             select t).Distinct().ToList();
+                }
+                model.Tickets = tickets;
                 model.EventInstanceId = instanceId;
                 model.Type = instance.Event is Class ? Enums.EventType.Class : Enums.EventType.Social;
                 model.EventId = instance.EventId;
             }
             else
             {
+                var instance = DataContext.EventInstances.Include("Event").Single(e => e.Id == (int)instanceId);
+
+                var tickets = new List<Ticket>();
+                tickets = DataContext.Tickets.Where(t => t.SchoolId == schoolId).ToList();
+
+                model.Tickets = tickets;
                 model.SchoolId = schoolId;
             }
-            model.EventInstanceId = instanceId;
             return View(model);
         }
         

@@ -74,7 +74,15 @@
                             }
                             else
                             {
-                                @Html.ActionLink("Un-Register", "UnRegister", new { id = next.Id }, new { @class = "btn btn-danger btn-lg" })
+                                var reg = next.EventRegistrations.Where(r => r.UserId == userid).FirstOrDefault();
+                                if (reg.UserTicket.Ticket.EventId == null)
+                                {
+                                    @Html.ActionLink("Un-Register", "UnRegister", new { id = next.Id }, new { @class = "btn btn-danger btn-lg" });
+                                }
+                                else
+                                {
+                                    <span class="btn btn-default btn-lg">Registered</span>
+                                }
                             }
                         </p>
                     </div>

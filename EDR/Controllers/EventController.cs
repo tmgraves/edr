@@ -771,6 +771,7 @@ namespace EDR.Controllers
             .Include("EventMembers.Member")
             .Include("EventInstances")
             .Include("EventInstances.EventRegistrations")
+            .Include("EventInstances.EventRegistrations.UserTicket.Ticket")
             .Include("Creator")
             .Include("Tickets")
             .FirstOrDefault();
@@ -823,14 +824,16 @@ namespace EDR.Controllers
                         select ut.Quantity * t.Quantity;
 
                 var used =
-                        (from c in DataContext.Classes
-                         join cr in DataContext.Classes
-                         on c.SchoolId equals cr.SchoolId
+                        (from er in DataContext.EventRegistrations
                          join ei in DataContext.EventInstances
-                         on cr.Id equals ei.EventId
-                         join er in DataContext.EventRegistrations
-                         on ei.Id equals er.EventInstanceId
-                         where er.UserId == userid
+                         on er.EventInstanceId equals ei.Id
+                         join ut in DataContext.UserTickets
+                         on new { er.UserTicketId, er.UserId } equals new { UserTicketId = ut.Id, UserId = ut.UserId }
+                         join t in DataContext.Tickets
+                         on ut.TicketId equals t.Id
+                         join c in DataContext.Classes
+                         on t.SchoolId equals c.SchoolId
+                         where ut.UserId == userid
                          && c.Id == id
                          select er.Id).Distinct();
 
