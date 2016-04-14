@@ -24,7 +24,7 @@ namespace EDR.Controllers
         }
 
         [Authorize]
-        public ActionResult BuyTicket(int id)
+        public ActionResult BuyTicket(int? instanceId, int? schoolId)
         {
             var tickets =
                     (from i in DataContext.EventInstances
@@ -32,10 +32,22 @@ namespace EDR.Controllers
                      on i.EventId equals c.Id
                      join t in DataContext.Tickets
                      on c.SchoolId equals t.SchoolId
-                     where i.Id == id
+                     where i.Id == instanceId
                      select t).Distinct();
 
             var model = new BuyTicketViewModel(tickets.ToList());
+            if (instanceId != null)
+            {
+                var instance = DataContext.EventInstances.Include("Event").Single(e => e.Id == (int)instanceId);
+                model.EventInstanceId = instanceId;
+                model.Type = instance.Event is Class ? Enums.EventType.Class : Enums.EventType.Social;
+                model.EventId = instance.EventId;
+            }
+            else
+            {
+                model.SchoolId = schoolId;
+            }
+            model.EventInstanceId = instanceId;
             return View(model);
         }
         
@@ -46,9 +58,20 @@ namespace EDR.Controllers
             {
                 var userid = User.Identity.GetUserId();
                 var user = DataContext.Users.Single(u => u.Id == userid);
-                DataContext.UserTickets.Add(new UserTicket() { UserId = userid, TicketId = model.TicketId, Quantity = model.Quantity });
+                var ticket = new UserTicket() { UserId = userid, TicketId = model.TicketId, Quantity = model.Quantity };
+                DataContext.UserTickets.Add(ticket);
                 DataContext.SaveChanges();
-                return RedirectToAction("Home", "Dancer", new { id = userid });
+
+                if (model.EventInstanceId != null)
+                {
+                    DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = (int)model.EventInstanceId, UserTicketId = ticket.Id });
+                    DataContext.SaveChanges();
+                    return RedirectToAction("View", "Event", new { id = model.EventId, eventType = model.Type });
+                }
+                else
+                {
+                    return RedirectToAction("View", "School", new { id = model.SchoolId });
+                }
             }
             else
             {

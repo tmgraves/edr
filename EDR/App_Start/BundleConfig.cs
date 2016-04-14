@@ -28,9 +28,14 @@ namespace EDR
                       "~/Content/site.css",
                       "~/Content/sidebar.bootstrap.css"));
 
-            // Set EnableOptimizations to false for debugging. For more information,
-            // visit http://go.microsoft.com/fwlink/?LinkId=301862
-            BundleTable.EnableOptimizations = true;
+            //  foolproof scripts
+            bundles.Add(new ScriptBundle("~/bundles/foolproof").Include(
+                        "~/Scripts/qunit.js",
+                        "~/Scripts/mvcfoolproof.unobtrusive.js"));
+
+              // Set EnableOptimizations to false for debugging. For more information,
+              // visit http://go.microsoft.com/fwlink/?LinkId=301862
+              BundleTable.EnableOptimizations = true;
         }
     }
 }

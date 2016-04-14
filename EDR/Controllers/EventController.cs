@@ -1438,13 +1438,13 @@ namespace EDR.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("BuyTicket", "Store", new { id = id });
+                    return RedirectToAction("BuyTicket", "Store", new { instanceId = id });
                 }
             }
             //  User needs to purchase tickets
             else
             {
-                return RedirectToAction("BuyTicket", "Store", new { id = id });
+                return RedirectToAction("BuyTicket", "Store", new { instanceId = id });
             }
             
         }
@@ -1671,9 +1671,9 @@ namespace EDR.Controllers
                     //cls.EventTickets = DataContext.Tickets.Where(t => model.TicketId.Contains(t.Id.ToString())).AsEnumerable().Select(t => new EventTicket() { TicketId = t.Id, EventId = cls.Id }).ToList();
                     //DataContext.SaveChanges();
                     //  Add Tickets
-                    if (model.EventTicket.Quantity != 0)
+                    if (!model.UseSchoolTickets)
                     {
-                        cls.Tickets.Add(new Ticket() { EventId = cls.Id, Price = model.EventTicket.Price, Quantity = model.EventTicket.Quantity });
+                        cls.Tickets.Add(new Ticket() { EventId = cls.Id, Price = (decimal)model.TicketPrice, Quantity = (decimal)model.TicketQuantity });
                         DataContext.SaveChanges();
                     }
                 }
@@ -1740,11 +1740,8 @@ namespace EDR.Controllers
                     id = soc.Id;
 
                     //  Add Tickets
-                    if (model.EventTicket.Quantity != 0)
-                    {
-                        soc.Tickets.Add(new Ticket() { EventId = soc.Id, Price = model.EventTicket.Price, Quantity = model.EventTicket.Quantity });
-                        DataContext.SaveChanges();
-                    }
+                    soc.Tickets.Add(new Ticket() { EventId = soc.Id, Price = (decimal)model.TicketPrice, Quantity = (decimal)model.TicketQuantity });
+                    DataContext.SaveChanges();
                 }
             }
             else

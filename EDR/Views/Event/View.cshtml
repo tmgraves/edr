@@ -57,27 +57,30 @@
         </div>*@
     </div>
     <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-        <div class="panel panel-default">
-            <div class="panel-body text-center">
-                @{
-                    var next = Model.Event.EventInstances.Where(e => e.DateTime >= DateTime.Today).OrderBy(c => c.DateTime).FirstOrDefault();
-                }
-                <h2><span class="text-primary">Next Date: </span>@next.DateTime.ToShortDateString()</h2>
-                <p>
-                    (Available Tickets: @Model.AvailableTickets)
-                </p>
-                <p>
-                    @if (next.EventRegistrations.Where(r => r.UserId == userid).Count() == 0)
-                    {
-                        @Html.ActionLink("Register", "Register", new { id = next.Id }, new { @class = "btn btn-primary btn-lg" })
-                    }
-                    else
-                    {
-                        @Html.ActionLink("Un-Register", "UnRegister", new { id = next.Id }, new { @class = "btn btn-danger btn-lg" })
-                    }
-                </p>
-            </div>
-        </div>
+        @{
+            var next = Model.Event.EventInstances.Where(e => e.DateTime >= DateTime.Today).OrderBy(c => c.DateTime).FirstOrDefault();
+            if (next != null)
+            {
+                <div class="panel panel-default">
+                    <div class="panel-body text-center">
+                        <h2><span class="text-primary">Next Date: </span>@next.DateTime.ToShortDateString()</h2>
+                        <p>
+                            (Available Tickets: @Model.AvailableTickets)
+                        </p>
+                        <p>
+                            @if (next.EventRegistrations.Where(r => r.UserId == userid).Count() == 0)
+                            {
+                                @Html.ActionLink("Register", "Register", new { id = next.Id }, new { @class = "btn btn-primary btn-lg" })
+                            }
+                            else
+                            {
+                                @Html.ActionLink("Un-Register", "UnRegister", new { id = next.Id }, new { @class = "btn btn-danger btn-lg" })
+                            }
+                        </p>
+                    </div>
+                </div>
+            }
+        }
         <div class="partialContents" data-url="/Event/@Model.Event.Id/GetRelatedEvents?eventType=@Model.EventType">
             <img src="~/Content/images/indicator.white.gif" />Loading...
         </div>

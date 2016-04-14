@@ -8,6 +8,10 @@
 
 @using (Html.BeginForm(null, null, FormMethod.Post, new { @class = "form-horizontal" }))
 {
+    @Html.HiddenFor(m => m.EventInstanceId)
+    @Html.HiddenFor(m => m.Type)
+    @Html.HiddenFor(m => m.EventId)
+    @Html.HiddenFor(m => m.SchoolId)
     @*@Html.HiddenFor(m => m.Ticket.Id)
     @Html.HiddenFor(m => m.Ticket.Quantity)
     @Html.HiddenFor(m => m.Ticket.Price)

@@ -16,9 +16,24 @@ namespace EDR
 
             //  routes.MapMvcAttributeRoutes();
             routes.MapRoute(
-                name: "EventCreate",
-                url: "{eventType}/Create",
-                defaults: new { controller = "Event", action = "Create", eventType = UrlParameter.Optional }
+                name: "ClassActionId",
+                url: "Class/{action}/{id}",
+                defaults: new { controller = "Event", action = "View", eventType = EDR.Enums.EventType.Class }
+            );
+            routes.MapRoute(
+                name: "ClassAction",
+                url: "Class/{action}",
+                defaults: new { controller = "Event", action = "View", eventType = EDR.Enums.EventType.Class }
+            );
+            routes.MapRoute(
+                name: "SocialActionId",
+                url: "Social/{action}/{id}",
+                defaults: new { controller = "Event", action = "View", eventType = EDR.Enums.EventType.Social }
+            );
+            routes.MapRoute(
+                name: "SocialAction",
+                url: "Social/{action}",
+                defaults: new { controller = "Event", action = "View", eventType = EDR.Enums.EventType.Social }
             );
 
             routes.MapRoute(

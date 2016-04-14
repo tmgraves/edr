@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using EDR.Enums;
 using EDR.Utilities.Validators;
 using System.ComponentModel;
+using Foolproof;
 
 namespace EDR.Models.ViewModels
 {
@@ -67,9 +68,21 @@ namespace EDR.Models.ViewModels
         public int SkillLevel { get; set; }
         public bool AddtoMyPlaces { get; set; }
         public string CreateAction { get; set; }
-        public Ticket EventTicket { get; set; }
+        public bool UseSchoolTickets { get; set; }
+        //  [RequiredIf("UseSchoolTickets", Operator.EqualTo, false)]
+        //  public Ticket EventTicket { get; set; }
         //  public List<Ticket> Tickets { get; set; }
         //  public string[] TicketId { get; set; }
+        [RequiredIf("UseSchoolTickets", Operator.EqualTo, "false", ErrorMessage = "Enter a Ticket Quantity")]
+        [DisplayFormat(DataFormatString = "{0:G0}")]
+        [Display(Name = "Quantity")]
+        [DefaultValue(1)]
+        [Range(1, 1000)]
+        public int? TicketQuantity { get; set; }
+        [RequiredIf("UseSchoolTickets", Operator.EqualTo, "false", ErrorMessage = "Enter a Ticket Price")]
+        [DisplayFormat(DataFormatString = "{0:C}")]
+        [Display(Name = "Price")]
+        public decimal? TicketPrice { get; set; }
 
         public EventCreateViewModel()
         {
@@ -85,6 +98,7 @@ namespace EDR.Models.ViewModels
             Places = new List<PlaceItem>();
             MonthDays = new MultiCheckBox();
             StylesCheckboxList = new MultiCheckBox();
+            UseSchoolTickets = true;
             //  Tickets = new List<Ticket>();
 
             NewPlace = new Place() { Id = 0, Latitude = 0.0, Longitude = 0.0, Public = false, PlaceType = PlaceType.OtherPlace };

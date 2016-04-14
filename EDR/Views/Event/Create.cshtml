@@ -8,7 +8,9 @@
 
 @section Scripts
 {
+@Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/foolproof")
 }
 
 <h2>New Event</h2>
@@ -197,6 +199,14 @@
         });
     });
 
+    //$(function () {
+    //    $('#UseSchoolTickets').change(function () {
+    //        var form = $('#createform.main');
+    //        var valid = form.valid();
+    //        alert(valid);
+    //    });
+    //});
+
     $(function () {
         $('#checkall').click(function () {
             var status = $('#checkall').prop('checked');
@@ -206,6 +216,28 @@
         });
     });
 
+    $(function () {
+        $('#UseSchoolTickets').change(function () {
+            var use = $("#UseSchoolTickets option:selected").val();
+            if (use == "true")
+            {
+                $('#newticketdiv').hide();
+            }
+            else
+            {
+                $('#newticketdiv').show();
+            }
+
+            //var classtype = $("#ClassType option:selected").val();
+            //var btn = $('.wizard .next');
+            //if (classtype != "") {
+            //    btn.prop('disabled', false);
+            //}
+            //else {
+            //    btn.prop('disabled', true);
+            //}
+        });
+    });
     $(document).ready(function () {
         function SetEventType(eventtype)
         {
@@ -308,6 +340,9 @@
             if ('@Model.EventType' == "Social")
             {
                 dd.prop('selectedIndex', 1);
+                $('#UseSchoolTickets').prop('disabled', true);
+                $('#UseSchoolTickets').prop('selectedIndex', 1);
+                $('#newticketdiv').show();
             }
             else
             {
@@ -777,24 +812,28 @@
             <div id="wizticketsdiv" class="step" style="display:none">
                 <h2>Step: Tickets</h2>
                 <div class="col-lg-12 col-md-12" style="margin-bottom: 5px;">
-                    <h3>Add a Ticket for this event</h3>
                     <div class="form-horizontal">
-                        <h4>Ticket</h4>
-                        <hr />
-                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                         <div class="form-group">
-                            @Html.LabelFor(model => model.EventTicket.Quantity, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10">
-                                @Html.EditorFor(model => model.EventTicket.Quantity, new { htmlAttributes = new { @class = "form-control" } })
-                                @Html.ValidationMessageFor(model => model.EventTicket.Quantity, "", new { @class = "text-danger" })
-                            </div>
+                            @Html.DropDownListFor(m => m.UseSchoolTickets, new SelectList(new List<SelectListItem>() { new SelectListItem() { Text = "Use Existing School Tickets", Value = "true" }, new SelectListItem() { Text = "Set up New Ticket for this Event", Value = "false" } }, "Value", "Text").AsEnumerable(), null, new { @class = "form-control" })
                         </div>
+                        <div id="newticketdiv" class="panel" style="display: none;">
+                            <h4>New Event Ticket</h4>
+                            <hr />
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.TicketQuantity, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.TicketQuantity, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.TicketQuantity, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
 
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.EventTicket.Price, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10">
-                                @Html.EditorFor(model => model.EventTicket.Price, new { htmlAttributes = new { @class = "form-control" } })
-                                @Html.ValidationMessageFor(model => model.EventTicket.Price, "", new { @class = "text-danger" })
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.TicketPrice, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.TicketPrice, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.TicketPrice, "", new { @class = "text-danger" })
+                                </div>
                             </div>
                         </div>
                     </div>

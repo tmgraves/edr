@@ -93,7 +93,7 @@
                     {
                         <tr>
                             <td>
-                                <h3>(@s.Id)@s.Name</h3>
+                                <h3>(@s.Id) @Html.ActionLink(s.Name, "View", "School", new { id = s.Id }, null)</h3>
                             </td>
                         </tr>
                         <tr>
@@ -160,10 +160,10 @@
                                     {
                                         <tr>
                                             <td>
-                                                @Html.DisplayFor(member => item.Instance.Event.Name)
+                                                @Html.ActionLink(item.Instance.Event.Name, "View", "Event", new { id = item.Instance.EventId, eventType = item.Instance.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social }, null)
                                             </td>
                                             <td class="text-center">
-                                                @item.DateRegistered.ToShortDateString()
+                                                @item.Instance.DateTime.ToShortDateString()
                                             </td>
                                         </tr>
                                     }

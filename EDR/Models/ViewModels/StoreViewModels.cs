@@ -38,7 +38,10 @@ namespace EDR.Models.ViewModels
         public int Quantity { get; set; }
         [Required(ErrorMessage = "Please pick a Ticket")]
         public int TicketId { get; set; }
-
+        public int? EventInstanceId { get; set; }
+        public int? EventId { get; set; }
+        public EDR.Enums.EventType? Type { get; set; }
+        public int? SchoolId { get; set; }
         public BuyTicketViewModel()
         {
             Quantity = 1;
