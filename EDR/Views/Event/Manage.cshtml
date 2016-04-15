@@ -58,14 +58,51 @@
                         @(Model.Event.Recurring ? "Yes" : "No")
                     </dd>
                 </dl>
-                <dl class="dl-horizontal">
-                    <dt>
-                        @Html.DisplayNameFor(model => model.Event.FacebookLink)
-                    </dt>
-                    <dd>
-                        @Html.DisplayFor(model => model.Event.FacebookLink)
-                    </dd>
-                </dl>
+                <div id="repeat" @(Model.Event.Recurring ? "" : "hidden='hidden'")>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            Repeats
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Event.Frequency)
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            Every
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Event.Interval, new { @class = "form-control" })
+                            @if (Model.Event.Frequency == EDR.Enums.Frequency.Daily)
+                            {
+                                @: Day(s)
+                                        }
+                            else if (Model.Event.Frequency == EDR.Enums.Frequency.Weekly)
+                            {
+                                @: Week(s)
+                                        }
+                            else if (Model.Event.Frequency == EDR.Enums.Frequency.Monthly)
+                            {
+                                @: Month(s)
+                                        }
+                            else if (Model.Event.Frequency == EDR.Enums.Frequency.Yearly)
+                            {
+                                @: Year(s)
+                            }
+                        </dd>
+                    </dl>
+                    <div id="monthly" @(Model.Event.Frequency == EDR.Enums.Frequency.Monthly ? "" : "hidden='hidden'")>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                On the
+                            </dt>
+                            <dd>
+                                @Model.Event.MonthDays @Model.Event.StartDate.DayOfWeek
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+
                 <dl class="dl-horizontal">
                     <dt>
                         @Html.DisplayNameFor(model => model.Event.FacebookLink)

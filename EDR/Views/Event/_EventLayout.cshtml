@@ -31,21 +31,21 @@
         {
             if (Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)
             {
-                <a class="btn btn-info" title="Edit" href="@Url.Action("Edit", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">
+                <a class="btn btn-info" title="Edit" href="@Url.Action("Manage", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">
                     <i class="glyphicon glyphicon-pencil" style="vertical-align: middle;"></i>
                     <span class="sr-only">Edit</span>
                 </a>
             }
             else if (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)
             {
-                <a class="btn btn-info" title="Edit" href="@Url.Action("Edit", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">
+                <a class="btn btn-info" title="Edit" href="@Url.Action("Manage", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">
                     <i class="glyphicon glyphicon-pencil" style="vertical-align: middle;"></i>
                     <span class="sr-only">Edit</span>
                 </a>
             }
             else if (Model.Event.Creator.UserName == User.Identity.Name)
             {
-                <a class="btn btn-info" title="Edit" href="@Url.Action("Edit", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">
+                <a class="btn btn-info" title="Edit" href="@Url.Action("Manage", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">
                     <i class="glyphicon glyphicon-pencil" style="vertical-align: middle;"></i>
                     <span class="sr-only">Edit</span>
                 </a>

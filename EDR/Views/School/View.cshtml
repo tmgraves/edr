@@ -133,17 +133,17 @@
                     <thead>
                         <tr>
                             <th>Quantity</th>
-                            <th>Price</th>
-                            <th>Related Event</th>
+                            <th class="text-center">Price</th>
+                            <th class="text-center">Related Event</th>
                         </tr>
                     </thead>
-                    @foreach (var item in Model.School.Tickets)
+                    @foreach (var item in Model.School.Tickets.OrderBy(t => t.Quantity))
                     {
                         <tr>
-                            <td>
+                            <td class="text-center">
                                 @Html.DisplayFor(member => item.Quantity)
                             </td>
-                            <td>
+                            <td class="text-right">
                                 @Html.DisplayFor(member => item.Price)
                             </td>
                             <td>
