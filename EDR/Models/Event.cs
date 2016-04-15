@@ -37,7 +37,7 @@ namespace EDR.Models
         [Required]
         [DataType(DataType.Date)]
         [Display(Name = "Start Date")]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:MM-dd-yyyy}")]
         public DateTime StartDate { get; set; }
 
         [Required]
@@ -46,12 +46,12 @@ namespace EDR.Models
 
         [DataType(DataType.Time)]
         [Display(Name = "Start Time")]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:HH:mm}")]
+        [DisplayFormat(DataFormatString = "{0:hh:mm tt}")]
         public DateTime? StartTime { get; set; }
 
         [DataType(DataType.Time)]
         [Display(Name = "End Time")]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:HH:mm}")]
+        [DisplayFormat(DataFormatString = "{0:hh:mm tt}")]
         public DateTime? EndTime { get; set; }
 
         [Display(Name = "Duration")]
@@ -59,7 +59,7 @@ namespace EDR.Models
         
         [DataType(DataType.Date)]
         [Display(Name = "End Date")]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:MM-dd-yyyy}")]
         public DateTime? EndDate { get; set; }
 
         [DataType(DataType.Date)]
@@ -206,7 +206,7 @@ namespace EDR.Models
         [Required]
         public string UserId { get; set; }
         [ForeignKey("UserId")]
-        public ApplicationUser Member { get; set; }
+        public ApplicationUser User { get; set; }
         [Required]
         public int EventInstanceId { get; set; }
         [ForeignKey("EventInstanceId")]
@@ -250,6 +250,7 @@ namespace EDR.Models
         [ForeignKey("EventId")]
         public Event Event { get; set; }
         //public ICollection<EventTicket> EventTickets { get; set; }
+        public ICollection<UserTicket> UserTickets { get; set; }
     }
 
     //public class EventTicketPlaceholder

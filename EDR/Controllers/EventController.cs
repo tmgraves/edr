@@ -167,6 +167,24 @@ namespace EDR.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        public ActionResult Manage(int id, EventType eventType)
+        {
+            var model = new EventManageViewModel(DataContext.Events
+                    .Include("Tickets.UserTickets.EventRegistrations")
+                    .Include("EventInstances.EventRegistrations.User")
+                    .Single(e => e.Id == id));
+
+            model.EventType = eventType;
+
+            if (model.Event == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View(model);
+        }
+
         protected void UpdateFacebookEvent(Event rEvent)
         {
             var evt = FacebookHelper.GetEvent(rEvent.FacebookId, rEvent.Creator.FacebookToken);
@@ -776,20 +794,20 @@ namespace EDR.Controllers
             .Include("Tickets")
             .FirstOrDefault();
 
-            //  Get Tickets
-            if (model.Event.Tickets.Count() != 0)
-            {
-                model.Tickets = model.Event.Tickets;
-            }
-            else
-            {
-                model.Tickets = 
-                        from t in DataContext.Tickets
-                        join c in DataContext.Classes
-                        on t.SchoolId equals c.SchoolId
-                        where c.Id == id
-                        select t;
-            }
+            ////  Get Tickets
+            //if (model.Event.Tickets.Count() != 0)
+            //{
+            //    model.Tickets = model.Event.Tickets;
+            //}
+            //else
+            //{
+            //    model.Tickets = 
+            //            from t in DataContext.Tickets
+            //            join c in DataContext.Classes
+            //            on t.SchoolId equals c.SchoolId
+            //            where c.Id == id
+            //            select t;
+            //}
 
             if (model.Event.Tickets.Count() != 0)
             {
@@ -1419,8 +1437,8 @@ namespace EDR.Controllers
                     where i.Id == id
                     select new { EventInstance = i, Class = c }).FirstOrDefault();
 
-            var credits = DataContext.UserTickets.Where(u => u.UserId == userid && instance.Class.SchoolId == u.Ticket.SchoolId).Include("Ticket").Include("EventRegistrations").ToList();
-
+            //  Event Tickets
+            var credits = DataContext.UserTickets.Where(t => t.Ticket.EventId == instance.EventInstance.EventId && t.UserId == userid).Include("Ticket").Include("EventRegistrations").ToList();
             if (credits != null)
             {
                 //  User Has Remaining Credit
@@ -1432,24 +1450,55 @@ namespace EDR.Controllers
                              join t in DataContext.Tickets
                              on ut.TicketId equals t.Id
                              where ut.UserId == userid
-                             && t.SchoolId == instance.Class.SchoolId
+                             && t.EventId == instance.EventInstance.EventId
                              && ut.EventRegistrations.Count() < ut.Quantity * t.Quantity
                              select ut).FirstOrDefault();
                     DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = id, UserTicketId = ticket.Id });
                     DataContext.SaveChanges();
                     return RedirectToAction("View", new { id = instance.EventInstance.EventId, eventType = instance.EventInstance.Event is Class ? EventType.Class : EventType.Social });
                 }
+                //  User needs to purchase tickets
                 else
                 {
                     return RedirectToAction("BuyTicket", "Store", new { instanceId = id });
                 }
             }
-            //  User needs to purchase tickets
+            //Event Tickets
+            //  School Tickets
             else
             {
-                return RedirectToAction("BuyTicket", "Store", new { instanceId = id });
+                credits = DataContext.UserTickets.Where(t => t.Ticket.SchoolId == instance.Class.SchoolId && t.UserId == userid).Include("Ticket").Include("EventRegistrations").ToList();
+
+                if (credits != null)
+                {
+                    //  User Has Remaining Credit
+                    if (credits.Sum(c => c.Quantity * c.Ticket.Quantity) > credits.Sum(c => c.EventRegistrations.Count()))
+                    {
+                        //  Get Available Tickets
+                        var ticket =
+                                (from ut in DataContext.UserTickets
+                                 join t in DataContext.Tickets
+                                 on ut.TicketId equals t.Id
+                                 where ut.UserId == userid
+                                 && t.SchoolId == instance.Class.SchoolId
+                                 && ut.EventRegistrations.Count() < ut.Quantity * t.Quantity
+                                 select ut).FirstOrDefault();
+                        DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = id, UserTicketId = ticket.Id });
+                        DataContext.SaveChanges();
+                        return RedirectToAction("View", new { id = instance.EventInstance.EventId, eventType = instance.EventInstance.Event is Class ? EventType.Class : EventType.Social });
+                    }
+                    //  User needs to purchase tickets
+                    else
+                    {
+                        return RedirectToAction("BuyTicket", "Store", new { instanceId = id });
+                    }
+                }
+                //  User needs to purchase tickets
+                else
+                {
+                    return RedirectToAction("BuyTicket", "Store", new { instanceId = id });
+                }
             }
-            
         }
 
         [Authorize]

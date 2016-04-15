@@ -241,8 +241,16 @@ namespace EDR.Models.ViewModels
             YouTubePlaylists = new List<YouTubePlaylist>();
             FacebookEvents = new List<FacebookEvent>();
             LinkedFacebookObjects = new List<LinkedFacebookObject>();
-            Tickets = new List<Ticket>();
+            //  Tickets = new List<Ticket>();
             AvailableTickets = 0;
+        }
+    }
+
+    public class EventManageViewModel : EventBaseViewModel
+    {
+        public EventManageViewModel(Event evnt)
+        {
+            Event = evnt;
         }
     }
 

@@ -261,8 +261,7 @@
                                 @Html.DisplayFor(member => item.Name)
                             </td>
                             <td>
-                                @Html.ActionLink("View", "View", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Class }, null)
-                                @Html.ActionLink("Manage Dates", "ManageDates", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Class }, null)
+                                @Html.ActionLink("Manage", "Manage", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Class }, null)
                             </td>
                         </tr>
                     }
