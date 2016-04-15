@@ -15,6 +15,7 @@ namespace EDR.Controllers
 {
     public class PromoterController : BaseController
     {
+        [Authorize(Roles = "Promoter")]
         public ActionResult Manage()
         {
             var userid = User.Identity.GetUserId();

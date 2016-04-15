@@ -18,7 +18,7 @@ namespace EDR.Controllers
 {
     public class TeacherController : BaseController
     {
-        [Authorize]
+        [Authorize(Roles = "Teacher")]
         public ActionResult Manage()
         {
             var id = User.Identity.GetUserId();

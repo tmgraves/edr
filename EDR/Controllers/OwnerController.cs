@@ -15,6 +15,7 @@ namespace EDR.Controllers
 {
     public class OwnerController : BaseController
     {
+        [Authorize(Roles = "Owner")]
         public ActionResult Manage()
         {
             var userid = User.Identity.GetUserId();
