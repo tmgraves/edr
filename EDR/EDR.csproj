@@ -767,6 +767,7 @@
     <Content Include="Views\School\Manage.cshtml" />
     <Content Include="Views\Teacher\ApplyNew.cshtml" />
     <Content Include="Views\Event\Manage.cshtml" />
+    <Content Include="Views\Home\Test3.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

@@ -86,6 +86,7 @@ namespace EDR.Models.ViewModels
 
         public EventCreateViewModel()
         {
+            Event = new Event();
             Places = new List<PlaceItem>();
             MonthDays = new MultiCheckBox();
             StylesCheckboxList = new MultiCheckBox();

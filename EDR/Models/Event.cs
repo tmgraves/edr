@@ -9,6 +9,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Foolproof;
 
 namespace EDR.Models
 {
@@ -23,6 +24,7 @@ namespace EDR.Models
             CheckedDate = DateTime.Now;
             EventInstances = new List<EventInstance>();
             Tickets = new List<Ticket>();
+            Place = new Place();
         }
 
         [Required]
@@ -52,6 +54,7 @@ namespace EDR.Models
         [DataType(DataType.Time)]
         [Display(Name = "End Time")]
         [DisplayFormat(DataFormatString = "{0:hh:mm tt}")]
+        [GreaterThan("StartTime")]
         public DateTime? EndTime { get; set; }
 
         [Display(Name = "Duration")]
@@ -60,6 +63,7 @@ namespace EDR.Models
         [DataType(DataType.Date)]
         [Display(Name = "End Date")]
         [DisplayFormat(DataFormatString = "{0:MM-dd-yyyy}")]
+        [GreaterThanOrEqualTo("StartDate")]
         public DateTime? EndDate { get; set; }
 
         [DataType(DataType.Date)]

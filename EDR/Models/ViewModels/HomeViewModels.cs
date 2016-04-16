@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Foolproof;
 
 namespace EDR.Models.ViewModels
 {
@@ -52,6 +53,10 @@ namespace EDR.Models.ViewModels
 
     public class Test2
     {
+        [Required]
+        public string Title { get; set; }
+        [RequiredIf("Title", Operator.GreaterThan, "")]
+        public string Desc { get; set; }
         public List<OrganizationMember> Members { get; set; }
     }
 }

@@ -332,5 +332,18 @@ namespace EDR.Controllers
         {
             return View(model);
         }
+
+        public ActionResult Test3()
+        {
+            var model = new EventCreateViewModel();
+            model.EventType = Enums.EventType.Class;
+            return View(model);
+        }
+
+        [HttpPost]
+        public ActionResult Test3(EventCreateViewModel model)
+        {
+            return View(model);
+        }
     }
 }

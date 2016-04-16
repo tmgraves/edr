@@ -2010,6 +2010,23 @@ namespace EDR.Controllers
         //    }
         //}
 
+        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        [HttpPost]
+        public ActionResult Save(EventViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var evnt = DataContext.Events.Single(s => s.Id == model.Event.Id);
+                TryUpdateModel(evnt, "Event");
+                DataContext.SaveChanges();
+                return RedirectToAction("Manage", new { id = model.Event.Id, eventType = model.EventType });
+            }
+            else
+            {
+                return View(model);
+            }
+        }
+
         [Authorize]
         [HttpPost]
         public ActionResult Edit(EventEditViewModel model)

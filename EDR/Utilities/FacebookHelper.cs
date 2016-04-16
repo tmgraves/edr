@@ -662,10 +662,10 @@ namespace EDR.Utilities
                     var available = (fevt.Privacy == "OPEN" || fevt.Privacy == "FRIENDS") ? true : false;
                     evnt.Name = fevt.Name;
                     evnt.Description = fevt.Description;
-                    evnt.StartDate = fevt.StartTime;
-                    evnt.StartTime = fevt.StartTime;
-                    evnt.EndDate = fevt.EndTime;
-                    evnt.EndTime = fevt.EndTime;
+                    //evnt.StartDate = fevt.StartTime;
+                    //evnt.StartTime = fevt.StartTime;
+                    //evnt.EndDate = fevt.EndTime;
+                    //evnt.EndTime = fevt.EndTime;
                     evnt.PhotoUrl = fevt.CoverPhoto.LargeSource;
                     evnt.FacebookLink = fevt.EventLink;
                     evnt.IsAvailable = available;
@@ -748,6 +748,11 @@ namespace EDR.Utilities
 
                 }
                 evnt.CheckedDate = DateTime.Now;
+
+                if (evnt.EndDate == null)
+                {
+                    evnt.EndDate = evnt.StartDate;
+                }
 
                 context.Entry(evnt).State = EntityState.Modified;
                 context.SaveChanges();

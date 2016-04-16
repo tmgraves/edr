@@ -5,120 +5,311 @@
 }
 
 <h2>Manage @Model.Event.Name</h2>
+@section Scripts
+{
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/foolproof")
+}
+<script type="text/javascript">
+    $(function () {
+        var form = $('#saveform2.main');
+        alert(form.prop('id'));
+        try {
+            var valid = form.valid();
+            alert(valid);
+        }
+        catch (err) {
+            document.getElementById("demo").innerHTML = err.message;
+        }
+        var form2 = $('#saveform.main');
+        alert(form2.prop('id'));
 
-<div class="container-fluid">
+        $('#btnEdit').click(function () {
+            $('#viewdiv').hide();
+            $('#editdiv').show();
+            var form = $('#saveform.main');
+            alert(form.prop('id'));
+            try
+            {
+                var valid = form.valid();
+                alert(valid);
+            }
+            catch(err)
+            {
+                document.getElementById("demo").innerHTML = err.message;
+            }
+        });
+        $('#btncanceledit').click(function () {
+            $('#viewdiv').show();
+            $('#editdiv').hide();
+        });
+        $('#saveform.main').validate;
+        $('#btnsave').click(function () {
+            alert("here");
+            var form = $('#saveform.main');
+            alert(form.prop('id'));
+        });
+        $('#btnsave2').click(function () {
+            var form = $('#saveform2.main');
+            alert(form.valid());
+        });
+    });
+</script>
+<p id="demo"></p>
+@using (Html.BeginForm("Create", "Event", FormMethod.Post, new { @id = "saveform2", @class = "main" }))
+{
+    @Html.EditorFor(model => model.Event.Name, new { htmlAttributes = new { @class = "form-control" } })
+    @Html.ValidationMessageFor(model => model.Event.Name, "", new { @class = "text-danger" })
+    @Html.TextBoxFor(m => m.Event.StartDate)
+    @Html.ValidationMessageFor(model => model.Event.StartDate, "", new { @class = "text-danger" })
+    <input type="button" id="btnsave2" value="Save" class="btn btn-primary" />
+}
+@*<div class="container-fluid">
     <div class="col-lg-6 col-md-6">
         <div class="panel panel-default">
             <div class="panel-body ">
-                <dl class="dl-horizontal">
-                    <dt>
-                        @Html.DisplayNameFor(model => model.Event.Name)
-                    </dt>
-                    <dd>
-                        @Html.DisplayFor(model => model.Event.Name)
-                    </dd>
-                </dl>
-                <dl class="dl-horizontal">
-                    <dt>
-                        @Html.DisplayNameFor(model => model.Event.StartDate)
-                    </dt>
-                    <dd>
-                        @Html.DisplayFor(model => model.Event.StartDate)
-                    </dd>
-                </dl>
-                <dl class="dl-horizontal">
-                    <dt>
-                        @Html.DisplayNameFor(model => model.Event.EndDate)
-                    </dt>
-                    <dd>
-                        @Html.DisplayFor(model => model.Event.EndDate)
-                    </dd>
-                </dl>
-                <dl class="dl-horizontal">
-                    <dt>
-                        @Html.DisplayNameFor(model => model.Event.StartTime)
-                    </dt>
-                    <dd>
-                        @Html.DisplayFor(model => model.Event.StartTime)
-                    </dd>
-                </dl>
-                <dl class="dl-horizontal">
-                    <dt>
-                        @Html.DisplayNameFor(model => model.Event.EndTime)
-                    </dt>
-                    <dd>
-                        @Html.DisplayFor(model => model.Event.EndTime)
-                    </dd>
-                </dl>
-                <dl class="dl-horizontal">
-                    <dt>
-                        Repeat Event?
-                    </dt>
-                    <dd>
-                        @(Model.Event.Recurring ? "Yes" : "No")
-                    </dd>
-                </dl>
-                <div id="repeat" @(Model.Event.Recurring ? "" : "hidden='hidden'")>
+                <div id="viewdiv">
+                    <div class="text-right">
+                        <input id="btnEdit" type="button" class="btn btn-primary" value="Edit" />
+                    </div>
                     <dl class="dl-horizontal">
                         <dt>
-                            Repeats
+                            @Html.DisplayNameFor(model => model.Event.Name)
                         </dt>
                         <dd>
-                            @Html.DisplayFor(model => model.Event.Frequency)
+                            @Html.DisplayFor(model => model.Event.Name)
                         </dd>
                     </dl>
                     <dl class="dl-horizontal">
                         <dt>
-                            Every
+                            @Html.DisplayNameFor(model => model.Event.StartDate)
                         </dt>
                         <dd>
-                            @Html.DisplayFor(model => model.Event.Interval, new { @class = "form-control" })
-                            @if (Model.Event.Frequency == EDR.Enums.Frequency.Daily)
-                            {
-                                @: Day(s)
-                                        }
-                            else if (Model.Event.Frequency == EDR.Enums.Frequency.Weekly)
-                            {
-                                @: Week(s)
-                                        }
-                            else if (Model.Event.Frequency == EDR.Enums.Frequency.Monthly)
-                            {
-                                @: Month(s)
-                                        }
-                            else if (Model.Event.Frequency == EDR.Enums.Frequency.Yearly)
-                            {
-                                @: Year(s)
-                            }
+                            @Html.DisplayFor(model => model.Event.StartDate)
                         </dd>
                     </dl>
-                    <div id="monthly" @(Model.Event.Frequency == EDR.Enums.Frequency.Monthly ? "" : "hidden='hidden'")>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Event.EndDate)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Event.EndDate)
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Event.StartTime)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Event.StartTime)
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Event.EndTime)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Event.EndTime)
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            Repeat Event?
+                        </dt>
+                        <dd>
+                            @(Model.Event.Recurring ? "Yes" : "No")
+                        </dd>
+                    </dl>
+                    <div id="repeat" @(Model.Event.Recurring ? "" : "hidden='hidden'")>
                         <dl class="dl-horizontal">
                             <dt>
-                                On the
+                                Repeats
                             </dt>
                             <dd>
-                                @Model.Event.MonthDays @Model.Event.StartDate.DayOfWeek
+                                @Html.DisplayFor(model => model.Event.Frequency)
                             </dd>
                         </dl>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                Every
+                            </dt>
+                            <dd>
+                                @Html.DisplayFor(model => model.Event.Interval, new { @class = "form-control" })
+                                @if (Model.Event.Frequency == EDR.Enums.Frequency.Daily)
+                                {
+                                    @: Day(s)
+                                        }
+                                else if (Model.Event.Frequency == EDR.Enums.Frequency.Weekly)
+                                {
+                                    @: Week(s)
+                                        }
+                                else if (Model.Event.Frequency == EDR.Enums.Frequency.Monthly)
+                                {
+                                    @: Month(s)
+                                        }
+                                else if (Model.Event.Frequency == EDR.Enums.Frequency.Yearly)
+                                {
+                                    @: Year(s)
+                            }
+                            </dd>
+                        </dl>
+                        <div id="monthly" @(Model.Event.Frequency == EDR.Enums.Frequency.Monthly ? "" : "hidden='hidden'")>
+                            <dl class="dl-horizontal">
+                                <dt>
+                                    On the
+                                </dt>
+                                <dd>
+                                    @Model.Event.MonthDays @Model.Event.StartDate.DayOfWeek
+                                </dd>
+                            </dl>
+                        </div>
                     </div>
-                </div>
 
-                <dl class="dl-horizontal">
-                    <dt>
-                        @Html.DisplayNameFor(model => model.Event.FacebookLink)
-                    </dt>
-                    <dd>
-                        @Html.DisplayFor(model => model.Event.FacebookLink)
-                    </dd>
-                </dl>
-                <dl class="dl-horizontal">
-                    <dt>
-                        @Html.DisplayNameFor(model => model.Event.Description)
-                    </dt>
-                    <dd>
-                        @Html.DisplayFor(model => model.Event.Description)
-                    </dd>
-                </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Event.FacebookLink)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Event.FacebookLink)
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Event.Description)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Event.Description)
+                        </dd>
+                    </dl>
+                </div>
+                <div id="editdiv" style="display: none;">
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                    @using (Html.BeginForm("Save", "Event", FormMethod.Post, new { @id = "saveform", @class = "main" }))
+                    {
+                    @Html.HiddenFor(x => x.EventType)
+                    @Html.HiddenFor(x => x.Event.Id)
+                    <div class="text-right" style="padding-bottom: 10px;">
+                        <input type="submit" id="btnsave" value="Save" class="btn btn-primary" />
+                        <input id="btncanceledit" type="button" class="btn btn-primary" value="Cancel" />
+                    </div>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Event.Name)
+                        </dt>
+                        <dd>
+                            @Html.EditorFor(model => model.Event.Name, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Event.Name, "", new { @class = "text-danger" })
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Event.StartDate)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(m => m.Event.StartDate, "{0:yyyy-MM-dd}")
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Event.EndDate)
+                        </dt>
+                        <dd>
+                            @Html.TextBoxFor(m => m.Event.EndDate, "{0:yyyy-MM-dd}", htmlAttributes: new { @type = "date", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Event.EndDate, "", new { @class = "text-danger" })
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Event.StartTime)
+                        </dt>
+                        <dd>
+                            @Html.TextBoxFor(m => m.Event.StartTime, "{0:HH:mm}", htmlAttributes: new { @type = "time", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Event.StartTime, "", new { @class = "text-danger" })
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Event.EndTime)
+                        </dt>
+                        <dd>
+                            @Html.TextBoxFor(m => m.Event.EndTime, "{0:HH:mm}", htmlAttributes: new { @type = "time", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Event.EndTime, "", new { @class = "text-danger" })
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            Repeat Event?
+                        </dt>
+                        <dd>
+                            @(Model.Event.Recurring ? "Yes" : "No")
+                        </dd>
+                    </dl>
+                    <div id="repeat" @(Model.Event.Recurring ? "" : "hidden='hidden'")>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                Repeats
+                            </dt>
+                            <dd>
+                                @Html.DisplayFor(model => model.Event.Frequency)
+                            </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                Every
+                            </dt>
+                            <dd>
+                                @Html.DisplayFor(model => model.Event.Interval, new { @class = "form-control" })
+                                @if (Model.Event.Frequency == EDR.Enums.Frequency.Daily)
+                                {
+                                    @: Day(s)
+                                        }
+                                else if (Model.Event.Frequency == EDR.Enums.Frequency.Weekly)
+                                {
+                                    @: Week(s)
+                                        }
+                                else if (Model.Event.Frequency == EDR.Enums.Frequency.Monthly)
+                                {
+                                    @: Month(s)
+                                        }
+                                else if (Model.Event.Frequency == EDR.Enums.Frequency.Yearly)
+                                {
+                                    @: Year(s)
+                            }
+                            </dd>
+                        </dl>
+                        <div id="monthly" @(Model.Event.Frequency == EDR.Enums.Frequency.Monthly ? "" : "hidden='hidden'")>
+                            <dl class="dl-horizontal">
+                                <dt>
+                                    On the
+                                </dt>
+                                <dd>
+                                    @Model.Event.MonthDays @Model.Event.StartDate.DayOfWeek
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Event.FacebookLink)
+                        </dt>
+                        <dd>
+                            @Html.EditorFor(model => model.Event.FacebookLink, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Event.FacebookLink, "", new { @class = "text-danger" })
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Event.Description)
+                        </dt>
+                        <dd>
+                            @Html.EditorFor(model => model.Event.Description, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Event.Description, "", new { @class = "text-danger" })
+                        </dd>
+                    </dl>
+                    }
+                </div>
             </div>
         </div>
         <div class="panel panel-default">
@@ -241,4 +432,4 @@
             </div>
         </div>
     </div>
-</div>
+</div>*@
