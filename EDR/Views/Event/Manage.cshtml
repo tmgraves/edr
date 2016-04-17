@@ -5,35 +5,34 @@
 }
 
 <h2>Manage @Model.Event.Name</h2>
+@if (Model.EventType == EDR.Enums.EventType.Class)
+{
+    @Html.ActionLink("Back to School", "View", "School", new { id = Model.SchoolId }, null)
+}
 @section Scripts
 {
-    @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/foolproof")
-}
 <script type="text/javascript">
     $(function () {
-        var form = $('#saveform2.main');
-        alert(form.prop('id'));
-        try {
-            var valid = form.valid();
-            alert(valid);
-        }
-        catch (err) {
-            document.getElementById("demo").innerHTML = err.message;
-        }
-        var form2 = $('#saveform.main');
-        alert(form2.prop('id'));
+        //alert("here");
+        //var form = $('#saveform2.main');
+        //alert(form.prop('id'));
+        //try {
+        //    var valid = form.valid();
+        //    alert(valid);
+        //}
+        //catch (err) {
+        //    document.getElementById("demo").innerHTML = err.message;
+        //}
+        $('#saveform.main').valid();
 
         $('#btnEdit').click(function () {
             $('#viewdiv').hide();
             $('#editdiv').show();
-            var form = $('#saveform.main');
-            alert(form.prop('id'));
             try
             {
-                var valid = form.valid();
-                alert(valid);
+                var valid = $('#saveform.main').valid();
             }
             catch(err)
             {
@@ -45,27 +44,69 @@
             $('#editdiv').hide();
         });
         $('#saveform.main').validate;
-        $('#btnsave').click(function () {
-            alert("here");
-            var form = $('#saveform.main');
-            alert(form.prop('id'));
+
+        $('.time').change(function () {
+            CheckDates();
         });
-        $('#btnsave2').click(function () {
-            var form = $('#saveform2.main');
-            alert(form.valid());
+
+        function CheckDates() {
+            var shour = $('#StartHour option:selected').val();
+            var smin = $('#StartMinute option:selected').val();
+            var sampm = $('#StartAMPM option:selected').val();
+            var ehour = $('#EndHour option:selected').val();
+            var emin = $('#EndMinute option:selected').val();
+            var eampm = $('#EndAMPM option:selected').val();
+
+            var start = new Date("@Model.Event.StartDate.ToShortDateString() " + shour + ":" + smin + " " + sampm);
+            $('#StartTime').prop("value", start)
+            var end = new Date("@Model.Event.StartDate.ToShortDateString() " + ehour + ":" + emin + " " + eampm);
+
+            $('#Event_StartTime').prop("value", "@Model.Event.StartDate.ToShortDateString() " + shour + ":" + smin + " " + sampm);
+            $('#Event_EndTime').prop("value", "@Model.Event.StartDate.ToShortDateString() " + ehour + ":" + emin + " " + eampm);
+
+            if (start > end) {
+                $('#EndTimevalidationMessage').show();
+                return false;
+            }
+            else {
+                $('#EndTimevalidationMessage').hide();
+                return true;
+            }
+        }
+
+        $('#saveform.main').submit(function () {
+            var valid = $('#saveform.main').valid();
+
+            if (valid)
+            {
+                var ck = CheckDates();
+                if (ck)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
         });
     });
 </script>
+}
 <p id="demo"></p>
-@using (Html.BeginForm("Create", "Event", FormMethod.Post, new { @id = "saveform2", @class = "main" }))
+@*@using (Html.BeginForm("Create", "Event", FormMethod.Post, new { @id = "saveform2", @class = "main" }))
 {
     @Html.EditorFor(model => model.Event.Name, new { htmlAttributes = new { @class = "form-control" } })
     @Html.ValidationMessageFor(model => model.Event.Name, "", new { @class = "text-danger" })
     @Html.TextBoxFor(m => m.Event.StartDate)
     @Html.ValidationMessageFor(model => model.Event.StartDate, "", new { @class = "text-danger" })
     <input type="button" id="btnsave2" value="Save" class="btn btn-primary" />
-}
-@*<div class="container-fluid">
+}*@
+<div class="container-fluid">
     <div class="col-lg-6 col-md-6">
         <div class="panel panel-default">
             <div class="panel-body ">
@@ -189,6 +230,8 @@
                     {
                     @Html.HiddenFor(x => x.EventType)
                     @Html.HiddenFor(x => x.Event.Id)
+                    @Html.HiddenFor(x => x.Event.StartTime)
+                    @Html.HiddenFor(x => x.Event.EndTime)
                     <div class="text-right" style="padding-bottom: 10px;">
                         <input type="submit" id="btnsave" value="Save" class="btn btn-primary" />
                         <input id="btncanceledit" type="button" class="btn btn-primary" value="Cancel" />
@@ -207,7 +250,8 @@
                             @Html.DisplayNameFor(model => model.Event.StartDate)
                         </dt>
                         <dd>
-                            @Html.DisplayFor(m => m.Event.StartDate, "{0:yyyy-MM-dd}")
+                            @*@Html.DisplayFor(m => m.Event.StartDate, "{0:yyyy-MM-dd}")*@
+                            @Html.TextBoxFor(m => m.Event.StartDate, "{0:yyyy-MM-dd}", htmlAttributes: new { @type = "date", @class = "form-control", @readonly = "readonly" })
                         </dd>
                     </dl>
                     <dl class="dl-horizontal">
@@ -224,7 +268,24 @@
                             @Html.DisplayNameFor(model => model.Event.StartTime)
                         </dt>
                         <dd>
-                            @Html.TextBoxFor(m => m.Event.StartTime, "{0:HH:mm}", htmlAttributes: new { @type = "time", @class = "form-control" })
+                            @Html.DropDownListFor(m => m.StartHour, new SelectList(new List<SelectListItem>
+                                                {
+                                                    new SelectListItem { Text = "01", Value = "1" },
+                                                    new SelectListItem { Text = "02", Value = "2" },
+                                                    new SelectListItem { Text = "03", Value = "3" },
+                                                    new SelectListItem { Text = "04", Value = "4" },
+                                                    new SelectListItem { Text = "05", Value = "5" },
+                                                    new SelectListItem { Text = "06", Value = "6" },
+                                                    new SelectListItem { Text = "07", Value = "7" },
+                                                    new SelectListItem { Text = "08", Value = "8" },
+                                                    new SelectListItem { Text = "09", Value = "9" },
+                                                    new SelectListItem { Text = "10", Value = "10" },
+                                                    new SelectListItem { Text = "11", Value = "11" },
+                                                    new SelectListItem { Text = "12", Value = "12" }
+                                                    }, "Value", "Text", null), new { @class = "form-control time", style = "width: 70px; display: inline;" })
+                            @Html.DropDownListFor(m => m.StartMinute, new SelectList(new List<string> { "00", "15", "30", "45" }), new { @class = "form-control time", style = "width: 70px; display: inline;" })
+                            @Html.DropDownListFor(m => m.StartAMPM, new SelectList(new List<string>() { "AM", "PM" }), new { @class = "form-control time", style = "width: 70px; display: inline;" })
+                            @*@Html.TextBoxFor(m => m.Event.StartTime, "{0:HH:mm}", htmlAttributes: new { @type = "time", @class = "form-control" })*@
                             @Html.ValidationMessageFor(model => model.Event.StartTime, "", new { @class = "text-danger" })
                         </dd>
                     </dl>
@@ -233,8 +294,29 @@
                             @Html.DisplayNameFor(model => model.Event.EndTime)
                         </dt>
                         <dd>
-                            @Html.TextBoxFor(m => m.Event.EndTime, "{0:HH:mm}", htmlAttributes: new { @type = "time", @class = "form-control" })
+                            @Html.DropDownListFor(m => m.EndHour, new SelectList(new List<SelectListItem>
+                                                {
+                                                    new SelectListItem { Text = "01", Value = "1" },
+                                                    new SelectListItem { Text = "02", Value = "2" },
+                                                    new SelectListItem { Text = "03", Value = "3" },
+                                                    new SelectListItem { Text = "04", Value = "4" },
+                                                    new SelectListItem { Text = "05", Value = "5" },
+                                                    new SelectListItem { Text = "06", Value = "6" },
+                                                    new SelectListItem { Text = "07", Value = "7" },
+                                                    new SelectListItem { Text = "08", Value = "8" },
+                                                    new SelectListItem { Text = "09", Value = "9" },
+                                                    new SelectListItem { Text = "10", Value = "10" },
+                                                    new SelectListItem { Text = "11", Value = "11" },
+                                                    new SelectListItem { Text = "12", Value = "12" }
+                                                    }, "Value", "Text", null), new { @class = "form-control time", style = "width: 70px; display: inline;" })
+                            @Html.DropDownListFor(m => m.EndMinute, new SelectList(new List<string> { "00", "15", "30", "45" }), new { @class = "form-control time", style = "width: 70px; display: inline;" })
+                            @Html.DropDownListFor(m => m.EndAMPM, new SelectList(new List<string>() { "AM", "PM" }), new { @class = "form-control time", style = "width: 70px; display: inline;" })
+
+                            @*@Html.TextBoxFor(m => m.Event.EndTime, "{0:HH:mm}", htmlAttributes: new { @type = "time", @class = "form-control" })*@
                             @Html.ValidationMessageFor(model => model.Event.EndTime, "", new { @class = "text-danger" })
+                            <p>
+                                <span id="EndTimevalidationMessage" class="text-danger" style="display: none;">End Time Must Be After Start Time</span>
+                            </p>
                         </dd>
                     </dl>
                     <dl class="dl-horizontal">
@@ -370,7 +452,7 @@
                         <thead>
                             <tr>
                                 <th>
-                                    Event Date
+                                    Date
                                 </th>
                                 <th class="text-center">
                                     Attendees
@@ -432,4 +514,4 @@
             </div>
         </div>
     </div>
-</div>*@
+</div>

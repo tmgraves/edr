@@ -175,6 +175,11 @@ namespace EDR.Controllers
                     .Include("EventInstances.EventRegistrations.User")
                     .Single(e => e.Id == id));
 
+            if (model.Event is Class)
+            {
+                model.SchoolId = DataContext.Classes.Single(c => c.Id == model.Event.Id).SchoolId;
+            }
+
             model.EventType = eventType;
 
             if (model.Event == null)
@@ -2012,14 +2017,67 @@ namespace EDR.Controllers
 
         [Authorize(Roles = "Owner,Promoter,Teacher")]
         [HttpPost]
-        public ActionResult Save(EventViewModel model)
+        public ActionResult Save(EventManageViewModel model)
         {
+            //model.Event.StartTime = Convert.ToDateTime(model.Event.StartDate.ToShortDateString() + " " + model.StartHour.ToString() + ":" + model.StartMinute.ToString() + " " + model.StartAMPM);
+            //model.Event.EndTime = Convert.ToDateTime(((DateTime)model.Event.StartDate).ToShortDateString() + " " + model.EndHour.ToString() + ":" + model.EndMinute.ToString() + " " + model.EndAMPM);
+
             if (ModelState.IsValid)
             {
-                var evnt = DataContext.Events.Single(s => s.Id == model.Event.Id);
-                TryUpdateModel(evnt, "Event");
-                DataContext.SaveChanges();
-                return RedirectToAction("Manage", new { id = model.Event.Id, eventType = model.EventType });
+                try
+                {
+                    var evnt = DataContext.Events.Include("Place").Single(s => s.Id == model.Event.Id);
+                    evnt.Name = model.Event.Name;
+                    evnt.Description = model.Event.Description;
+                    evnt.StartTime = model.Event.StartTime;
+                    evnt.EndDate = model.Event.EndDate;
+                    evnt.EndTime = model.Event.EndTime;
+                    evnt.FacebookLink = model.Event.FacebookLink;
+
+                    DataContext.Entry(evnt).State = EntityState.Modified; 
+                    DataContext.SaveChanges();
+
+                    //  Add Recurring Events
+                    if (evnt.Recurring)
+                    {
+                        var instances = DataContext.EventInstances.Where(i => i.EventId == evnt.Id);
+
+                        var sdate = instances.Max(i => i.DateTime).AddDays(1);
+                        var edate = model.Event.EndDate;
+                        sdate = ApplicationUtility.GetNextDate(evnt.StartDate, model.Event.Frequency, (int)model.Event.Interval, model.Event.Day, sdate, model.Event.MonthDays);
+
+                        if (edate > sdate)
+                        {
+                            while (sdate <= edate)
+                            {
+                                DataContext.EventInstances.Add(new EventInstance() { EventId = evnt.Id, DateTime = sdate });
+                                sdate = ApplicationUtility.GetNextDate(sdate, model.Event.Frequency, (int)model.Event.Interval, model.Event.Day, sdate.AddDays(1), model.Event.MonthDays);
+                            }
+                        }
+                        else
+                        {
+                            DataContext.EventInstances.RemoveRange(DataContext.EventInstances.Where(i => i.EventId == evnt.Id && i.EventRegistrations.Count() == 0 && i.DateTime > edate));
+                        }
+
+                        DataContext.SaveChanges();
+                    }
+
+                    return RedirectToAction("Manage", new { id = model.Event.Id, eventType = model.EventType });
+                }
+                catch (DbEntityValidationException e)
+                {
+                    foreach (var eve in e.EntityValidationErrors)
+                    {
+                        Console.WriteLine("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                            eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                        foreach (var ve in eve.ValidationErrors)
+                        {
+                            Console.WriteLine("- Property: \"{0}\", Error: \"{1}\"",
+                                ve.PropertyName, ve.ErrorMessage);
+                        }
+                    }
+                    throw;
+                }
             }
             else
             {

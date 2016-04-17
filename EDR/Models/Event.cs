@@ -13,6 +13,18 @@ using Foolproof;
 
 namespace EDR.Models
 {
+    public class Test
+    {
+        [Required]
+        public string Name { get; set; }
+
+        [Required]
+        public DateTime Start { get; set; }
+
+        [Required]
+        [GreaterThan("Start")]
+        public DateTime End { get; set; }
+    }
     public class Event : Entity
     {
         //  Default Constructor
@@ -22,9 +34,9 @@ namespace EDR.Models
             Frequency = Enums.Frequency.Weekly;
             UpdatedDate = DateTime.Now;
             CheckedDate = DateTime.Now;
-            EventInstances = new List<EventInstance>();
-            Tickets = new List<Ticket>();
-            Place = new Place();
+            //EventInstances = new List<EventInstance>();
+            //Tickets = new List<Ticket>();
+            //Place = new Place();
         }
 
         [Required]
@@ -48,12 +60,12 @@ namespace EDR.Models
 
         [DataType(DataType.Time)]
         [Display(Name = "Start Time")]
-        [DisplayFormat(DataFormatString = "{0:hh:mm tt}")]
+        [DisplayFormat(DataFormatString = "{0:hh:mm tt}", ApplyFormatInEditMode=false)]
         public DateTime? StartTime { get; set; }
 
         [DataType(DataType.Time)]
         [Display(Name = "End Time")]
-        [DisplayFormat(DataFormatString = "{0:hh:mm tt}")]
+        [DisplayFormat(DataFormatString = "{0:hh:mm tt}", ApplyFormatInEditMode = false)]
         [GreaterThan("StartTime")]
         public DateTime? EndTime { get; set; }
 

@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Eat. Dance. Repeat.</title>
     @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
-    @Scripts.Render("~/bundles/jquery")
 </head>
 <body>
     <div id="fb-root"></div>
@@ -38,6 +36,7 @@ window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]
                     <ul class="nav navbar-nav">
                         @if (User.Identity.IsAuthenticated)
                         {
+                            <li>@Html.ActionLink("Explore", "Explore", "Home")</li>
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Learn<span class="caret"></span></a>
                                 <ul class="dropdown-menu">
@@ -129,8 +128,11 @@ window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]
         </div>
     </div>
 
-    @*@Scripts.Render("~/bundles/jquery")*@
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @*@Scripts.Render("~/bundles/jqueryval")*@
     @Scripts.Render("~/bundles/bootstrap")
-    @RenderSection("scripts", required: false)
+    <script src="~/Scripts/jquery.validate.js"></script>
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

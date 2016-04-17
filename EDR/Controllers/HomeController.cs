@@ -14,6 +14,7 @@ using System.Data.Entity.Spatial;
 using System.Web.Security;
 using System.Collections.ObjectModel;
 using Microsoft.AspNet.Identity.EntityFramework;
+using EDR.Enums;
 
 namespace EDR.Controllers
 {
@@ -335,13 +336,12 @@ namespace EDR.Controllers
 
         public ActionResult Test3()
         {
-            var model = new EventCreateViewModel();
-            model.EventType = Enums.EventType.Class;
+            var model = new Test();
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult Test3(EventCreateViewModel model)
+        public ActionResult Test3(Test model)
         {
             return View(model);
         }
