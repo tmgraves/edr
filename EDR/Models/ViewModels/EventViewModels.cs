@@ -86,13 +86,13 @@ namespace EDR.Models.ViewModels
 
         [Range(1, 12)]
         public int StartHour { get; set; }
-        [Range(1, 59)]
+        [Range(0, 59)]
         public int StartMinute { get; set; }
         public string StartAMPM { get; set; }
 
         [Range(1, 12)]
         public int EndHour { get; set; }
-        [Range(1, 59)]
+        [Range(0, 59)]
         public int EndMinute { get; set; }
         public string EndAMPM { get; set; }
 
@@ -263,13 +263,13 @@ namespace EDR.Models.ViewModels
     {
         [Range(1, 12)]
         public int StartHour { get; set; }
-        [Range(1, 59)]
+        [Range(0, 59)]
         public int StartMinute { get; set; }
         public string StartAMPM { get; set; }
 
         [Range(1, 12)]
         public int EndHour { get; set; }
-        [Range(1, 59)]
+        [Range(0, 59)]
         public int EndMinute { get; set; }
         public string EndAMPM { get; set; }
 

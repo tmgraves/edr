@@ -465,13 +465,20 @@
                         {
                             <tr>
                                 <td>
-                                    @i.DateTime.ToShortDateString()
+                                    @i.DateTime.ToLongDateString()
                                 </td>
                                 <td class="text-center">
                                     @i.EventRegistrations.Count()
                                 </td>
                                 <td>
-                                    @Html.ActionLink("Delete", "DeleteInstance", "Event", new { id = i.Id }, null)
+                                    @if (i.EventRegistrations.Count() == 0)
+                                    {
+                                        @Html.ActionLink("Delete", "DeleteInstance", "Event", new { id = i.Id }, null)
+                                    }
+                                    else
+                                    {
+                                        <span title="Instance has Registrations">Delete</span>
+                                    }
                                 </td>
                             </tr>
                         }

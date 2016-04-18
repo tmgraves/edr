@@ -61,6 +61,8 @@ namespace EDR.Data
             modelBuilder.Entity<Concert>().ToTable("Concerts");
             modelBuilder.Entity<Social>().ToTable("Socials");
             modelBuilder.Entity<Party>().ToTable("Parties");
+            modelBuilder.Entity<Performance>().ToTable("Performances");
+            modelBuilder.Entity<Audition>().ToTable("Auditions");
             modelBuilder.Entity<LinkedFacebookObject>().ToTable("LinkedFacebookObjects");
             modelBuilder.Entity<EventAttendee>().ToTable("EventAttendees");
             modelBuilder.Entity<Feed>()
@@ -143,6 +145,8 @@ namespace EDR.Data
         public DbSet<UserTicket> UserTickets { get; set; }
         public DbSet<EventInstance> EventInstances { get; set; }
         public DbSet<EventRegistration> EventRegistrations { get; set; }
+        public DbSet<Audition> Auditions { get; set; }
+        public DbSet<Performance> Performances { get; set; }
 
         public DbSet<Series> Series { get; set; }
         //  public DbSet<Group> Groups { get; set; }
@@ -179,6 +183,7 @@ namespace EDR.Data
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<OrganizationMember> OrganizationMembers { get; set; }
         public DbSet<School> Schools { get; set; }
+        public DbSet<Team> Teams { get; set; }
 
         //// TODO: REMOVE THESE DBSETS
         //public DbSet<Class> Classes { get; set; }

@@ -754,8 +754,8 @@ namespace EDR.Utilities
                     evnt.EndDate = evnt.StartDate;
                 }
 
-                context.Entry(evnt).State = EntityState.Modified;
-                context.SaveChanges();
+                //  context.Entry(evnt).State = EntityState.Modified;
+                //  context.SaveChanges();
             }
             //  Set Update Date for missing facebook events
             //  var eIds = videos.Where(v => v.FacebookId != null).Select(v => v.FacebookId).ToArray(); 
@@ -763,7 +763,7 @@ namespace EDR.Utilities
             var evntids = evtList.Select(e => e.Id).ToArray();
             var fevntids = eventList.Select(e => e.Id).ToArray();
             context.Events.Where(e => evntids.Contains(e.Id) && !fevntids.Contains(e.FacebookId)).ToList().ForEach(e => { e.UpdatedDate = DateTime.Now; e.CheckedDate = DateTime.Now; });
-            context.SaveChanges();
+            //  context.SaveChanges();
             //  Set Update Date for missing facebook events
 
         }

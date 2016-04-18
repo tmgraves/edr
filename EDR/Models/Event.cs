@@ -13,18 +13,18 @@ using Foolproof;
 
 namespace EDR.Models
 {
-    public class Test
-    {
-        [Required]
-        public string Name { get; set; }
+    //public class Test
+    //{
+    //    [Required]
+    //    public string Name { get; set; }
 
-        [Required]
-        public DateTime Start { get; set; }
+    //    [Required]
+    //    public DateTime Start { get; set; }
 
-        [Required]
-        [GreaterThan("Start")]
-        public DateTime End { get; set; }
-    }
+    //    [Required]
+    //    [GreaterThan("Start")]
+    //    public DateTime End { get; set; }
+    //}
     public class Event : Entity
     {
         //  Default Constructor
@@ -60,7 +60,7 @@ namespace EDR.Models
 
         [DataType(DataType.Time)]
         [Display(Name = "Start Time")]
-        [DisplayFormat(DataFormatString = "{0:hh:mm tt}", ApplyFormatInEditMode=false)]
+        [DisplayFormat(DataFormatString = "{0:hh:mm tt}", ApplyFormatInEditMode = false)]
         public DateTime? StartTime { get; set; }
 
         [DataType(DataType.Time)]
@@ -71,7 +71,7 @@ namespace EDR.Models
 
         [Display(Name = "Duration")]
         public int Duration { get; set; }
-        
+
         [DataType(DataType.Date)]
         [Display(Name = "End Date")]
         [DisplayFormat(DataFormatString = "{0:MM-dd-yyyy}")]
@@ -101,7 +101,7 @@ namespace EDR.Models
         [DefaultValue(1)]
         [Range(1, 100)]
         public int Interval { get; set; }
-        public DayOfWeek Day 
+        public DayOfWeek Day
         {
             get
             {
@@ -267,6 +267,21 @@ namespace EDR.Models
         public Event Event { get; set; }
         //public ICollection<EventTicket> EventTickets { get; set; }
         public ICollection<UserTicket> UserTickets { get; set; }
+    }
+
+    public class Performance : Event
+    {
+        public int? TeamId { get; set; }
+        [ForeignKey("TeamId")]
+        public Team Team { get; set; }
+    }
+
+    public class Audition : Event
+    {
+        [Required]
+        public int TeamId { get; set; }
+        [ForeignKey("TeamId")]
+        public Team Team { get; set; }
     }
 
     //public class EventTicketPlaceholder

@@ -1,0 +1,122 @@
+﻿@model EDR.Models.ViewModels.TeamViewViewModel
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+@Html.ActionLink("Manage", "Manage", new { id = Model.Team.Id }, null)
+<div>
+    <h4>Team</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Team.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Team.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Team.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Team.Description)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Team.FacebookLink)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Team.FacebookLink)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Team.Public)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Team.Public)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Team.DateStarted)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Team.DateStarted)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Team.Address)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Team.Address)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Team.Address2)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Team.Address2)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Team.City)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Team.City)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Team.State)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Team.State)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Team.Zip)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Team.Zip)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Team.Country)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Team.Country)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Team.Latitude)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Team.Latitude)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Team.Longitude)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Team.Longitude)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Team.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

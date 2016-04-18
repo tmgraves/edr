@@ -312,6 +312,7 @@
     </Compile>
     <Compile Include="Controllers\StoreController.cs" />
     <Compile Include="Controllers\TeacherController.cs" />
+    <Compile Include="Controllers\TeamController.cs" />
     <Compile Include="Controllers\VisitorController.cs" />
     <Compile Include="Data\ApplicationDbContext.cs" />
     <Compile Include="Data\ApplicationDbInitializer.cs" />
@@ -354,6 +355,7 @@
     <Compile Include="Models\ViewModels\SchoolViewModels.cs" />
     <Compile Include="Models\ViewModels\StoreViewModels.cs" />
     <Compile Include="Models\ViewModels\TeacherViewModels.cs" />
+    <Compile Include="Models\ViewModels\TeamViewModels.cs" />
     <Compile Include="Models\ViewModels\VisitorViewViewModel.cs" />
     <Compile Include="Models\YouTube.cs" />
     <Compile Include="Types\CustomModelBinders.cs" />
@@ -768,6 +770,12 @@
     <Content Include="Views\Teacher\ApplyNew.cshtml" />
     <Content Include="Views\Event\Manage.cshtml" />
     <Content Include="Views\Home\Test3.cshtml" />
+    <Content Include="Views\Team\Delete.cshtml" />
+    <Content Include="Views\Team\View.cshtml" />
+    <Content Include="Views\Team\Edit.cshtml" />
+    <Content Include="Views\Team\Index.cshtml" />
+    <Content Include="Views\Team\Create.cshtml" />
+    <Content Include="Views\Team\Manage.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

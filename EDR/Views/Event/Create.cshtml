@@ -96,19 +96,31 @@
         //alert(form.prop('id'));
         $('#btneventtypenext').click(function () {
             $('#wizeventtypediv').hide();
-            $('#wizdetaildiv').show();
+            $('#wizdatetimediv').show();
+        });
+        $('#btndatetimeprev').click(function () {
+            $('#wizeventtypediv').show();
+            $('#wizdatetimediv').hide();
+        });
+        $('#btndatetimenext').click(function () {
+            var form = $('#createform.main');
+            var valid = form.valid();
+            if (valid) {
+                var ck = CheckDates();
+                if (ck) {
+                    $('#wizdatetimediv').hide();
+                    $('#wizdetaildiv').show();
+                }
+            }
         });
         $('#btndetailprev').click(function () {
-            $('#wizeventtypediv').show();
+            $('#wizdatetimediv').show();
             $('#wizdetaildiv').hide();
         });
         $('#btndetailnext').click(function () {
             var form = $('#createform.main');
             var count = $('input[name="StylesCheckboxList.PostedItems"]:checked').length;
-
             var valid = form.valid();
-
-            alert(valid);
 
             if (count == 0)
             {
@@ -122,30 +134,12 @@
 
             if (valid) {
                 $('#validationMessage').hide();
+                $('#wizlocationdiv').show();
                 $('#wizdetaildiv').hide();
-                $('#wizdatetimediv').show();
-            }
-        });
-        $('#btndatetimeprev').click(function () {
-            $('#wizdetaildiv').show();
-            $('#wizdatetimediv').hide();
-        });
-        $('#btndatetimenext').click(function () {
-            alert("here");
-            var form = $('#createform.main');
-            var valid = form.valid();
-            alert(valid);
-            if (valid) {
-                alert("here");
-                var ck = CheckDates();
-                if (ck) {
-                    $('#wizdatetimediv').hide();
-                    $('#wizlocationdiv').show();
-                }
             }
         });
         $('#btnlocationprev').click(function () {
-            $('#wizdatetimediv').show();
+            $('#wizdetaildiv').show();
             $('#wizlocationdiv').hide();
         });
         $('#btnlocationnext').click(function () {
@@ -179,8 +173,6 @@
             $('#Event_StartTime').prop("value", "@Model.Event.StartDate.ToShortDateString() " + shour + ":" + smin + " " + sampm);
             $('#Event_EndTime').prop("value", "@Model.Event.StartDate.ToShortDateString() " + ehour + ":" + emin + " " + eampm);
 
-            alert(start);
-            alert(end);
             if (start > end) {
                 $('#EndTimevalidationMessage').show();
                 return false;
@@ -395,61 +387,87 @@
 
     $(document).ready(function () {
         var date = '@Model.Event.StartDate';
-        var res = date.split("-");
-        date = new Date(res[1] + "/" + res[2] + "/" + res[0]);
-        setInitialLock(date);
-
-        function setInitialLock(date) {
-            var weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-            var daysofmonth = ["blank", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th", "13th", "14th", "15th", "16th", "17th", "18th", "19th", "20th", "21st", "22nd", "23rd", "24th", "25th", "26th", "27th", "28th", "29th", "30th", "31st"];
-            $("#dayofweek").text(weekdays[date.getDay()]);
-            //  $("#eventday").text(daysofmonth[date.getDate()] + " of the Month");
-            var nth = parseInt(date.getDate() / 7) + 1;
-            var cb = $('input[type=checkbox][name="MonthDays.PostedItems"][value="' + nth.toString() + '"]');
-            //  var test = $('input[type=checkbox][name="cbtest"]');
-            //  alert(cb.attr("value").valueOf());
-            //  alert(test.attr("value").valueOf());
-            cb.prop("disabled", true);
-            var hcb = $('input[type=hidden][id="HiddenMonthDay"]');
-            hcb.prop("value", cb.prop("value"));
+        if (date != "")
+        {
+            setDate(date);
         }
+
+        function setDate(date) {
+            var res = date.split("-");
+            date = new Date(res[1] + "/" + res[2] + "/" + res[0]);
+            setMonthDay(date);
+        };
 
         function setMonthDay(date) {
             var weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
             var daysofmonth = ["blank", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th", "13th", "14th", "15th", "16th", "17th", "18th", "19th", "20th", "21st", "22nd", "23rd", "24th", "25th", "26th", "27th", "28th", "29th", "30th", "31st"];
             $("#dayofweek").text(weekdays[date.getDay()]);
             //  $("#eventday").text(daysofmonth[date.getDate()] + " of the Month");
-            var nth = parseInt(date.getDate() / 7) + 1;
-            var cb1 = $('input[type=checkbox][name="MonthDays.PostedItems"][value="1"]');
-            cb1.prop("disabled", false);
-            var cb2 = $('input[type=checkbox][name="MonthDays.PostedItems"][value="2"]');
-            cb2.prop("disabled", false);
-            var cb3 = $('input[type=checkbox][name="MonthDays.PostedItems"][value="3"]');
-            cb3.prop("disabled", false);
-            var cb4 = $('input[type=checkbox][name="MonthDays.PostedItems"][value="4"]');
-            cb4.prop("disabled", false);
-            cb1.prop("checked", "");
-            cb2.prop("checked", "");
-            cb3.prop("checked", "");
-            cb4.prop("checked", "");
-
-            var cb = $('input[type=checkbox][name="MonthDays.PostedItems"][value="' + nth.toString() + '"]');
-            //  var test = $('input[type=checkbox][name="cbtest"]');
-            //  alert(cb.attr("value").valueOf());
-            //  alert(test.attr("value").valueOf());
-            cb.prop("checked", "checked");
-            cb.prop("disabled", true);
-            var hcb = $('input[type=hidden][id="HiddenMonthDay"]');
-            //  alert(cb.attr("value"));
-            hcb.prop("value", cb.prop("value"));
-
-            //  cb.prop("readonly", "readonly");
-            //  alert(cb.attr("readonly").valueOf());
-            //  alert(cb.promise("readonly").valueOf());
-
-            //  test.prop("checked", "checked");
-            //  .prop("checked",true);
+            //var nth = parseInt(date.getDate() / 7) + 1;
+            //alert(nth);
+            setMonthDaysCheck(date);
+            //var cb = $('input[type=checkbox][name="MonthDays.PostedItems"][value="' + nth.toString() + '"]');
+            ////  var test = $('input[type=checkbox][name="cbtest"]');
+            ////  alert(cb.attr("value").valueOf());
+            ////  alert(test.attr("value").valueOf());
+            //cb.prop("disabled", true);
+            //cb.prop("checked", "checked");
+            //var hcb = $('input[type=hidden][id="HiddenMonthDay"]');
+            //hcb.prop("value", cb.prop("value"));
         }
+
+        function setMonthDaysCheck(date)
+        {
+            var nth = Math.ceil(date.getDate() / 7);
+            $('input[type=checkbox][name="MonthDays.PostedItems"]').prop('checked', "");
+            $('input[type=checkbox][name="MonthDays.PostedItems"]').prop('disabled', false);
+            var cb = $('input[type=checkbox][name="MonthDays.PostedItems"][value="' + nth.toString() + '"]');
+            cb.prop("disabled", true);
+            cb.prop("checked", "checked");
+            var hcb = $('input[type=hidden][id="HiddenMonthDay"]');
+            hcb.prop("value", cb.prop("value"));
+        }
+
+        //function setMonthDay(date) {
+        //    var weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        //    var daysofmonth = ["blank", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th", "13th", "14th", "15th", "16th", "17th", "18th", "19th", "20th", "21st", "22nd", "23rd", "24th", "25th", "26th", "27th", "28th", "29th", "30th", "31st"];
+        //    $("#dayofweek").text(weekdays[date.getDay()]);
+        //    //  $("#eventday").text(daysofmonth[date.getDate()] + " of the Month");
+        //    var nth = parseInt(date.getDate() / 7) + 1;
+        //    var cb1 = $('input[type=checkbox][name="MonthDays.PostedItems"][value="1"]');
+        //    cb1.prop("disabled", false);
+        //    var cb2 = $('input[type=checkbox][name="MonthDays.PostedItems"][value="2"]');
+        //    cb2.prop("disabled", false);
+        //    var cb3 = $('input[type=checkbox][name="MonthDays.PostedItems"][value="3"]');
+        //    cb3.prop("disabled", false);
+        //    var cb4 = $('input[type=checkbox][name="MonthDays.PostedItems"][value="4"]');
+        //    cb4.prop("disabled", false);
+        //    cb1.prop("checked", "");
+        //    cb2.prop("checked", "");
+        //    cb3.prop("checked", "");
+        //    cb4.prop("checked", "");
+
+        //    var cb = $('input[type=checkbox][name="MonthDays.PostedItems"][value="' + nth.toString() + '"]');
+        //    //  var test = $('input[type=checkbox][name="cbtest"]');
+        //    //  alert(cb.attr("value").valueOf());
+        //    //  alert(test.attr("value").valueOf());
+        //    cb.prop("checked", "checked");
+        //    cb.prop("disabled", true);
+        //    var hcb = $('input[type=hidden][id="HiddenMonthDay"]');
+        //    //  alert(cb.attr("value"));
+        //    hcb.prop("value", cb.prop("value"));
+
+        //    //  cb.prop("readonly", "readonly");
+        //    //  alert(cb.attr("readonly").valueOf());
+        //    //  alert(cb.promise("readonly").valueOf());
+
+        //    //  test.prop("checked", "checked");
+        //    //  .prop("checked",true);
+        //}
+
+        $('input[name="Event.StartDate"]').change(function () {
+            setDate($('input[name="Event.StartDate"]').val());
+        });
 
         $('input[name="Event.Recurring"]').click(function () {
             if ($(this).attr("value") == "True") {
@@ -475,7 +493,7 @@
                 var date = $('#Event_StartDate').val();
                 var res = date.split("-");
                 date = new Date(res[1] + "/" + res[2] + "/" + res[0]);
-                setMonthDay(date);
+                //  setMonthDay(date);
             }
             if ($('option:selected', $(this)).text() == "Yearly") {
                 $('#frequency').text('Year(s)');
@@ -558,47 +576,6 @@
                     </div>
                 </div>
             </div>
-            <div id="wizdetaildiv" class="step" style="display:none">
-                <h2>Step: Details</h2>
-                <div class="row" style="margin-bottom: 5px;">
-                    @Html.LabelFor(model => model.Event.Name, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
-                    <div class="col-md-10 col-lg-9">
-                        @Html.EditorFor(model => model.Event.Name, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.Event.Name, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div id="skilllevel" class="row" style="margin-bottom: 5px;" hidden="hidden">
-                    @Html.LabelFor(m => m.SkillLevel, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
-                    <div class="col-md-10 col-lg-9">
-                        @Html.DropDownListFor(m => m.SkillLevel, new SelectList(new List<int> { 1, 2, 3, 4, 5 }), "-- Select a Skill Level --", new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.SkillLevel, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="row" style="margin-bottom: 5px;">
-                    @Html.LabelFor(model => model.Event.Name, "Dance Styles", htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
-                    <div class="col-md-10 col-lg-9">
-                        @Html.CheckBoxListFor(model => model.StylesCheckboxList.PostedItems,
-                                    model => model.StylesCheckboxList.AvailableItems,
-                                    style => style.Value,
-                                    style => style.Text,
-                                    model => model.StylesCheckboxList.SelectedItems,
-                                    new HtmlListInfo(HtmlTag.table, 2, new { @class = "checkboxlist" }, TextLayout.Default))
-                        <span id="validationMessage" class="text-danger" style="display: none;" >Please choose at least one style</span>
-                        @*@Html.ValidationMessageFor(model => model.StylesCheckboxList.PostedItems, "Please choose at least one style", new { @class = "text-danger" })*@
-                    </div>
-                </div>
-                <div class="row" style="margin-bottom: 5px;">
-                    @Html.LabelFor(model => model.Event.Description, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
-                    <div class="col-md-10 col-lg-9">
-                        @Html.EditorFor(model => model.Event.Description, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.Event.Description, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="col-md-10 col-lg-9" style="margin-top: 5px;">
-                    <input id="btndetailprev" type="button" class="prev btn btn-primary" value="Previous" />
-                    <input id="btndetailnext" type="button" class="next btn btn-primary" style="display: none" value="Next" disabled="disabled" />
-                </div>
-            </div>
             <div id="wizdatetimediv" class="step" style="display:none">
                 <h2>Step: Date & Time</h2>
                 <div class="row" style="margin-bottom: 5px;">
@@ -632,7 +609,7 @@
                 <div class="row" style="margin-bottom: 5px;">
                     <label class="control-label col-lg-3 col-md-2">From</label>
                     <div class="col-lg-9 col-md-10">
-                        @*@Html.HiddenFor(m => m.Event.StartTime)*@
+                        @Html.HiddenFor(m => m.Event.StartTime)
                         @Html.DropDownListFor(m => m.StartHour, new SelectList(new List<SelectListItem>
                                                 {
                                                     new SelectListItem { Text = "01", Value = "1" },
@@ -650,8 +627,8 @@
                                                     }, "Value", "Text", null), new { @class = "form-control time", style = "width: 70px; display: inline;" })
                         @Html.DropDownListFor(m => m.StartMinute, new SelectList(new List<string> { "00", "15", "30", "45" }), new { @class = "form-control time", style = "width: 70px; display: inline;" })
                         @Html.DropDownListFor(m => m.StartAMPM, new SelectList(new List<string>() { "AM", "PM" }), new { @class = "form-control time", style = "width: 70px; display: inline;" })
-                        @Html.TextBoxFor(m => m.Event.StartTime)
                         @Html.ValidationMessageFor(model => model.Event.StartTime, "", new { @class = "text-danger" })
+
                         @*@Html.TextBoxFor(m => m.Event.StartTime, "{0:HH:mm}", htmlAttributes: new { @type = "time", @class = "form-control" })*@
                         @*@Html.EditorFor(model => model.Event.StartTime, new { htmlAttributes = new { @class = "form-control" } })*@
                     </div>
@@ -659,7 +636,7 @@
                 <div class="row" style="margin-bottom: 5px;">
                     <label class="control-label col-lg-3 col-md-2">To</label>
                     <div class="col-lg-9 col-md-10">
-                        @*@Html.HiddenFor(m => m.Event.EndTime)*@
+                        @Html.HiddenFor(m => m.Event.EndTime)
                         @Html.DropDownListFor(m => m.EndHour, new SelectList(new List<SelectListItem>
                                                 {
                                                     new SelectListItem { Text = "01", Value = "1" },
@@ -677,12 +654,11 @@
                                                     }, "Value", "Text", null), new { @class = "form-control time", style = "width: 70px; display: inline;" })
                         @Html.DropDownListFor(m => m.EndMinute, new SelectList(new List<string> { "00", "15", "30", "45" }), new { @class = "form-control time", style = "width: 70px; display: inline;" })
                         @Html.DropDownListFor(m => m.EndAMPM, new SelectList(new List<string>() { "AM", "PM" }), new { @class = "form-control time", style = "width: 70px; display: inline;" })
-
-                        @Html.TextBoxFor(m => m.Event.EndTime)
                         @Html.ValidationMessageFor(model => model.Event.EndTime, "", new { @class = "text-danger" })
                         <p>
                             <span id="EndTimevalidationMessage" class="text-danger" style="display: none;">End Time Must Be After Start Time</span>
                         </p>
+
                         @*@Html.TextBoxFor(m => m.Event.EndTime, "{0:HH:mm}", htmlAttributes: new { @type = "time", @class = "form-control" })*@
                         @*@Html.EditorFor(model => model.Event.EndTime, new { htmlAttributes = new { @class = "form-control" } })*@
                     </div>
@@ -775,6 +751,47 @@
                 <div class="col-md-10 col-lg-9" style="margin-top: 5px;">
                     <input id="btndatetimeprev" type="button" class="prev btn btn-primary" value="Previous" />
                     <input id="btndatetimenext" type="button" class="next btn btn-primary" style="display: none" value="Next" disabled="disabled" />
+                </div>
+            </div>
+            <div id="wizdetaildiv" class="step" style="display:none">
+                <h2>Step: Details</h2>
+                <div class="row" style="margin-bottom: 5px;">
+                    @Html.LabelFor(model => model.Event.Name, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
+                    <div class="col-md-10 col-lg-9">
+                        @Html.EditorFor(model => model.Event.Name, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Event.Name, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div id="skilllevel" class="row" style="margin-bottom: 5px;" hidden="hidden">
+                    @Html.LabelFor(m => m.SkillLevel, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
+                    <div class="col-md-10 col-lg-9">
+                        @Html.DropDownListFor(m => m.SkillLevel, new SelectList(new List<int> { 1, 2, 3, 4, 5 }), "-- Select a Skill Level --", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.SkillLevel, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row" style="margin-bottom: 5px;">
+                    @Html.LabelFor(model => model.Event.Name, "Dance Styles", htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
+                    <div class="col-md-10 col-lg-9">
+                        @Html.CheckBoxListFor(model => model.StylesCheckboxList.PostedItems,
+                                    model => model.StylesCheckboxList.AvailableItems,
+                                    style => style.Value,
+                                    style => style.Text,
+                                    model => model.StylesCheckboxList.SelectedItems,
+                                    new HtmlListInfo(HtmlTag.table, 2, new { @class = "checkboxlist" }, TextLayout.Default))
+                        <span id="validationMessage" class="text-danger" style="display: none;" >Please choose at least one style</span>
+                        @*@Html.ValidationMessageFor(model => model.StylesCheckboxList.PostedItems, "Please choose at least one style", new { @class = "text-danger" })*@
+                    </div>
+                </div>
+                <div class="row" style="margin-bottom: 5px;">
+                    @Html.LabelFor(model => model.Event.Description, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
+                    <div class="col-md-10 col-lg-9">
+                        @Html.EditorFor(model => model.Event.Description, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Event.Description, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-md-10 col-lg-9" style="margin-top: 5px;">
+                    <input id="btndetailprev" type="button" class="prev btn btn-primary" value="Previous" />
+                    <input id="btndetailnext" type="button" class="next btn btn-primary" style="display: none" value="Next" disabled="disabled" />
                 </div>
             </div>
             <div id="wizlocationdiv" class="step" style="display:none">

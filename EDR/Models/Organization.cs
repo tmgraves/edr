@@ -25,7 +25,9 @@ namespace EDR.Models
         public State State { get; set; }
         public string Zip { get; set; }
         public string Country { get; set; }
+        [ScaffoldColumn(false)]
         public double Latitude { get; set; }
+        [ScaffoldColumn(false)]
         public double Longitude { get; set; }
         public ICollection<OrganizationMember> Members { get; set; }
     }
@@ -51,7 +53,13 @@ namespace EDR.Models
 
     public class Team : Organization
     {
+        public int SkillLevel { get; set; }
+        public int? SchoolId { get; set; }
+        [ForeignKey("SchoolId")]
+        public School School { get; set; }
         public ICollection<Rehearsal> Rehearsals { get; set; }
+        public ICollection<Performance> Performances { get; set; }
+        public ICollection<Audition> Auditions { get; set; }
     }
 
     public class OrganizationMember : Entity

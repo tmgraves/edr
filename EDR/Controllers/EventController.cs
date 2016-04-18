@@ -1665,6 +1665,7 @@ namespace EDR.Controllers
                 if (model.EventType == EventType.Class)
                 {
                     var cls = new Class();
+                    cls.EventInstances = new List<EventInstance>();
                     TryUpdateModel(cls, "Event");
                     TryUpdateModel(cls);
                     //  TryUpdateModel(cls.EventInstances, "EventInstances");
@@ -1738,6 +1739,7 @@ namespace EDR.Controllers
                 else
                 {
                     var soc = new Social();
+                    soc.EventInstances = new List<EventInstance>();
                     TryUpdateModel(soc, "Event");
                     TryUpdateModel(soc);
                     //  TryUpdateModel(soc.EventInstances, "EventInstances");
@@ -3833,6 +3835,22 @@ namespace EDR.Controllers
 
             return View(model);
         }
+
+        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        public ActionResult DeleteInstance(int id)
+        {
+            var instance = DataContext.EventInstances.Include("EventRegistrations").Where(i => i.Id == id).FirstOrDefault();
+            var eventid = instance.EventId;
+
+            if (instance.EventRegistrations.Count() == 0)
+            {
+                DataContext.EventInstances.Remove(instance);
+                DataContext.SaveChanges();
+            }
+
+            return RedirectToAction("Manage", new { id = eventid });
+        }
+
 
         [Authorize]
         [HttpPost]
