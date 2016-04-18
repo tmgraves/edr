@@ -84,6 +84,18 @@ namespace EDR.Models.ViewModels
         [Display(Name = "Price")]
         public decimal? TicketPrice { get; set; }
 
+        [Range(1, 12)]
+        public int StartHour { get; set; }
+        [Range(1, 59)]
+        public int StartMinute { get; set; }
+        public string StartAMPM { get; set; }
+
+        [Range(1, 12)]
+        public int EndHour { get; set; }
+        [Range(1, 59)]
+        public int EndMinute { get; set; }
+        public string EndAMPM { get; set; }
+
         public EventCreateViewModel()
         {
             Event = new Event();
@@ -251,11 +263,13 @@ namespace EDR.Models.ViewModels
     {
         [Range(1, 12)]
         public int StartHour { get; set; }
+        [Range(1, 59)]
         public int StartMinute { get; set; }
         public string StartAMPM { get; set; }
 
         [Range(1, 12)]
         public int EndHour { get; set; }
+        [Range(1, 59)]
         public int EndMinute { get; set; }
         public string EndAMPM { get; set; }
 
