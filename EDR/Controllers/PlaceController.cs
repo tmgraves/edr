@@ -537,5 +537,12 @@ namespace EDR.Controllers
 
             return RedirectToAction("Details", "Place", new { id = model.Place.Id });
         }
+
+        [HttpPost]
+        public JsonResult Search(string searchString)
+        {
+            var places = DataContext.Places.Where(p => (p.Address + " " + p.City + " " + p.State + " " + p.Zip).Contains(searchString));
+            return Json(places, JsonRequestBehavior.AllowGet);
+        }
     }
 }

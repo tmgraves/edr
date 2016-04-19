@@ -10,12 +10,13 @@ using EDR.Models;
 using System.Data.Entity;
 using EDR.Utilities;
 using EDR.Enums;
+using EDR.Attributes;
 
 namespace EDR.Controllers
 {
     public class OwnerController : BaseController
     {
-        [Authorize(Roles = "Owner")]
+        [AccessDeniedAuthorize(Roles="Owner", AccessDeniedAction = "Apply", AccessDeniedController = "Owner")]
         public ActionResult Manage()
         {
             var userid = User.Identity.GetUserId();

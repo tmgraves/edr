@@ -14,6 +14,22 @@ else
 {
     using (Html.BeginForm())
     {
+        <div class="form-group">
+            @Html.LabelFor(model => model.Owner.Website, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Owner.Website, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Owner.Website, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Owner.ContactEmail, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Owner.ContactEmail, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Owner.ContactEmail, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
         <input type="submit" value="Apply to be an Owner" class="btn btn-default" />
     }
 }

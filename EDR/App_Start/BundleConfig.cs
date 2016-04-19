@@ -34,6 +34,10 @@ namespace EDR
                         "~/Scripts/qunit.js",
                         "~/Scripts/mvcfoolproof.unobtrusive.js"));
 
+            //  jquery UI
+            bundles.Add(new ScriptBundle("~/bundles/jqueryUI").Include(
+                        "~/Scripts/jquery-ui.js"));
+            
               // Set EnableOptimizations to false for debugging. For more information,
               // visit http://go.microsoft.com/fwlink/?LinkId=301862
               BundleTable.EnableOptimizations = true;

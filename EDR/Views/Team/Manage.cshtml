@@ -4,119 +4,487 @@
     ViewBag.Title = "Details";
 }
 
+@section Scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/foolproof")
+    @Scripts.Render("~/bundles/jqueryUI")
+
+<script type="text/javascript">
+    $(function () {
+        $('#saveform.main').valid();
+
+        $('#btnEdit').click(function () {
+            $('#viewdiv').hide();
+            $('#editdiv').show();
+            try
+            {
+                var valid = $('#saveform.main').valid();
+            }
+            catch(err)
+            {
+                document.getElementById("demo").innerHTML = err.message;
+            }
+        });
+        $('#btncanceledit').click(function () {
+            $('#viewdiv').show();
+            $('#editdiv').hide();
+        });
+
+        $('#saveform.main').submit(function () {
+            var valid = $('#saveform.main').valid();
+        });
+    });
+    </script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#Country").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '@Url.Action("Search", "Place")',
+                    type: "POST",
+                    dataType: "json",
+                    data: { searchString: request.term },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return { label: item.Country, value: item.Country };
+                        }))
+
+                    }
+                })
+            },
+            messages: {
+                noResults: "", results: ""
+            }
+        });
+    })
+</script>
+
+<script type="text/javascript">
+    var url = '@Url.RouteUrl("DefaultApi",
+        new { httproute = "", controller = "ProductApi" })';
+    $('#search').autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: url,
+                data: { query: request.term },
+                dataType: 'json',
+                type: 'GET',
+                success: function (data) {
+                    response($.map(data, function (item) {
+                        return {
+                            label: item.Description,
+                            value: item.Id
+                        }
+                    }));
+                }
+            })
+        },
+        select: function (event, ui) {
+            $('#search').val(ui.item.label);
+            $('#Id').val(ui.item.value);
+            return false;
+        },
+        minLength: 1
+    });
+</script>
+}
+
+<p>
+    Enter country name @Html.TextBox("Country")
+    <input type="submit" id="GetCustomers" value="Submit" />
+</p>
+
+<span id="rData"></span>
+
+@using (Html.BeginForm())
+{
+    @Html.Hidden("PlaceId")
+    <input type="text" id="search" placeholder="Search for a product" required />
+    <input type="submit" value="Go" id="submit" />
+}
+
+
 <h2>Details</h2>
+<hr />
 
-<div>
-    <h4>Team</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.Name)
-        </dt>
+<div class="container-fluid">
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div class="panel panel-default">
+            <div class="panel-body ">
+                <h3>Team Details</h3>
+                <div id="viewdiv">
+                    <div class="text-right" style="padding-bottom: 10px;">
+                        <input id="btnEdit" type="button" class="btn btn-primary" value="Edit" />
+                    </div>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Team.Name)
+                        </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Team.Name)
-        </dd>
+                        <dd>
+                            @Html.DisplayFor(model => model.Team.Name)
+                        </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.Description)
-        </dt>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Team.Description)
+                        </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Team.Description)
-        </dd>
+                        <dd>
+                            @Html.DisplayFor(model => model.Team.Description)
+                        </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.FacebookLink)
-        </dt>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Team.FacebookLink)
+                        </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Team.FacebookLink)
-        </dd>
+                        <dd>
+                            @Html.DisplayFor(model => model.Team.FacebookLink)
+                        </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.Public)
-        </dt>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Team.Public)
+                        </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Team.Public)
-        </dd>
+                        <dd>
+                            @Html.DisplayFor(model => model.Team.Public)
+                        </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.DateStarted)
-        </dt>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Team.DateStarted)
+                        </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Team.DateStarted)
-        </dd>
+                        <dd>
+                            @Html.DisplayFor(model => model.Team.DateStarted)
+                        </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.Address)
-        </dt>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Team.Address)
+                        </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Team.Address)
-        </dd>
+                        <dd>
+                            @Html.DisplayFor(model => model.Team.Address)
+                        </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.Address2)
-        </dt>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Team.Address2)
+                        </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Team.Address2)
-        </dd>
+                        <dd>
+                            @Html.DisplayFor(model => model.Team.Address2)
+                        </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.City)
-        </dt>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Team.City)
+                        </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Team.City)
-        </dd>
+                        <dd>
+                            @Html.DisplayFor(model => model.Team.City)
+                        </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.State)
-        </dt>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Team.State)
+                        </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Team.State)
-        </dd>
+                        <dd>
+                            @Html.DisplayFor(model => model.Team.State)
+                        </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.Zip)
-        </dt>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Team.Zip)
+                        </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Team.Zip)
-        </dd>
+                        <dd>
+                            @Html.DisplayFor(model => model.Team.Zip)
+                        </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.Country)
-        </dt>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Team.Country)
+                        </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Team.Country)
-        </dd>
+                        <dd>
+                            @Html.DisplayFor(model => model.Team.Country)
+                        </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.Latitude)
-        </dt>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Team.Latitude)
+                        </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Team.Latitude)
-        </dd>
+                        <dd>
+                            @Html.DisplayFor(model => model.Team.Latitude)
+                        </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.Longitude)
-        </dt>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Team.Longitude)
+                        </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Team.Longitude)
-        </dd>
+                        <dd>
+                            @Html.DisplayFor(model => model.Team.Longitude)
+                        </dd>
 
-    </dl>
+                    </dl>
+
+                </div>
+                <div id="editdiv" style="display: none;">
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                    @using (Html.BeginForm("Save", "Team", FormMethod.Post, new { @id = "saveform", @class = "main" }))
+            {
+                        @Html.HiddenFor(x => x.Team.Id)
+                        <div class="text-right" style="padding-bottom: 10px;">
+                            <input type="submit" id="btnsave" value="Save" class="btn btn-primary" />
+                            <input id="btncanceledit" type="button" class="btn btn-primary" value="Cancel" />
+                        </div>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.LabelFor(model => model.Team.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+                            </dt>
+                            <dd>
+                                @Html.EditorFor(model => model.Team.Name, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Team.Name, "", new { @class = "text-danger" })
+                            </dd>
+                            <dt>
+                                @Html.LabelFor(model => model.Team.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+                            </dt>
+                            <dd>
+                                @Html.EditorFor(model => model.Team.Description, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Team.Description, "", new { @class = "text-danger" })
+                            </dd>
+                            <dt>
+                                @Html.LabelFor(model => model.Team.FacebookLink, htmlAttributes: new { @class = "control-label col-md-2" })
+                            </dt>
+                            <dd>
+                                @Html.EditorFor(model => model.Team.FacebookLink, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Team.FacebookLink, "", new { @class = "text-danger" })
+                            </dd>
+                            <dt>
+                                @Html.LabelFor(model => model.Team.Public, htmlAttributes: new { @class = "control-label col-md-2" })
+                            </dt>
+                            <dd class="checkbox">
+                                @Html.EditorFor(model => model.Team.Public)
+                                @Html.ValidationMessageFor(model => model.Team.Public, "", new { @class = "text-danger" })
+                            </dd>
+                            <dt>
+                                @Html.LabelFor(model => model.Team.DateStarted, htmlAttributes: new { @class = "control-label col-md-2" })
+                            </dt>
+                            <dd>
+                                @Html.EditorFor(model => model.Team.DateStarted, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Team.DateStarted, "", new { @class = "text-danger" })
+                            </dd>
+                            <dt>
+                                @Html.LabelFor(model => model.Team.Address, htmlAttributes: new { @class = "control-label col-md-2" })
+                            </dt>
+                            <dd>
+                                @Html.EditorFor(model => model.Team.Address, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Team.Address, "", new { @class = "text-danger" })
+                            </dd>
+                            <dt>
+                                @Html.LabelFor(model => model.Team.Address2, htmlAttributes: new { @class = "control-label col-md-2" })
+                            </dt>
+                            <dd>
+                                @Html.EditorFor(model => model.Team.Address2, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Team.Address2, "", new { @class = "text-danger" })
+                            </dd>
+                            <dt>
+                                @Html.LabelFor(model => model.Team.City, htmlAttributes: new { @class = "control-label col-md-2" })
+                            </dt>
+                            <dd>
+                                @Html.EditorFor(model => model.Team.City, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Team.City, "", new { @class = "text-danger" })
+                            </dd>
+                            <dt>
+                                @Html.LabelFor(model => model.Team.State, htmlAttributes: new { @class = "control-label col-md-2" })
+                            </dt>
+                            <dd>
+                                @Html.EnumDropDownListFor(model => model.Team.State, htmlAttributes: new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Team.State, "", new { @class = "text-danger" })
+                            </dd>
+                            <dt>
+                                @Html.LabelFor(model => model.Team.Zip, htmlAttributes: new { @class = "control-label col-md-2" })
+                            </dt>
+                            <dd>
+                                @Html.EditorFor(model => model.Team.Zip, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Team.Zip, "", new { @class = "text-danger" })
+                            </dd>
+                            <dt>
+                                @Html.LabelFor(model => model.Team.Country, htmlAttributes: new { @class = "control-label col-md-2" })
+                            </dt>
+                            <dd>
+                                @Html.EditorFor(model => model.Team.Country, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Team.Country, "", new { @class = "text-danger" })
+                            </dd>
+                        </dl>
+
+                        <div class="form-group">
+                            <div class="col-md-10">
+                            </div>
+                        </div>
+            }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div class="panel panel-default">
+            <div class="panel-body ">
+                <h3>Rehearsal Schedule</h3>
+                <div id="rehearsalsdiv">
+                    <input id="btnAddRehearsal" type="button" class="btn btn-link" value="Add Rehearsal" />
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Day
+                                </th>
+                                <th>
+                                    Time
+                                </th>
+                                <th>
+                                    Location
+                                </th>
+                            </tr>
+                        </thead>
+                        @foreach (var r in Model.Team.Rehearsals)
+                        {
+                            <tr>
+                                <td>
+                                    @r.StartDate.DayOfWeek
+                                </td>
+                                <td>
+                                    @((DateTime)r.StartTime).ToShortTimeString()
+                                </td>
+                                <td>
+                                    @r.Place.Name<br />
+                                    @r.Place.Address<br />
+                                    @r.Place.City, @r.Place.State @r.Place.Zip
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+                <div id="addrehearsaldiv">
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                    @using (Html.BeginForm("AddRehearsal", "Team", FormMethod.Post, new { @id = "saveform", @class = "main" }))
+                    {
+                        @Html.HiddenFor(x => x.Team.Id)
+                        <div class="text-right" style="padding-bottom: 10px;">
+                            <input type="submit" id="btnsaverehearsal" value="Save" class="btn btn-primary" />
+                            <input id="btncancelrehearsaledit" type="button" class="btn btn-primary" value="Cancel" />
+                        </div>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.LabelFor(model => model.NewRehearsal.StartDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                            </dt>
+                            <dd>
+                                @Html.TextBoxFor(m => m.NewRehearsal.StartDate, "{0:yyyy-MM-dd}", htmlAttributes: new { @type = "date", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.NewRehearsal.StartDate, "", new { @class = "text-danger" })
+                            </dd>
+                            <dt>
+                                @Html.LabelFor(model => model.NewRehearsal.StartTime, htmlAttributes: new { @class = "control-label col-md-2" })
+                            </dt>
+                            <dd>
+                                @Html.HiddenFor(m => m.NewRehearsal.StartTime)
+                                @Html.DropDownListFor(m => m.RehearsalHour, new SelectList(new List<SelectListItem>
+                                                {
+                                                    new SelectListItem { Text = "01", Value = "1" },
+                                                    new SelectListItem { Text = "02", Value = "2" },
+                                                    new SelectListItem { Text = "03", Value = "3" },
+                                                    new SelectListItem { Text = "04", Value = "4" },
+                                                    new SelectListItem { Text = "05", Value = "5" },
+                                                    new SelectListItem { Text = "06", Value = "6" },
+                                                    new SelectListItem { Text = "07", Value = "7" },
+                                                    new SelectListItem { Text = "08", Value = "8" },
+                                                    new SelectListItem { Text = "09", Value = "9" },
+                                                    new SelectListItem { Text = "10", Value = "10" },
+                                                    new SelectListItem { Text = "11", Value = "11" },
+                                                    new SelectListItem { Text = "12", Value = "12" }
+                                                    }, "Value", "Text", null), new { @class = "form-control time", style = "width: 70px; display: inline;" })
+                                @Html.DropDownListFor(m => m.RehearsalMinute, new SelectList(new List<string> { "00", "15", "30", "45" }), new { @class = "form-control time", style = "width: 70px; display: inline;" })
+                                @Html.DropDownListFor(m => m.RehearsalAMPM, new SelectList(new List<string>() { "AM", "PM" }), new { @class = "form-control time", style = "width: 70px; display: inline;" })
+                                @Html.ValidationMessageFor(model => model.NewRehearsal.StartTime, "", new { @class = "text-danger" })
+                            </dd>
+
+                        </dl>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body ">
+                <h3>Auditions</h3>
+                @Html.ActionLink("Add an Audition", "AddAudition", new { id = Model.Team.Id })
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>
+                                Day
+                            </th>
+                            <th>
+                                Time
+                            </th>
+                            <th>
+                                Location
+                            </th>
+                        </tr>
+                    </thead>
+                    @foreach (var r in Model.Team.Rehearsals)
+                    {
+                        <tr>
+                            <td>
+                                @r.StartDate.DayOfWeek
+                            </td>
+                            <td>
+                                @((DateTime)r.StartTime).ToShortTimeString()
+                            </td>
+                            <td>
+                                @r.Place.Name<br />
+                                @r.Place.Address<br />
+                                @r.Place.City, @r.Place.State @r.Place.Zip
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body ">
+                <h3>Performances</h3>
+                @Html.ActionLink("Add a Performance", "AddPerformance", new { id = Model.Team.Id })
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>
+                                Day
+                            </th>
+                            <th>
+                                Time
+                            </th>
+                            <th>
+                                Location
+                            </th>
+                        </tr>
+                    </thead>
+                    @foreach (var r in Model.Team.Rehearsals)
+                    {
+                        <tr>
+                            <td>
+                                @r.StartDate.DayOfWeek
+                            </td>
+                            <td>
+                                @((DateTime)r.StartTime).ToShortTimeString()
+                            </td>
+                            <td>
+                                @r.Place.Name<br />
+                                @r.Place.Address<br />
+                                @r.Place.City, @r.Place.State @r.Place.Zip
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Team.Id }) |
     @Html.ActionLink("Back to List", "Index")
 </p>

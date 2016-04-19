@@ -13,12 +13,13 @@ using System.Text.RegularExpressions;
 using EDR.Utilities;
 using System.Data.Entity.Validation;
 using EDR.Enums;
+using EDR.Attributes;
 
 namespace EDR.Controllers
 {
     public class TeacherController : BaseController
     {
-        [Authorize(Roles = "Teacher")]
+        [AccessDeniedAuthorize(Roles = "Teacher", AccessDeniedAction = "Apply", AccessDeniedController = "Teacher")]
         public ActionResult Manage()
         {
             var id = User.Identity.GetUserId();

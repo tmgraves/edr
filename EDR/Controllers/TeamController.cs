@@ -46,10 +46,28 @@ namespace EDR.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             var model = new TeamManageViewModel();
-            model.Team = DataContext.Teams.Find(id);
+            model.Team = DataContext.Teams
+                            .Include("Members.User")
+                            .Include("Rehearsals.Place")
+                            .Include("Auditions.Place")
+                            .Include("Performances.Place")
+                            .Single(e => e.Id == id);
             if (model.Team == null)
             {
                 return HttpNotFound();
+            }
+            return View(model);
+        }
+
+        [Authorize(Roles = "Teacher")]
+        [HttpPost]
+        public ActionResult Save(TeamManageViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                DataContext.Entry(model.Team).State = EntityState.Modified;
+                DataContext.SaveChanges();
+                return RedirectToAction("View", new { id = model.Team.Id });
             }
             return View(model);
         }

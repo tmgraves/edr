@@ -10,12 +10,13 @@ using EDR.Models;
 using System.Data.Entity;
 using EDR.Utilities;
 using EDR.Enums;
+using EDR.Attributes;
 
 namespace EDR.Controllers
 {
     public class PromoterController : BaseController
     {
-        [Authorize(Roles = "Promoter")]
+        [AccessDeniedAuthorize(Roles = "Promoter", AccessDeniedAction = "Apply", AccessDeniedController = "Promoter")]
         public ActionResult Manage()
         {
             var userid = User.Identity.GetUserId();
