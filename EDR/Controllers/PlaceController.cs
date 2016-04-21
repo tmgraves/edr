@@ -538,10 +538,11 @@ namespace EDR.Controllers
             return RedirectToAction("Details", "Place", new { id = model.Place.Id });
         }
 
-        [HttpPost]
+
         public JsonResult Search(string searchString)
         {
-            var places = DataContext.Places.Where(p => (p.Address + " " + p.City + " " + p.State + " " + p.Zip).Contains(searchString));
+            //  var places = DataContext.Places.Where(p => (p.Address + " " + p.City + " " + p.State + " " + p.Zip).Contains(searchString)).ToList();
+            var places = DataContext.Places.Where(p => (p.Name + " " + p.Address + " " + p.City + " " + p.State + " " + p.Zip).Contains(searchString)).Select(s => new { Id = s.Id, Name = s.Name + " " + s.Address + " " + s.City + ", " + s.State + " " + s.Zip }).ToList();
             return Json(places, JsonRequestBehavior.AllowGet);
         }
     }

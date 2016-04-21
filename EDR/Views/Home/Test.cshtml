@@ -1,112 +1,41 @@
 ﻿@model IEnumerable<EDR.Models.OrganizationMember>
 
-@{
-    ViewBag.Title = "Index";
-    WebGrid grid = new WebGrid(source: Model, canPage: false);
-}
-
-@* Here  I am going to add some css for better looks *@
-
-<style type="text/css">
-    table.gridtable {
-        font-family: verdana,arial,sans-serif;
-        font-size: 11px;
-        color: #333333;
-        border-width: 1px;
-        border-color: #666666;
-        border-collapse: collapse;
-    }
-
-        table.gridtable th {
-            border-width: 1px;
-            padding: 8px;
-            border-style: solid;
-            border-color: #666666;
-            background-color: #dedede;
-        }
-
-        table.gridtable td {
-            border-width: 1px;
-            padding: 8px;
-            border-style: solid;
-            border-color: #666666;
-            background-color: #ffffff;
-        }
-</style>
-
-<h2>Customer Data</h2>
-
-@using (Html.BeginForm("Index", "Webgrid", FormMethod.Post))
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+@*<script src="http://code.jquery.com/jquery-1.9.1.js"></script>*@
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+@using (Html.BeginForm())
 {
-    <div>
-        @grid.GetHtml(
-                    tableStyle: "gridtable",
-                    htmlAttributes: new { id = "checkableGrid" },
-                    columns: grid.Columns
-                        (
-        //Here I am going to add checkbox column
-                            grid.Column(
-                                format: @<text> <input type="checkbox" value="@item.Id" name="ids" /> </text>,
-                     header: "{checkall}"
-                 ),
-                  grid.Column("User.FullName", "Name")
-              )
-          )
-    </div>
-    <div>
-        <input type="submit" value="Get Selected Record" />
-    </div>
+    <input id="Id" type="text" />
+    @*@Html.HiddenFor(m => m.Id)*@
+    <input type="text" id="search" placeholder="Search for a product" required />
+    <input type="submit" value="Go" id="submit" />
 }
-
-@if (ViewBag.Message != null)
+@section Scripts
 {
-    <div>
-        @ViewBag.Message
-    </div>
+<script type="text/javascript">
+    $('#search').autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: '@Url.Action("Search", "Place")',
+                data: { searchString: request.term },
+                dataType: 'json',
+                type: 'GET',
+                success: function (data) {
+                    response($.map(data, function (item) {
+                        return {
+                            label: item.Address,
+                            value: item.Id
+                        }
+                    }));
+                }
+            })
+        },
+        select: function (event, ui) {
+            $('#search').val(ui.item.label);
+            $('#Id').val(ui.item.value);
+            return false;
+        },
+        minLength: 1
+    });
+</script>
 }
-
-    @* Here I am going to add some Jquery Code *@
-
-    @section Scripts{
-        <script>
-            $(document).ready(function () {
-
-                // 1st replace first column header text with checkbox
-
-                $("#checkableGrid th").each(function () {
-                    if ($.trim($(this).text().toString().toLowerCase()) === "{checkall}") {
-                        $(this).text('');
-                        $("<input/>", { type: "checkbox", id: "cbSelectAll", value: "" }).appendTo($(this));
-                        $(this).append("<span>Select All</span>");
-                    }
-                });
-
-                //2nd click event for header checkbox for select /deselect all
-                $(document).on("click", "#cbSelectAll", function () {
-                    var ischecked = this.checked;
-                    $('#checkableGrid').find("input:checkbox").each(function () {
-                        this.checked = ischecked;
-                    });
-                });
-
-
-                //3rd click event for checkbox of each row
-                $("input[name='ids']").click(function () {
-                    var totalRows = $("#checkableGrid td :checkbox").length;
-                    var checked = $("#checkableGrid td :checkbox:checked").length;
-
-                    if (checked == totalRows) {
-                        $("#checkableGrid").find("input:checkbox").each(function () {
-                            this.checked = true;
-                        });
-                    }
-                    else {
-                        $("#cbSelectAll").removeAttr("checked");
-                    }
-                });
-
-            });
-        </script>
-
-    }
-

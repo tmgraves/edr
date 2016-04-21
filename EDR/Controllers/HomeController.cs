@@ -334,11 +334,10 @@ namespace EDR.Controllers
         //    return View(model);
         //}
 
-        //public ActionResult Test3()
-        //{
-        //    var model = new Test();
-        //    return View(model);
-        //}
+        public ActionResult Test3()
+        {
+            return View();
+        }
 
         //[HttpPost]
         //public ActionResult Test3(Test model)

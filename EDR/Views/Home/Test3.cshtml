@@ -1,76 +1,41 @@
-﻿@model EDR.Models.Test
-
-@{
-    ViewBag.Title = "Test3";
+﻿@{
+    Layout = null;
 }
 
-<h2>Test3</h2>
+@model EDR.Models.Place
 
-
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+<script src="https://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="https://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 @using (Html.BeginForm())
 {
-    @Html.AntiForgeryToken()
-    
-    <div class="form-horizontal">
-        <h4>Event</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group">
-            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Start, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Start, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Start, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.End, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.End, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.End, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
-            </div>
-        </div>
-    </div>
+    @Html.TextBoxFor(m => m.Id)
+    <input type="text" id="search" placeholder="Search for a product" required />
+    <input type="submit" value="Go" id="submit" />
 }
-
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
-
-@section scripts {
-@Scripts.Render("~/bundles/jqueryval")
-@Scripts.Render("~/bundles/foolproof")
-@*<script src="~/Scripts/jquery.validate.js"></script>*@
-@*<script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
-<script src="~/Scripts/mvcfoolproof.unobtrusive.js"></script>
-<script src="~/Scripts/qunit.js"></script>*@
-<script>
-    $(function () {
-        try {
-            alert("here");
-            alert($("form").valid());
-            $("form").valid();
-        }
-        catch (err) {
-            alert(err.message);
-            document.getElementById("demo").innerHTML = err.message;
-        }
+<script type="text/javascript">
+    $('#search').autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: '@Url.Action("Search", "Place")',
+                data: { searchString: request.term },
+                dataType: 'json',
+                type: 'GET',
+                success: function (data) {
+                    response($.map(data, function (item) {
+                        return {
+                            label: item.Name,
+                            value: item.Id
+                        }
+                    }));
+                }
+            })
+        },
+        select: function (event, ui) {
+            $('#search').val(ui.item.label);
+            $('#Id').val(ui.item.value);
+            return false;
+        },
+        minLength: 1
     });
 </script>
-}
-
-<p id="demo"></p>

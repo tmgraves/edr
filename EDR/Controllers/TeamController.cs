@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using EDR.Data;
 using EDR.Models;
 using EDR.Models.ViewModels;
+using System.Data.Entity.Validation;
 
 namespace EDR.Controllers
 {
@@ -63,11 +64,12 @@ namespace EDR.Controllers
         [HttpPost]
         public ActionResult Save(TeamManageViewModel model)
         {
-            if (ModelState.IsValid)
+            var t = ModelState.IsValidField("Team");
+            if (ModelState.IsValidField("Team"))
             {
                 DataContext.Entry(model.Team).State = EntityState.Modified;
                 DataContext.SaveChanges();
-                return RedirectToAction("View", new { id = model.Team.Id });
+                return RedirectToAction("Manage", new { id = model.Team.Id });
             }
             return View(model);
         }
@@ -160,6 +162,26 @@ namespace EDR.Controllers
                 DataContext.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        [Authorize(Roles = "Teacher")]
+        [HttpPost]
+        public ActionResult AddRehearsal(TeamManageViewModel model)
+        {
+            var rehearsal = new Rehearsal() { TeamId = model.Team.Id, Day = model.NewRehearsal.Day, Time = Convert.ToDateTime(DateTime.Today.ToShortDateString() + " " + model.RehearsalHour.ToString() + ":" + model.RehearsalMinute.ToString() + " " + model.RehearsalAMPM), PlaceId = model.NewRehearsal.PlaceId };
+            DataContext.Rehearsals.Add(rehearsal);
+            DataContext.SaveChanges();
+            return RedirectToAction("Manage", new { id = model.Team.Id });
+        }
+
+        [Authorize(Roles = "Teacher")]
+        public ActionResult DeleteRehearsal(int id)
+        {
+            var rehearsal = DataContext.Rehearsals.Single(s => s.Id == id);
+            var teamId = rehearsal.TeamId;
+            DataContext.Rehearsals.Remove(rehearsal);
+            DataContext.SaveChanges();
+            return RedirectToAction("Manage", new { id = teamId });
         }
     }
 }

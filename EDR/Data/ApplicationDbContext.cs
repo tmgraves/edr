@@ -145,6 +145,7 @@ namespace EDR.Data
         public DbSet<UserTicket> UserTickets { get; set; }
         public DbSet<EventInstance> EventInstances { get; set; }
         public DbSet<EventRegistration> EventRegistrations { get; set; }
+        public DbSet<Rehearsal> Rehearsals { get; set; }
         public DbSet<Audition> Auditions { get; set; }
         public DbSet<Performance> Performances { get; set; }
 
