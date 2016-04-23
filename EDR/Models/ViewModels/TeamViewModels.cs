@@ -25,11 +25,8 @@ namespace EDR.Models.ViewModels
     public class TeamManageViewModel : TeamBaseViewModel
     {
         public Rehearsal NewRehearsal { get; set; }
-        [Range(1, 12)]
-        public int RehearsalHour { get; set; }
-        [Range(0, 59)]
-        public int RehearsalMinute { get; set; }
-        public string RehearsalAMPM { get; set; }
+        public Audition NewAudition { get; set; }
+        public Performance NewPerformance { get; set; }
     }
 
     public class TeamCreateViewModel : TeamBaseViewModel

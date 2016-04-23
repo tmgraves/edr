@@ -169,46 +169,18 @@ namespace EDR.Controllers
             }
         }
 
-        // GET: School
-        [Authorize(Roles = "Teacher,Owner")]
-        public ActionResult AddTicket(int id)
-        {
-            var ticket = new Ticket();
-            ticket.SchoolId = id;
-            return View(ticket);
-        }
-
         // POST: School
         [HttpPost]
         [Authorize(Roles = "Teacher,Owner")]
-        public ActionResult AddTicket(Ticket ticket)
+        public ActionResult UpdateMembers(ManageSchoolViewModel model)
         {
-            if (ModelState.IsValid)
-            {
-                //Save Ticket
-                DataContext.Tickets.Add(ticket);
-                DataContext.SaveChanges();
-
-                return RedirectToAction("View", new { id = ticket.SchoolId });
-            }
-            else
-            {
-                return View(ticket);
-            }
-        }
-
-        // POST: School
-        [HttpPost]
-        [Authorize(Roles = "Teacher,Owner")]
-        public ActionResult UpdateMembers(School model)
-        {
-            foreach (var m in model.Members)
+            foreach (var m in model.School.Members)
             {
                 var mem = DataContext.OrganizationMembers.Where(om => om.Id == m.Id).FirstOrDefault();
                 mem.Admin = m.Admin;
             }
             DataContext.SaveChanges();
-            return RedirectToAction("View", new { id = model.Id });
+            return RedirectToAction("Manage", new { id = model.School.Id });
             //var members = school.Members;
             //var schoolId = members.FirstOrDefault().OrganizationId;
             //foreach(var mbr in members)

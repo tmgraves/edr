@@ -28,5 +28,5 @@ namespace EDR.Attributes
                 filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new { Controller = AccessDeniedController, Action = AccessDeniedAction }));
             }
         }
-    }
+    }   
 }

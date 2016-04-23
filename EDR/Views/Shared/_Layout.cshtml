@@ -19,7 +19,17 @@
 <script>
 window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0], t = window.twttr || {}; if (d.getElementById(id)) return; js = d.createElement(s); js.id = id; js.src = "https://platform.twitter.com/widgets.js"; fjs.parentNode.insertBefore(js, fjs); t._e = []; t.ready = function (f) { t._e.push(f); }; return t; }(document, "script", "twitter-wjs"));
 </script>
-    <div class="row" style="margin-bottom: 40px;">
+<style>
+.mainnav.dropdown-menu > li {
+    display: inline-block;
+    float:left;
+}
+.mainnav.open > ul {
+    display: inline-flex !important;
+}
+</style>
+
+<div class="row" style="margin-bottom: 40px;">
         <div class="navbar navbar-inverse navbar-fixed-top">
             <div class="container-fluid">
                 <div class="navbar-header">
@@ -37,9 +47,9 @@ window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li>@Html.ActionLink("Explore", "Explore", "Home")</li>
-                            <li class="dropdown">
+                            <li class="mainnav dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Learn<span class="caret"></span></a>
-                                <ul class="dropdown-menu">
+                                <ul class="mainnav dropdown-menu" role="menu">
                                     <li>@Html.ActionLink("Search Classes", "Learn", "Home")</li>
                                     @*<li>@Html.ActionLink("+ Add a Class", "Create", "Event", new { eventType = EDR.Enums.EventType.Class })</li>*@
                                     <li role="separator" class="divider"></li>
@@ -49,18 +59,18 @@ window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]
                                     <li>@Html.ActionLink("Studios", "List", "Place", new { TypeParam = EDR.Enums.PlaceType.Studio }, null)</li>
                                 </ul>
                             </li>
-                            <li class="dropdown">
+                            <li class="mainnav dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dance<span class="caret"></span></a>
-                                <ul class="dropdown-menu">
+                                <ul class="mainnav dropdown-menu">
                                     <li>@Html.ActionLink("Search Socials", "Social", "Home")</li>
                                     @*<li>@Html.ActionLink("+ Add a Social", "Create", "Event", new { eventType = EDR.Enums.EventType.Social })</li>*@
                                     <li role="separator" class="divider"></li>
                                     <li>@Html.ActionLink("Dance Venues", "List", "Place")</li>
                                 </ul>
                             </li>
-                            <li class="dropdown">
+                            <li class="mainnav dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">People<span class="caret"></span></a>
-                                <ul class="dropdown-menu">
+                                <ul class="mainnav dropdown-menu">
                                     <li>@Html.ActionLink("Teachers", "List", "Teacher")</li>
                                     <li role="separator" class="divider"></li>
                                     <li>@Html.ActionLink("Owners", "List", "Owner")</li>
@@ -68,9 +78,9 @@ window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]
                                     <li>@Html.ActionLink("Promoters", "List", "Promoter")</li>
                                 </ul>
                             </li>
-                            <li class="dropdown">
+                            <li class="mainnav dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Performance<span class="caret"></span></a>
-                                <ul class="dropdown-menu">
+                                <ul class="mainnav dropdown-menu">
                                     <li>@Html.ActionLink("Teams", "Index", "Team")</li>
                                     <li>@Html.ActionLink("+ Add a Team", "Create", "Team")</li>
                                     <li><a href="#">Performances</a></li>

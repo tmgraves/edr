@@ -206,7 +206,7 @@
         <div class="panel panel-default">
             <div class="panel-body ">
                 <h3>Tickets</h3>
-                @Html.ActionLink("Add Ticket", "AddTicket", "School", new { id = Model.School.Id }, null)
+                @Html.ActionLink("Add Ticket", "AddTicket", "Store", new { schoolId = Model.School.Id }, null)
                 <table class="table">
                     <thead>
                         <tr>

@@ -40,12 +40,8 @@ namespace EDR.Controllers
         }
 
         [Authorize(Roles = "Teacher")]
-        public ActionResult Manage(int? id)
+        public ActionResult Manage(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
             var model = new TeamManageViewModel();
             model.Team = DataContext.Teams
                             .Include("Members.User")
@@ -168,10 +164,16 @@ namespace EDR.Controllers
         [HttpPost]
         public ActionResult AddRehearsal(TeamManageViewModel model)
         {
-            var rehearsal = new Rehearsal() { TeamId = model.Team.Id, Day = model.NewRehearsal.Day, Time = Convert.ToDateTime(DateTime.Today.ToShortDateString() + " " + model.RehearsalHour.ToString() + ":" + model.RehearsalMinute.ToString() + " " + model.RehearsalAMPM), PlaceId = model.NewRehearsal.PlaceId };
-            DataContext.Rehearsals.Add(rehearsal);
-            DataContext.SaveChanges();
-            return RedirectToAction("Manage", new { id = model.Team.Id });
+            if (ModelState.IsValidField("NewRehearsal"))
+            {
+                DataContext.Rehearsals.Add(model.NewRehearsal);
+                DataContext.SaveChanges();
+                return RedirectToAction("Manage", new { id = model.NewRehearsal.TeamId });
+            }
+            else
+            {
+                return View(model);
+            }
         }
 
         [Authorize(Roles = "Teacher")]
@@ -180,6 +182,93 @@ namespace EDR.Controllers
             var rehearsal = DataContext.Rehearsals.Single(s => s.Id == id);
             var teamId = rehearsal.TeamId;
             DataContext.Rehearsals.Remove(rehearsal);
+            DataContext.SaveChanges();
+            return RedirectToAction("Manage", new { id = teamId });
+        }
+
+        [Authorize(Roles = "Teacher")]
+        [HttpPost]
+        public ActionResult AddAudition(TeamManageViewModel model)
+        {
+            try
+            {
+                model.NewAudition.EndDate = model.NewAudition.StartDate;
+                DataContext.Auditions.Add(model.NewAudition);
+                DataContext.SaveChanges();
+                return RedirectToAction("Manage", new { id = model.NewAudition.TeamId });
+            }
+            catch (DbEntityValidationException e)
+            {
+                foreach (var eve in e.EntityValidationErrors)
+                {
+                    Console.WriteLine("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                        eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                    foreach (var ve in eve.ValidationErrors)
+                    {
+                        Console.WriteLine("- Property: \"{0}\", Error: \"{1}\"",
+                            ve.PropertyName, ve.ErrorMessage);
+                    }
+                }
+                throw;
+            }
+            //if (ModelState.IsValidField("NewAudition"))
+            //{
+            //    DataContext.Auditions.Add(model.NewAudition);
+            //    DataContext.SaveChanges();
+            //    return RedirectToAction("Manage", new { id = model.NewAudition.TeamId });
+            //}
+            //else
+            //{
+            //    return View(model);
+            //}
+            //if (TryValidateModel(audition))
+            //{
+            //}
+        }
+
+        [Authorize(Roles = "Teacher")]
+        public ActionResult DeleteAudition(int id)
+        {
+            var audition = DataContext.Auditions.Single(s => s.Id == id);
+            var teamId = audition.TeamId;
+            DataContext.Auditions.Remove(audition);
+            DataContext.SaveChanges();
+            return RedirectToAction("Manage", new { id = teamId });
+        }
+
+        [Authorize(Roles = "Teacher")]
+        [HttpPost]
+        public ActionResult AddPerformance(TeamManageViewModel model)
+        {
+            try
+            {
+                model.NewPerformance.EndDate = model.NewPerformance.StartDate;
+                DataContext.Performances.Add(model.NewPerformance);
+                DataContext.SaveChanges();
+                return RedirectToAction("Manage", new { id = model.NewPerformance.TeamId });
+            }
+            catch (DbEntityValidationException e)
+            {
+                foreach (var eve in e.EntityValidationErrors)
+                {
+                    Console.WriteLine("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                        eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                    foreach (var ve in eve.ValidationErrors)
+                    {
+                        Console.WriteLine("- Property: \"{0}\", Error: \"{1}\"",
+                            ve.PropertyName, ve.ErrorMessage);
+                    }
+                }
+                throw;
+            }
+        }
+
+        [Authorize(Roles = "Teacher")]
+        public ActionResult DeletePerformance(int id)
+        {
+            var performance = DataContext.Performances.Single(s => s.Id == id);
+            var teamId = performance.TeamId;
+            DataContext.Performances.Remove(performance);
             DataContext.SaveChanges();
             return RedirectToAction("Manage", new { id = teamId });
         }

@@ -57,6 +57,10 @@ namespace EDR.Models.ViewModels
     {
         public School School { get; set; }
 
+        public ManageSchoolViewModel()
+        {
+
+        }
         public ManageSchoolViewModel(School school)
         {
             School = school;

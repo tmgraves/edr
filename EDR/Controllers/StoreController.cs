@@ -92,5 +92,43 @@ namespace EDR.Controllers
                 return View(model);
             }
         }
+
+        // GET: School
+        [Authorize(Roles = "Teacher,Owner")]
+        public ActionResult AddTicket(int? schoolId, int? eventId)
+        {
+            var ticket = new Ticket();
+            ticket.SchoolId = schoolId;
+            ticket.EventId = eventId;
+            return View(ticket);
+        }
+
+        // POST: School
+        [HttpPost]
+        [Authorize(Roles = "Teacher,Owner")]
+        public ActionResult AddTicket(Ticket ticket)
+        {
+            if (ModelState.IsValid)
+            {
+                //Save Ticket
+                DataContext.Tickets.Add(ticket);
+                DataContext.SaveChanges();
+
+                if (ticket.SchoolId != null)
+                {
+                    return RedirectToAction("View", "School", new { id = ticket.SchoolId });
+                }
+                else
+                {
+                    var evt = DataContext.Events.Single(e => e.Id == ticket.EventId);
+                    return RedirectToAction("View", "Event", new { id = ticket.EventId, eventType = evt is Class ? EDR.Enums.EventType.Class : Enums.EventType.Social });
+                }
+            }
+            else
+            {
+                return View(ticket);
+            }
+        }
+
     }
 }

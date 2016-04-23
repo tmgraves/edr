@@ -11,6 +11,7 @@
 {
     @Html.AntiForgeryToken()
     @Html.HiddenFor(t => t.SchoolId)
+    @Html.HiddenFor(t => t.EventId)
     
     <div class="form-horizontal">
         <h4>Ticket</h4>
