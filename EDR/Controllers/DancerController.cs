@@ -104,6 +104,13 @@ namespace EDR.Controllers
             return viewModel;
         }
 
+        [Authorize]
+        public JsonResult Search(string searchString)
+        {
+            var users = DataContext.Users.Where(u => (u.FirstName + " " + u.LastName).Contains(searchString)).Select(s => new { Id = s.Id, Name = s.FirstName + " " + s.LastName }).ToList();
+            return Json(users, JsonRequestBehavior.AllowGet);
+        }
+
         //[Authorize]
         //public ActionResult View(string username)
         //{

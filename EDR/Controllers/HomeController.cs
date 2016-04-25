@@ -231,7 +231,7 @@ namespace EDR.Controllers
             return View(viewModel);
         }
 
-        public ActionResult Learn(int? danceStyle, string teacher, int? place, int? skillLevel, string location, string[] days, double? CenterLat, double? CenterLng, int? Zoom, double? NELat, double? NELng, double? SWLat, double? SWLng)
+        public ActionResult Learn(int? danceStyle, string TeacherId, int? PlaceId, int? skillLevel, string location, string[] days, double? CenterLat, double? CenterLng, int? Zoom, double? NELat, double? NELng, double? SWLat, double? SWLng)
         {
             var viewModel = new LearnViewModel();
             viewModel.DanceStyles = DataContext.DanceStyles;
@@ -239,6 +239,7 @@ namespace EDR.Controllers
             viewModel.Teachers = DataContext.Teachers.Include("ApplicationUser");
             viewModel.Zoom = Zoom == null ? 10 : (int)Zoom;
             viewModel.Location = location;
+            viewModel.SearchAddress = new Address();
 
             if (location != "" && location != null)
             {
@@ -282,14 +283,14 @@ namespace EDR.Controllers
                 viewModel.Classes = viewModel.Classes.Where(x => x.DanceStyles.Any(s => s.Id == danceStyle));
             }
 
-            if (teacher != null && teacher != "")
+            if (TeacherId != null && TeacherId != "")
             {
-                viewModel.Classes = viewModel.Classes.Where(x => x.Teachers.Any(t => t.ApplicationUser.Id == teacher));
+                viewModel.Classes = viewModel.Classes.Where(x => x.Teachers.Any(t => t.ApplicationUser.Id == TeacherId));
             }
 
-            if (place != null)
+            if (PlaceId != null)
             {
-                viewModel.Classes = viewModel.Classes.Where(x => x.Place.Id == place);
+                viewModel.Classes = viewModel.Classes.Where(x => x.Place.Id == PlaceId);
             }
 
             if (skillLevel != null)

@@ -183,6 +183,31 @@
         },
         minLength: 1
     });
+
+    $('#performanceevent').autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: '@Url.Action("Search", "Event")',
+                data: { searchString: request.term },
+                dataType: 'json',
+                type: 'GET',
+                success: function (data) {
+                    response($.map(data, function (item) {
+                        return {
+                            label: item.Name,
+                            value: item.Id
+                        }
+                    }));
+                }
+            })
+        },
+        select: function (event, ui) {
+            $('#performanceevent').val(ui.item.label);
+            $('#NewPerformance_EventId').val(ui.item.value);
+            return false;
+        },
+        minLength: 1
+    });
 </script>
 }
 
@@ -562,7 +587,6 @@
                     @using (Html.BeginForm("AddAudition", "Team", FormMethod.Post, new { @id = "addauditionform", @class = "main" }))
                     {
                         @Html.HiddenFor(x => x.NewAudition.TeamId, new { @Value = Model.Team.Id })
-                        @Html.HiddenFor(x => x.NewAudition.Name, new { @Value = "Audition" })
                         <div class="text-right" style="padding-bottom: 10px;">
                             <input type="submit" value="Save" class="btn btn-primary" />
                             <input id="btncancelaudition" type="button" class="btn btn-primary" value="Cancel" />
@@ -657,10 +681,7 @@
                                     Start Time
                                 </th>
                                 <th>
-                                    End Time
-                                </th>
-                                <th>
-                                    Location
+                                    Event/Location
                                 </th>
                                 <th>
                                 </th>
@@ -676,9 +697,10 @@
                                     @(((DateTime)r.StartTime).ToShortTimeString())
                                 </td>
                                 <td>
-                                    @(((DateTime)r.EndTime).ToShortTimeString())
-                                </td>
-                                <td>
+                                    @if (r.Event != null)
+                                    {
+                                        @r.Event.Name<br />
+                                    }
                                     @r.Place.Name<br />
                                     @r.Place.Address<br />
                                     @r.Place.City, @r.Place.State @r.Place.Zip
@@ -697,7 +719,6 @@
                     @using (Html.BeginForm("AddPerformance", "Team", FormMethod.Post, new { @id = "addperformanceform", @class = "main" }))
                     {
                         @Html.HiddenFor(x => x.NewPerformance.TeamId, new { @Value = Model.Team.Id })
-                        @Html.HiddenFor(x => x.NewPerformance.Name, new { @Value = "Performance" })
                         <div class="text-right" style="padding-bottom: 10px;">
                             <input type="submit" value="Save" class="btn btn-primary" />
                             <input id="btncancelperformance" type="button" class="btn btn-primary" value="Cancel" />
@@ -739,38 +760,29 @@
                         </dl>
                         <dl class="dl-horizontal">
                             <dt>
-                                @Html.LabelFor(model => model.NewPerformance.EndTime, htmlAttributes: new { @class = "control-label col-md-2" })
-                            </dt>
-                            <dd class="timepicker" id="tpdd">
-                                @Html.DropDownList("PerformanceEndHour", new SelectList(new List<SelectListItem>
-                                                {
-                                                    new SelectListItem { Text = "01", Value = "1" },
-                                                    new SelectListItem { Text = "02", Value = "2" },
-                                                    new SelectListItem { Text = "03", Value = "3" },
-                                                    new SelectListItem { Text = "04", Value = "4" },
-                                                    new SelectListItem { Text = "05", Value = "5" },
-                                                    new SelectListItem { Text = "06", Value = "6" },
-                                                    new SelectListItem { Text = "07", Value = "7" },
-                                                    new SelectListItem { Text = "08", Value = "8" },
-                                                    new SelectListItem { Text = "09", Value = "9" },
-                                                    new SelectListItem { Text = "10", Value = "10" },
-                                                    new SelectListItem { Text = "11", Value = "11" },
-                                                    new SelectListItem { Text = "12", Value = "12" }
-                                                    }, "Value", "Text", null), new { @class = "form-control time hour", style = "width: 70px; display: inline;" })
-                                @Html.DropDownList("PerformanceEndMinute", new SelectList(new List<string> { "00", "15", "30", "45" }), new { @class = "form-control time minute", style = "width: 70px; display: inline;" })
-                                @Html.DropDownList("PerformanceEndAMPM", new SelectList(new List<string>() { "AM", "PM" }), new { @class = "form-control time ampm", style = "width: 70px; display: inline;" })
-                                @Html.HiddenFor(m => m.NewPerformance.EndTime, new { @class = "timeelement", @Value = "1/1/2000 1:00 AM" })
-                                @Html.ValidationMessageFor(model => model.NewPerformance.EndTime, "", new { @class = "text-danger" })
-                            </dd>
-                        </dl>
-                        <dl class="dl-horizontal">
-                            <dt>
                                 @Html.LabelFor(model => model.NewPerformance.PlaceId, htmlAttributes: new { @class = "control-label col-md-2" })
                             </dt>
                             <dd>
                                 @Html.HiddenFor(m => m.NewPerformance.PlaceId)
-                                <input type="text" id="performanceplace" placeholder="Type in a Place" required class="form-control" />
+                                <input type="text" id="performanceplace" placeholder="Search for a Place" required class="form-control" />
                                 @Html.ValidationMessageFor(model => model.NewPerformance.PlaceId, "", new { @class = "text-danger" })
+                            </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                OR
+                            </dt>
+                            <dd>
+                            </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.LabelFor(model => model.NewPerformance.EventId, htmlAttributes: new { @class = "control-label col-md-2" })
+                            </dt>
+                            <dd>
+                                @Html.HiddenFor(m => m.NewPerformance.EventId)
+                                <input type="text" id="performanceevent" placeholder="Search for an Event" required class="form-control" />
+                                @Html.ValidationMessageFor(model => model.NewPerformance.EventId, "", new { @class = "text-danger" })
                             </dd>
                         </dl>
                     }

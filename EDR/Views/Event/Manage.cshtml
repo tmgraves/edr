@@ -496,6 +496,15 @@
                             <th>
                                 Ticket Type
                             </th>
+                            <th>
+                                Purchase Limit
+                            </th>
+                            <th>
+                                Valid From
+                            </th>
+                            <th>
+                                Valid To
+                            </th>
                             <th class="text-center">
                                 Sold
                             </th>
@@ -509,6 +518,15 @@
                             <td>
                                 @(String.Format("{0:N0}", i.Quantity) + " @ " + String.Format("{0:C}", i.Price))
                             </td>
+                            <td>
+                                @i.Limit
+                            </td>
+                            <td>
+                                @i.Start
+                            </td>
+                            <td>
+                                @i.End
+                            </td>
                             <td class="text-center">
                                 @i.UserTickets.Sum(t => t.EventRegistrations.Count())
                             </td>
@@ -518,6 +536,39 @@
                         </tr>
                     }
                 </table>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body ">
+                <h3>Registrations</h3>
+                @foreach(var i in Model.Event.EventInstances.Where(i => i.DateTime <= DateTime.Today).OrderByDescending(i => i.DateTime))
+                {
+                    @i.DateTime.ToShortDateString()
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Name
+                                </th>
+                            </tr>
+                        </thead>
+                        @foreach (var r in i.EventRegistrations)
+                        {
+                            <tr>
+                                <td>
+                                    @r.User.FullName
+                                </td>
+                            </tr>
+                        }
+                        <tfoot>
+                            <tr>
+                                <td>
+                                    Total: @i.EventRegistrations.Count()
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                }
             </div>
         </div>
     </div>

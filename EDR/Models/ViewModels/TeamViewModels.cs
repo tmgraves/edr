@@ -31,7 +31,10 @@ namespace EDR.Models.ViewModels
 
     public class TeamCreateViewModel : TeamBaseViewModel
     {
-
+        public TeamCreateViewModel()
+        {
+            Team = new Team();
+        }
     }
 
     public class TeamDeleteViewModel : TeamBaseViewModel

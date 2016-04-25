@@ -9,6 +9,66 @@
 
 <h1 class="page-header">Find a Class/Workshop</h1>
 
+@section Scripts
+{
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/foolproof")
+    @Scripts.Render("~/bundles/jqueryUI")
+
+<script type="text/javascript">
+    $('#placesearch').autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: '@Url.Action("Search", "Place")',
+                data: { searchString: request.term },
+                dataType: 'json',
+                type: 'GET',
+                success: function (data) {
+                    response($.map(data, function (item) {
+                        return {
+                            label: item.Name,
+                            value: item.Id
+                        }
+                    }));
+                }
+            })
+        },
+        select: function (event, ui) {
+            $('#placesearch').val(ui.item.label);
+            $('#PlaceId').val(ui.item.value);
+            return false;
+        },
+        minLength: 1
+    });
+
+    $('#teachersearch').autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: '@Url.Action("Search", "Teacher")',
+                data: { searchString: request.term },
+                dataType: 'json',
+                type: 'GET',
+                success: function (data) {
+                    response($.map(data, function (item) {
+                        return {
+                            label: item.Name,
+                            value: item.Id
+                        }
+                    }));
+                }
+            })
+        },
+        select: function (event, ui) {
+            $('#teachersearch').val(ui.item.label);
+            $('#TeacherId').val(ui.item.value);
+            return false;
+        },
+        minLength: 1
+    });
+</script>
+}
+
 @using (Html.BeginForm("Learn", "Home", FormMethod.Get))
 {
     @Html.Hidden("NELat", 0)
@@ -51,10 +111,12 @@
             </div>
             <div class="row" style="margin-top: 5px;">
                 <div class="form-group">
-                    @Html.LabelFor(model => model.Places, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                    @Html.Label("Place:", htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
                     <div class="col-md-8 col-lg-8">
-                        @Html.DropDownList("place", new SelectList(Model.Places.OrderBy(p => p.Name), "Id", "Name", Model.PlaceId), "All", new { @class = "form-control col-lg-6 col-md-6" })
-                        @Html.ValidationMessageFor(model => model.Places, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(m => m.PlaceId)
+                        <input type="text" id="placesearch" placeholder="Search for a Place" class="form-control" />
+                        @*@Html.DropDownList("place", new SelectList(Model.Places.OrderBy(p => p.Name), "Id", "Name", Model.PlaceId), "All", new { @class = "form-control col-lg-6 col-md-6" })
+                        @Html.ValidationMessageFor(model => model.Places, "", new { @class = "text-danger" })*@
                     </div>
                 </div>
             </div>
@@ -62,8 +124,10 @@
                 <div class="form-group">
                     @Html.LabelFor(model => model.Teachers, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
                     <div class="col-md-8 col-lg-8">
-                        @Html.DropDownList("teacher", new SelectList(Model.Teachers.OrderBy(t => t.ApplicationUser.FullName), "ApplicationUser.Id", "ApplicationUser.FullName", Model.TeacherId), "All", new { @class = "form-control col-lg-6 col-md-6" })
-                        @Html.ValidationMessageFor(model => model.Teachers, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(m => m.TeacherId)
+                        <input type="text" id="teachersearch" placeholder="Search for a Teacher" class="form-control" />
+                        @*@Html.DropDownList("teacher", new SelectList(Model.Teachers.OrderBy(t => t.ApplicationUser.FullName), "ApplicationUser.Id", "ApplicationUser.FullName", Model.TeacherId), "All", new { @class = "form-control col-lg-6 col-md-6" })
+                        @Html.ValidationMessageFor(model => model.Teachers, "", new { @class = "text-danger" })*@
                     </div>
                 </div>
             </div>

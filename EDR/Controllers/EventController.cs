@@ -190,6 +190,12 @@ namespace EDR.Controllers
             return View(model);
         }
 
+        public JsonResult Search(string searchString)
+        {
+            var events = DataContext.Events.Where(e => e.StartDate >= DateTime.Today && (e.Name + " " + e.Description).Contains(searchString)).Select(s => new { Id = s.Id, Name = s.Name + " - " + s.Place.Address + " " + s.Place.City + ", " + s.Place.State + " " + s.Place.Zip }).ToList();
+            return Json(events, JsonRequestBehavior.AllowGet);
+        }
+
         protected void UpdateFacebookEvent(Event rEvent)
         {
             var evt = FacebookHelper.GetEvent(rEvent.FacebookId, rEvent.Creator.FacebookToken);

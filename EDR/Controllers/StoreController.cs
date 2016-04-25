@@ -116,12 +116,12 @@ namespace EDR.Controllers
 
                 if (ticket.SchoolId != null)
                 {
-                    return RedirectToAction("View", "School", new { id = ticket.SchoolId });
+                    return RedirectToAction("Manage", "School", new { id = ticket.SchoolId });
                 }
                 else
                 {
                     var evt = DataContext.Events.Single(e => e.Id == ticket.EventId);
-                    return RedirectToAction("View", "Event", new { id = ticket.EventId, eventType = evt is Class ? EDR.Enums.EventType.Class : Enums.EventType.Social });
+                    return RedirectToAction("Manage", "Event", new { id = ticket.EventId, eventType = evt is Class ? EDR.Enums.EventType.Class : Enums.EventType.Social });
                 }
             }
             else

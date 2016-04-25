@@ -1,4 +1,4 @@
-﻿@model IEnumerable<EDR.Models.School>
+﻿@model EDR.Models.ViewModels.ListSchoolViewModel
 
 @{
     ViewBag.Title = "All Schools";
@@ -9,16 +9,151 @@
 <p>
     @Html.ActionLink("Create New School", "Create")
 </p>
+
+<style>
+    .map_canvas {
+        width: 100%;
+        height: 200px;
+    }
+</style>
+
+@section Scripts
+{
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/foolproof")
+    @Scripts.Render("~/bundles/jqueryUI")
+    @Scripts.Render("~/bundles/GeoComplete")
+
+    <script type="text/javascript">
+
+        $('#Style').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '@Url.Action("Search", "DanceStyle")',
+                    data: { searchString: request.term },
+                    dataType: 'json',
+                    type: 'GET',
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return {
+                                label: item.Name,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+            select: function (event, ui) {
+                $('#Style').val(ui.item.label);
+                $('#DanceStyleId').val(ui.item.value);
+                return false;
+            },
+            minLength: 1
+        });
+
+        $('#Teacher').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '@Url.Action("Search", "Teacher")',
+                    data: { searchString: request.term },
+                    dataType: 'json',
+                    type: 'GET',
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return {
+                                label: item.Name,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+            select: function (event, ui) {
+                $('#Teacher').val(ui.item.label);
+                $('#TeacherId').val(ui.item.value);
+                return false;
+            },
+            minLength: 1
+        });
+    </script>
+}
+
+<script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="../../Scripts/jquery.geocomplete.js"></script>
+<script>
+    $(function () {
+        $("#Location").geocomplete({
+            map: ".map_canvas",
+            details: "form",
+            types: ["geocode", "establishment"],
+        });
+
+        //$("#find").click(function () {
+        //    $("#geocomplete").trigger("geocode");
+        //});
+    });
+</script>
+
+@using (Html.BeginForm("List", "School", FormMethod.Get))
+{
+    @Html.HiddenFor(m => m.SearchAddress.Latitude, new { Name = "lat" })
+    @Html.HiddenFor(m => m.SearchAddress.Longitude, new { Name = "lng" })
+    @Html.Hidden("NELat", 0)
+    @Html.Hidden("NELng", 0)
+    @Html.Hidden("SWLat", 0)
+    @Html.Hidden("SWLng", 0)
+    @Html.Hidden("CenterLat", 0)
+    @Html.Hidden("CenterLng", 0)
+    @Html.Hidden("Zoom", 0)
+    <div class="row col-lg-12 col-md-12">
+        <div class="col-lg-6 col-md-6">
+            <div class="row">
+                <div class="form-group">
+                    @Html.Label("Location:", htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                    <div class="col-md-8 col-lg-8">
+                        @Html.TextBoxFor(m => m.Location, new { placeholder = "Search for a Location", @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 5px;">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.DanceStyleId, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                    <div class="col-md-8 col-lg-8">
+                        @Html.HiddenFor(m => m.DanceStyleId)
+                        @Html.TextBoxFor(m => m.Style, new { placeholder="Search for a Dance Style", @class="form-control" } )
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 5px;">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TeacherId, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                    <div class="col-md-8 col-lg-8">
+                        @Html.HiddenFor(m => m.TeacherId)
+                        @Html.TextBoxFor(m => m.Teacher, new { placeholder = "Search for a Teacher", @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row col-lg-12 col-md-12" style="margin: 5px;">
+        <input type="submit" value="Search Classes" class="btn btn-warning" />
+    </div>
+}
+
+<div class="map_canvas"></div>
+
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Name)
+            @Html.Display("School Name")
         </th>
         <th></th>
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
+@foreach (var item in Model.Schools) {
     <tr>
         <td>
             @Html.DisplayFor(modelItem => item.Name)

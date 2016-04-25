@@ -26,7 +26,7 @@
         map = new google.maps.Map(document.getElementById('map-canvas'),
             mapOptions);
 
-        @if (Model.Location == null)
+        @if (Model.Location == null || Model.Location.Latitude == 0)
         {
             <text>
         // Try W3C Geolocation (Preferred)

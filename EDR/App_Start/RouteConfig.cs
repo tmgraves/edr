@@ -39,13 +39,15 @@ namespace EDR
             routes.MapRoute(
                 name: "Generic",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional },
+                namespaces: new[] { "EDR.Controllers" }
             );
 
             routes.MapRoute(
                 name: "GenericNoID",
                 url: "{controller}/{action}",
-                defaults: new { controller = "Home", action = "Index" }
+                defaults: new { controller = "Home", action = "Index" },
+                namespaces: new[] { "EDR.Controllers" }
             );
 
             routes.MapRoute(

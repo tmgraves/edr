@@ -14,9 +14,21 @@ namespace EDR.Controllers
     public class SchoolController : BaseController
     {
         // GET: School
-        public ActionResult List()
+        public ActionResult List(ListSchoolViewModel model)
         {
-            var model = DataContext.Schools.ToList();
+            model.Schools = DataContext.Schools
+                                .Include("Teachers.ApplicationUser")
+                                .Include("Classes.DanceStyles")
+                                .AsQueryable();
+            if (model.DanceStyleId != null)
+            {
+                model.Schools = model.Schools.Where(s => s.Classes.Any(c => c.DanceStyles.Select(st => st.Id).Contains((int)model.DanceStyleId)));
+            }
+            if (model.TeacherId != null)
+            {
+                model.Schools = model.Schools.Where(s => s.Teachers.Select(t => t.ApplicationUser.Id).Contains(model.TeacherId));
+            }
+            model.Schools = model.Schools.ToList();
             return View(model);
         }
 
@@ -88,6 +100,7 @@ namespace EDR.Controllers
                         .Include("Owners.ApplicationUser")
                         .Include("Teachers")
                         .Include("Teachers.ApplicationUser")
+                        .Include("Teams")
                         .FirstOrDefault());
             model.Member = DataContext.OrganizationMembers.Where(m => m.OrganizationId == id && m.UserId == userid && m.Admin).FirstOrDefault();
             return View(model);
@@ -106,13 +119,14 @@ namespace EDR.Controllers
                             .Where(s => s.Id == id)
                             .Include("Members")
                             .Include("Members.User")
-                            .Include("Classes")
+                            .Include("Classes.EventInstances.EventRegistrations")
                             .Include("Tickets")
                             .Include("Tickets.Event")
                             .Include("Owners")
                             .Include("Owners.ApplicationUser")
                             .Include("Teachers")
                             .Include("Teachers.ApplicationUser")
+                            .Include("Teams")
                             .FirstOrDefault());
                 return View(model);
             }
@@ -194,6 +208,7 @@ namespace EDR.Controllers
             //return RedirectToAction("View", new { id = schoolId });
         }
 
+        [Authorize]
         public ActionResult Join(int id)
         {
             var userid = User.Identity.GetUserId();
@@ -203,6 +218,18 @@ namespace EDR.Controllers
                 DataContext.SaveChanges();
             }
             return RedirectToAction("View", new { id = id });
+        }
+
+        [Authorize(Roles = "Teacher,Owner")]
+        [HttpPost]
+        public ActionResult AddMember(ManageSchoolViewModel model)
+        {
+            if (DataContext.OrganizationMembers.Where(m => m.OrganizationId == model.School.Id && m.UserId == model.NewMemberId).Count() == 0)
+            {
+                DataContext.OrganizationMembers.Add(new OrganizationMember() { OrganizationId = model.School.Id, UserId = model.NewMemberId, Admin = false });
+                DataContext.SaveChanges();
+            }
+            return RedirectToAction("Manage", new { id = model.School.Id });
         }
 
         //// GET: School

@@ -169,6 +169,7 @@ namespace EDR.Models
         //  public ICollection<EventTicket> EventTickets { get; set; }
         public ICollection<EventInstance> EventInstances { get; set; }
         public ICollection<Ticket> Tickets { get; set; }
+        public ICollection<Performance> Performances { get; set; }
     }
 
     public class EventInstance : Entity
@@ -267,21 +268,12 @@ namespace EDR.Models
         public Event Event { get; set; }
         //public ICollection<EventTicket> EventTickets { get; set; }
         public ICollection<UserTicket> UserTickets { get; set; }
-    }
-
-    public class Performance : Event
-    {
-        public int? TeamId { get; set; }
-        [ForeignKey("TeamId")]
-        public Team Team { get; set; }
-    }
-
-    public class Audition : Event
-    {
-        [Required]
-        public int TeamId { get; set; }
-        [ForeignKey("TeamId")]
-        public Team Team { get; set; }
+        [Display(Name = "Purchase Limit")]
+        public int? Limit { get; set; }
+        [Display(Name = "Valid From")]
+        public DateTime? Start { get; set; }
+        [Display(Name = "Valid To")]
+        public DateTime? End { get; set; }
     }
 
     //public class EventTicketPlaceholder

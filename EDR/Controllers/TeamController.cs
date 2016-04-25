@@ -48,6 +48,7 @@ namespace EDR.Controllers
                             .Include("Rehearsals.Place")
                             .Include("Auditions.Place")
                             .Include("Performances.Place")
+                            .Include("Performances.Event.Place")
                             .Single(e => e.Id == id);
             if (model.Team == null)
             {
@@ -71,9 +72,11 @@ namespace EDR.Controllers
         }
 
         // GET: Team/Create
-        public ActionResult Create()
+        public ActionResult Create(int? schoolId)
         {
-            return View();
+            var model = new TeamCreateViewModel();
+            model.Team.SchoolId = schoolId;
+            return View(model);
         }
 
         // POST: Team/Create
@@ -192,7 +195,6 @@ namespace EDR.Controllers
         {
             try
             {
-                model.NewAudition.EndDate = model.NewAudition.StartDate;
                 DataContext.Auditions.Add(model.NewAudition);
                 DataContext.SaveChanges();
                 return RedirectToAction("Manage", new { id = model.NewAudition.TeamId });
@@ -242,7 +244,6 @@ namespace EDR.Controllers
         {
             try
             {
-                model.NewPerformance.EndDate = model.NewPerformance.StartDate;
                 DataContext.Performances.Add(model.NewPerformance);
                 DataContext.SaveChanges();
                 return RedirectToAction("Manage", new { id = model.NewPerformance.TeamId });

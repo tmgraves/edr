@@ -2,6 +2,7 @@
 using EDR.Utilities.Validators;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
@@ -56,6 +57,7 @@ namespace EDR.Models.ViewModels
     public class ManageSchoolViewModel
     {
         public School School { get; set; }
+        public string NewMemberId { get; set; }
 
         public ManageSchoolViewModel()
         {
@@ -65,5 +67,18 @@ namespace EDR.Models.ViewModels
         {
             School = school;
         }
+    }
+
+    public class ListSchoolViewModel
+    {
+        public IEnumerable<School> Schools { get; set; }
+        [Display(Name = "Teacher:")]
+        public string TeacherId { get; set; }
+        [Display(Name = "Dance Style:")]
+        public int? DanceStyleId { get; set; }
+        public Address SearchAddress { get; set; }
+        public string Location { get; set; }
+        public string Teacher { get; set; }
+        public string Style { get; set; }
     }
 }

@@ -119,6 +119,12 @@ namespace EDR.Controllers
             return viewModel;
         }
 
+        public JsonResult Search(string searchString)
+        {
+            var teachers = DataContext.Teachers.Where(t => (t.ApplicationUser.FirstName + " " + t.ApplicationUser.LastName).Contains(searchString)).Select(s => new { Id = s.ApplicationUser.Id, Name = s.ApplicationUser.FirstName + " " + s.ApplicationUser.LastName }).ToList();
+            return Json(teachers, JsonRequestBehavior.AllowGet);
+        }
+
         //[Authorize]
         //public ActionResult View(string username)
         //{

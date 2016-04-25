@@ -136,5 +136,11 @@ namespace EDR.Controllers
 
             return PartialView("_DanceStyleListPartial", DataContext.DanceStyles);
         }
+
+        public JsonResult Search(string searchString)
+        {
+            var styles = DataContext.DanceStyles.Where(s => s.Name.Contains(searchString)).Select(s => new { Id = s.Id, Name = s.Name }).ToList();
+            return Json(styles, JsonRequestBehavior.AllowGet);
+        }
     }
 }
