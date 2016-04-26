@@ -13,6 +13,11 @@
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/foolproof")
     @Scripts.Render("~/bundles/jqueryUI")
+    @Scripts.Render("~/bundles/GeoComplete")
+
+<script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+@*<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="../../Scripts/jquery.geocomplete.js"></script>*@
 
 <script type="text/javascript">
     $('#newmember').autocomplete({
@@ -39,6 +44,78 @@
         },
         minLength: 1
     });
+
+    $(function () {
+        $("#newplace").geocomplete({
+            details: "form",
+            types: ["geocode", "establishment"],
+        })
+        .bind("geocode:result", function (event, result) {
+            $('#School_Latitude').prop("value", result.geometry.location.lat());
+            $('#School_Longitude').prop("value", result.geometry.location.lng());
+            var street_num;
+            var street_name;
+            $.each(result.address_components, function (i, address_component)
+            {
+                //alert(address_component.types[0]);
+                //alert(address_component.long_name);
+                if (address_component.types[0] == "street_number")
+                {
+                    street_num = address_component.long_name;
+                }
+                else if (address_component.types[0] == "route") {
+                    street_name = address_component.long_name;
+                }
+                else if (address_component.types[0] == "locality") {
+                    $('#School_City').prop("value", address_component.long_name);
+                }
+                else if (address_component.types[0] == "administrative_area_level_1") {
+                    $('#School_State').prop("value", address_component.long_name);
+                }
+                else if (address_component.types[0] == "postal_code") {
+                    $('#School_Zip').prop("value", address_component.long_name);
+                }
+                else if (address_component.types[0] == "country") {
+                    $('#School_Country').prop("value", address_component.long_name);
+                }
+            });
+            //alert(street_num + " " + street_name);
+            $('#School_Address').prop("value", street_num + " " + street_name);
+            //  console.log(result);
+        });
+    });
+
+    $(function () {
+        $('#saveform.main').valid();
+
+        $('#btnEdit').click(function () {
+            $('#viewdiv').hide();
+            $('#editdiv').show();
+            try {
+                var valid = $('#saveform.main').valid();
+            }
+            catch (err) {
+                document.getElementById("demo").innerHTML = err.message;
+            }
+        });
+        $('#btncanceledit').click(function () {
+            $('#viewdiv').show();
+            $('#editdiv').hide();
+        });
+
+        //$('#saveform.main').validate;
+
+        //$('#saveform.main').submit(function () {
+        //    var valid = $('#saveform.main').valid();
+
+        //    if (valid) {
+        //        return true;
+        //    }
+        //    else {
+        //        return false;
+        //    }
+        //});
+    });
 </script>
 }
 
@@ -46,95 +123,171 @@
     <div class="col-lg-6 col-md-6">
         <div class="panel panel-default">
             <div class="panel-body ">
-                <dl class="dl-horizontal">
-                    <dt>
-                        @Html.DisplayNameFor(model => model.School.Name)
-                    </dt>
+                <div id="viewdiv">
+                    <div class="text-right">
+                        <input id="btnEdit" type="button" class="btn btn-primary" value="Edit" />
+                    </div>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.School.Name)
+                        </dt>
 
-                    <dd>
-                        @Html.DisplayFor(model => model.School.Name)
-                    </dd>
+                        <dd>
+                            @Html.DisplayFor(model => model.School.Name)
+                        </dd>
 
-            <dt>
-                @Html.DisplayNameFor(model => model.School.Description)
-            </dt>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.School.Description)
+                        </dt>
 
-            <dd>
-                @Html.DisplayFor(model => model.School.Description)
-            </dd>
+                        <dd>
+                            @Html.DisplayFor(model => model.School.Description)
+                        </dd>
 
-            <dt>
-                @Html.DisplayNameFor(model => model.School.FacebookLink)
-            </dt>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.School.FacebookLink)
+                        </dt>
 
-            <dd>
-                @Html.DisplayFor(model => model.School.FacebookLink)
-            </dd>
+                        <dd>
+                            @Html.DisplayFor(model => model.School.FacebookLink)
+                        </dd>
 
-            @*<dt>
-        @Html.DisplayNameFor(model => model.School.Public)
-    </dt>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.School.Address)
+                        </dt>
 
-    <dd>
-        @Html.DisplayFor(model => model.School.Public)
-    </dd>
+                        <dd>
+                            @Html.DisplayFor(model => model.School.Address)
+                        </dd>
 
-    <dt>
-        @Html.DisplayNameFor(model => model.School.DateStarted)
-    </dt>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.School.Address2)
+                        </dt>
 
-    <dd>
-        @Html.DisplayFor(model => model.School.DateStarted)
-    </dd>
+                        <dd>
+                            @Html.DisplayFor(model => model.School.Address2)
+                        </dd>
 
-    <dt>
-        @Html.DisplayNameFor(model => model.School.Address)
-    </dt>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.School.City)
+                        </dt>
 
-    <dd>
-        @Html.DisplayFor(model => model.School.Address)
-    </dd>
+                        <dd>
+                            @Html.DisplayFor(model => model.School.City)
+                        </dd>
 
-    <dt>
-        @Html.DisplayNameFor(model => model.School.Address2)
-    </dt>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.School.State)
+                        </dt>
 
-    <dd>
-        @Html.DisplayFor(model => model.School.Address2)
-    </dd>
+                        <dd>
+                            @Html.DisplayFor(model => model.School.State)
+                        </dd>
 
-    <dt>
-        @Html.DisplayNameFor(model => model.School.City)
-    </dt>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.School.Zip)
+                        </dt>
 
-    <dd>
-        @Html.DisplayFor(model => model.School.City)
-    </dd>
+                        <dd>
+                            @Html.DisplayFor(model => model.School.Zip)
+                        </dd>
 
-    <dt>
-        @Html.DisplayNameFor(model => model.School.State)
-    </dt>
+                        <dt>
+                            @Html.DisplayNameFor(model => model.School.Country)
+                        </dt>
 
-    <dd>
-        @Html.DisplayFor(model => model.School.State)
-    </dd>
+                        <dd>
+                            @Html.DisplayFor(model => model.School.Country)
+                        </dd>
+                    </dl>
+                </div>
+                <div id="editdiv" style="display: none;">
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                    @using (Html.BeginForm("Save", "School", FormMethod.Post, new { @id = "saveform", @class = "main" }))
+                    {
+                        @Html.HiddenFor(m => m.School.Id)
+                        @Html.HiddenFor(model => model.School.Address)
+                        @Html.HiddenFor(model => model.School.Address2)
+                        @Html.HiddenFor(model => model.School.City)
+                        @Html.HiddenFor(model => model.School.State)
+                        @Html.HiddenFor(model => model.School.Zip)
+                        @Html.HiddenFor(model => model.School.Country)
+                        @Html.HiddenFor(model => model.School.Latitude)
+                        @Html.HiddenFor(model => model.School.Longitude)
+                        @Html.HiddenFor(model => model.School.DateStarted)
+                        <div class="text-right" style="padding-bottom: 10px;">
+                            <input type="submit" id="btnsave" value="Save" class="btn btn-primary" />
+                            <input id="btncanceledit" type="button" class="btn btn-primary" value="Cancel" />
+                        </div>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.LabelFor(model => model.School.Name, htmlAttributes: new { @class = "control-label" })
+                            </dt>
+                            <dd>
+                                @Html.EditorFor(model => model.School.Name, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.School.Name, "", new { @class = "text-danger" })
+                            </dd>
+                        </dl>
 
-    <dt>
-        @Html.DisplayNameFor(model => model.School.Zip)
-    </dt>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.LabelFor(model => model.School.Description, htmlAttributes: new { @class = "control-label" })
+                            </dt>
+                            <dd>
+                                @Html.EditorFor(model => model.School.Description, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.School.Description, "", new { @class = "text-danger" })
+                            </dd>
+                        </dl>
 
-    <dd>
-        @Html.DisplayFor(model => model.School.Zip)
-    </dd>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.LabelFor(model => model.School.FacebookLink, htmlAttributes: new { @class = "control-label" })
+                            </dt>
+                            <dd>
+                                @Html.EditorFor(model => model.School.FacebookLink, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.School.FacebookLink, "", new { @class = "text-danger" })
+                            </dd>
+                        </dl>
 
-    <dt>
-        @Html.DisplayNameFor(model => model.School.Country)
-    </dt>
+                        @*<dl class="dl-horizontal">
+                            <dt>
+                                @Html.LabelFor(model => model.School.Public, htmlAttributes: new { @class = "control-label" })
+                            </dt>
+                            <dd>
+                                @Html.EditorFor(model => model.School.Public)
+                                @Html.ValidationMessageFor(model => model.School.Public, "", new { @class = "text-danger" })
+                            </dd>
+                        </dl>
 
-    <dd>
-        @Html.DisplayFor(model => model.School.Country)
-    </dd>*@
-                </dl>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.LabelFor(model => model.School.DateStarted, htmlAttributes: new { @class = "control-label" })
+                            </dt>
+                            <dd>
+                                @Html.EditorFor(model => model.School.DateStarted, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.School.DateStarted, "", new { @class = "text-danger" })
+                            </dd>
+                        </dl>*@
+
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.Label("New Place", htmlAttributes: new { @class = "control-label" })
+                            </dt>
+                            <dd>
+                                <input id="newplace" type="text" placeholder="Search for a new Location" class="form-control" />
+                            </dd>
+                        </dl>
+
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.Label("Location", htmlAttributes: new { @class = "control-label" })
+                            </dt>
+                            <dd>
+                                @Html.TextArea("Location", Model.School.Address + "\n" + Model.School.City + ", " + Model.School.State + " " + Model.School.Zip + "\n" + Model.School.Country, 6, 50, new { @class = "form-control", Name = "formatted_address", @readonly = true })
+                            </dd>
+                        </dl>
+                    }
+                </div>
             </div>
         </div>
     </div>

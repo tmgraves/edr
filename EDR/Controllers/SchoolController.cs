@@ -136,6 +136,16 @@ namespace EDR.Controllers
             }
         }
 
+        [Authorize(Roles = "Teacher,Owner")]
+        [HttpPost]
+        // POST: School
+        public ActionResult Save(ManageSchoolViewModel model)
+        {
+            DataContext.Entry(model.School).State = EntityState.Modified;
+            DataContext.SaveChanges();
+            return RedirectToAction("Manage", new { id = model.School.Id });
+        }
+
         // GET: School
         [Authorize(Roles = "Teacher,Owner")]
         public ActionResult Delete(int id)

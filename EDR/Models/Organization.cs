@@ -22,8 +22,7 @@ namespace EDR.Models
         public string Address { get; set; }
         public string Address2 { get; set; }
         public string City { get; set; }
-        [Range(1, 50000, ErrorMessage = "Select a State")]
-        public State State { get; set; }
+        public string State { get; set; }
         public string Zip { get; set; }
         public string Country { get; set; }
         [ScaffoldColumn(false)]
