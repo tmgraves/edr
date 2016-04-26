@@ -179,6 +179,9 @@ namespace EDR.Models
         public virtual Event Event { get; set; }
         public DateTime DateTime { get; set; }
         public ICollection<EventRegistration> EventRegistrations { get; set; }
+        public int? PlaceId { get; set; }
+        [ForeignKey("PlaceId")]
+        public virtual Place Place { get; set; }
     }
 
     public class LinkedFacebookObject : Entity

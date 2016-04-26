@@ -26,7 +26,6 @@
     @Scripts.Render("~/bundles/GeoComplete")
 
     <script type="text/javascript">
-
         $('#Style').autocomplete({
             source: function (request, response) {
                 $.ajax({
@@ -83,17 +82,124 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script src="../../Scripts/jquery.geocomplete.js"></script>
 <script>
+    //$(function () {
+    //    $("#Location").geocomplete({
+    //        map: ".map_canvas",
+    //        details: "form",
+    //        types: ["geocode", "establishment"],
+    //    });
+
+    //    //$("#find").click(function () {
+    //    //    $("#geocomplete").trigger("geocode");
+    //    //});
+    //});
+
+    //  Map Marker Containers
+    var markers = [];
+    var infowindows = [];
+    //  Map Marker Containers
+
     $(function () {
+        // Initialize the plugin.
+        //  $("#Location").geocomplete({ map: ".map_canvas" });
         $("#Location").geocomplete({
             map: ".map_canvas",
             details: "form",
             types: ["geocode", "establishment"],
         });
 
-        //$("#find").click(function () {
-        //    $("#geocomplete").trigger("geocode");
-        //});
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(success);
+        }
+
+        function success(position) {
+            var loc = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+            $("#Location").geocomplete("find", loc.lat() + ", " + loc.lng());
+            $("#Location").geocomplete("map").setZoom(2);
+        }
+
+        //  Build up the Markers
+        var map = $("#Location").geocomplete("map");
+        @foreach(var s in Model.Schools)
+        {
+            <text>
+            var marker = new google.maps.Marker({
+            position: new google.maps.LatLng('@s.Latitude', @s.Longitude),
+            map: map,
+            title: '@s.Name',
+            icon: "http://maps.google.com/mapfiles/kml/pal2/icon2.png"
+            });
+
+            attachMessage(map, marker, '@s.Id', '@s.Name', '@s.Address', '@(s.City + ", " + s.State + " " + s.Zip)', '<a href="@Url.Action("View", "School", new { id = s.Id })">' + '@s.Name' + '</a>');
+
+            markers.push(marker);
+            </text>
+        }
+
+        //// Get the map and set a new zoom level.
+        //var map = $("#Location").geocomplete("map");
+        //map.setZoom(20);
     });
+
+    function attachMessage(map, marker, num, placeName, address, address2, link) {
+        var message = marker.title;
+        var infowindow = new google.maps.InfoWindow({
+            disableAutoPan: false,
+            maxWidth: 200,
+            content: '<div id="content" class="text-center" style="width: 200px;">' +
+            '<div id="siteNotice">' +
+            '</div>' +
+            '<div style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
+            link +
+            '</div>' +
+            '<div id="bodyContent">' +
+            '<p>' +
+            address + '<br>' +
+            address2 +
+            '</p>' +
+            '</div>' +
+            '</div>'
+        });
+        infowindows.push(infowindow);
+
+        //  infowindow.open(map, marker);
+
+        google.maps.event.addListener(marker, 'click', function () {
+            clearWindows();
+            infowindow.open(map, marker);
+        });
+    }
+
+    function clearWindows() {
+        for (var i = 0; i < infowindows.length; i++) {
+            infowindows[i].close();
+        }
+    }
+
+
+    //$(function () {
+    //    $("#Location").geocomplete({
+    //        map: ".map_canvas",
+    //        location: "Los Angeles, CA",
+    //        details: "form",
+    //        types: ["geocode", "establishment"],
+    //    });
+    //});
+
+    //if (navigator.geolocation) {
+    //    navigator.geolocation.getCurrentPosition(success);
+    //    function success(position) {
+    //        var loc = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+    //        $("#geocomplete").trigger("geocode");
+    //    }
+    //} else {
+    //    $("#Location").geocomplete({
+    //        map: ".map_canvas",
+    //        details: "form",
+    //        types: ["geocode", "establishment"],
+    //    });
+    //}
+
 </script>
 
 @using (Html.BeginForm("List", "School", FormMethod.Get))

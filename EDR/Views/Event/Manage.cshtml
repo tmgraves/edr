@@ -13,7 +13,35 @@
 {
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/foolproof")
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    @Scripts.Render("~/bundles/jqueryUI")
+
 <script type="text/javascript">
+    $('#placesearch').autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: '@Url.Action("Search", "Place")',
+                data: { searchString: request.term },
+                dataType: 'json',
+                type: 'GET',
+                success: function (data) {
+                    response($.map(data, function (item) {
+                        return {
+                            label: item.Name,
+                            value: item.Id
+                        }
+                    }));
+                }
+            })
+        },
+        select: function (event, ui) {
+            $('#placesearch').val(ui.item.label);
+            $('#Id').val(ui.item.value);
+            return false;
+        },
+        minLength: 1
+    });
+
     $(function () {
         //alert("here");
         //var form = $('#saveform2.main');
@@ -209,18 +237,42 @@
 
                     <dl class="dl-horizontal">
                         <dt>
-                            @Html.DisplayNameFor(model => model.Event.FacebookLink)
+                            @Html.DisplayNameFor(model => model.Event.Place.Name)
                         </dt>
                         <dd>
-                            @Html.DisplayFor(model => model.Event.FacebookLink)
+                            @Html.DisplayFor(model => model.Event.Place.Name)
                         </dd>
                     </dl>
                     <dl class="dl-horizontal">
                         <dt>
-                            @Html.DisplayNameFor(model => model.Event.Description)
+                            @Html.DisplayNameFor(model => model.Event.Place.Address)
                         </dt>
                         <dd>
-                            @Html.DisplayFor(model => model.Event.Description)
+                            @Html.DisplayFor(model => model.Event.Place.Address)
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Event.Place.City)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Event.Place.City)
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Event.Place.State)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Event.Place.State)
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Event.Place.Zip)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Event.Place.Zip)
                         </dd>
                     </dl>
                 </div>
@@ -390,6 +442,54 @@
                             @Html.ValidationMessageFor(model => model.Event.Description, "", new { @class = "text-danger" })
                         </dd>
                     </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.Label("New Place")
+                        </dt>
+                        <dd>
+                            <input type="text" id="placesearch" placeholder="Search for a Place" required />
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Event.Place.Name)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Event.Place.Name)
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Event.Place.Address)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Event.Place.Address)
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Event.Place.City)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Event.Place.City)
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Event.Place.State)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Event.Place.State)
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Event.Place.Zip)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Event.Place.Zip)
+                        </dd>
+                    </dl>
                     }
                 </div>
             </div>
@@ -454,6 +554,9 @@
                                 <th>
                                     Date
                                 </th>
+                                <th>
+                                    Place
+                                </th>
                                 <th class="text-center">
                                     Attendees
                                 </th>
@@ -466,6 +569,11 @@
                             <tr>
                                 <td>
                                     @i.DateTime.ToLongDateString()
+                                </td>
+                                <td>
+                                    @i.Place.Name<br />
+                                    @i.Place.Address<br />
+                                    @i.Place.City, @i.Place.State @i.Place.Zip
                                 </td>
                                 <td class="text-center">
                                     @i.EventRegistrations.Count()
