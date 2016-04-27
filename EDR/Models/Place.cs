@@ -7,15 +7,13 @@ namespace EDR.Models
     {
         [Required(ErrorMessage = "Place Name is Required")]
         public string Name { get; set; }
-        [Required]
         public string Address { get; set; }
         public string Address2 { get; set; }
-        [Required]
         public string City { get; set; }
-        [Required]
         [Range(1, 50000, ErrorMessage = "Select a State")]
         public State? State { get; set; }
-        [Required(ErrorMessage = "Zipcode is Required")]
+        [Display(Name = "State")]
+        public string StateName { get; set; }
         public string Zip { get; set; }
         public string Country { get; set; }
         public double Latitude { get; set; }
@@ -27,6 +25,9 @@ namespace EDR.Models
         public PlaceType PlaceType { get; set; }
         public string FacebookId { get; set; }
         public bool Public { get; set; }
+        public string GooglePlaceId { get; set; }
+        public string GoogleUrl { get; set; }
+        public double? GoogleRating { get; set; }
 
         public virtual ICollection<Event> Events { get; set; }
         public virtual ICollection<Review> Reviews { get; set; }

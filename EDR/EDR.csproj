@@ -782,6 +782,7 @@
     <Content Include="Views\Team\Create.cshtml" />
     <Content Include="Views\Team\Manage.cshtml" />
     <Content Include="Views\Home\Test3.cshtml" />
+    <Content Include="Views\Event\ManageInstance.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

@@ -173,7 +173,10 @@ namespace EDR.Controllers
             var model = new EventManageViewModel(DataContext.Events
                     .Include("Tickets.UserTickets.EventRegistrations")
                     .Include("EventInstances.EventRegistrations.User")
+                    .Include("Place")
                     .Single(e => e.Id == id));
+            model.NewPlace = new Place();
+            model.NewPlace.PlaceType = PlaceType.OtherPlace;
 
             if (model.Event is Class)
             {
@@ -183,6 +186,25 @@ namespace EDR.Controllers
             model.EventType = eventType;
 
             if (model.Event == null)
+            {
+                return HttpNotFound();
+            }
+
+            return View(model);
+        }
+
+        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        public ActionResult ManageInstance(int id)
+        {
+            var model = new EventInstanceManageViewModel();
+            model.Instance = DataContext.EventInstances
+                                    .Include("Event")
+                                    .Include("EventRegistrations.User")
+                                    .Single(s => s.Id == id);
+            model.NewPlace = new Place();
+            model.NewPlace.PlaceType = PlaceType.OtherPlace;
+
+            if (model.Instance.Event == null)
             {
                 return HttpNotFound();
             }
@@ -1717,7 +1739,7 @@ namespace EDR.Controllers
 
                         while (sdate <= edate)
                         {
-                            cls.EventInstances.Add(new EventInstance() { Event = cls, DateTime = sdate });
+                            cls.EventInstances.Add(new EventInstance() { Event = cls, DateTime = sdate, PlaceId = cls.PlaceId, StartTime = cls.StartTime, EndTime = cls.EndTime });
                             sdate = ApplicationUtility.GetNextDate(sdate, model.Event.Frequency, (int)model.Event.Interval, model.Event.Day, sdate.AddDays(1), model.Event.MonthDays);
                         }
                     }
@@ -1790,7 +1812,7 @@ namespace EDR.Controllers
 
                         while (sdate <= edate)
                         {
-                            soc.EventInstances.Add(new EventInstance() { Event = soc, DateTime = sdate });
+                            soc.EventInstances.Add(new EventInstance() { Event = soc, DateTime = sdate, PlaceId = soc.PlaceId, StartTime = soc.StartTime, EndTime = soc.EndTime });
                             sdate = ApplicationUtility.GetNextDate(sdate, model.Event.Frequency, (int)model.Event.Interval, model.Event.Day, sdate.AddDays(1), model.Event.MonthDays);
                         }
                     }
@@ -2042,6 +2064,17 @@ namespace EDR.Controllers
                     evnt.EndTime = model.Event.EndTime;
                     evnt.FacebookLink = model.Event.FacebookLink;
 
+                    if (model.NewPlace.GooglePlaceId != null)
+                    {
+                        var place = DataContext.Places.Where(p => p.GooglePlaceId == model.NewPlace.GooglePlaceId).FirstOrDefault();
+                        if (place == null)
+                        {
+                            place = DataContext.Places.Add(model.NewPlace);
+                            DataContext.SaveChanges();
+                        }
+                        evnt.PlaceId = place.Id;
+                    }
+
                     DataContext.Entry(evnt).State = EntityState.Modified; 
                     DataContext.SaveChanges();
 
@@ -2058,7 +2091,7 @@ namespace EDR.Controllers
                         {
                             while (sdate <= edate)
                             {
-                                DataContext.EventInstances.Add(new EventInstance() { EventId = evnt.Id, DateTime = sdate });
+                                DataContext.EventInstances.Add(new EventInstance() { EventId = evnt.Id, DateTime = sdate, PlaceId = evnt.PlaceId, StartTime = evnt.StartTime, EndTime = evnt.EndTime });
                                 sdate = ApplicationUtility.GetNextDate(sdate, model.Event.Frequency, (int)model.Event.Interval, model.Event.Day, sdate.AddDays(1), model.Event.MonthDays);
                             }
                         }

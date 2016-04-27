@@ -15,6 +15,8 @@
     @Scripts.Render("~/bundles/foolproof")
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
     @Scripts.Render("~/bundles/jqueryUI")
+    @Scripts.Render("~/bundles/GeoComplete")
+<script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
 
 <script type="text/javascript">
     $('#placesearch').autocomplete({
@@ -121,6 +123,54 @@
             {
                 return false;
             }
+        });
+    });
+
+    $(function () {
+        $("#newplace").geocomplete({
+            details: "form",
+            types: ["geocode", "establishment"],
+        })
+        .bind("geocode:result", function (event, result) {
+            $('#NewPlace_Latitude').prop("value", result.geometry.location.lat());
+            $('#NewPlace_Longitude').prop("value", result.geometry.location.lng());
+
+            $('#NewPlace_Name').prop("value", result.name);
+            $('#NewPlace_GooglePlaceId').prop("value", result.place_id);
+            $('#NewPlace_GoogleUrl').prop("value", result.url);
+            $('#NewPlace_Website').prop("value", result.website);
+            $('#NewPlace_GoogleRating').prop("value", result.rating);
+            //$.each(result.reviews, function (i, review) {
+            //    alert(review.text);
+            //});
+            var street_num;
+            var street_name;
+            $.each(result.address_components, function (i, address_component) {
+
+                //alert(address_component.types[0]);
+                //alert(address_component.long_name);
+                if (address_component.types[0] == "street_number") {
+                    street_num = address_component.long_name;
+                }
+                else if (address_component.types[0] == "route") {
+                    street_name = address_component.long_name;
+                }
+                else if (address_component.types[0] == "locality") {
+                    $('#NewPlace_City').prop("value", address_component.long_name);
+                }
+                else if (address_component.types[0] == "administrative_area_level_1") {
+                    $('#NewPlace_StateName').prop("value", address_component.long_name);
+                }
+                else if (address_component.types[0] == "postal_code") {
+                    $('#NewPlace_Zip').prop("value", address_component.long_name);
+                }
+                else if (address_component.types[0] == "country") {
+                    $('#NewPlace_Country').prop("value", address_component.long_name);
+                }
+            });
+            //alert(street_num + " " + street_name);
+            $('#NewPlace_Address').prop("value", street_num + " " + street_name);
+            //  console.log(result);
         });
     });
 </script>
@@ -237,42 +287,13 @@
 
                     <dl class="dl-horizontal">
                         <dt>
-                            @Html.DisplayNameFor(model => model.Event.Place.Name)
+                            @Html.Label("Location", htmlAttributes: new { @class = "control-label" })
                         </dt>
                         <dd>
-                            @Html.DisplayFor(model => model.Event.Place.Name)
-                        </dd>
-                    </dl>
-                    <dl class="dl-horizontal">
-                        <dt>
-                            @Html.DisplayNameFor(model => model.Event.Place.Address)
-                        </dt>
-                        <dd>
-                            @Html.DisplayFor(model => model.Event.Place.Address)
-                        </dd>
-                    </dl>
-                    <dl class="dl-horizontal">
-                        <dt>
-                            @Html.DisplayNameFor(model => model.Event.Place.City)
-                        </dt>
-                        <dd>
-                            @Html.DisplayFor(model => model.Event.Place.City)
-                        </dd>
-                    </dl>
-                    <dl class="dl-horizontal">
-                        <dt>
-                            @Html.DisplayNameFor(model => model.Event.Place.State)
-                        </dt>
-                        <dd>
-                            @Html.DisplayFor(model => model.Event.Place.State)
-                        </dd>
-                    </dl>
-                    <dl class="dl-horizontal">
-                        <dt>
-                            @Html.DisplayNameFor(model => model.Event.Place.Zip)
-                        </dt>
-                        <dd>
-                            @Html.DisplayFor(model => model.Event.Place.Zip)
+                            @Html.ActionLink(Model.Event.Place.Name, "Details", "Place", new { id = Model.Event.Place.Id }, null)<br />
+                            @Model.Event.Place.Address<br />
+                            @Model.Event.Place.City, @Model.Event.Place.StateName @Model.Event.Place.Zip<br />
+                            @Model.Event.Place.Country
                         </dd>
                     </dl>
                 </div>
@@ -442,52 +463,44 @@
                             @Html.ValidationMessageFor(model => model.Event.Description, "", new { @class = "text-danger" })
                         </dd>
                     </dl>
+                        @Html.HiddenFor(model => model.NewPlace.Name, new { @Value = "New Place" })
+                        @Html.HiddenFor(model => model.NewPlace.Address)
+                        @Html.HiddenFor(model => model.NewPlace.Address2)
+                        @Html.HiddenFor(model => model.NewPlace.City)
+                        @Html.HiddenFor(model => model.NewPlace.StateName)
+                        @Html.HiddenFor(model => model.NewPlace.Zip)
+                        @Html.HiddenFor(model => model.NewPlace.Country)
+                        @Html.HiddenFor(model => model.NewPlace.Latitude)
+                        @Html.HiddenFor(model => model.NewPlace.Longitude)
+                        @Html.HiddenFor(model => model.NewPlace.GooglePlaceId)
+                        @Html.HiddenFor(model => model.NewPlace.GoogleUrl)
+                        @Html.HiddenFor(model => model.NewPlace.Website)
+                        @Html.HiddenFor(model => model.NewPlace.GoogleRating)
+                        @*@Html.TextBoxFor(model => model.NewPlace.PlaceType, new { @Value = EDR.Enums.PlaceType.OtherPlace })*@
                     <dl class="dl-horizontal">
                         <dt>
-                            @Html.Label("New Place")
+                            @Html.Label("New Location", htmlAttributes: new { @class = "control-label" })
                         </dt>
                         <dd>
-                            <input type="text" id="placesearch" placeholder="Search for a Place" required />
+                            <input id="newplace" type="text" placeholder="Search for a new Location" class="form-control" />
                         </dd>
                     </dl>
+
                     <dl class="dl-horizontal">
                         <dt>
-                            @Html.DisplayNameFor(model => model.Event.Place.Name)
+                            @Html.Label("Type of Location", htmlAttributes: new { @class = "control-label" })
                         </dt>
                         <dd>
-                            @Html.DisplayFor(model => model.Event.Place.Name)
+                            @Html.EnumDropDownListFor(model => model.NewPlace.PlaceType, new { @class = "form-control" })
                         </dd>
                     </dl>
+
                     <dl class="dl-horizontal">
                         <dt>
-                            @Html.DisplayNameFor(model => model.Event.Place.Address)
+                            @Html.Label("Location", htmlAttributes: new { @class = "control-label" })
                         </dt>
                         <dd>
-                            @Html.DisplayFor(model => model.Event.Place.Address)
-                        </dd>
-                    </dl>
-                    <dl class="dl-horizontal">
-                        <dt>
-                            @Html.DisplayNameFor(model => model.Event.Place.City)
-                        </dt>
-                        <dd>
-                            @Html.DisplayFor(model => model.Event.Place.City)
-                        </dd>
-                    </dl>
-                    <dl class="dl-horizontal">
-                        <dt>
-                            @Html.DisplayNameFor(model => model.Event.Place.State)
-                        </dt>
-                        <dd>
-                            @Html.DisplayFor(model => model.Event.Place.State)
-                        </dd>
-                    </dl>
-                    <dl class="dl-horizontal">
-                        <dt>
-                            @Html.DisplayNameFor(model => model.Event.Place.Zip)
-                        </dt>
-                        <dd>
-                            @Html.DisplayFor(model => model.Event.Place.Zip)
+                            @Html.TextArea("Location", Model.Event.Place.Address + "\n" + Model.Event.Place.City + ", " + Model.Event.Place.StateName + " " + Model.Event.Place.Zip + "\n" + Model.Event.Place.Country, 4, 50, new { @class = "form-control", Name = "formatted_address", @readonly = true })
                         </dd>
                     </dl>
                     }
@@ -496,49 +509,35 @@
         </div>
         <div class="panel panel-default">
             <div class="panel-body ">
-                <section>
-                    <h3>Place</h3>
-                    <dl class="dl-horizontal">
-                        <dt>
-                            @Html.DisplayNameFor(model => model.Event.Place.Name)
-                        </dt>
-                        <dd>
-                            @Html.DisplayFor(model => model.Event.Place.Name)
-                        </dd>
-                    </dl>
-                    <dl class="dl-horizontal">
-                        <dt>
-                            @Html.DisplayNameFor(model => model.Event.Place.Address)
-                        </dt>
-                        <dd>
-                            @Html.DisplayFor(model => model.Event.Place.Address)
-                        </dd>
-                    </dl>
-                    <dl class="dl-horizontal">
-                        <dt>
-                            @Html.DisplayNameFor(model => model.Event.Place.City)
-                        </dt>
-                        <dd>
-                            @Html.DisplayFor(model => model.Event.Place.City)
-                        </dd>
-                    </dl>
-                    <dl class="dl-horizontal">
-                        <dt>
-                            @Html.DisplayNameFor(model => model.Event.Place.State)
-                        </dt>
-                        <dd>
-                            @Html.DisplayFor(model => model.Event.Place.State)
-                        </dd>
-                    </dl>
-                    <dl class="dl-horizontal">
-                        <dt>
-                            @Html.DisplayNameFor(model => model.Event.Place.Zip)
-                        </dt>
-                        <dd>
-                            @Html.DisplayFor(model => model.Event.Place.Zip)
-                        </dd>
-                    </dl>
-                </section>
+                <h3>Registrations</h3>
+                @foreach (var i in Model.Event.EventInstances.Where(i => i.DateTime <= DateTime.Today).OrderByDescending(i => i.DateTime))
+                {
+                    @i.DateTime.ToShortDateString()
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Name
+                                </th>
+                            </tr>
+                        </thead>
+                        @foreach (var r in i.EventRegistrations)
+                        {
+                            <tr>
+                                <td>
+                                    @r.User.FullName
+                                </td>
+                            </tr>
+                        }
+                        <tfoot>
+                            <tr>
+                                <td>
+                                    Total: @i.EventRegistrations.Count()
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                }
             </div>
         </div>
     </div>
@@ -568,24 +567,28 @@
                         {
                             <tr>
                                 <td>
-                                    @i.DateTime.ToLongDateString()
+                                    <strong>@i.DateTime.ToLongDateString()</strong><br />
                                 </td>
                                 <td>
-                                    @i.Place.Name<br />
-                                    @i.Place.Address<br />
-                                    @i.Place.City, @i.Place.State @i.Place.Zip
+                                    @Html.ActionLink(i.Place.Name, "Details", "Place", new { id = i.Place.Id }, new { @style = "white-space: pre-line; display: block; width: 150px;" })
                                 </td>
                                 <td class="text-center">
                                     @i.EventRegistrations.Count()
                                 </td>
                                 <td>
+                                    <a class="btn text-info" title="Edit this Instance" href="@Url.Action("ManageInstance", "Event", new { id = i.Id })">
+                                        <i class="glyphicon glyphicon-edit"></i>
+                                    </a>
                                     @if (i.EventRegistrations.Count() == 0)
                                     {
-                                        @Html.ActionLink("Delete", "DeleteInstance", "Event", new { id = i.Id }, null)
+                                        @*@Html.ActionLink("Delete", "DeleteInstance", "Event", new { id = i.Id }, null)*@
+                                        <a class="btn text-danger" title="Delete" href="@Url.Action("DeleteInstance", "Event", new { id = i.Id })" onclick="return confirm('Are you sure you want to DELETE this Instance?')">
+                                            <i class="glyphicon glyphicon-remove-circle"></i>
+                                        </a>
                                     }
                                     else
                                     {
-                                        <span title="Instance has Registrations">Delete</span>
+                                        <a class="btn"><i title="Instance has Registrations and can't be Deleted'" class="glyphicon glyphicon-remove-circle"></i></a>
                                     }
                                 </td>
                             </tr>
@@ -644,39 +647,6 @@
                         </tr>
                     }
                 </table>
-            </div>
-        </div>
-        <div class="panel panel-default">
-            <div class="panel-body ">
-                <h3>Registrations</h3>
-                @foreach(var i in Model.Event.EventInstances.Where(i => i.DateTime <= DateTime.Today).OrderByDescending(i => i.DateTime))
-                {
-                    @i.DateTime.ToShortDateString()
-                    <table class="table table-condensed">
-                        <thead>
-                            <tr>
-                                <th>
-                                    Name
-                                </th>
-                            </tr>
-                        </thead>
-                        @foreach (var r in i.EventRegistrations)
-                        {
-                            <tr>
-                                <td>
-                                    @r.User.FullName
-                                </td>
-                            </tr>
-                        }
-                        <tfoot>
-                            <tr>
-                                <td>
-                                    Total: @i.EventRegistrations.Count()
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                }
             </div>
         </div>
     </div>

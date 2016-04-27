@@ -272,8 +272,8 @@ namespace EDR.Models.ViewModels
         [Range(0, 59)]
         public int EndMinute { get; set; }
         public string EndAMPM { get; set; }
-
         public int? SchoolId { get; set; }
+        public Place NewPlace { get; set; }
 
         public EventManageViewModel()
         {
@@ -296,6 +296,12 @@ namespace EDR.Models.ViewModels
                 EndAMPM = ((DateTime)evnt.EndTime).ToString("tt");
             }
         }
+    }
+
+    public class EventInstanceManageViewModel
+    {
+        public EventInstance Instance { get; set; }
+        public Place NewPlace { get; set; }
     }
 
     public class EventFacebookPictureContainer : EventBaseViewModel

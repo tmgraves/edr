@@ -178,6 +178,8 @@ namespace EDR.Models
         [ForeignKey("EventId")]
         public virtual Event Event { get; set; }
         public DateTime DateTime { get; set; }
+        public DateTime? StartTime { get; set; }
+        public DateTime? EndTime { get; set; }
         public ICollection<EventRegistration> EventRegistrations { get; set; }
         public int? PlaceId { get; set; }
         [ForeignKey("PlaceId")]

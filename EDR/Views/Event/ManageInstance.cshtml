@@ -1,0 +1,161 @@
+﻿@model EDR.Models.ViewModels.EventInstanceManageViewModel
+
+@{
+    ViewBag.Title = "ManageInstance";
+}
+@section Scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/foolproof")
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    @Scripts.Render("~/bundles/jqueryUI")
+    @Scripts.Render("~/bundles/GeoComplete")
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+
+<script>
+    $(function () {
+        //alert("here");
+        //var form = $('#saveform2.main');
+        //alert(form.prop('id'));
+        //try {
+        //    var valid = form.valid();
+        //    alert(valid);
+        //}
+        //catch (err) {
+        //    document.getElementById("demo").innerHTML = err.message;
+        //}
+        $('#saveform.main').valid();
+
+        $('#btnEdit').click(function () {
+            $('#viewdiv').hide();
+            $('#editdiv').show();
+            try {
+                var valid = $('#saveform.main').valid();
+            }
+            catch (err) {
+                document.getElementById("demo").innerHTML = err.message;
+            }
+        });
+        $('#btncanceledit').click(function () {
+            $('#viewdiv').show();
+            $('#editdiv').hide();
+        });
+        $('#saveform.main').validate;
+    });
+</script>
+}
+
+<h2>Manage Instance</h2>
+<p>
+    @Html.ActionLink("Back to Event", "Manage", new { id = Model.Instance.EventId, eventType = Model.Instance.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social })
+</p>
+<hr />
+<div class="container-fluid">
+    <div class="col-lg-6 col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-body ">
+                <h3>Details</h3>
+                <div id="viewdiv">
+                    <div class="text-right">
+                        <input id="btnEdit" type="button" class="btn btn-primary" value="Edit" />
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.DisplayName("Event")
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.Instance.Event.Name)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayName("Place")
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.Instance.Place.Name)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.Instance.DateTime)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.Instance.DateTime)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.Instance.StartTime)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.Instance.StartTime)
+                            </dd>
+
+                            <dt>
+                                @Html.DisplayNameFor(model => model.Instance.EndTime)
+                            </dt>
+
+                            <dd>
+                                @Html.DisplayFor(model => model.Instance.EndTime)
+                            </dd>
+
+                        </dl>
+                    </div>
+                </div>
+                <div id="editdiv" style="display: none;">
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                    @using (Html.BeginForm("SaveInstance", "Event", FormMethod.Post, new { @id = "saveform", @class = "main" }))
+                    {
+                        <div class="text-right" style="padding-bottom: 10px;">
+                            <input type="submit" id="btnsave" value="Save" class="btn btn-primary" />
+                            <input id="btncanceledit" type="button" class="btn btn-primary" value="Cancel" />
+                        </div>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.DisplayNameFor(model => model.Instance.DateTime)
+                            </dt>
+                            <dd>
+                                @Html.EditorFor(model => model.Instance.DateTime, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Instance.DateTime, "", new { @class = "text-danger" })
+                            </dd>
+                        </dl>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-body ">
+                <h3>Registrations</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>
+                                Name
+                            </th>
+                            <th>
+                            </th>
+                        </tr>
+                    </thead>
+                    @foreach (var r in Model.Instance.EventRegistrations)
+                    {
+                        <tr>
+                            <td>
+                                @r.User.FullName
+                            </td>
+                            <td>
+                                <a class="btn btn-sm btn-danger" title="Delete" href="@Url.Action("DeleteRegistration", "Event", new { id = r.Id })" onclick="return confirm('Are you sure you want to DELETE this Registration?')">
+                                    Remove
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                    <tfoot>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
