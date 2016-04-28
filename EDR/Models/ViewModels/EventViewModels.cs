@@ -84,17 +84,17 @@ namespace EDR.Models.ViewModels
         [Display(Name = "Price")]
         public decimal? TicketPrice { get; set; }
 
-        [Range(1, 12)]
-        public int StartHour { get; set; }
-        [Range(0, 59)]
-        public int StartMinute { get; set; }
-        public string StartAMPM { get; set; }
+        //[Range(1, 12)]
+        //public int StartHour { get; set; }
+        //[Range(0, 59)]
+        //public int StartMinute { get; set; }
+        //public string StartAMPM { get; set; }
 
-        [Range(1, 12)]
-        public int EndHour { get; set; }
-        [Range(0, 59)]
-        public int EndMinute { get; set; }
-        public string EndAMPM { get; set; }
+        //[Range(1, 12)]
+        //public int EndHour { get; set; }
+        //[Range(0, 59)]
+        //public int EndMinute { get; set; }
+        //public string EndAMPM { get; set; }
 
         public EventCreateViewModel()
         {
@@ -261,17 +261,6 @@ namespace EDR.Models.ViewModels
 
     public class EventManageViewModel : EventBaseViewModel
     {
-        [Range(1, 12)]
-        public int StartHour { get; set; }
-        [Range(0, 59)]
-        public int StartMinute { get; set; }
-        public string StartAMPM { get; set; }
-
-        [Range(1, 12)]
-        public int EndHour { get; set; }
-        [Range(0, 59)]
-        public int EndMinute { get; set; }
-        public string EndAMPM { get; set; }
         public int? SchoolId { get; set; }
         public Place NewPlace { get; set; }
 
@@ -281,20 +270,6 @@ namespace EDR.Models.ViewModels
         public EventManageViewModel(Event evnt)
         {
             Event = evnt;
-
-            if (evnt.StartTime != null)
-            {
-                StartHour = Convert.ToInt32(((DateTime)evnt.StartTime).ToString("hh"));
-                StartMinute = ((DateTime)evnt.StartTime).Minute;
-                StartAMPM = ((DateTime)evnt.StartTime).ToString("tt");
-            }
-
-            if (evnt.EndTime != null)
-            {
-                EndHour = Convert.ToInt32(((DateTime)evnt.EndTime).ToString("hh"));
-                EndMinute = ((DateTime)evnt.EndTime).Minute;
-                EndAMPM = ((DateTime)evnt.EndTime).ToString("tt");
-            }
         }
     }
 

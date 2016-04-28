@@ -13,8 +13,6 @@
     <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
     @Scripts.Render("~/bundles/TimePicker")
     @Styles.Render("~/Content/TimePickercss")
-@Scripts.Render("~/bundles/GeoComplete")
-<script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
 
 <script>
     $.validator.setDefaults({
@@ -57,22 +55,32 @@
     //    var valid = $('#saveform.main').valid();
     //});
 
-    function CheckDates() {
-        var start = $('.timeelement.begintime').val();
-        var end = $('.timeelement.endtime').val();
+    //function CheckDates() {
+    //    var start = $('.timeelement.begintime').val();
+    //    var end = $('.timeelement.endtime').val();
 
-        if (new Date(start) > new Date(end)) {
-            $('#EndTimevalidationMessage').show();
-            return false;
-        }
-        else {
-            $('#EndTimevalidationMessage').hide();
-            return true;
-        }
-    }
+    //    if (new Date(start) > new Date(end)) {
+    //        $('#EndTimevalidationMessage').show();
+    //        return false;
+    //    }
+    //    else {
+    //        $('#EndTimevalidationMessage').hide();
+    //        return true;
+    //    }
+    //}
     $(function () {
-        $('.start').timepicker({ 'timeFormat': 'h:i A' });
-        $('.end').timepicker({ 'timeFormat': 'h:i A', });
+        $('.start').timepicker({
+            'timeFormat': 'h:i A',
+            'step': function (i) {
+                return 15;
+            }
+        });
+        $('.end').timepicker({
+            'timeFormat': 'h:i A',
+            'step': function (i) {
+                return 15;
+            }
+        });
         $('.start').timepicker('setTime', new Date($('.timeelement.begintime').val()));
         $('.end').timepicker('setTime', new Date($('.timeelement.endtime').val()));
     });

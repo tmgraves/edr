@@ -20,8 +20,41 @@
     @Scripts.Render("~/bundles/jqueryUI")
     @Scripts.Render("~/bundles/GeoComplete")
 <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+@Scripts.Render("~/bundles/TimePicker")
+@Styles.Render("~/Content/TimePickercss")
 
 <script type="text/javascript">
+    $.validator.setDefaults({
+        ignore: ""
+    })
+    $(function () {
+        $('.start').timepicker({
+            'timeFormat': 'h:i A',
+            'step': function (i) {
+                return 15;
+            }
+        });
+        $('.end').timepicker({
+            'timeFormat': 'h:i A',
+            'step': function (i) {
+                return 15;
+            }
+        });
+        $('.start').timepicker('setTime', new Date($('.timeelement.begintime').val()));
+        $('.end').timepicker('setTime', new Date($('.timeelement.endtime').val()));
+    });
+
+    $('.timepicker').change(function () {
+        var start = $('.timeelement.begintime');
+        var end = $('.timeelement.endtime');
+
+        var time = new Date();
+        var startdt = new Date(time.getMonth().toString() + "/" + time.getDate().toString() + "/" + time.getFullYear().toString() + " " + $('.timepicker.start').val());
+        var enddt = new Date(time.getMonth().toString() + "/" + time.getDate().toString() + "/" + time.getFullYear().toString() + " " + $('.timepicker.end').val());
+        start.prop('value', startdt.toLocaleDateString() + " " + startdt.toLocaleTimeString());
+        end.prop('value', enddt.toLocaleDateString() + " " + enddt.toLocaleTimeString());
+        var val = $('#saveform.main').valid();
+    });
     $('#placesearch').autocomplete({
         source: function (request, response) {
             $.ajax({
@@ -76,9 +109,9 @@
             $('#viewdiv').show();
             $('#editdiv').hide();
         });
-        $('#saveform.main').validate;
+        //  $('#saveform.main').validate;
 
-        $('.time').change(function () {
+        @*$('.time').change(function () {
             CheckDates();
         });
 
@@ -105,27 +138,27 @@
                 $('#EndTimevalidationMessage').hide();
                 return true;
             }
-        }
+        }*@
 
         $('#saveform.main').submit(function () {
             var valid = $('#saveform.main').valid();
 
-            if (valid)
-            {
-                var ck = CheckDates();
-                if (ck)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
+            //if (valid)
+            //{
+            //    var ck = CheckDates();
+            //    if (ck)
+            //    {
+            //        return true;
+            //    }
+            //    else
+            //    {
+            //        return false;
+            //    }
+            //}
+            //else
+            //{
+            //    return false;
+            //}
         });
     });
 
@@ -306,8 +339,8 @@
                     {
                     @Html.HiddenFor(x => x.EventType)
                     @Html.HiddenFor(x => x.Event.Id)
-                    @Html.HiddenFor(x => x.Event.StartTime)
-                    @Html.HiddenFor(x => x.Event.EndTime)
+                    @*@Html.HiddenFor(x => x.Event.StartTime)
+                    @Html.HiddenFor(x => x.Event.EndTime)*@
                     <div class="text-right" style="padding-bottom: 10px;">
                         <input type="submit" id="btnsave" value="Save" class="btn btn-primary" />
                         <input id="btncanceledit" type="button" class="btn btn-primary" value="Cancel" />
@@ -344,6 +377,26 @@
                             @Html.DisplayNameFor(model => model.Event.StartTime)
                         </dt>
                         <dd>
+                            <p><input id="start" type="text" class="start timepicker form-control" /></p>
+                            @Html.HiddenFor(m => m.Event.StartTime, new { @class = "timeelement begintime" })
+                            @Html.ValidationMessageFor(model => model.Event.StartTime, "", new { @class = "text-danger" })
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Event.EndTime)
+                        </dt>
+                        <dd>
+                            <p><input id="end" type="text" class="end timepicker form-control" /></p>
+                            @Html.HiddenFor(m => m.Event.EndTime, new { @class = "timeelement endtime" })
+                            @Html.ValidationMessageFor(model => model.Event.EndTime, "", new { @class = "text-danger" })
+                        </dd>
+                    </dl>
+                    @*<dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Event.StartTime)
+                        </dt>
+                        <dd>
                             @Html.DropDownListFor(m => m.StartHour, new SelectList(new List<SelectListItem>
                                                 {
                                                     new SelectListItem { Text = "01", Value = "1" },
@@ -361,7 +414,6 @@
                                                     }, "Value", "Text", null), new { @class = "form-control time", style = "width: 70px; display: inline;" })
                             @Html.DropDownListFor(m => m.StartMinute, new SelectList(new List<string> { "00", "15", "30", "45" }), new { @class = "form-control time", style = "width: 70px; display: inline;" })
                             @Html.DropDownListFor(m => m.StartAMPM, new SelectList(new List<string>() { "AM", "PM" }), new { @class = "form-control time", style = "width: 70px; display: inline;" })
-                            @*@Html.TextBoxFor(m => m.Event.StartTime, "{0:HH:mm}", htmlAttributes: new { @type = "time", @class = "form-control" })*@
                             @Html.ValidationMessageFor(model => model.Event.StartTime, "", new { @class = "text-danger" })
                         </dd>
                     </dl>
@@ -387,14 +439,12 @@
                                                     }, "Value", "Text", null), new { @class = "form-control time", style = "width: 70px; display: inline;" })
                             @Html.DropDownListFor(m => m.EndMinute, new SelectList(new List<string> { "00", "15", "30", "45" }), new { @class = "form-control time", style = "width: 70px; display: inline;" })
                             @Html.DropDownListFor(m => m.EndAMPM, new SelectList(new List<string>() { "AM", "PM" }), new { @class = "form-control time", style = "width: 70px; display: inline;" })
-
-                            @*@Html.TextBoxFor(m => m.Event.EndTime, "{0:HH:mm}", htmlAttributes: new { @type = "time", @class = "form-control" })*@
                             @Html.ValidationMessageFor(model => model.Event.EndTime, "", new { @class = "text-danger" })
                             <p>
                                 <span id="EndTimevalidationMessage" class="text-danger" style="display: none;">End Time Must Be After Start Time</span>
                             </p>
                         </dd>
-                    </dl>
+                    </dl>*@
                     <dl class="dl-horizontal">
                         <dt>
                             Repeat Event?

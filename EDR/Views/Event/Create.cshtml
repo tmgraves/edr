@@ -12,8 +12,99 @@
 {
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/foolproof")
+@Scripts.Render("~/bundles/jqueryUI")
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+@Scripts.Render("~/bundles/GeoComplete")
+<script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+@Scripts.Render("~/bundles/TimePicker")
+@Styles.Render("~/Content/TimePickercss")
+
 
 <script type="text/javascript">
+    $.validator.setDefaults({
+        ignore: ""
+    })
+    
+    $(function () {
+        $('.start').timepicker({
+            'timeFormat': 'h:i A',
+            'step': function (i) {
+                return 15;
+            }
+        });
+        $('.end').timepicker({
+            'timeFormat': 'h:i A',
+            'step': function (i) {
+                return 15;
+            }
+        });
+        $('.start').timepicker('setTime', new Date($('.timeelement.begintime').val()));
+        $('.end').timepicker('setTime', new Date($('.timeelement.endtime').val()));
+    });
+
+    $('.timepicker').change(function () {
+        var start = $('.timeelement.begintime');
+        var end = $('.timeelement.endtime');
+
+        var time = new Date();
+        var startdt = new Date(time.getMonth().toString() + "/" + time.getDate().toString() + "/" + time.getFullYear().toString() + " " + $('.timepicker.start').val());
+        var enddt = new Date(time.getMonth().toString() + "/" + time.getDate().toString() + "/" + time.getFullYear().toString() + " " + $('.timepicker.end').val());
+        start.prop('value', startdt.toLocaleDateString() + " " + startdt.toLocaleTimeString());
+        end.prop('value', enddt.toLocaleDateString() + " " + enddt.toLocaleTimeString());
+        var val = $('#createform.main').valid();
+    });
+
+    //  New Place AutoComplete
+    $(function () {
+        $("#newplace").geocomplete({
+            details: "form",
+            types: ["geocode", "establishment"],
+        })
+        .bind("geocode:result", function (event, result) {
+            $('#Event_Place_Latitude').prop("value", result.geometry.location.lat());
+            $('#Event_Place_Longitude').prop("value", result.geometry.location.lng());
+
+            $('#Event_Place_Name').prop("value", result.name);
+            $('#Event_Place_GooglePlaceId').prop("value", result.place_id);
+            $('#Event_Place_GoogleUrl').prop("value", result.url);
+            $('#Event_Place_Website').prop("value", result.website);
+            $('#Event_Place_GoogleRating').prop("value", result.rating);
+            //$.each(result.reviews, function (i, review) {
+            //    alert(review.text);
+            //});
+            var street_num;
+            var street_name;
+            $.each(result.address_components, function (i, address_component) {
+
+                //alert(address_component.types[0]);
+                //alert(address_component.long_name);
+                if (address_component.types[0] == "street_number") {
+                    street_num = address_component.long_name;
+                }
+                else if (address_component.types[0] == "route") {
+                    street_name = address_component.long_name;
+                }
+                else if (address_component.types[0] == "locality") {
+                    $('#Event_Place_City').prop("value", address_component.long_name);
+                }
+                else if (address_component.types[0] == "administrative_area_level_1") {
+                    $('#Event_Place_StateName').prop("value", address_component.long_name);
+                }
+                else if (address_component.types[0] == "postal_code") {
+                    $('#Event_Place_Zip').prop("value", address_component.long_name);
+                }
+                else if (address_component.types[0] == "country") {
+                    $('#Event_Place_Country').prop("value", address_component.long_name);
+                }
+            });
+            //alert(street_num + " " + street_name);
+            $('#Event_Place_Address').prop("value", street_num + " " + street_name);
+            //  console.log(result);
+            $('#Event_Place_Name').valid();
+        });
+    });
+    //  New Place AutoComplete
+
     $(function () {
         function SetFirstScreen(action) {
             if (action == "New")
@@ -103,15 +194,25 @@
             $('#wizdatetimediv').hide();
         });
         $('#btndatetimenext').click(function () {
-            var form = $('#createform.main');
-            var valid = form.valid();
-            if (valid) {
-                var ck = CheckDates();
-                if (ck) {
-                    $('#wizdatetimediv').hide();
-                    $('#wizdetaildiv').show();
+            if ($('.timeelement.begintime').valid() && $('.timeelement.endtime').valid() && $('#Event_StartDate').valid() && $('#Event_EndDate').valid())
+            {
+                $('#wizdatetimediv').hide();
+                $('#wizdetaildiv').show();
+            }
+            else {
+                var val = $('#createform.main').validate();
+                for (var i = 0; i < val.errorList.length; i++) {
+                    alert(val.errorList[i].message);
                 }
             }
+
+            //var form = $('#createform.main');
+            //var val = form.validate();
+            //alert($('.timeelement.endtime').valid());
+            //if (form.valid()) {
+            //    $('#wizdatetimediv').hide();
+            //    $('#wizdetaildiv').show();
+            //}
         });
         $('#btndetailprev').click(function () {
             $('#wizdatetimediv').show();
@@ -120,7 +221,7 @@
         $('#btndetailnext').click(function () {
             var form = $('#createform.main');
             var count = $('input[name="StylesCheckboxList.PostedItems"]:checked').length;
-            var valid = form.valid();
+            var valid = true;
 
             if (count == 0)
             {
@@ -133,9 +234,17 @@
             }
 
             if (valid) {
-                $('#validationMessage').hide();
-                $('#wizlocationdiv').show();
-                $('#wizdetaildiv').hide();
+                if ($('#Event_Name').valid() && $('#SkillLevel').valid()) {
+                    $('#validationMessage').hide();
+                    $('#wizlocationdiv').show();
+                    $('#wizdetaildiv').hide();
+                }
+                else {
+                    var val = $('#createform.main').validate();
+                    for (var i = 0; i < val.errorList.length; i++) {
+                        alert(val.errorList[i].message);
+                    }
+                }
             }
         });
         $('#btnlocationprev').click(function () {
@@ -143,8 +252,7 @@
             $('#wizlocationdiv').hide();
         });
         $('#btnlocationnext').click(function () {
-            var form = $('#createform.main');
-            if (form.valid()) {
+            if ($('#Event_Place_Name').valid()) {
                 $('#wizlocationdiv').hide();
                 $('#wizticketsdiv').show();
             }
@@ -154,7 +262,7 @@
             $('#wizticketsdiv').hide();
         });
 
-        $('.time').change(function () {
+        @*$('.time').change(function () {
             CheckDates();
         });
 
@@ -181,7 +289,7 @@
                 $('#EndTimevalidationMessage').hide();
                 return true;
             }
-        }
+        }*@
     });
 
     $(function () {
@@ -216,19 +324,19 @@
         });
     });
 
-    $(function () {
-        $('#ExistingPlace').change(function () {
-            var placeid = $("#ExistingPlace option:selected").val();
-            if (placeid > 0) {
-                $('#newlocationdiv').hide();
-                $('#ordiv').hide();
-            }
-            else {
-                $('#newlocationdiv').show();
-                $('#ordiv').show();
-            }
-        });
-    });
+    //$(function () {
+    //    $('#ExistingPlace').change(function () {
+    //        var placeid = $("#ExistingPlace option:selected").val();
+    //        if (placeid > 0) {
+    //            $('#newlocationdiv').hide();
+    //            $('#ordiv').hide();
+    //        }
+    //        else {
+    //            $('#newlocationdiv').show();
+    //            $('#ordiv').show();
+    //        }
+    //    });
+    //});
 
     //$(function () {
     //    $('#UseSchoolTickets').change(function () {
@@ -541,13 +649,13 @@
         @Html.HiddenFor(x => x.Event.Interval)
         @Html.HiddenFor(x => x.Event.IsAvailable)
         @Html.HiddenFor(x => x.Event.UpdatedDate)
-        @Html.HiddenFor(m => m.Event.Place.FacebookId)
+        @*@Html.HiddenFor(m => m.Event.Place.FacebookId)
         @Html.HiddenFor(m => m.Event.Place.Public)
         @Html.HiddenFor(m => m.Event.Place.Country)
         @Html.HiddenFor(m => m.Event.Place.Longitude)
         @Html.HiddenFor(m => m.Event.Place.Latitude)
         @Html.HiddenFor(m => m.Event.Place.Filename)
-        @Html.HiddenFor(m => m.Event.Place.ThumbnailFilename)
+        @Html.HiddenFor(m => m.Event.Place.ThumbnailFilename)*@
         <div id="wizard" class="wizard" style="display: none;">
             <div id="wizeventtypediv" class="step active" title="New Event">
                 <h2>Step: Type of Event</h2>
@@ -607,6 +715,23 @@
                     </div>
                 </div>
                 <div class="row" style="margin-bottom: 5px;">
+                    @Html.LabelFor(model => model.Event.StartTime, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
+                    <div class="col-md-10 col-lg-9">
+                        <p><input id="start" type="text" class="start timepicker form-control" /></p>
+                        @Html.HiddenFor(m => m.Event.StartTime, new { @class = "timeelement begintime" })
+                        @Html.ValidationMessageFor(model => model.Event.StartTime, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row" style="margin-bottom: 5px;">
+                    @Html.LabelFor(model => model.Event.EndTime, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
+                    <div class="col-md-10 col-lg-9">
+                        <p><input id="end" type="text" class="end timepicker form-control" /></p>
+                        @Html.HiddenFor(m => m.Event.EndTime, new { @class = "timeelement endtime" })
+                        @Html.ValidationMessageFor(model => model.Event.EndTime, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                @*<div class="row" style="margin-bottom: 5px;">
                     <label class="control-label col-lg-3 col-md-2">From</label>
                     <div class="col-lg-9 col-md-10">
                         @Html.HiddenFor(m => m.Event.StartTime)
@@ -628,9 +753,6 @@
                         @Html.DropDownListFor(m => m.StartMinute, new SelectList(new List<string> { "00", "15", "30", "45" }), new { @class = "form-control time", style = "width: 70px; display: inline;" })
                         @Html.DropDownListFor(m => m.StartAMPM, new SelectList(new List<string>() { "AM", "PM" }), new { @class = "form-control time", style = "width: 70px; display: inline;" })
                         @Html.ValidationMessageFor(model => model.Event.StartTime, "", new { @class = "text-danger" })
-
-                        @*@Html.TextBoxFor(m => m.Event.StartTime, "{0:HH:mm}", htmlAttributes: new { @type = "time", @class = "form-control" })*@
-                        @*@Html.EditorFor(model => model.Event.StartTime, new { htmlAttributes = new { @class = "form-control" } })*@
                     </div>
                 </div>
                 <div class="row" style="margin-bottom: 5px;">
@@ -658,11 +780,8 @@
                         <p>
                             <span id="EndTimevalidationMessage" class="text-danger" style="display: none;">End Time Must Be After Start Time</span>
                         </p>
-
-                        @*@Html.TextBoxFor(m => m.Event.EndTime, "{0:HH:mm}", htmlAttributes: new { @type = "time", @class = "form-control" })*@
-                        @*@Html.EditorFor(model => model.Event.EndTime, new { htmlAttributes = new { @class = "form-control" } })*@
                     </div>
-                </div>
+                </div>*@
                 <div class="row" style="margin-bottom: 5px;">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                         @Html.LabelFor(model => model.Event.Recurring, htmlAttributes: new { @class = "control-label text-danger text-uppercase" })
@@ -797,7 +916,48 @@
             <div id="wizlocationdiv" class="step" style="display:none">
                 <h2>Step: Location</h2>
                 <div class="col-lg-12 col-md-12" style="margin-bottom: 5px;">
+                    @Html.HiddenFor(model => model.Event.Place.Name)
+                    @Html.HiddenFor(model => model.Event.Place.Address)
+                    @Html.HiddenFor(model => model.Event.Place.Address2)
+                    @Html.HiddenFor(model => model.Event.Place.City)
+                    @Html.HiddenFor(model => model.Event.Place.StateName)
+                    @Html.HiddenFor(model => model.Event.Place.Zip)
+                    @Html.HiddenFor(model => model.Event.Place.Country)
+                    @Html.HiddenFor(model => model.Event.Place.Latitude)
+                    @Html.HiddenFor(model => model.Event.Place.Longitude)
+                    @Html.HiddenFor(model => model.Event.Place.GooglePlaceId)
+                    @Html.HiddenFor(model => model.Event.Place.GoogleUrl)
+                    @Html.HiddenFor(model => model.Event.Place.Website)
+                    @Html.HiddenFor(model => model.Event.Place.GoogleRating)
                     @Html.HiddenFor(m => m.Event.Place.FacebookId)
+                    @Html.HiddenFor(m => m.Event.Place.Public)
+                    @Html.HiddenFor(m => m.Event.Place.Website)
+                    @Html.HiddenFor(m => m.Event.Place.FacebookLink)
+                    @Html.HiddenFor(m => m.Event.Place.Filename)
+                    @Html.HiddenFor(m => m.Event.Place.ThumbnailFilename)
+                    @*@Html.TextBoxFor(model => model.NewPlace.PlaceType, new { @Value = EDR.Enums.PlaceType.OtherPlace })*@
+                    <div class="row" style="margin-bottom: 5px;">
+                        @Html.Label("New Location", htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
+                        <div class="col-md-10 col-lg-9">
+                            <input id="newplace" type="text" placeholder="Search for a new Location" class="form-control" />
+                            @Html.ValidationMessageFor(model => model.Event.Place.Name, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom: 5px;">
+                        @Html.Label("Type of Location", htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
+                        <div class="col-md-10 col-lg-9">
+                            @Html.EnumDropDownListFor(model => model.Event.Place.PlaceType, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Event.Place.PlaceType, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom: 5px;">
+                        @Html.Label("Location", htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
+                        <div class="col-md-10 col-lg-9">
+                            @Html.TextArea("Location", Model.Event.Place.Address + "\n" + Model.Event.Place.City + ", " + Model.Event.Place.StateName + " " + Model.Event.Place.Zip + "\n" + Model.Event.Place.Country, 4, 50, new { @class = "form-control", Name = "formatted_address", @readonly = true })
+                        </div>
+                    </div>
+
+                    @*@Html.HiddenFor(m => m.Event.Place.FacebookId)
                     @Html.HiddenFor(m => m.Event.Place.Public)
                     @Html.HiddenFor(m => m.Event.Place.Country)
                     @Html.HiddenFor(m => m.Event.Place.Longitude)
@@ -905,7 +1065,7 @@
                                 </div>
                             }
                         </div>
-                    </div>
+                    </div>*@
                 </div>
                 <div class="col-md-10 col-lg-9" style="margin-top: 5px;">
                 <input id="btnlocationprev" type="button" class="prev btn btn-primary" value="Previous" />

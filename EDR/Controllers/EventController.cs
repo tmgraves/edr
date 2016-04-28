@@ -1678,24 +1678,35 @@ namespace EDR.Controllers
             }
             //  Pick a Facebook Event
 
-            int id = 0;
-            if (model.Event.PlaceId >= 0)
+            //  Create the Place
+            var place = DataContext.Places.Where(p => p.GooglePlaceId == model.Event.Place.GooglePlaceId).FirstOrDefault();
+            if (place == null)
             {
-                ModelState["Event.Place.Name"].Errors.Clear();
-                ModelState["Event.Place.Address"].Errors.Clear();
-                ModelState["Event.Place.City"].Errors.Clear();
-                ModelState["Event.Place.State"].Errors.Clear();
-                ModelState["Event.Place.Zip"].Errors.Clear();
+                place = DataContext.Places.Add(model.Event.Place);
+                DataContext.SaveChanges();
             }
+            model.Event.Place = null;
+            model.Event.PlaceId = place.Id;
+            //  Create the Place
+
+            int id = 0;
+            //if (model.Event.PlaceId >= 0)
+            //{
+            //    ModelState["Event.Place.Name"].Errors.Clear();
+            //    ModelState["Event.Place.Address"].Errors.Clear();
+            //    ModelState["Event.Place.City"].Errors.Clear();
+            //    ModelState["Event.Place.State"].Errors.Clear();
+            //    ModelState["Event.Place.Zip"].Errors.Clear();
+            //}
 
             if (ModelState.IsValid)
             {
-                if (model.Event.PlaceId == 0)
-                {
-                    var add = Geolocation.ParseAddress(model.Event.Place.Address + ", " + model.Event.Place.City + ", " + model.Event.Place.State + ", " + model.Event.Place.Zip);
-                    model.Event.Place.Latitude = add.Latitude;
-                    model.Event.Place.Longitude = add.Longitude;
-                }
+                //if (model.Event.PlaceId == 0)
+                //{
+                //    var add = Geolocation.ParseAddress(model.Event.Place.Address + ", " + model.Event.Place.City + ", " + model.Event.Place.State + ", " + model.Event.Place.Zip);
+                //    model.Event.Place.Latitude = add.Latitude;
+                //    model.Event.Place.Longitude = add.Longitude;
+                //}
 
                 if (model.EventType == EventType.Class)
                 {
@@ -1703,6 +1714,8 @@ namespace EDR.Controllers
                     cls.EventInstances = new List<EventInstance>();
                     TryUpdateModel(cls, "Event");
                     TryUpdateModel(cls);
+                    cls.Place = null;
+                    cls.PlaceId = place.Id;
                     //  TryUpdateModel(cls.EventInstances, "EventInstances");
 
                     //  Update Month Days
@@ -1725,15 +1738,16 @@ namespace EDR.Controllers
                         cls.Owners.Add(DataContext.Owners.Single(o => o.ApplicationUser.Id == userid));
                     }
                     cls.Creator = user;
-                    if (cls.PlaceId == 0)
-                    {
-                        cls.Place.Latitude = model.Event.Place.Latitude;
-                        cls.Place.Longitude = model.Event.Place.Longitude;
-                    }
-                    else
-                    {
-                        cls.Place = null;
-                    }
+
+                    //if (cls.PlaceId == 0)
+                    //{
+                    //    cls.Place.Latitude = model.Event.Place.Latitude;
+                    //    cls.Place.Longitude = model.Event.Place.Longitude;
+                    //}
+                    //else
+                    //{
+                    //    cls.Place = null;
+                    //}
 
                     cls.DanceStyles = DataContext.DanceStyles.Where(s => model.StylesCheckboxList.PostedItems.Contains(s.Id.ToString())).ToList();
 
@@ -1777,6 +1791,8 @@ namespace EDR.Controllers
                     soc.EventInstances = new List<EventInstance>();
                     TryUpdateModel(soc, "Event");
                     TryUpdateModel(soc);
+                    soc.Place = null;
+                    soc.PlaceId = place.Id;
                     //  TryUpdateModel(soc.EventInstances, "EventInstances");
 
                     //  Update Month Days
@@ -1799,15 +1815,15 @@ namespace EDR.Controllers
                         soc.Owners.Add(DataContext.Owners.Single(o => o.ApplicationUser.Id == userid));
                     }
                     soc.Creator = user;
-                    if (soc.PlaceId == 0)
-                    {
-                        soc.Place.Latitude = model.Event.Place.Latitude;
-                        soc.Place.Longitude = model.Event.Place.Longitude;
-                    }
-                    else
-                    {
-                        soc.Place = null;
-                    }
+                    //if (soc.PlaceId == 0)
+                    //{
+                    //    soc.Place.Latitude = model.Event.Place.Latitude;
+                    //    soc.Place.Longitude = model.Event.Place.Longitude;
+                    //}
+                    //else
+                    //{
+                    //    soc.Place = null;
+                    //}
                     soc.DanceStyles = DataContext.DanceStyles.Where(s => model.StylesCheckboxList.PostedItems.Contains(s.Id.ToString())).ToList();
 
                     //  Add Recurring Events

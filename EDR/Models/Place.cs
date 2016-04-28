@@ -41,6 +41,7 @@ namespace EDR.Models
         public Place()
         {
             Public = true;
+            PlaceType = PlaceType.OtherPlace;
         }
     }
 }
