@@ -11,19 +11,16 @@
     @Scripts.Render("~/bundles/jqueryUI")
     @Scripts.Render("~/bundles/GeoComplete")
     <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+    @Scripts.Render("~/bundles/TimePicker")
+    @Styles.Render("~/Content/TimePickercss")
+@Scripts.Render("~/bundles/GeoComplete")
+<script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
 
 <script>
+    $.validator.setDefaults({
+        ignore: ""
+    })
     $(function () {
-        //alert("here");
-        //var form = $('#saveform2.main');
-        //alert(form.prop('id'));
-        //try {
-        //    var valid = form.valid();
-        //    alert(valid);
-        //}
-        //catch (err) {
-        //    document.getElementById("demo").innerHTML = err.message;
-        //}
         $('#saveform.main').valid();
 
         $('#btnEdit').click(function () {
@@ -40,25 +37,25 @@
             $('#viewdiv').show();
             $('#editdiv').hide();
         });
-        $('#saveform.main').validate;
     });
 
-    $('.time').change(function () {
-        var start = $('.timeelement.begintime');
-        var end = $('.timeelement.endtime');
-        var shour = $('.time.hour.start option:selected').val();
-        var smin = $('.time.minute.start option:selected').val();
-        var sampm = $('.time.ampm.start option:selected').val();
-        var ehour = $('.time.hour.end option:selected').val();
-        var emin = $('.time.minute.end option:selected').val();
-        var eampm = $('.time.ampm.end option:selected').val();
+    //$('.time').change(function () {
+    //    var start = $('.timeelement.begintime');
+    //    var end = $('.timeelement.endtime');
+    //    var shour = $('.time.hour.start option:selected').val();
+    //    var smin = $('.time.minute.start option:selected').val();
+    //    var sampm = $('.time.ampm.start option:selected').val();
+    //    var ehour = $('.time.hour.end option:selected').val();
+    //    var emin = $('.time.minute.end option:selected').val();
+    //    var eampm = $('.time.ampm.end option:selected').val();
 
-        var time = new Date();
-        start.prop('value', new Date(time.getDate().toString() + "/" + time.getMonth().toString() + "/" + time.getYear().toString() + " " + shour.toString() + ":" + smin.toString() + " " + sampm));
-        end.prop('value', new Date(time.getDate().toString() + "/" + time.getMonth().toString() + "/" + time.getYear().toString() + " " + ehour.toString() + ":" + emin.toString() + " " + eampm));
+    //    var time = new Date();
+    //    start.prop('value', new Date(time.getDate().toString() + "/" + time.getMonth().toString() + "/" + time.getYear().toString() + " " + shour.toString() + ":" + smin.toString() + " " + sampm));
+    //    end.prop('value', new Date(time.getDate().toString() + "/" + time.getMonth().toString() + "/" + time.getYear().toString() + " " + ehour.toString() + ":" + emin.toString() + " " + eampm));
 
-        CheckDates();
-    });
+    //    CheckDates();
+    //    var valid = $('#saveform.main').valid();
+    //});
 
     function CheckDates() {
         var start = $('.timeelement.begintime').val();
@@ -73,15 +70,80 @@
             return true;
         }
     }
+    $(function () {
+        $('.start').timepicker({ 'timeFormat': 'h:i A' });
+        $('.end').timepicker({ 'timeFormat': 'h:i A', });
+        $('.start').timepicker('setTime', new Date($('.timeelement.begintime').val()));
+        $('.end').timepicker('setTime', new Date($('.timeelement.endtime').val()));
+    });
+
+    $('.timepicker').change(function () {
+        var start = $('.timeelement.begintime');
+        var end = $('.timeelement.endtime');
+
+        var time = new Date();
+        var startdt = new Date(time.getMonth().toString() + "/" + time.getDate().toString() + "/" + time.getFullYear().toString() + " " + $('.timepicker.start').val());
+        var enddt = new Date(time.getMonth().toString() + "/" + time.getDate().toString() + "/" + time.getFullYear().toString() + " " + $('.timepicker.end').val());
+        start.prop('value', startdt.toLocaleDateString() + " " + startdt.toLocaleTimeString());
+        end.prop('value', enddt.toLocaleDateString() + " " + enddt.toLocaleTimeString());
+        var val = $('#saveform.main').valid();
+    });
+
+    $(function () {
+        $("#newplace").geocomplete({
+            details: "form",
+            types: ["geocode", "establishment"],
+        })
+        .bind("geocode:result", function (event, result) {
+            $('#NewPlace_Latitude').prop("value", result.geometry.location.lat());
+            $('#NewPlace_Longitude').prop("value", result.geometry.location.lng());
+
+            $('#NewPlace_Name').prop("value", result.name);
+            $('#NewPlace_GooglePlaceId').prop("value", result.place_id);
+            $('#NewPlace_GoogleUrl').prop("value", result.url);
+            $('#NewPlace_Website').prop("value", result.website);
+            $('#NewPlace_GoogleRating').prop("value", result.rating);
+            //$.each(result.reviews, function (i, review) {
+            //    alert(review.text);
+            //});
+            var street_num;
+            var street_name;
+            $.each(result.address_components, function (i, address_component) {
+
+                //alert(address_component.types[0]);
+                //alert(address_component.long_name);
+                if (address_component.types[0] == "street_number") {
+                    street_num = address_component.long_name;
+                }
+                else if (address_component.types[0] == "route") {
+                    street_name = address_component.long_name;
+                }
+                else if (address_component.types[0] == "locality") {
+                    $('#NewPlace_City').prop("value", address_component.long_name);
+                }
+                else if (address_component.types[0] == "administrative_area_level_1") {
+                    $('#NewPlace_StateName').prop("value", address_component.long_name);
+                }
+                else if (address_component.types[0] == "postal_code") {
+                    $('#NewPlace_Zip').prop("value", address_component.long_name);
+                }
+                else if (address_component.types[0] == "country") {
+                    $('#NewPlace_Country').prop("value", address_component.long_name);
+                }
+            });
+            //alert(street_num + " " + street_name);
+            $('#NewPlace_Address').prop("value", street_num + " " + street_name);
+            //  console.log(result);
+        });
+    });
 </script>
 }
-
-<h2>Manage Instance</h2>
-<p>
-    @Html.ActionLink("Back to Event", "Manage", new { id = Model.Instance.EventId, eventType = Model.Instance.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social })
-</p>
-<hr />
 <div class="container-fluid">
+    <h2>Manage Instance</h2>
+    <p>
+        @Html.ActionLink("Back to Event", "Manage", new { id = Model.Instance.EventId, eventType = Model.Instance.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social })
+    </p>
+    <hr />
     <div class="col-lg-6 col-md-6">
         <div class="panel panel-default">
             <div class="panel-body ">
@@ -89,64 +151,92 @@
                 <div id="viewdiv">
                     <div class="text-right">
                         <input id="btnEdit" type="button" class="btn btn-primary" value="Edit" />
+                    </div>
                         <dl class="dl-horizontal">
                             <dt>
                                 @Html.DisplayName("Event")
                             </dt>
-
                             <dd>
                                 @Html.DisplayFor(model => model.Instance.Event.Name)
                             </dd>
-
+                        </dl>
+                        <dl class="dl-horizontal">
                             <dt>
                                 @Html.DisplayName("Place")
                             </dt>
-
                             <dd>
                                 @Html.DisplayFor(model => model.Instance.Place.Name)
                             </dd>
-
+                        </dl>
+                        <dl class="dl-horizontal">
                             <dt>
-                                @Html.DisplayNameFor(model => model.Instance.DateTime)
+                                Date
                             </dt>
-
                             <dd>
                                 @Html.DisplayFor(model => model.Instance.DateTime)
                             </dd>
-
+                        </dl>
+                        <dl class="dl-horizontal">
                             <dt>
                                 @Html.DisplayNameFor(model => model.Instance.StartTime)
                             </dt>
-
                             <dd>
                                 @Html.DisplayFor(model => model.Instance.StartTime)
                             </dd>
-
+                        </dl>
+                        <dl class="dl-horizontal">
                             <dt>
                                 @Html.DisplayNameFor(model => model.Instance.EndTime)
                             </dt>
-
                             <dd>
                                 @Html.DisplayFor(model => model.Instance.EndTime)
                             </dd>
-
                         </dl>
-                    </div>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.Label("Location", htmlAttributes: new { @class = "control-label" })
+                        </dt>
+                        <dd>
+                            @Html.ActionLink(Model.Instance.Place.Name, "Details", "Place", new { id = Model.Instance.Place.Id }, null)<br />
+                            @Model.Instance.Place.Address<br />
+                            @Model.Instance.Place.City, @Model.Instance.Place.StateName @Model.Instance.Place.Zip<br />
+                            @Model.Instance.Place.Country
+                        </dd>
+                    </dl>
                 </div>
                 <div id="editdiv" style="display: none;">
                     @Html.ValidationSummary("", new { @class = "text-danger" })
                     @using (Html.BeginForm("SaveInstance", "Event", FormMethod.Post, new { @id = "saveform", @class = "main" }))
                     {
+                        @Html.HiddenFor(model => model.Instance.Id)
+                        @Html.HiddenFor(model => model.Instance.EventId)
+                        @Html.HiddenFor(model => model.Instance.PlaceId)
                         <div class="text-right" style="padding-bottom: 10px;">
                             <input type="submit" id="btnsave" value="Save" class="btn btn-primary" />
                             <input id="btncanceledit" type="button" class="btn btn-primary" value="Cancel" />
                         </div>
                         <dl class="dl-horizontal">
                             <dt>
-                                @Html.DisplayNameFor(model => model.Instance.DateTime)
+                                @Html.DisplayName("Event")
                             </dt>
                             <dd>
-                                @Html.EditorFor(model => model.Instance.DateTime, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.DisplayFor(model => model.Instance.Event.Name)
+                            </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.DisplayName("Place")
+                            </dt>
+                            <dd>
+                                @Html.DisplayFor(model => model.Instance.Place.Name)
+                            </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                Date
+                            </dt>
+                            <dd>
+                                @Html.TextBoxFor(m => m.Instance.DateTime, "{0:yyyy-MM-dd}", htmlAttributes: new { @type = "date", @class = "form-control" })
                                 @Html.ValidationMessageFor(model => model.Instance.DateTime, "", new { @class = "text-danger" })
                             </dd>
                         </dl>
@@ -155,27 +245,9 @@
                                 @Html.DisplayNameFor(model => model.Instance.StartTime)
                             </dt>
                             <dd>
-                                <div class="time">
-                                    @Html.DropDownList("StartHour", new SelectList(new List<SelectListItem>
-                                                {
-                                                    new SelectListItem { Text = "01", Value = "1" },
-                                                    new SelectListItem { Text = "02", Value = "2" },
-                                                    new SelectListItem { Text = "03", Value = "3" },
-                                                    new SelectListItem { Text = "04", Value = "4" },
-                                                    new SelectListItem { Text = "05", Value = "5" },
-                                                    new SelectListItem { Text = "06", Value = "6" },
-                                                    new SelectListItem { Text = "07", Value = "7" },
-                                                    new SelectListItem { Text = "08", Value = "8" },
-                                                    new SelectListItem { Text = "09", Value = "9" },
-                                                    new SelectListItem { Text = "10", Value = "10" },
-                                                    new SelectListItem { Text = "11", Value = "11" },
-                                                    new SelectListItem { Text = "12", Value = "12" }
-                                                    }, "Value", "Text", null), new { @class = "form-control time hour start", style = "width: 70px; display: inline;" })
-                                    @Html.DropDownList("StartMinute", new SelectList(new List<string> { "00", "15", "30", "45" }), new { @class = "form-control time minute start", style = "width: 70px; display: inline;" })
-                                    @Html.DropDownList("StartAMPM", new SelectList(new List<string>() { "AM", "PM" }), new { @class = "form-control time ampm start", style = "width: 70px; display: inline;" })
-                                    @Html.HiddenFor(m => m.Instance.StartTime, new { @class = "timeelement begintime" })
-                                    @Html.ValidationMessageFor(model => model.Instance.StartTime, "", new { @class = "text-danger" })
-                                </div>
+                                <p><input id="start" type="text" class="start timepicker form-control" /></p>
+                                @Html.HiddenFor(m => m.Instance.StartTime, new { @class = "timeelement begintime" })
+                                @Html.ValidationMessageFor(model => model.Instance.StartTime, "", new { @class = "text-danger" })
                             </dd>
                         </dl>
                         <dl class="dl-horizontal">
@@ -183,30 +255,49 @@
                                 @Html.DisplayNameFor(model => model.Instance.EndTime)
                             </dt>
                             <dd>
-                                <div class="time">
-                                    @Html.DropDownList("EndHour", new SelectList(new List<SelectListItem>
-                                                {
-                                                    new SelectListItem { Text = "01", Value = "1" },
-                                                    new SelectListItem { Text = "02", Value = "2" },
-                                                    new SelectListItem { Text = "03", Value = "3" },
-                                                    new SelectListItem { Text = "04", Value = "4" },
-                                                    new SelectListItem { Text = "05", Value = "5" },
-                                                    new SelectListItem { Text = "06", Value = "6" },
-                                                    new SelectListItem { Text = "07", Value = "7" },
-                                                    new SelectListItem { Text = "08", Value = "8" },
-                                                    new SelectListItem { Text = "09", Value = "9" },
-                                                    new SelectListItem { Text = "10", Value = "10" },
-                                                    new SelectListItem { Text = "11", Value = "11" },
-                                                    new SelectListItem { Text = "12", Value = "12" }
-                                                    }, "Value", "Text", null), new { @class = "form-control time hour end", style = "width: 70px; display: inline;" })
-                                    @Html.DropDownList("EndMinute", new SelectList(new List<string> { "00", "15", "30", "45" }), new { @class = "form-control time minute end", style = "width: 70px; display: inline;" })
-                                    @Html.DropDownList("EndAMPM", new SelectList(new List<string>() { "AM", "PM" }), new { @class = "form-control time ampm end", style = "width: 70px; display: inline;" })
-                                    @Html.HiddenFor(m => m.Instance.EndTime, new { @class = "timeelement endtime" })
-                                    @Html.ValidationMessageFor(model => model.Instance.EndTime, "", new { @class = "text-danger" })
-                                    <p>
-                                        <span id="EndTimevalidationMessage" class="text-danger" style="display: none;">End Time Must Be After Start Time</span>
-                                    </p>
-                                </div>
+                                <p><input id="end" type="text" class="end timepicker form-control" /></p>
+                                @Html.HiddenFor(m => m.Instance.EndTime, new { @class = "timeelement endtime" })
+                                @Html.ValidationMessageFor(model => model.Instance.EndTime, "", new { @class = "text-danger" })
+                            </dd>
+                        </dl>
+                        @Html.HiddenFor(model => model.NewPlace.Name, new { @Value = "New Place" })
+                        @Html.HiddenFor(model => model.NewPlace.Address)
+                        @Html.HiddenFor(model => model.NewPlace.Address2)
+                        @Html.HiddenFor(model => model.NewPlace.City)
+                        @Html.HiddenFor(model => model.NewPlace.StateName)
+                        @Html.HiddenFor(model => model.NewPlace.Zip)
+                        @Html.HiddenFor(model => model.NewPlace.Country)
+                        @Html.HiddenFor(model => model.NewPlace.Latitude)
+                        @Html.HiddenFor(model => model.NewPlace.Longitude)
+                        @Html.HiddenFor(model => model.NewPlace.GooglePlaceId)
+                        @Html.HiddenFor(model => model.NewPlace.GoogleUrl)
+                        @Html.HiddenFor(model => model.NewPlace.Website)
+                        @Html.HiddenFor(model => model.NewPlace.GoogleRating)
+                        @*@Html.TextBoxFor(model => model.NewPlace.PlaceType, new { @Value = EDR.Enums.PlaceType.OtherPlace })*@
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.Label("New Location", htmlAttributes: new { @class = "control-label" })
+                            </dt>
+                            <dd>
+                                <input id="newplace" type="text" placeholder="Search for a new Location" class="form-control" />
+                            </dd>
+                        </dl>
+
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.Label("Type of Location", htmlAttributes: new { @class = "control-label" })
+                            </dt>
+                            <dd>
+                                @Html.EnumDropDownListFor(model => model.NewPlace.PlaceType, new { @class = "form-control" })
+                            </dd>
+                        </dl>
+
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.Label("Location", htmlAttributes: new { @class = "control-label" })
+                            </dt>
+                            <dd>
+                                @Html.TextArea("Location", Model.Instance.Place.Address + "\n" + Model.Instance.Place.City + ", " + Model.Instance.Place.StateName + " " + Model.Instance.Place.Zip + "\n" + Model.Instance.Place.Country, 4, 50, new { @class = "form-control", Name = "formatted_address", @readonly = true })
                             </dd>
                         </dl>
                     }

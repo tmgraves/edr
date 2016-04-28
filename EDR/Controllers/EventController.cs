@@ -1471,26 +1471,33 @@ namespace EDR.Controllers
                     select new { EventInstance = i, Class = c }).FirstOrDefault();
 
             //  Event Tickets
-            var credits = DataContext.UserTickets.Where(t => t.Ticket.EventId == instance.EventInstance.EventId && t.UserId == userid).Include("Ticket").Include("EventRegistrations").ToList();
-            if (credits != null)
+            if (DataContext.Tickets.Where(t => t.EventId == instance.EventInstance.EventId).Count() != 0)
             {
-                //  User Has Remaining Credit
-                if (credits.Sum(c => c.Quantity * c.Ticket.Quantity) > credits.Sum(c => c.EventRegistrations.Count()))
+                var credits = DataContext.UserTickets.Where(t => t.Ticket.EventId == instance.EventInstance.EventId && t.UserId == userid).Include("Ticket").Include("EventRegistrations").ToList();
+                if (credits != null)
                 {
-                    //  Get Available Tickets
-                    var ticket =
-                            (from ut in DataContext.UserTickets
-                             join t in DataContext.Tickets
-                             on ut.TicketId equals t.Id
-                             where ut.UserId == userid
-                             && t.EventId == instance.EventInstance.EventId
-                             && ut.EventRegistrations.Count() < ut.Quantity * t.Quantity
-                             select ut).FirstOrDefault();
-                    DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = id, UserTicketId = ticket.Id });
-                    DataContext.SaveChanges();
-                    return RedirectToAction("View", new { id = instance.EventInstance.EventId, eventType = instance.EventInstance.Event is Class ? EventType.Class : EventType.Social });
+                    //  User Has Remaining Credit
+                    if (credits.Sum(c => c.Quantity * c.Ticket.Quantity) > credits.Sum(c => c.EventRegistrations.Count()))
+                    {
+                        //  Get Available Tickets
+                        var ticket =
+                                (from ut in DataContext.UserTickets
+                                 join t in DataContext.Tickets
+                                 on ut.TicketId equals t.Id
+                                 where ut.UserId == userid
+                                 && t.EventId == instance.EventInstance.EventId
+                                 && ut.EventRegistrations.Count() < ut.Quantity * t.Quantity
+                                 select ut).FirstOrDefault();
+                        DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = id, UserTicketId = ticket.Id });
+                        DataContext.SaveChanges();
+                        return RedirectToAction("View", new { id = instance.EventInstance.EventId, eventType = instance.EventInstance.Event is Class ? EventType.Class : EventType.Social });
+                    }
+                    //  User needs to purchase tickets
+                    else
+                    {
+                        return RedirectToAction("BuyTicket", "Store", new { instanceId = id });
+                    }
                 }
-                //  User needs to purchase tickets
                 else
                 {
                     return RedirectToAction("BuyTicket", "Store", new { instanceId = id });
@@ -1500,7 +1507,7 @@ namespace EDR.Controllers
             //  School Tickets
             else
             {
-                credits = DataContext.UserTickets.Where(t => t.Ticket.SchoolId == instance.Class.SchoolId && t.UserId == userid).Include("Ticket").Include("EventRegistrations").ToList();
+                var credits = DataContext.UserTickets.Where(t => t.Ticket.SchoolId == instance.Class.SchoolId && t.UserId == userid).Include("Ticket").Include("EventRegistrations").ToList();
 
                 if (credits != null)
                 {
@@ -2056,7 +2063,7 @@ namespace EDR.Controllers
             {
                 try
                 {
-                    var evnt = DataContext.Events.Include("Place").Single(s => s.Id == model.Event.Id);
+                    var evnt = DataContext.Events.Include("Place").Include("EventInstances").Single(s => s.Id == model.Event.Id);
                     evnt.Name = model.Event.Name;
                     evnt.Description = model.Event.Description;
                     evnt.StartTime = model.Event.StartTime;
@@ -2073,6 +2080,7 @@ namespace EDR.Controllers
                             DataContext.SaveChanges();
                         }
                         evnt.PlaceId = place.Id;
+                        evnt.EventInstances.ToList().ForEach(i => i.PlaceId = place.Id);
                     }
 
                     DataContext.Entry(evnt).State = EntityState.Modified; 
@@ -2104,6 +2112,51 @@ namespace EDR.Controllers
                     }
 
                     return RedirectToAction("Manage", new { id = model.Event.Id, eventType = model.EventType });
+                }
+                catch (DbEntityValidationException e)
+                {
+                    foreach (var eve in e.EntityValidationErrors)
+                    {
+                        Console.WriteLine("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                            eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                        foreach (var ve in eve.ValidationErrors)
+                        {
+                            Console.WriteLine("- Property: \"{0}\", Error: \"{1}\"",
+                                ve.PropertyName, ve.ErrorMessage);
+                        }
+                    }
+                    throw;
+                }
+            }
+            else
+            {
+                return View(model);
+            }
+        }
+
+        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        [HttpPost]
+        public ActionResult SaveInstance(EventInstanceManageViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    if (model.NewPlace.GooglePlaceId != null)
+                    {
+                        var place = DataContext.Places.Where(p => p.GooglePlaceId == model.NewPlace.GooglePlaceId).FirstOrDefault();
+                        if (place == null)
+                        {
+                            place = DataContext.Places.Add(model.NewPlace);
+                            DataContext.SaveChanges();
+                        }
+                        model.Instance.PlaceId = place.Id;
+                    }
+
+                    DataContext.Entry(model.Instance).State = EntityState.Modified;
+                    DataContext.SaveChanges();
+
+                    return RedirectToAction("ManageInstance", new { id = model.Instance.Id });
                 }
                 catch (DbEntityValidationException e)
                 {
@@ -3890,6 +3943,17 @@ namespace EDR.Controllers
             return RedirectToAction("Manage", new { id = eventid });
         }
 
+        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        public ActionResult DeleteRegistration(int id)
+        {
+            var registration = DataContext.EventRegistrations.Where(i => i.Id == id).FirstOrDefault();
+            var instanceid = registration.EventInstanceId;
+
+            DataContext.EventRegistrations.Remove(registration);
+            DataContext.SaveChanges();
+
+            return RedirectToAction("ManageInstance", new { id = instanceid });
+        }
 
         [Authorize]
         [HttpPost]

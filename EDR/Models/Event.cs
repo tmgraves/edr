@@ -177,8 +177,16 @@ namespace EDR.Models
         public int? EventId { get; set; }
         [ForeignKey("EventId")]
         public virtual Event Event { get; set; }
+        [DisplayFormat(DataFormatString = "{0:MM-dd-yyyy}")]
         public DateTime DateTime { get; set; }
+        [DataType(DataType.Time)]
+        [Display(Name = "Start Time")]
+        [DisplayFormat(DataFormatString = "{0:hh:mm tt}", ApplyFormatInEditMode = false)]
         public DateTime? StartTime { get; set; }
+        [DataType(DataType.Time)]
+        [Display(Name = "End Time")]
+        [GreaterThanOrEqualTo("StartTime")]
+        [DisplayFormat(DataFormatString = "{0:hh:mm tt}", ApplyFormatInEditMode = false)]
         public DateTime? EndTime { get; set; }
         public ICollection<EventRegistration> EventRegistrations { get; set; }
         public int? PlaceId { get; set; }

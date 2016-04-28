@@ -5,6 +5,9 @@
 }
 
 <h2>Manage @Model.Event.Name</h2>
+<p>
+    @Html.ActionLink("View Event", "View", new { id = Model.Event.Id, eventType = Model.EventType }, null)
+</p>
 @if (Model.EventType == EDR.Enums.EventType.Class)
 {
     @Html.ActionLink("Back to School", "View", "School", new { id = Model.SchoolId }, null)

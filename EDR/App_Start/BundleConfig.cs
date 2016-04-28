@@ -38,14 +38,31 @@ namespace EDR
             bundles.Add(new ScriptBundle("~/bundles/jqueryUI").Include(
                         "~/Scripts/jquery-ui.js"));
 
-            //  jquery UI
+            //  GeoComplete
             bundles.Add(new ScriptBundle("~/bundles/GeoComplete").Include(
                         //"~/Scripts/jquery.geocomplete.min.js",
                         "~/Scripts/jquery.geocomplete.js"));
-            
+
+            //  timepicker
+            bundles.Add(new ScriptBundle("~/bundles/TimePicker").Include(
+                        //"~/Scripts/timepicker/jquery.timepicker.min.js",                        
+                        "~/Scripts/timepicker/jquery.timepicker.js",
+                        "~/Scripts/timepicker/bootstrap-datepicker.js",
+                        "~/Scripts/timepicker/site.js"));
+
+            //  timepicker css
+            bundles.Add(new StyleBundle("~/Content/TimePickercss").Include(
+                      "~/Content/timepicker/jquery.timepicker.css",
+                      "~/Content/timepicker/bootstrap-datepicker.css"));
+
+            //  datepair
+            bundles.Add(new ScriptBundle("~/bundles/DatePair").Include(
+                        "~/Scripts/timepicker/datepair.js",
+                        "~/Scripts/timepicker/jquery.datepair.js"));
+
             // Set EnableOptimizations to false for debugging. For more information,
-              // visit http://go.microsoft.com/fwlink/?LinkId=301862
-              BundleTable.EnableOptimizations = true;
+            // visit http://go.microsoft.com/fwlink/?LinkId=301862
+            BundleTable.EnableOptimizations = true;
         }
     }
 }

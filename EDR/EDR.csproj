@@ -483,6 +483,9 @@
     <Content Include="Content\images\yelp.png" />
     <Content Include="Content\images\youtube.png" />
     <Content Include="Content\sidebar.bootstrap.css" />
+    <Content Include="Content\timepicker\bootstrap-datepicker.css" />
+    <Content Include="Content\timepicker\jquery.timepicker.css" />
+    <Content Include="Content\timepicker\site.css" />
     <Content Include="favicon.ico" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -721,6 +724,14 @@
     <Content Include="Scripts\respond.matchmedia.addListener.js" />
     <Content Include="Scripts\respond.matchmedia.addListener.min.js" />
     <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\timepicker\bootstrap-datepicker.js" />
+    <Content Include="Scripts\timepicker\datepair.js" />
+    <Content Include="Scripts\timepicker\datepair.min.js" />
+    <Content Include="Scripts\timepicker\jquery.datepair.js" />
+    <Content Include="Scripts\timepicker\jquery.datepair.min.js" />
+    <Content Include="Scripts\timepicker\jquery.timepicker.js" />
+    <Content Include="Scripts\timepicker\jquery.timepicker.min.js" />
+    <Content Include="Scripts\timepicker\site.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Views\Dancer\MyDance.cshtml">
       <SubType>Code</SubType>
@@ -781,8 +792,9 @@
     <Content Include="Views\Team\Index.cshtml" />
     <Content Include="Views\Team\Create.cshtml" />
     <Content Include="Views\Team\Manage.cshtml" />
-    <Content Include="Views\Home\Test3.cshtml" />
+    <Content Include="Views\Home\Test4.cshtml" />
     <Content Include="Views\Event\ManageInstance.cshtml" />
+    <Content Include="Views\Home\Test3.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>
