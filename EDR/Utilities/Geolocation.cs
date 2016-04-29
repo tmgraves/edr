@@ -21,6 +21,11 @@ namespace EDR.Utilities
             public geometry geometry { get; set; }
             public string[] types { get; set; }
             public address_component[] address_components { get; set; }
+            public string place_id { get; set; }
+            public string name { get; set; }
+            public string url { get; set; }
+            public string website { get; set; }
+            public string rating { get; set; }
         }
 
         private class geometry
@@ -84,6 +89,11 @@ namespace EDR.Utilities
                     address.Longitude = Convert.ToDouble(resObj.results[0].geometry.location.lng);
                     address.Latitude = Convert.ToDouble(resObj.results[0].geometry.location.lat);
                     address.Street = (address.StreetNumber != null && address.StreetName != null) ? address.StreetNumber + " " + address.StreetName : null;
+                    address.GooglePlaceId = resObj.results[0].place_id;
+                    address.GoogleUrl = resObj.results[0].url;
+                    address.GoogleRating = Convert.ToDouble(resObj.results[0].rating);
+                    address.Name = resObj.results[0].name;
+                    address.Website = resObj.results[0].website;
                 }
                 else
                 {

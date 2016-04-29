@@ -12,6 +12,13 @@
 {
     @Html.ActionLink("Back to School", "View", "School", new { id = Model.SchoolId }, null)
 }
+<p>
+    <a title="Delete" href="@Url.Action("Delete", "Event", new { id = Model.Event.Id, eventType = Model.EventType, returnUrl = Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this Event?')">
+        Delete Event
+    </a>
+</p>
+
+
 @section Scripts
 {
     @Scripts.Render("~/bundles/jqueryval")
@@ -22,6 +29,9 @@
 <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
 @Scripts.Render("~/bundles/TimePicker")
 @Styles.Render("~/Content/TimePickercss")
+
+<script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
 
 <script type="text/javascript">
     $.validator.setDefaults({
@@ -75,6 +85,31 @@
         select: function (event, ui) {
             $('#placesearch').val(ui.item.label);
             $('#Id').val(ui.item.value);
+            return false;
+        },
+        minLength: 1
+    });
+
+    $('#stylesearch').autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: '@Url.Action("Search", "DanceStyle")',
+                data: { searchString: request.term },
+                dataType: 'json',
+                type: 'GET',
+                success: function (data) {
+                    response($.map(data, function (item) {
+                        return {
+                            label: item.Name,
+                            value: item.Id
+                        }
+                    }));
+                }
+            })
+        },
+        select: function (event, ui) {
+            $('#stylesearch').val(ui.item.label);
+            $('#NewStyleId').val(ui.item.value);
             return false;
         },
         minLength: 1
@@ -700,6 +735,31 @@
                         </tr>
                     }
                 </table>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body ">
+                <h3>Dance Styles</h3>
+                @using (Ajax.BeginForm("AddStyle",
+                                        "Event",
+                                        new AjaxOptions()
+                                        {
+                                            UpdateTargetId = "stylesdiv",
+                                            OnSuccess = "done(this)"
+                                        },
+                                        new { @id = "addstyleform" }
+                                        ))
+                {
+                @Html.AntiForgeryToken()
+                    @Html.HiddenFor(m => m.Event.Id)
+                    @Html.HiddenFor(m => m.NewStyleId)
+                    @Html.HiddenFor(m => m.EventType)
+                    @Html.TextBox("stylesearch", "", new { placeholder = "Search for a Dance Style", @class = "form-control col-md-4" })
+                    <input class="btn" type="submit" value="Add Style" />
+                }
+                <div id="stylesdiv">
+                    @Html.Partial("~/Views/Event/Partial/_DanceStylesPartial.cshtml", new EDR.Models.ViewModels.EventDanceStylesPartialViewModel() { DanceStyles = Model.Event.DanceStyles, EventId = Model.Event.Id, EventType = (EDR.Enums.EventType)Model.EventType })
+                </div>
             </div>
         </div>
     </div>

@@ -102,6 +102,7 @@ namespace EDR.Models.ViewModels
             Places = new List<PlaceItem>();
             MonthDays = new MultiCheckBox();
             StylesCheckboxList = new MultiCheckBox();
+            UseSchoolTickets = true;
             //  Tickets = new List<Ticket>();
         }
         public EventCreateViewModel(EventType eventType, int? schoolId, RoleName role)
@@ -263,6 +264,7 @@ namespace EDR.Models.ViewModels
     {
         public int? SchoolId { get; set; }
         public Place NewPlace { get; set; }
+        public int? NewStyleId { get; set; }
 
         public EventManageViewModel()
         {
@@ -271,6 +273,13 @@ namespace EDR.Models.ViewModels
         {
             Event = evnt;
         }
+    }
+
+    public class EventDanceStylesPartialViewModel
+    {
+        public IEnumerable<DanceStyle> DanceStyles { get; set; }
+        public EventType EventType { get; set; }
+        public int EventId { get; set; }
     }
 
     public class EventInstanceManageViewModel

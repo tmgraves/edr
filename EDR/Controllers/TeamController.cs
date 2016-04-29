@@ -49,6 +49,7 @@ namespace EDR.Controllers
                             .Include("Auditions.Place")
                             .Include("Performances.Place")
                             .Include("Performances.Event.Place")
+                            .Include("DanceStyles")
                             .Single(e => e.Id == id);
             if (model.Team == null)
             {
@@ -272,6 +273,26 @@ namespace EDR.Controllers
             DataContext.Performances.Remove(performance);
             DataContext.SaveChanges();
             return RedirectToAction("Manage", new { id = teamId });
+        }
+
+        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        public PartialViewResult AddStyle(TeamManageViewModel model)
+        {
+            var team = DataContext.Teams.Include("DanceStyles").Single(e => e.Id == model.Team.Id);
+            if (team.DanceStyles.Where(s => s.Id == model.NewStyleId).Count() == 0)
+            {
+                team.DanceStyles.Add(DataContext.DanceStyles.Single(s => s.Id == model.NewStyleId));
+                DataContext.SaveChanges();
+            }
+            return PartialView("~/Views/Team/Partial/_DanceStylesPartial.cshtml", new TeamDanceStylesPartialViewModel() { DanceStyles = team.DanceStyles, TeamId = team.Id });
+        }
+
+        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        public ActionResult DeleteStyle(int id, int styleId)
+        {
+            DataContext.Teams.Include("DanceStyles").Single(e => e.Id == id).DanceStyles.Remove(DataContext.DanceStyles.Single(s => s.Id == styleId));
+            DataContext.SaveChanges();
+            return RedirectToAction("Manage", new { id = id });
         }
     }
 }

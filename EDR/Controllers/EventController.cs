@@ -173,6 +173,7 @@ namespace EDR.Controllers
             var model = new EventManageViewModel(DataContext.Events
                     .Include("Tickets.UserTickets.EventRegistrations")
                     .Include("EventInstances.EventRegistrations.User")
+                    .Include("DanceStyles")
                     .Include("Place")
                     .Single(e => e.Id == id));
             model.NewPlace = new Place();
@@ -1618,15 +1619,15 @@ namespace EDR.Controllers
             var userid = User.Identity.GetUserId();
             var user = DataContext.Users.Single(u => u.Id == userid);
 
-            //  Fill Places
-            var places = new List<Place>();
-            int? placeid = model.Event.Place != null ? (int?)model.Event.Place.Id : null;
-            //  Fill Places
-            places = DataContext.Places.Where(p => p.Teachers.Any(t => t.ApplicationUser.Id == userid) || p.Owners.Any(o => o.ApplicationUser.Id == userid) || p.Promoters.Any(pr => pr.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == model.Event.Place.Id).ToList();
-            model.Places = new List<PlaceItem>();
-            model.Places.Add(new PlaceItem() { Id = 0, Latitude = 0.0, Longitude = 0.0 });
-            model.Places.AddRange(DataContext.Places.Where(p => p.Teachers.Any(t => t.ApplicationUser.Id == userid) || p.Owners.Any(o => o.ApplicationUser.Id == userid) || p.Promoters.Any(pr => pr.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == model.Event.Place.Id).AsEnumerable().Select(p => new PlaceItem() { Address = p.Address, Address2 = p.Address2, City = p.City, Country = p.Country, FacebookId = p.FacebookId, FacebookLink = p.FacebookLink, Filename = p.Filename, Id = p.Id, Latitude = p.Latitude, Longitude = p.Longitude, Name = p.Name, PlaceType = p.PlaceType, State = p.State, ThumbnailFilename = p.ThumbnailFilename, Website = p.Website, Zip = p.Zip, Selected = (model.Event.Place != null && model.Event.Place.Id == p.Id) ? true : false }));
-            //  Fill Places
+            ////  Fill Places
+            //var places = new List<Place>();
+            //int? placeid = model.Event.Place != null ? (int?)model.Event.Place.Id : null;
+            ////  Fill Places
+            //places = DataContext.Places.Where(p => p.Teachers.Any(t => t.ApplicationUser.Id == userid) || p.Owners.Any(o => o.ApplicationUser.Id == userid) || p.Promoters.Any(pr => pr.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == model.Event.Place.Id).ToList();
+            //model.Places = new List<PlaceItem>();
+            //model.Places.Add(new PlaceItem() { Id = 0, Latitude = 0.0, Longitude = 0.0 });
+            //model.Places.AddRange(DataContext.Places.Where(p => p.Teachers.Any(t => t.ApplicationUser.Id == userid) || p.Owners.Any(o => o.ApplicationUser.Id == userid) || p.Promoters.Any(pr => pr.ApplicationUser.Id == userid) || p.Users.Any(u => u.Id == userid) || p.Id == model.Event.Place.Id).AsEnumerable().Select(p => new PlaceItem() { Address = p.Address, Address2 = p.Address2, City = p.City, Country = p.Country, FacebookId = p.FacebookId, FacebookLink = p.FacebookLink, Filename = p.Filename, Id = p.Id, Latitude = p.Latitude, Longitude = p.Longitude, Name = p.Name, PlaceType = p.PlaceType, State = p.State, ThumbnailFilename = p.ThumbnailFilename, Website = p.Website, Zip = p.Zip, Selected = (model.Event.Place != null && model.Event.Place.Id == p.Id) ? true : false }));
+            ////  Fill Places
 
             //  Load Facebook Events
             //  For Dance Styles Checkbox List
@@ -1669,7 +1670,7 @@ namespace EDR.Controllers
             {
                 model.CreateAction = "Facebook";
                 var f = FacebookHelper.GetEvent(model.FacebookId, user.FacebookToken);
-                model.Event = new Event() { Description = f.Description, Name = f.Name, StartDate = f.StartTime, StartTime = f.StartTime, EndDate = f.EndTime, EndTime = f.EndTime, FacebookId = f.Id, FacebookLink = f.EventLink, PhotoUrl = f.CoverPhoto.LargeSource, Place = new Place() { Name = f.Address.Location, Address = f.Address.Street, City = f.Address.City, State = f.Address.State != null && Enum.IsDefined(typeof(State), f.Address.State) ? (State)Enum.Parse(typeof(State), f.Address.State) : State.CA, Zip = f.Address.ZipCode, Country = f.Address.Country, Latitude = f.Address.Latitude, Longitude = f.Address.Longitude, FacebookId = f.Address.FacebookId, PlaceType = FacebookHelper.ParsePlaceType(f.Address.Categories), Public = true, Website = f.Address.WebsiteUrl, FacebookLink = f.Address.FacebookUrl, Filename = f.Address.CoverPhotoUrl, ThumbnailFilename = f.Address.ThumbnailUrl } };
+                model.Event = new Event() { Description = f.Description, Name = f.Name, StartDate = Convert.ToDateTime(f.StartTime.ToShortDateString()), StartTime = f.StartTime, EndDate = f.EndTime != null ? (DateTime?)Convert.ToDateTime(((DateTime)f.EndTime).ToShortDateString()) : Convert.ToDateTime(f.StartTime.ToShortDateString()), EndTime = f.EndTime, FacebookId = f.Id, FacebookLink = f.EventLink, PhotoUrl = f.CoverPhoto.LargeSource, Place = new Place() { Name = f.Address.Location, Address = f.Address.Street, City = f.Address.City, State = f.Address.State != null && Enum.IsDefined(typeof(State), f.Address.State) ? (State)Enum.Parse(typeof(State), f.Address.State) : State.CA, Zip = f.Address.ZipCode, Country = f.Address.Country, Latitude = f.Address.Latitude, Longitude = f.Address.Longitude, FacebookId = f.Address.FacebookId, PlaceType = FacebookHelper.ParsePlaceType(f.Address.Categories), Public = true, Website = f.Address.WebsiteUrl, FacebookLink = f.Address.FacebookUrl, Filename = f.Address.CoverPhotoUrl, ThumbnailFilename = f.Address.ThumbnailUrl, GooglePlaceId = f.Address.GooglePlaceId } };
                 model.FacebookId = null;
 
                 ModelState.Clear();
@@ -1923,6 +1924,26 @@ namespace EDR.Controllers
             BuildEditModel(model);
 
             return View(model);
+        }
+
+        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        public PartialViewResult AddStyle(EventManageViewModel model)
+        {
+            var evnt = DataContext.Events.Include("DanceStyles").Single(e => e.Id == model.Event.Id);
+            if (evnt.DanceStyles.Where(s => s.Id == model.NewStyleId).Count() == 0)
+            {
+                evnt.DanceStyles.Add(DataContext.DanceStyles.Single(s => s.Id == model.NewStyleId));
+                DataContext.SaveChanges();
+            }
+            return PartialView("~/Views/Event/Partial/_DanceStylesPartial.cshtml", new EventDanceStylesPartialViewModel() { DanceStyles = evnt.DanceStyles, EventId = evnt.Id, EventType = evnt is Class ? EventType.Class : EventType.Social } );
+        }
+
+        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        public ActionResult DeleteStyle(int id, int styleId, EventType eventType)
+        {
+            DataContext.Events.Include("DanceStyles").Single(e => e.Id == id).DanceStyles.Remove(DataContext.DanceStyles.Single(s => s.Id == styleId));
+            DataContext.SaveChanges();
+            return RedirectToAction("Manage", new { id = id, eventType = eventType });
         }
 
         //[Authorize(Roles = "Owner,Promoter,Teacher")]

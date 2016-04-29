@@ -344,6 +344,18 @@ namespace EDR.Utilities
                                 add.State = address.State != null ? address.State.ToString() : null;
                                 add.Street = address.Street;
                                 add.ZipCode = address.ZipCode;
+                                add.Country = address.Country;
+                                add.GooglePlaceId = address.GooglePlaceId;
+                                add.GoogleUrl = address.GoogleUrl;
+                                add.GoogleRating = address.GoogleRating;
+                                if (add.Website == null)
+                                {
+                                    add.Website = address.Website;
+                                }
+                                if (add.Name == null)
+                                {
+                                    add.Name = address.Name;
+                                }
                             }
                         }
                     }
@@ -356,6 +368,17 @@ namespace EDR.Utilities
                 if (address != null)
                 {
                     add.Country = address.Country;
+                    add.GooglePlaceId = address.GooglePlaceId;
+                    add.GoogleUrl = address.GoogleUrl;
+                    add.GoogleRating = address.GoogleRating;
+                    if (add.Website == null)
+                    {
+                        add.Website = address.Website;
+                    }
+                    if (add.Name == null)
+                    {
+                        add.Name = address.Name;
+                    }
                 }
 
                 //  Get Place from Page
@@ -386,6 +409,18 @@ namespace EDR.Utilities
                                 add.State = address.State != null ? address.State.ToString() : null;
                                 add.Street = address.Street;
                                 add.ZipCode = address.ZipCode;
+                                add.Country = address.Country;
+                                add.GooglePlaceId = address.GooglePlaceId;
+                                add.GoogleUrl = address.GoogleUrl;
+                                add.GoogleRating = address.GoogleRating;
+                                if (add.Website == null)
+                                {
+                                    add.Website = address.Website;
+                                }
+                                if (add.Name == null)
+                                {
+                                    add.Name = address.Name;
+                                }
                             }
                         }
                     }

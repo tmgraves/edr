@@ -24,6 +24,7 @@ namespace EDR.Models
         public ICollection<Series> Series { get; set; }
         public ICollection<Teacher> Teachers { get; set; }
         public ICollection<DanceStyleVideo> Videos { get; set; }
+        public ICollection<Organization> Organizations { get; set; }
     }
 
     public class DanceStyleVideo : Video

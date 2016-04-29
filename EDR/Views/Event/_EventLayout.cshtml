@@ -303,51 +303,6 @@
                             </p>
                         }*@
                     }
-                @if (User.Identity != null)
-                {
-                    //  For Creator
-                    if (Model.Event.Creator.UserName == User.Identity.Name)
-                    {
-                        <p>
-                            <a class="btn btn btn-danger col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 5px;" title="Delete" href="@Url.Action("Delete", "Event", new { id = Model.Event.Id, eventType = Model.EventType, returnUrl = Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this Event?')">
-                                <i class="glyphicon glyphicon-remove"></i>
-                                Delete Event
-                            </a>
-                        </p>
-                        @*<p>
-                            <a class="btn btn btn-danger col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 5px;" title="Edit Fees" href="@Url.Action("EditFees", "Event", new { id = Model.Event.Id })">
-                                <i class="glyphicon glyphicon-usd"></i>
-                                View Fees
-                            </a>
-                        </p>*@
-                    }
-                    //  For Class
-                    else if (Model.Event is Class)
-                    {
-                        if (Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)
-                        {
-                            <p>
-                                <a class="btn btn btn-danger col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 5px;" title="Delete" href="@Url.Action("Delete", "Event", new { id = Model.Event.Id, eventType = Model.EventType, returnUrl = Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this Event?')">
-                                    <i class="glyphicon glyphicon-remove"></i>
-                                    Delete Event
-                                </a>
-                            </p>
-                        }
-                    }
-                    //  For Social
-                    else
-                    {
-                        if (Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)
-                        {
-                            <p>
-                                <a class="btn btn btn-danger col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 5px;" title="Delete" href="@Url.Action("Delete", "Event", new { id = Model.Event.Id, eventType = Model.EventType, returnUrl = Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this Event?')">
-                                    <i class="glyphicon glyphicon-remove"></i>
-                                    Delete Event
-                                </a>
-                            </p>
-                        }
-                    }
-                }
             </div>
         </div>
     </div>

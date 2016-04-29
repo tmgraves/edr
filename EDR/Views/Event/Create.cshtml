@@ -262,6 +262,16 @@
             $('#wizticketsdiv').hide();
         });
 
+        $('#createform.main').submit(function () {
+            if (!$('#createform.main').valid()) {
+                var val = $('#createform.main').validate();
+                for (var i = 0; i < val.errorList.length; i++) {
+                    alert(val.errorList[i].message);
+                }
+            }
+        });
+
+
         @*$('.time').change(function () {
             CheckDates();
         });
@@ -689,10 +699,10 @@
                 <div class="row" style="margin-bottom: 5px;">
                     @if (Model.Event.FacebookId != null)
                     {
-                        @Html.HiddenFor(m => m.Event.StartDate)
                         @Html.LabelFor(model => model.Event.StartDate, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
                         <div class="col-md-10 col-lg-9">
-                            @Model.Event.StartDate.ToLongDateString()
+                            @Html.HiddenFor(m => m.Event.StartDate, new { Value = Model.Event.StartDate.ToString("yyyy-MM-dd") })
+                            @Html.TextBox("StartLabel", Model.Event.StartDate.ToString("yyyy-MM-dd"), htmlAttributes: new { @type = "date", @class = "form-control", @disabled = "disabled" })
                             @Html.ValidationMessageFor(model => model.Event.StartDate, "", new { @class = "text-danger" })
                         </div>
                     }

@@ -10,11 +10,38 @@
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/foolproof")
     @Scripts.Render("~/bundles/jqueryUI")
+<script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
 
 <script type="text/javascript">
     $.validator.setDefaults({
         ignore: ""
     })
+
+    $('#stylesearch').autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: '@Url.Action("Search", "DanceStyle")',
+                data: { searchString: request.term },
+                dataType: 'json',
+                type: 'GET',
+                success: function (data) {
+                    response($.map(data, function (item) {
+                        return {
+                            label: item.Name,
+                            value: item.Id
+                        }
+                    }));
+                }
+            })
+        },
+        select: function (event, ui) {
+            $('#stylesearch').val(ui.item.label);
+            $('#NewStyleId').val(ui.item.value);
+            return false;
+        },
+        minLength: 1
+    });
 
     $(function () {
         $('#saveform.main').valid();
@@ -401,7 +428,7 @@
                                 @Html.LabelFor(model => model.Team.State, htmlAttributes: new { @class = "control-label col-md-2" })
                             </dt>
                             <dd>
-                                @Html.EnumDropDownListFor(model => model.Team.State, htmlAttributes: new { @class = "form-control" })
+                                @Html.EditorFor(model => model.Team.State, new { htmlAttributes = new { @class = "form-control" } })
                                 @Html.ValidationMessageFor(model => model.Team.State, "", new { @class = "text-danger" })
                             </dd>
                             <dt>
@@ -425,6 +452,30 @@
                             </div>
                         </div>
             }
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body ">
+                <h3>Dance Styles</h3>
+                @using (Ajax.BeginForm("AddStyle",
+                                    "Team",
+                                    new AjaxOptions()
+                                    {
+                                        UpdateTargetId = "stylesdiv",
+                                        OnSuccess = "done(this)"
+                                    },
+                                    new { @id = "addstyleform" }
+                                    ))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(m => m.Team.Id)
+                    @Html.HiddenFor(m => m.NewStyleId)
+                    @Html.TextBox("stylesearch", "", new { placeholder = "Search for a Dance Style", @class = "form-control col-md-4" })
+                    <input class="btn" type="submit" value="Add Style" />
+                }
+                <div id="stylesdiv">
+                    @Html.Partial("~/Views/Team/Partial/_DanceStylesPartial.cshtml", new EDR.Models.ViewModels.TeamDanceStylesPartialViewModel() { DanceStyles = Model.Team.DanceStyles, TeamId = Model.Team.Id })
                 </div>
             </div>
         </div>

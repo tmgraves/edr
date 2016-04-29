@@ -795,6 +795,8 @@
     <Content Include="Views\Home\Test4.cshtml" />
     <Content Include="Views\Event\ManageInstance.cshtml" />
     <Content Include="Views\Home\Test3.cshtml" />
+    <Content Include="Views\Event\Partial\_DanceStylesPartial.cshtml" />
+    <Content Include="Views\Team\Partial\_DanceStylesPartial.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

@@ -30,6 +30,7 @@ namespace EDR.Models
         [ScaffoldColumn(false)]
         public double Longitude { get; set; }
         public ICollection<OrganizationMember> Members { get; set; }
+        public ICollection<DanceStyle> DanceStyles { get; set; }
     }
 
     public class School : Organization

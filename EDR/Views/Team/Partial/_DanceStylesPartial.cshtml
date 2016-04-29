@@ -1,0 +1,26 @@
+﻿@model EDR.Models.ViewModels.TeamDanceStylesPartialViewModel
+
+<table class="table table-condensed table-striped">
+    <thead>
+        <tr>
+            <th>
+                Style
+            </th>
+            <th>
+            </th>
+        </tr>
+    </thead>
+    @foreach (var i in Model.DanceStyles)
+    {
+        <tr>
+            <td>
+                @i.Name
+            </td>
+            <td>
+                @Html.ActionLink("Delete", "DeleteStyle", "Team", new { id = Model.TeamId, styleId = i.Id }, null)
+            </td>
+        </tr>
+    }
+</table>
+
+
