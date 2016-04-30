@@ -9,6 +9,9 @@ using System.Web.Mvc;
 using System.Data.Entity;
 using System.Net;
 using System.ComponentModel;
+using AuthorizeNet.Api.Controllers;
+using AuthorizeNet.Api.Contracts.V1;
+using AuthorizeNet.Api.Controllers.Bases;
 
 namespace EDR.Models
 {
@@ -36,63 +39,85 @@ namespace EDR.Models
     [Bind(Exclude = "Id")]
     public partial class Order : Entity
     {
+        private DateTime _date = DateTime.Now;
         [ScaffoldColumn(false)]
-        public System.DateTime OrderDate { get; set; }
+        [Required]
+        public DateTime OrderDate
+        {
+            get { return _date; }
+            set { _date = value; }
+        }
         [ScaffoldColumn(false)]
-        public string Username { get; set; }
         [Required(ErrorMessage = "First Name is required")]
         [DisplayName("First Name")]
-        [StringLength(160)]
         public string FirstName { get; set; }
         [Required(ErrorMessage = "Last Name is required")]
         [DisplayName("Last Name")]
-        [StringLength(160)]
         public string LastName { get; set; }
         [Required(ErrorMessage = "Address is required")]
-        [StringLength(70)]
         public string Address { get; set; }
         [Required(ErrorMessage = "City is required")]
-        [StringLength(40)]
         public string City { get; set; }
         [Required(ErrorMessage = "State is required")]
-        [StringLength(40)]
         public string State { get; set; }
         [Required(ErrorMessage = "Postal Code is required")]
         [DisplayName("Postal Code")]
-        [StringLength(10)]
         public string PostalCode { get; set; }
         [Required(ErrorMessage = "Country is required")]
-        [StringLength(40)]
         public string Country { get; set; }
         [Required(ErrorMessage = "Phone is required")]
-        [StringLength(24)]
         public string Phone { get; set; }
         [Required(ErrorMessage = "Email Address is required")]
         [DisplayName("Email Address")]
-
         [RegularExpression(@"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}",
             ErrorMessage = "Email is is not valid.")]
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
+        public string Username { get; set; }
         [ScaffoldColumn(false)]
+        public string UserId { get; set; }
+        [ForeignKey("UserId")]
+        public ApplicationUser User { get; set; }
         public decimal Total { get; set; }
-        public List<OrderDetail> OrderDetails { get; set; }
+        public ICollection<OrderDetail> OrderDetails { get; set; }
+        public ICollection<OrderTransaction> OrderTransactions { get; set; }
     }
 
+    [Bind(Exclude = "Id")]
     public class OrderDetail : Entity
     {
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
+        public int? TicketId { get; set; }
+        [ForeignKey("TicketId")]
+        public Ticket Ticket { get; set; }
         [Required]
-        [Index("IX_OrderDetail_DancePack", 2, IsUnique = true)]
-        public int DancePackId { get; set; }
-        [ForeignKey("DancePackId")]
-        public DancePack DancePack { get; set; }
-        [Required]
-        [Index("IX_OrderDetail_Order", 2, IsUnique = true)]
         public int OrderId { get; set; }
         [ForeignKey("OrderId")]
         public Order Order { get; set; }
+    }
+
+    [Bind(Exclude = "Id")]
+    public class OrderTransaction : Entity
+    {
+        [Required]
+        public int OrderId { get; set; }
+        [ForeignKey("OrderId")]
+        public Order Order { get; set; }
+        private DateTime _date = DateTime.Now;
+        [ScaffoldColumn(false)]
+        [Required]
+        public DateTime TransactionDate
+        {
+            get { return _date; }
+            set { _date = value; }
+        }
+        public transactionTypeEnum TransactionType { get; set; }
+        public string ResponseCode { get; set; }
+        public string ResponseMessage { get; set; }
+        public string AccountNumber { get; set; }
+        public string AccountType { get; set; }
+        public bool Success { get; set; }
     }
 
     [Bind(Exclude = "Id")]
@@ -235,7 +260,7 @@ namespace EDR.Models
             {
                 var orderDetail = new OrderDetail
                 {
-                    DancePack = item.DancePack,
+                    //  DancePack = item.DancePack,
                     OrderId = order.Id,
                     UnitPrice = item.DancePack.Price,
                     Quantity = item.Count

@@ -121,10 +121,7 @@ namespace EDR.Data
                         .HasRequired(f => f.Order)
                         .WithMany(f => f.OrderDetails)
                         .WillCascadeOnDelete(true);
-            modelBuilder.Entity<OrderDetail>()
-                        .HasRequired(f => f.DancePack)
-                        .WithMany(f => f.OrderDetails)
-                        .WillCascadeOnDelete(true);
+            modelBuilder.Entity<OrderDetail>();
             modelBuilder.Entity<Ticket>().ToTable("Tickets");
             //modelBuilder.Entity<EventTicket>().ToTable("EventTickets");
             modelBuilder.Entity<UserTicket>().ToTable("UserTickets");

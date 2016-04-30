@@ -38,7 +38,7 @@ namespace EDR.Controllers
                 else
                 {
                     order.Username = User.Identity.Name;
-                    order.OrderDate = DateTime.Now;
+                    //  order.OrderDate = DateTime.Now;
 
                     //Save Order
                     DataContext.Orders.Add(order);

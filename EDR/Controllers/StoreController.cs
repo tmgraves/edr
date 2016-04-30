@@ -30,7 +30,7 @@ namespace EDR.Controllers
         [Authorize]
         public ActionResult BuyTicket(int? instanceId, int? schoolId)
         {
-            var model = new BuyTicketViewModel();
+            var model = new OrderViewModel();
             if (instanceId != null)
             {
                 var instance = DataContext.EventInstances.Include("Event").Include("Event.Tickets").Single(e => e.Id == (int)instanceId);
@@ -70,7 +70,7 @@ namespace EDR.Controllers
         }
         
         [HttpPost]
-        public ActionResult BuyTicket(BuyTicketViewModel model)
+        public ActionResult BuyTicket(OrderViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -135,14 +135,16 @@ namespace EDR.Controllers
         }
 
         [HttpPost]
-        public ActionResult PostTransaction(string CCNumber, string CCMonth, string CCYear, string SecurityCode, decimal amount)
+        public ActionResult PostTransaction(OrderViewModel model)
         {
-            Run(CCNumber, CCMonth, CCYear, SecurityCode, amount);
+            //  model.Order = new Order() { }
+            model.Order.OrderDetails.Add(new OrderDetail() { TicketId = model.TicketId, Quantity = model.Quantity });
+            Run(model);
             return RedirectToAction("Test3", "Home");
         }
 
         [Authorize]
-        public static ANetApiResponse Run(string CCNumber, string CCMonth, string CCYear, string SecurityCode, decimal amount)
+        public static ANetApiResponse Run(OrderViewModel model)
         {
             Console.WriteLine("Charge Credit Card Sample");
 
@@ -158,36 +160,40 @@ namespace EDR.Controllers
 
             var creditCard = new creditCardType
             {
-                cardNumber = CCNumber,  //  "4111111111111111",
-                expirationDate = CCMonth + CCYear, //   "0718",
-                cardCode = SecurityCode //   "123"
+                cardNumber = model.CCNumber,  //  "4111111111111111",
+                expirationDate = model.CCMonth + model.CCYear, //   "0718",
+                cardCode = model.SecurityCode //   "123"
             };
 
             var billingAddress = new customerAddressType
             {
-                firstName = "John",
-                lastName = "Doe",
-                address = "123 My St",
-                city = "OurTown",
-                zip = "98004"
+                firstName = model.Order.FirstName,  //  "John",
+                lastName = model.Order.LastName, //    "Doe",
+                address = model.Order.Address, //  "123 My St",
+                city = model.Order.City, //  "OurTown",
+                zip = model.Order.PostalCode, //  "98004"
             };
 
             //standard api call to retrieve response
             var paymentType = new paymentType { Item = creditCard };
 
             // Add line Items
-            var lineItems = new lineItemType[2];
-            lineItems[0] = new lineItemType { itemId = "1", name = "t-shirt", quantity = 2, unitPrice = new Decimal(15.00) };
-            lineItems[1] = new lineItemType { itemId = "2", name = "snowboard", quantity = 1, unitPrice = new Decimal(450.00) };
+            var lineItems = new List<lineItemType>();
+            foreach(var i in model.Order.OrderDetails)
+            {
+                lineItems.Add( new lineItemType { itemId = i.Id.ToString(), name = i.Ticket.Quantity.ToString() + " tickets for $" + i.Ticket.Price.ToString(), quantity = i.Quantity, unitPrice = i.Ticket.Price });
+            }
+            //lineItems[0] = new lineItemType { itemId = "1", name = "t-shirt", quantity = 2, unitPrice = new Decimal(15.00) };
+            //lineItems[1] = new lineItemType { itemId = "2", name = "snowboard", quantity = 1, unitPrice = new Decimal(450.00) };
 
             var transactionRequest = new transactionRequestType
             {
                 transactionType = transactionTypeEnum.authCaptureTransaction.ToString(),    // charge the card
 
-                amount = amount,
+                amount = model.Order.OrderDetails.Sum(i => i.Ticket.Price),
                 payment = paymentType,
                 billTo = billingAddress,
-                lineItems = lineItems
+                lineItems = lineItems.ToArray()
             };
 
             var request = new createTransactionRequest { transactionRequest = transactionRequest };
@@ -203,7 +209,8 @@ namespace EDR.Controllers
             {
                 if (response.transactionResponse != null)
                 {
-                    Console.WriteLine("Success, Auth Code : " + response.transactionResponse.authCode);
+                    model.Order.OrderTransactions.Add(new OrderTransaction() { Success = true, ResponseCode = response.messages.message[0].code, ResponseMessage = response.messages.message[0].text });
+                    //  Console.WriteLine("Success, Auth Code : " + response.transactionResponse.authCode);
                 }
             }
             else if (response != null)
@@ -211,9 +218,13 @@ namespace EDR.Controllers
                 Console.WriteLine("Error: " + response.messages.message[0].code + "  " + response.messages.message[0].text);
                 if (response.transactionResponse != null)
                 {
-                    Console.WriteLine("Transaction Error : " + response.transactionResponse.errors[0].errorCode + " " + response.transactionResponse.errors[0].errorText);
+                    model.Order.OrderTransactions.Add(new OrderTransaction() { Success = true, ResponseCode = response.messages.message[0].code, ResponseMessage = response.messages.message[0].text });
+                    //  Console.WriteLine("Transaction Error : " + response.transactionResponse.errors[0].errorCode + " " + response.transactionResponse.errors[0].errorText);
                 }
             }
+
+            var context = new Data.ApplicationDbContext();
+            context.SaveChanges();
 
             return response;
         }

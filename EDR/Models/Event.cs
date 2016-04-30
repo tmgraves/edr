@@ -280,13 +280,14 @@ namespace EDR.Models
         [ForeignKey("EventId")]
         public Event Event { get; set; }
         //public ICollection<EventTicket> EventTickets { get; set; }
-        public ICollection<UserTicket> UserTickets { get; set; }
         [Display(Name = "Purchase Limit")]
         public int? Limit { get; set; }
         [Display(Name = "Valid From")]
         public DateTime? Start { get; set; }
         [Display(Name = "Valid To")]
         public DateTime? End { get; set; }
+        public ICollection<UserTicket> UserTickets { get; set; }
+        public ICollection<OrderDetail> OrderDetails { get; set; }
     }
 
     //public class EventTicketPlaceholder

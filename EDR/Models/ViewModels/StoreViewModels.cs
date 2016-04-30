@@ -28,7 +28,7 @@ namespace EDR.Models.ViewModels
         public int DeleteId { get; set; }
     }
 
-    public class BuyTicketViewModel
+    public class OrderViewModel
     {
         public ICollection<Ticket> Tickets { get; set; }
         [Required]
@@ -42,11 +42,17 @@ namespace EDR.Models.ViewModels
         public int? EventId { get; set; }
         public EDR.Enums.EventType? Type { get; set; }
         public int? SchoolId { get; set; }
-        public BuyTicketViewModel()
+        public Order Order { get; set; }
+        public string CCNumber { get; set; }
+        public string CCMonth { get; set; }
+        public string CCYear { get; set; }
+        public string SecurityCode { get; set; }
+        public decimal Amount { get; set; }
+        public OrderViewModel()
         {
             Quantity = 1;
         }
-        public BuyTicketViewModel(List<Ticket> tickets)
+        public OrderViewModel(List<Ticket> tickets)
         {
             Quantity = 1;
             Tickets = tickets;
