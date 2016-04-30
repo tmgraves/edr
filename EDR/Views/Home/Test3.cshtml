@@ -1,9 +1,5 @@
-﻿
-@{
-    ViewBag.Title = "Test3";
-}
-
-@{
+﻿@{
+    Layout = null;
     ViewBag.Title = "ManageInstance";
 }
 @section Scripts
@@ -31,3 +27,50 @@
     <link rel="stylesheet" type="text/css" href="~/Content/timepicker/site.css" />
     <script src="~/Scripts/timepicker/datepair.js"></script>
     <script src="~/Scripts/timepicker/jquery.datepair.js"></script>
+}
+@using (Html.BeginForm("PostTransaction", "Store", FormMethod.Post, new { @id = "saveform", @class = "main" }))
+{
+    <h2>Payment Info</h2>
+    <div class="form-group">
+        <label for="inputPassword3" class="col-sm-2 control-label">Card Number</label>
+        <div class="col-sm-10">
+            <input id="CCNumber" name="CCNumber" type="text" size="20" value="" autocomplete="off" required class="form-control" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="inputPassword3" class="col-sm-2 control-label">Expiration Date (MM/YYYY)</label>
+        <div class="col-sm-10">
+            <div class="col-lg-1">
+                <input type="text" size="2" id="CCMonth" name="CCMonth" required class="form-control" />
+            </div>
+            <span class="col-lg-1"> / </span>
+            <div class="col-lg-1">
+                <input type="text" size="2" id="CCYear" name="CCYear" required class="form-control" />
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="inputPassword3" class="col-sm-2 control-label">CVC</label>
+        <div class="col-sm-10">
+            <input id="SecurityCode" name="SecurityCode" size="4" type="text" value="" autocomplete="off" required class="form-control" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="amount" class="col-sm-2 control-label">Amount</label>
+        <div class="col-sm-10">
+            <input id="amount" name="amount" type="text" size="20" value="" autocomplete="off" required class="form-control" />
+        </div>
+    </div>
+
+    @*<p>
+        Api ID<input type="text" id="ApiLoginID" name="ApiLoginID" />
+    </p>
+    <p>
+        Key<input type="text" id="ApiTransactionKey" name="ApiTransactionKey" />
+    </p>
+    <p>
+        Amount<input type="text" id="amount" name="amount" />
+    </p>*@
+
+    <input type="submit" id="btnsave" value="Save" class="btn btn-primary" />
+}
