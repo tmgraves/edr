@@ -340,10 +340,12 @@ namespace EDR.Controllers
             return View();
         }
 
-        //[HttpPost]
-        //public ActionResult Test3(Test model)
-        //{
-        //    return View(model);
-        //}
+        [HttpPost]
+        public ActionResult Test3(OrderViewModel model)
+        {
+            model.Order.OrderDetails.Add(new OrderDetail() { TicketId = model.TicketId, Quantity = model.Quantity });
+            StoreController.PostTransaction(model);
+            return RedirectToAction("Test3", "Home");
+        }
     }
 }

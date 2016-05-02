@@ -36,7 +36,6 @@ namespace EDR.Models
         public virtual DancePack DancePack { get; set; }
     }
 
-    [Bind(Exclude = "Id")]
     public partial class Order : Entity
     {
         private DateTime _date = DateTime.Now;
@@ -65,12 +64,10 @@ namespace EDR.Models
         public string PostalCode { get; set; }
         [Required(ErrorMessage = "Country is required")]
         public string Country { get; set; }
-        [Required(ErrorMessage = "Phone is required")]
         public string Phone { get; set; }
         [Required(ErrorMessage = "Email Address is required")]
         [DisplayName("Email Address")]
-        [RegularExpression(@"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}",
-            ErrorMessage = "Email is is not valid.")]
+        [RegularExpression(@"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}", ErrorMessage = "Email is is not valid.")]
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
         public string Username { get; set; }
@@ -79,6 +76,9 @@ namespace EDR.Models
         [ForeignKey("UserId")]
         public ApplicationUser User { get; set; }
         public decimal Total { get; set; }
+        public int? EventInstanceId { get; set; }
+        [ForeignKey("EventInstanceId")]
+        public EventInstance EventInstance { get; set; }
         public ICollection<OrderDetail> OrderDetails { get; set; }
         public ICollection<OrderTransaction> OrderTransactions { get; set; }
     }

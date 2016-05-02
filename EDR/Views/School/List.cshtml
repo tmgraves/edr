@@ -94,52 +94,55 @@
     //    //});
     //});
 
-    //  Map Marker Containers
-    var markers = [];
-    var infowindows = [];
-    //  Map Marker Containers
+    $(function () {
+        
+          var options = {
+              map: ".map_canvas"
+          };
+        
+          $("#Location").geocomplete(options)
+            .on("geocode:result", function(event, result){
+
+                // Set the zoom level you require for the default map
+                var map = $("#Location").geocomplete("map");
+                map.setZoom(10);
+            });
+      });
 
     $(function () {
-        // Initialize the plugin.
-        //  $("#Location").geocomplete({ map: ".map_canvas" });
-        $("#Location").geocomplete({
-            map: ".map_canvas",
-            details: "form",
-            types: ["geocode", "establishment"],
-        });
-
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(success);
         }
 
         function success(position) {
             var loc = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-            $("#Location").geocomplete("find", loc.lat() + ", " + loc.lng());
-            $("#Location").geocomplete("map").setZoom(2);
+            var map = $("#Location").geocomplete("map");
+            map.setZoom(10);
+            map.setCenter(loc);
         }
+    });
 
+    $(function () {
+        //  Map Marker Containers
+        var markers = [];
+        var infowindows = [];
+        //  Map Marker Containers
         //  Build up the Markers
         var map = $("#Location").geocomplete("map");
-        @foreach(var s in Model.Schools)
-        {
-            <text>
-            var marker = new google.maps.Marker({
+    @foreach(var s in Model.Schools)
+    {
+        <text>
+        var marker = new google.maps.Marker({
             position: new google.maps.LatLng('@s.Latitude', @s.Longitude),
             map: map,
             title: '@s.Name',
             icon: "http://maps.google.com/mapfiles/kml/pal2/icon2.png"
-            });
+        });
 
-            attachMessage(map, marker, '@s.Id', '@s.Name', '@s.Address', '@(s.City + ", " + s.State + " " + s.Zip)', '<a href="@Url.Action("View", "School", new { id = s.Id })">' + '@s.Name' + '</a>');
-
-            markers.push(marker);
-            </text>
-        }
-
-        //// Get the map and set a new zoom level.
-        //var map = $("#Location").geocomplete("map");
-        //map.setZoom(20);
-    });
+        attachMessage(map, marker, '@s.Id', '@s.Name', '@s.Address', '@(s.City + ", " + s.State + " " + s.Zip)', '<a href="@Url.Action("View", "School", new { id = s.Id })">' + '@s.Name' + '</a>');
+        markers.push(marker);
+        </text>
+    }
 
     function attachMessage(map, marker, num, placeName, address, address2, link) {
         var message = marker.title;
@@ -175,6 +178,7 @@
             infowindows[i].close();
         }
     }
+    });
 
 
     //$(function () {

@@ -1,0 +1,72 @@
+﻿@model EDR.Models.ViewModels.ConfirmationViewModel
+
+@{
+    ViewBag.Title = "Confirmation";
+}
+
+<div class="container-fluid">
+    <div class="container">
+        <div class="col-lg-6 col-lg-offset-3">
+            <h2 class="text-center">Your Order is Complete!</h2>
+        </div>
+        <div class="col-lg-6 col-lg-offset-3 bg-info">
+            <div class="col-lg-8 col-lg-offset-2 text-center" style="padding: 10px;">
+                <strong>Thank you for your puchase.</strong> Please print this
+                receipt for your records. If you ordered multiple tickets or multiple class
+                tickets, you can use them on future Events or other Events from
+                the related School. Check on your ticket orders here:<br />
+                <strong>@Html.ActionLink("My Account", "Manage", "Dancer", new { id = Model.Order.User.Id }, null)</strong>
+                <hr />
+                @if (Model.Order.EventInstance != null)
+                {
+                    <h4 class="text-center">@Model.Order.EventInstance.Event.Name</h4>
+                    <text>at</text> @Model.Order.EventInstance.Place.Name<br />
+                    @Model.Order.EventInstance.DateTime.ToLongDateString()
+                    <text>@@</text> @(((DateTime)Model.Order.EventInstance.Event.StartTime).ToString("h:mm tt"))
+                }
+                else
+                {
+                    <h4>@Model.Order.OrderDetails.FirstOrDefault().Ticket.School.Name</h4>
+                }
+                <hr />
+                <table class="table table-condensed">
+                    @foreach (var i in Model.Order.OrderDetails)
+                    {
+                        <tr>
+                            <td class="text-left">
+                                @i.Ticket.Quantity.ToString("N0") x  @i.Ticket.Price.ToString("C")
+                            </td>
+                            <td class="text-right">
+                                @((i.UnitPrice * i.Quantity).ToString("C"))
+                            </td>
+                        </tr>
+                    }
+                    <tfoot>
+                        <tr style="font-weight: bold;">
+                            <td class="text-left">
+                                Total:
+                            </td>
+                            <td class="text-right">
+                                @Model.Order.OrderDetails.Sum(d => d.Quantity * d.UnitPrice).ToString("C")
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        <div class="col-lg-6 col-lg-offset-3">
+            <div class="row" style="margin-top: 10px;">
+                <div class="form-group text-center">
+                    @if (Model.Order.EventInstance != null)
+                    {
+                        @Html.ActionLink("Return to " + Model.Order.EventInstance.Event.Name, "View", "Event", new { id = Model.Order.EventInstance.EventId, eventType = Model.Order.EventInstance.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social }, new { @class = "btn btn-primary" })
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Return to " + Model.Order.OrderDetails.FirstOrDefault().Ticket.School.Name, "View", "School", new { id = Model.Order.OrderDetails.FirstOrDefault().Ticket.SchoolId }, new { @class = "btn btn-primary" })
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

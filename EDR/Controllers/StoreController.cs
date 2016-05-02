@@ -10,6 +10,7 @@ using AuthorizeNet.Api.Controllers;
 using AuthorizeNet.Api.Contracts.V1;
 using AuthorizeNet.Api.Controllers.Bases;
 using System.Configuration;
+using System.Data.Entity;
 
 namespace EDR.Controllers
 {
@@ -28,17 +29,22 @@ namespace EDR.Controllers
         }
 
         [Authorize]
-        public ActionResult BuyTicket(int? instanceId, int? schoolId)
+        private void LoadOrderModel(OrderViewModel model)
         {
-            var model = new OrderViewModel();
-            if (instanceId != null)
+            model.Years = new List<string>();
+            for (int i = DateTime.Today.Year; i <= DateTime.Today.Year + 10; i++)
             {
-                var instance = DataContext.EventInstances.Include("Event").Include("Event.Tickets").Single(e => e.Id == (int)instanceId);
+                model.Years.Add(i.ToString());
+            }
+
+            if (model.EventInstanceId != null)
+            {
+                model.EventInstance = DataContext.EventInstances.Include("Event").Include("Event.Tickets").Include("Event.Place").Single(e => e.Id == (int)model.EventInstanceId);
 
                 var tickets = new List<Ticket>();
-                if (instance.Event.Tickets.Count() != 0)
+                if (model.EventInstance.Event.Tickets.Count() != 0)
                 {
-                    tickets = instance.Event.Tickets.ToList();
+                    tickets = model.EventInstance.Event.Tickets.ToList();
                 }
                 else
                 {
@@ -48,55 +54,33 @@ namespace EDR.Controllers
                              on i.EventId equals c.Id
                              join t in DataContext.Tickets
                              on c.SchoolId equals t.SchoolId
-                             where i.Id == instanceId
+                             where i.Id == model.EventInstanceId
                              select t).Distinct().ToList();
                 }
                 model.Tickets = tickets;
-                model.EventInstanceId = instanceId;
-                model.Type = instance.Event is Class ? Enums.EventType.Class : Enums.EventType.Social;
-                model.EventId = instance.EventId;
+                model.Type = model.EventInstance.Event is Class ? Enums.EventType.Class : Enums.EventType.Social;
             }
             else
             {
-                var instance = DataContext.EventInstances.Include("Event").Single(e => e.Id == (int)instanceId);
-
                 var tickets = new List<Ticket>();
-                tickets = DataContext.Tickets.Where(t => t.SchoolId == schoolId).ToList();
+                tickets = DataContext.Tickets.Where(t => t.SchoolId == model.SchoolId).ToList();
 
                 model.Tickets = tickets;
-                model.SchoolId = schoolId;
+                model.School = DataContext.Schools.Single(s => s.Id == model.SchoolId);
             }
+        }
+
+        [Authorize]
+        public ActionResult BuyTicket(int? instanceId, int? schoolId)
+        {
+            var model = new OrderViewModel();
+            model.Order = new Order();
+            model.EventInstanceId = instanceId;
+            model.SchoolId = schoolId;
+            LoadOrderModel(model);
             return View(model);
         }
         
-        [HttpPost]
-        public ActionResult BuyTicket(OrderViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var userid = User.Identity.GetUserId();
-                var user = DataContext.Users.Single(u => u.Id == userid);
-                var ticket = new UserTicket() { UserId = userid, TicketId = model.TicketId, Quantity = model.Quantity };
-                DataContext.UserTickets.Add(ticket);
-                DataContext.SaveChanges();
-
-                if (model.EventInstanceId != null)
-                {
-                    DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = (int)model.EventInstanceId, UserTicketId = ticket.Id });
-                    DataContext.SaveChanges();
-                    return RedirectToAction("View", "Event", new { id = model.EventId, eventType = model.Type });
-                }
-                else
-                {
-                    return RedirectToAction("View", "School", new { id = model.SchoolId });
-                }
-            }
-            else
-            {
-                return View(model);
-            }
-        }
-
         // GET: School
         [Authorize(Roles = "Teacher,Owner")]
         public ActionResult AddTicket(int? schoolId, int? eventId)
@@ -134,19 +118,93 @@ namespace EDR.Controllers
             }
         }
 
-        [HttpPost]
-        public ActionResult PostTransaction(OrderViewModel model)
+        // GET: School
+        [Authorize(Roles = "Teacher,Owner")]
+        public ActionResult Confirmation(int id)
         {
-            //  model.Order = new Order() { }
-            model.Order.OrderDetails.Add(new OrderDetail() { TicketId = model.TicketId, Quantity = model.Quantity });
-            Run(model);
-            return RedirectToAction("Test3", "Home");
+            var model = new ConfirmationViewModel();
+            model.Order = DataContext.Orders
+                                .Include("OrderDetails.Ticket.School")
+                                .Include("EventInstance.Place")
+                                .Include("User")
+                                .Where(o => o.Id == id).FirstOrDefault();
+            return View(model);
+        }
+
+        //[HttpPost]
+        //public ActionResult PostTransaction(OrderViewModel model)
+        //{
+        //    model.Order.OrderDetails.Add(new OrderDetail() { TicketId = model.TicketId, Quantity = model.Quantity });
+        //    Run(model);
+        //    return RedirectToAction("Test3", "Home");
+        //}
+
+        [Authorize]
+        [HttpPost]
+        public ActionResult BuyTicket(OrderViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var userid = User.Identity.GetUserId();
+                //  Create Order and Details
+                model.Order.EventInstanceId = model.EventInstanceId;
+                model.Order.UserId = userid;
+                if (model.Order.Id != 0)
+                {
+                    DataContext.Entry(model.Order).State = EntityState.Modified;
+                    DataContext.SaveChanges();
+                    model.Order = DataContext.Orders.Include("OrderDetails.Ticket").Single(o => o.Id == model.Order.Id);
+                }
+                else
+                {
+                    DataContext.Orders.Add(model.Order);
+                    DataContext.SaveChanges();
+                    model.Order.OrderDetails = new List<OrderDetail>();
+                    var ticket = DataContext.Tickets.Single(t => t.Id == model.TicketId);
+                    model.Order.OrderDetails.Add(new OrderDetail() { Quantity = model.Quantity, TicketId = model.TicketId, UnitPrice = ticket.Price });
+                    DataContext.SaveChanges();
+                }
+                //  Create Order and Details
+
+                //  Post Transaction
+                if (PostTransaction(model).messages.resultCode == messageTypeEnum.Ok)
+                {
+                    //  Create User Ticket record
+                    var user = DataContext.Users.Single(u => u.Id == userid);
+                    var uticket = new UserTicket() { UserId = userid, TicketId = model.TicketId, Quantity = model.Quantity };
+                    DataContext.UserTickets.Add(uticket);
+                    DataContext.SaveChanges();
+                    //  Create User Ticket record
+
+                    //  Register User for Event
+                    if (model.EventInstance != null)
+                    {
+                        DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = (int)model.EventInstanceId, UserTicketId = uticket.Id });
+                        DataContext.SaveChanges();
+                    }
+                    //  Register User for Event
+                    return RedirectToAction("Confirmation", "Store", new { id = model.Order.Id });
+                }
+                else
+                {
+                    DataContext.SaveChanges();
+                    LoadOrderModel(model);
+                    return View(model);
+                }
+                //  Post Transaction
+
+            }
+            else
+            {
+                LoadOrderModel(model);
+                return View(model);
+            }
         }
 
         [Authorize]
-        public static ANetApiResponse Run(OrderViewModel model)
+        public static ANetApiResponse PostTransaction(OrderViewModel model)
         {
-            Console.WriteLine("Charge Credit Card Sample");
+            //  Console.WriteLine("Charge Credit Card Sample");
 
             ApiOperationBase<ANetApiRequest, ANetApiResponse>.RunEnvironment = AuthorizeNet.Environment.SANDBOX;
 
@@ -161,7 +219,7 @@ namespace EDR.Controllers
             var creditCard = new creditCardType
             {
                 cardNumber = model.CCNumber,  //  "4111111111111111",
-                expirationDate = model.CCMonth + model.CCYear, //   "0718",
+                expirationDate = model.CCMonth + model.CCYear.Substring(2,2), //   "0718",
                 cardCode = model.SecurityCode //   "123"
             };
 
@@ -205,6 +263,7 @@ namespace EDR.Controllers
             // get the response from the service (errors contained if any)
             var response = controller.GetApiResponse();
 
+            model.Order.OrderTransactions = new List<OrderTransaction>();
             if (response != null && response.messages.resultCode == messageTypeEnum.Ok)
             {
                 if (response.transactionResponse != null)
@@ -215,10 +274,12 @@ namespace EDR.Controllers
             }
             else if (response != null)
             {
-                Console.WriteLine("Error: " + response.messages.message[0].code + "  " + response.messages.message[0].text);
+                // Console.WriteLine("Error: " + response.messages.message[0].code + "  " + response.messages.message[0].text);
                 if (response.transactionResponse != null)
                 {
-                    model.Order.OrderTransactions.Add(new OrderTransaction() { Success = true, ResponseCode = response.messages.message[0].code, ResponseMessage = response.messages.message[0].text });
+                    model.Result = response.messages.message[0].code;
+                    model.Message = response.transactionResponse.errors[0].errorText;
+                    model.Order.OrderTransactions.Add(new OrderTransaction() { Success = false, ResponseCode = response.messages.message[0].code, ResponseMessage = response.transactionResponse.errors[0].errorText });
                     //  Console.WriteLine("Transaction Error : " + response.transactionResponse.errors[0].errorCode + " " + response.transactionResponse.errors[0].errorText);
                 }
             }

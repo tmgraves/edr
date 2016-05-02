@@ -1781,6 +1781,7 @@ namespace EDR.Controllers
                     //  Add Tickets
                     if (!model.UseSchoolTickets)
                     {
+                        cls.Tickets = new List<Ticket>();
                         cls.Tickets.Add(new Ticket() { EventId = cls.Id, Price = (decimal)model.TicketPrice, Quantity = (decimal)model.TicketQuantity });
                         DataContext.SaveChanges();
                     }
@@ -1851,6 +1852,7 @@ namespace EDR.Controllers
                     id = soc.Id;
 
                     //  Add Tickets
+                    soc.Tickets = new List<Ticket>();
                     soc.Tickets.Add(new Ticket() { EventId = soc.Id, Price = (decimal)model.TicketPrice, Quantity = (decimal)model.TicketQuantity });
                     DataContext.SaveChanges();
                 }

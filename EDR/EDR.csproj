@@ -800,6 +800,7 @@
     <Content Include="Views\Home\Test3.cshtml" />
     <Content Include="Views\Event\Partial\_DanceStylesPartial.cshtml" />
     <Content Include="Views\Team\Partial\_DanceStylesPartial.cshtml" />
+    <Content Include="Views\Store\Confirmation.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>
