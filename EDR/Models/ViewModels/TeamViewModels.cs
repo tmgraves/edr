@@ -19,6 +19,28 @@ namespace EDR.Models.ViewModels
 
     public class TeamIndexViewModel
     {
+        //  Search Fields
+        [Display(Name = "Teacher:")]
+        public string TeacherId { get; set; }
+        public string Teacher { get; set; }
+        [Display(Name = "Dance Style:")]
+        public int? DanceStyleId { get; set; }
+        public string Style { get; set; }
+        public Address SearchAddress { get; set; }
+        public string Location { get; set; }
+        [Display(Name = "Skill Level:")]
+        public int? SkillLevel { get; set; }
+
+        //  Map Settings
+        public double? NELat { get; set; }
+        public double? NELng { get; set; }
+        public double? SWLat { get; set; }
+        public double? SWLng { get; set; }
+        public double? CenterLat { get; set; }
+        public double? CenterLng { get; set; }
+        public int? Zoom { get; set; }
+
+        //  Results
         public IEnumerable<Team> Teams { get; set; }
     }
 

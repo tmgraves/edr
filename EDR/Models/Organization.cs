@@ -59,6 +59,7 @@ namespace EDR.Models
         public int? SchoolId { get; set; }
         [ForeignKey("SchoolId")]
         public School School { get; set; }
+        public ICollection<Teacher> Teachers { get; set; }
         public ICollection<Rehearsal> Rehearsals { get; set; }
         public ICollection<Performance> Performances { get; set; }
         public ICollection<Audition> Auditions { get; set; }

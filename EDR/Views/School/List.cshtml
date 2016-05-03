@@ -4,9 +4,9 @@
     ViewBag.Title = "All Schools";
 }
 
-<h2>All Schools</h2>
+<h2 class="text-center">All Schools</h2>
 
-<p>
+<p class="text-center">
     @Html.ActionLink("Create New School", "Create")
 </p>
 
@@ -278,38 +278,32 @@
     @Html.HiddenFor(m => m.CenterLat)
     @Html.HiddenFor(m => m.CenterLng)
     @Html.HiddenFor(m => m.Zoom)
-    <div class="row col-lg-12 col-md-12">
-        <div class="col-lg-6 col-md-6">
-            <div class="row">
-                <div class="form-group">
-                    @Html.Label("Location:", htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
-                    <div class="col-md-8 col-lg-8">
-                        @Html.TextBoxFor(m => m.Location, new { placeholder = "Search for a Location", @class = "form-control" })
-                    </div>
+    <div class="container bg-info text-center" style="padding: 10px;">
+        <div class="form-inline">
+            <div class="form-group">
+                @*@Html.Label("Location:", htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })*@
+                <div class="col-md-12 col-lg-12">
+                    @Html.TextBoxFor(m => m.Location, new { placeholder = "Search for a Location", @class = "form-control" })
                 </div>
             </div>
-            <div class="row" style="margin-top: 5px;">
-                <div class="form-group">
-                    @Html.LabelFor(model => model.DanceStyleId, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
-                    <div class="col-md-8 col-lg-8">
-                        @Html.HiddenFor(m => m.DanceStyleId)
-                        @Html.TextBoxFor(m => m.Style, new { placeholder="Search for a Dance Style", @class="form-control" } )
-                    </div>
+            <div class="form-group">
+                <div class="col-md-12 col-lg-12">
+                    @Html.HiddenFor(m => m.DanceStyleId)
+                    @Html.TextBoxFor(m => m.Style, new { placeholder = "Search for a Dance Style", @class = "form-control" })
                 </div>
             </div>
-            <div class="row" style="margin-top: 5px;">
-                <div class="form-group">
-                    @Html.LabelFor(model => model.TeacherId, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
-                    <div class="col-md-8 col-lg-8">
-                        @Html.HiddenFor(m => m.TeacherId)
-                        @Html.TextBoxFor(m => m.Teacher, new { placeholder = "Search for a Teacher", @class = "form-control" })
-                    </div>
+            <div class="form-group">
+                <div class="col-md-12 col-lg-12">
+                    @Html.HiddenFor(m => m.TeacherId)
+                    @Html.TextBoxFor(m => m.Teacher, new { placeholder = "Search for a Teacher", @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-12 col-lg-12">
+                    <input type="submit" value="Search Schools" class="btn btn-warning" />
                 </div>
             </div>
         </div>
-    </div>
-    <div class="row col-lg-12 col-md-12" style="margin: 5px;">
-        <input type="submit" value="Search Classes" class="btn btn-warning" />
     </div>
 }
 

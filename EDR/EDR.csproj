@@ -802,6 +802,7 @@
     <Content Include="Views\Team\Partial\_DanceStylesPartial.cshtml" />
     <Content Include="Views\Store\Confirmation.cshtml" />
     <Content Include="Views\Home\Learn.cshtml" />
+    <Content Include="Views\Home\Social.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>
@@ -845,7 +846,7 @@
     <Content Include="Views\Event\Signup.cshtml" />
     <Content Include="Views\Class\CreateReview.cshtml" />
     <Content Include="Views\Home\Teachers.cshtml" />
-    <Content Include="Views\Home\Social.cshtml" />
+    <Content Include="Views\Home\Social old.cshtml" />
     <Content Include="Views\Account\TeacherProfile.cshtml" />
     <Content Include="Views\Teacher\Apply.cshtml" />
     <Content Include="Views\Teacher\Edit.cshtml" />

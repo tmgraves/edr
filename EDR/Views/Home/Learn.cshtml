@@ -4,7 +4,7 @@
     ViewBag.Title = "Learn";
 }
 
-<h1 class="page-header">Find a Class/Workshop</h1>
+<h1 class="text-center">Find a Class/Workshop</h1>
 
 <style>
     .map_canvas {
@@ -149,14 +149,14 @@
         @if (Model.Zoom != null)
         {
             <text>
-            map.setZoom(@Model.Zoom.ToString());
-            </text>
+        map.setZoom(@Model.Zoom.ToString());
+        </text>
         }
         else
         {
             <text>
-            map.setZoom(10);
-            </text>
+        map.setZoom(10);
+        </text>
         }
     });
 
@@ -237,6 +237,46 @@
         }
     });
 
+    $(function () {
+        $( ".toggle" ).click(function() {
+            // Animation complete.
+            $("#daysdiv").css({
+                'position': 'absolute',
+                'z-index' : '3',
+                'left': $(this).offset().left,
+                'top': $(this).offset().top + $(this).height() + 15
+            });
+            $( "#daysdiv" ).toggle( "fast", function() {
+            });
+        });
+
+        //$('.popup').click(function (e) {
+        //    $('.popuptarget').css({
+        //        'position': 'absolute',
+        //        'left': $(this).offset().left,
+        //        'top': $(this).offset().top + $(this).height() + 5
+        //    }).show("slow").delay(3000).hide("slow");
+        //});
+        //$('.toggle').click(function (event) {
+        //    $('.popuptarget').css({
+        //        'position': 'absolute',
+        //        'z-index' : '3',
+        //        'left': $(this).offset().left,
+        //        'top': $(this).offset().top + $(this).height() + 15
+        //    });
+        //    $('.popuptarget').toggle("slow");
+        //    //event.preventDefault();
+        //    //var target = $(this).attr('href');
+        //    //$(target).toggleClass('hidden show');
+        //});
+
+        //$('#mypop').popover({
+        //    html: true,
+        //    content: function() {
+        //        return $('#mytab').html();
+        //    }
+        //})
+    });
 
     //$(function () {
     //    $("#Location").geocomplete({
@@ -274,38 +314,76 @@
     @Html.HiddenFor(m => m.CenterLat)
     @Html.HiddenFor(m => m.CenterLng)
     @Html.HiddenFor(m => m.Zoom)
-    <div class="row col-lg-12 col-md-12">
-        <div class="col-lg-6 col-md-6">
-            <div class="row">
-                <div class="form-group">
-                    @Html.Label("Location:", htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
-                    <div class="col-md-8 col-lg-8">
-                        @Html.TextBoxFor(m => m.Location, new { placeholder = "Search for a Location", @class = "form-control" })
-                    </div>
+    <div class="container bg-info text-center" style="padding: 10px;">
+        <div class="form-inline">
+            <div class="form-group">
+                @Html.TextBoxFor(m => m.Location, new { placeholder = "Location", @class = "form-control" })
+            </div>
+            <div class="form-group">
+                @Html.HiddenFor(m => m.DanceStyleId)
+                @Html.TextBoxFor(m => m.Style, new { placeholder = "Dance Style", @class = "form-control" })
+            </div>
+            <div class="form-group">
+                @Html.HiddenFor(m => m.TeacherId)
+                @Html.TextBoxFor(m => m.Teacher, new { placeholder = "Teacher", @class = "form-control" })
+            </div>
+            <div class="form-group">
+                @Html.DropDownListFor(m => m.SkillLevel, new SelectList(new List<int> { 1, 2, 3, 4, 5 }), "Skill Level", new { @class = "form-control text-center" })
+            </div>
+            <div class="form-group">
+                <a href="#days" class="toggle btn btn-default">Day of Week <span class="caret"></span></a>
+                <div id="daysdiv" class="well text-left" style="display: none;">
+                    @Html.CheckBoxListFor(model => model.Days,
+                                                    model => (Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>().Select(enu => new SelectListItem() { Text = enu.ToString(), Value = enu.ToString() })).ToList(),
+                                                    item => item.Value,
+                                                    item => item.Text,
+                                                    model => (Model.Days != null ? (Model.Days.Select(d => new SelectListItem() { Text = d.ToString(), Value = d.ToString() })) : null),
+                                                    new MvcCheckBoxList.Model.HtmlListInfo(MvcCheckBoxList.Model.HtmlTag.table, 1, new { @class = "checkboxlist text-warning" }, MvcCheckBoxList.Model.TextLayout.Default))
                 </div>
             </div>
-            <div class="row" style="margin-top: 5px;">
-                <div class="form-group">
-                    @Html.LabelFor(model => model.DanceStyleId, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
-                    <div class="col-md-8 col-lg-8">
-                        @Html.HiddenFor(m => m.DanceStyleId)
-                        @Html.TextBoxFor(m => m.Style, new { placeholder="Search for a Dance Style", @class="form-control" } )
-                    </div>
-                </div>
-            </div>
-            <div class="row" style="margin-top: 5px;">
-                <div class="form-group">
-                    @Html.LabelFor(model => model.TeacherId, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
-                    <div class="col-md-8 col-lg-8">
-                        @Html.HiddenFor(m => m.TeacherId)
-                        @Html.TextBoxFor(m => m.Teacher, new { placeholder = "Search for a Teacher", @class = "form-control" })
-                    </div>
-                </div>
+            <div class="form-group">
+                <input type="submit" value="Search Classes" class="btn btn-warning" />
             </div>
         </div>
-    </div>
-    <div class="row col-lg-12 col-md-12" style="margin: 5px;">
-        <input type="submit" value="Search Classes" class="btn btn-warning" />
+
+        @*<div class="col-lg-6 col-md-6">
+                <div class="row">
+                    <div class="form-group">
+                        @Html.Label("Location:", htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                        <div class="col-md-8 col-lg-8">
+                            @Html.TextBoxFor(m => m.Location, new { placeholder = "Search for a Location", @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 5px;">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.DanceStyleId, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                        <div class="col-md-8 col-lg-8">
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 5px;">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TeacherId, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                        <div class="col-md-8 col-lg-8">
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 5px;">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SkillLevel, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                        <div class="col-md-8 col-lg-8">
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 5px;">
+                    <div class="form-group">
+                        @Html.Label("Days:", htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                        <div class="col-md-8 col-lg-8">
+                        </div>
+                    </div>
+                </div>
+            </div>*@
     </div>
 }
 
@@ -319,15 +397,16 @@
         <th></th>
     </tr>
 
-    @foreach (var item in Model.Classes) {
+    @foreach (var item in Model.Classes)
+    {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                @Html.ActionLink(item.Name, "View", "Event", new { id=item.Id, eventType = EDR.Enums.EventType.Class }, null)
+                @Html.ActionLink(item.Name, "View", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Class }, null)
             </td>
         </tr>
-}
+    }
 
 </table>

@@ -1,78 +1,406 @@
 ﻿@model EDR.Models.ViewModels.SocialViewModel
-@using EDR.Models
-@using EDR.Utilities
-@using MvcCheckBoxList.Model
 
 @{
-    ViewBag.Title = "Social";
+    ViewBag.Title = "Find a Dance Social";
 }
 
-<h1 class="page-header">Find a Place to Dance</h1>
 
-@using (Html.BeginForm("Social", "Home", FormMethod.Get))
+<h1 class="text-center">Find a Social</h1>
+
+<style>
+    .map_canvas {
+        width: 100%;
+        height: 200px;
+    }
+</style>
+
+@section Scripts
 {
-    @Html.Hidden("NELat", 0)
-    @Html.Hidden("NELng", 0)
-    @Html.Hidden("SWLat", 0)
-    @Html.Hidden("SWLng", 0)
-    @Html.Hidden("CenterLat", 0)
-    @Html.Hidden("CenterLng", 0)
-    @Html.Hidden("Zoom", 0)
-    <div class="row col-lg-12 col-md-12">
-        <div class="col-lg-12 col-md-12" style="margin-bottom: 5px;">
-            <div class="row">
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Location, htmlAttributes: new { @class = "control-label col-md-2 col-lg-2 input-lg" })
-                    <div class="col-md-10 col-lg-10">
-                        @Html.TextBox("location", null, new { @class = "form-control input-lg", @placeholder = "Enter your location (Los Angeles, CA, 90065, etc)" })
-                        @Html.ValidationMessageFor(model => model.Location, "", new { @class = "text-danger" })
-                    </div>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/foolproof")
+    @Scripts.Render("~/bundles/jqueryUI")
+    @Scripts.Render("~/bundles/GeoComplete")
+
+    <script type="text/javascript">
+        $('#Style').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '@Url.Action("Search", "DanceStyle")',
+                    data: { searchString: request.term },
+                    dataType: 'json',
+                    type: 'GET',
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return {
+                                label: item.Name,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+            select: function (event, ui) {
+                $('#Style').val(ui.item.label);
+                $('#DanceStyleId').val(ui.item.value);
+                return false;
+            },
+            minLength: 1
+        });
+
+        $('#Teacher').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '@Url.Action("Search", "Teacher")',
+                    data: { searchString: request.term },
+                    dataType: 'json',
+                    type: 'GET',
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return {
+                                label: item.Name,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+            select: function (event, ui) {
+                $('#Teacher').val(ui.item.label);
+                $('#TeacherId').val(ui.item.value);
+                return false;
+            },
+            minLength: 1
+        });
+
+        $('.formmain').submit(function () {
+            if ($('#Teacher').val() == "")
+            {
+                $('#TeacherId').prop('value', "");
+            }
+            if ($('#Style').val() == "")
+            {
+                $('#DanceStyleId').prop('value', "");
+            }
+        });
+    </script>
+}
+
+<script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="../../Scripts/jquery.geocomplete.js"></script>
+<script>
+    //$(function () {
+    //    $("#Location").geocomplete({
+    //        map: ".map_canvas",
+    //        details: "form",
+    //        types: ["geocode", "establishment"],
+    //    });
+
+    //    //$("#find").click(function () {
+    //    //    $("#geocomplete").trigger("geocode");
+    //    //});
+    //});
+
+    $(function () {
+
+        var options = {
+            map: ".map_canvas"
+        };
+
+        $("#Location").geocomplete(options)
+          .on("geocode:result", function(event, result){
+              // Set the zoom level you require for the default map
+              var map = $("#Location").geocomplete("map");
+              var bounds = map.getBounds();
+              var ne = bounds.getNorthEast(); // LatLng of the north-east corner
+              var sw = bounds.getSouthWest(); // LatLng of the south-west corder
+              var center = map.getCenter();
+              $("#NELat").val(ne.lat());
+              $("#NELng").val(ne.lng());
+              $("#SWLat").val(sw.lat());
+              $("#SWLng").val(sw.lng());
+              $("#CenterLat").val(center.lat());
+              $("#CenterLng").val(center.lng());
+              //    map.setZoom(10);
+          });
+    });
+
+    $(function () {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(success);
+        }
+
+        function success(position) {
+            var loc = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+            @if (Model.CenterLat != null && Model.CenterLng != null)
+            {
+                <text>
+            loc = new google.maps.LatLng(@Model.CenterLat, @Model.CenterLng);
+            </text>
+            }
+            var map = $("#Location").geocomplete("map");
+            //  map.setZoom(0);
+            map.setCenter(loc);
+        }
+    });
+
+    $(function () {
+        var map = $("#Location").geocomplete("map");
+        @if (Model.Zoom != null)
+        {
+            <text>
+            map.setZoom(@Model.Zoom.ToString());
+            </text>
+        }
+        else
+        {
+            <text>
+            map.setZoom(10);
+            </text>
+        }
+    });
+
+    $(function () {
+        //  Map Marker Containers
+        var markers = [];
+        var infowindows = [];
+        //  Map Marker Containers
+        //  Build up the Markers
+        var map = $("#Location").geocomplete("map");
+        @foreach(var s in Model.Socials)
+    {
+        <text>
+        var marker = new google.maps.Marker({
+            position: new google.maps.LatLng('@s.Place.Latitude', @s.Place.Longitude),
+            map: map,
+            title: '@s.Name',
+            icon: "http://maps.google.com/mapfiles/kml/pal2/icon2.png"
+        });
+
+        attachMessage(map, marker, '@s.Id', '@s.Name', '@s.Place.Address', '@(s.Place.City + ", " + s.Place.State + " " + s.Place.Zip)', '<a href="@Url.Action("View", "Event", new { id = s.Id, eventType = EDR.Enums.EventType.Social })">' + '@s.Name' + '</a>');
+        markers.push(marker);
+        </text>
+    }
+
+        function attachMessage(map, marker, num, placeName, address, address2, link) {
+            var message = marker.title;
+            var infowindow = new google.maps.InfoWindow({
+                disableAutoPan: false,
+                maxWidth: 200,
+                content: '<div id="content" class="text-center" style="width: 200px;">' +
+                '<div id="siteNotice">' +
+                '</div>' +
+                '<div style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
+                link +
+                '</div>' +
+                '<div id="bodyContent">' +
+                '<p>' +
+                address + '<br>' +
+                address2 +
+                '</p>' +
+                '</div>' +
+                '</div>'
+            });
+            infowindows.push(infowindow);
+
+            //  infowindow.open(map, marker);
+
+            google.maps.event.addListener(marker, 'click', function () {
+                clearWindows();
+                infowindow.open(map, marker);
+            });
+        }
+
+        google.maps.event.addListener(map, 'zoom_changed', function () {
+            var map = $("#Location").geocomplete("map");
+            $("#Zoom").val(map.getZoom());
+        });
+
+        google.maps.event.addListener(map, 'dragend', function () {
+            var map = $("#Location").geocomplete("map");
+            var bounds = map.getBounds();
+            var ne = bounds.getNorthEast(); // LatLng of the north-east corner
+            var sw = bounds.getSouthWest(); // LatLng of the south-west corder
+            var center = map.getCenter();
+            $("#NELat").val(ne.lat());
+            $("#NELng").val(ne.lng());
+            $("#SWLat").val(sw.lat());
+            $("#SWLng").val(sw.lng());
+            $("#CenterLat").val(center.lat());
+            $("#CenterLng").val(center.lng());
+        });
+
+        function clearWindows() {
+            for (var i = 0; i < infowindows.length; i++) {
+                infowindows[i].close();
+            }
+        }
+    });
+
+    $(function () {
+        $( ".toggle" ).click(function() {
+            // Animation complete.
+            $("#daysdiv").css({
+                'position': 'absolute',
+                'z-index' : '3',
+                'left': $(this).offset().left,
+                'top': $(this).offset().top + $(this).height() + 15
+            });
+            $( "#daysdiv" ).toggle( "fast", function() {
+            });
+        });
+
+        //$('.popup').click(function (e) {
+        //    $('.popuptarget').css({
+        //        'position': 'absolute',
+        //        'left': $(this).offset().left,
+        //        'top': $(this).offset().top + $(this).height() + 5
+        //    }).show("slow").delay(3000).hide("slow");
+        //});
+        //$('.toggle').click(function (event) {
+        //    $('.popuptarget').css({
+        //        'position': 'absolute',
+        //        'z-index' : '3',
+        //        'left': $(this).offset().left,
+        //        'top': $(this).offset().top + $(this).height() + 15
+        //    });
+        //    $('.popuptarget').toggle("slow");
+        //    //event.preventDefault();
+        //    //var target = $(this).attr('href');
+        //    //$(target).toggleClass('hidden show');
+        //});
+
+        //$('#mypop').popover({
+        //    html: true,
+        //    content: function() {
+        //        return $('#mytab').html();
+        //    }
+        //})
+    });
+
+    //$(function () {
+    //    $("#Location").geocomplete({
+    //        map: ".map_canvas",
+    //        location: "Los Angeles, CA",
+    //        details: "form",
+    //        types: ["geocode", "establishment"],
+    //    });
+    //});
+
+    //if (navigator.geolocation) {
+    //    navigator.geolocation.getCurrentPosition(success);
+    //    function success(position) {
+    //        var loc = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+    //        $("#geocomplete").trigger("geocode");
+    //    }
+    //} else {
+    //    $("#Location").geocomplete({
+    //        map: ".map_canvas",
+    //        details: "form",
+    //        types: ["geocode", "establishment"],
+    //    });
+    //}
+
+</script>
+
+@using (Html.BeginForm("Social", "Home", FormMethod.Post, new { @class = "formmain" }))
+{
+    @Html.HiddenFor(m => m.SearchAddress.Latitude, new { Name = "lat" })
+    @Html.HiddenFor(m => m.SearchAddress.Longitude, new { Name = "lng" })
+    @Html.HiddenFor(m => m.NELat)
+    @Html.HiddenFor(m => m.NELng)
+    @Html.HiddenFor(m => m.SWLat)
+    @Html.HiddenFor(m => m.SWLng)
+    @Html.HiddenFor(m => m.CenterLat)
+    @Html.HiddenFor(m => m.CenterLng)
+    @Html.HiddenFor(m => m.Zoom)
+    <div class="container bg-info text-center" style="padding: 10px;">
+        <div class="form-inline">
+            <div class="form-group">
+                @Html.TextBoxFor(m => m.Location, new { placeholder = "Location", @class = "form-control" })
+            </div>
+            <div class="form-group">
+                @Html.HiddenFor(m => m.DanceStyleId)
+                @Html.TextBoxFor(m => m.Style, new { placeholder = "Dance Style", @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <a href="#days" class="toggle btn btn-default">Day of Week <span class="caret"></span></a>
+                <div id="daysdiv" class="well text-left" style="display: none;">
+                    @Html.CheckBoxListFor(model => model.Days,
+                                                    model => (Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>().Select(enu => new SelectListItem() { Text = enu.ToString(), Value = enu.ToString() })).ToList(),
+                                                    item => item.Value,
+                                                    item => item.Text,
+                                                    model => (Model.Days != null ? (Model.Days.Select(d => new SelectListItem() { Text = d.ToString(), Value = d.ToString() })) : null),
+                                                    new MvcCheckBoxList.Model.HtmlListInfo(MvcCheckBoxList.Model.HtmlTag.table, 1, new { @class = "checkboxlist text-warning" }, MvcCheckBoxList.Model.TextLayout.Default))
                 </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Search Socials" class="btn btn-warning" />
             </div>
         </div>
-        <div class="col-lg-6 col-md-6">
-            <div class="row">
-                <div class="form-group">
-                    @Html.LabelFor(model => model.DanceStyles, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
-                    <div class="col-md-8 col-lg-8">
-                        @Html.DropDownList("danceStyle", new SelectList(Model.DanceStyles.OrderBy(s => s.Name), "Id", "Name", Model.DanceStyleId), "All", new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.DanceStyles, "", new { @class = "text-danger" })
+
+        @*<div class="col-lg-6 col-md-6">
+                <div class="row">
+                    <div class="form-group">
+                        @Html.Label("Location:", htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                        <div class="col-md-8 col-lg-8">
+                            @Html.TextBoxFor(m => m.Location, new { placeholder = "Search for a Location", @class = "form-control" })
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="row" style="margin-top: 5px;">
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Places, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
-                    <div class="col-md-8 col-lg-8">
-                        @Html.DropDownList("place", new SelectList(Model.Places.OrderBy(p => p.Name), "Id", "Name", Model.PlaceId), "All", new { @class = "form-control col-lg-6 col-md-6" })
-                        @Html.ValidationMessageFor(model => model.Places, "", new { @class = "text-danger" })
+                <div class="row" style="margin-top: 5px;">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.DanceStyleId, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                        <div class="col-md-8 col-lg-8">
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="col-lg-6 col-md-6">
-            <div class="row">
-                <div class="form-group">
-                    @Html.Label("daysLabel", "Day(s) of Week:", htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
-                    <div class="col-md-8 col-lg-8">
-                        @Html.CheckBoxList("days",
-                                            x => x.DaysOfWeek,
-                                            x => x,
-                                            x => x,
-                                            x => Model.Days,
-                                            new HtmlListInfo(HtmlTag.table, 2, new { @class = "checkboxlist" }, TextLayout.Default, TemplateIsUsed.No))
-                        @Html.ValidationMessageFor(model => model.Days, "", new { @class = "text-danger" })
+                <div class="row" style="margin-top: 5px;">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TeacherId, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                        <div class="col-md-8 col-lg-8">
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-    <div class="row col-lg-12 col-md-12" style="margin: 5px;">
-        <input type="submit" value="Search Socials" class="btn btn-warning" />
+                <div class="row" style="margin-top: 5px;">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SkillLevel, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                        <div class="col-md-8 col-lg-8">
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 5px;">
+                    <div class="form-group">
+                        @Html.Label("Days:", htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                        <div class="col-md-8 col-lg-8">
+                        </div>
+                    </div>
+                </div>
+            </div>*@
     </div>
 }
-<div class="row">
-    @Html.Partial("~/Views/Shared/_EventListPartial.cshtml", new EDR.Models.ViewModels.EventsViewModel() { Events = Model.Socials, Location = Model.SearchAddress, EventType = EDR.Enums.EventType.Social, Zoom = Model.Zoom })
-</div>
 
-<a href="@Request.UrlReferrer.ToString()">Back</a>
+<div class="map_canvas"></div>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.Display("Social")
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model.Socials)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.ActionLink(item.Name, "View", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Social }, null)
+            </td>
+        </tr>
+    }
+
+</table>

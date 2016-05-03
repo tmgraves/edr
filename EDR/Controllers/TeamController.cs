@@ -16,9 +16,32 @@ namespace EDR.Controllers
     public class TeamController : BaseController
     {
         // GET: Team
-        public ActionResult Index()
+        public ActionResult Index(TeamIndexViewModel model)
         {
-            var model = new TeamIndexViewModel();
+            model.Teams = DataContext.Teams
+                                .Include("Teachers.ApplicationUser")
+                                .Include("DanceStyles")
+                                .AsQueryable();
+            if (model.DanceStyleId != null)
+            {
+                model.Teams = model.Teams.Where(c => c.DanceStyles.Select(st => st.Id).Contains((int)model.DanceStyleId));
+            }
+
+            if (model.NELat != null && model.SWLng != null)
+            {
+                model.Teams = model.Teams.Where(c => c.Longitude >= model.SWLng && c.Longitude <= model.NELng && c.Latitude >= model.SWLat && c.Latitude <= model.NELat);
+            }
+            if (model.SkillLevel != null)
+            {
+                model.Teams = model.Teams.Where(x => x.SkillLevel == model.SkillLevel);
+            }
+            if (model.TeacherId != null)
+            {
+                model.Teams = model.Teams.Where(c => c.Teachers.Select(t => t.ApplicationUser.Id).Contains(model.TeacherId));
+            }
+
+            model.Teams = model.Teams.ToList().Take(100);
+
             model.Teams = DataContext.Teams.ToList();
             return View(model);
         }

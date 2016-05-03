@@ -21,8 +21,7 @@ namespace EDR.Models.ViewModels
         public string Location { get; set; }
         [Display(Name = "Skill Level:")]
         public int? SkillLevel { get; set; }
-        public List<DayOfWeek> Days { get; set; }
-        public List<DayOfWeek> DaysOfWeek { get; set; }
+        public DayOfWeek[] Days { get; set; }
 
         //  Map Settings
         public double? NELat { get; set; }
@@ -39,20 +38,30 @@ namespace EDR.Models.ViewModels
 
     public class SocialViewModel
     {
+        //  Search Fields
+        [Display(Name = "Teacher:")]
+        public string TeacherId { get; set; }
+        public string Teacher { get; set; }
         [Display(Name = "Dance Style:")]
-        public IEnumerable<DanceStyle> DanceStyles { get; set; }
         public int? DanceStyleId { get; set; }
-        [Display(Name = "Place:")]
-        public IEnumerable<Place> Places { get; set; }
-        public int? PlaceId { get; set; }
-        [Display(Name = "Your Location:", Prompt = "Enter your location here")]
-        public string Location { get; set; }
+        public string Style { get; set; }
         public Address SearchAddress { get; set; }
-        public int Zoom { get; set; }
-        public List<DayOfWeek> Days { get; set; }
-        public List<DayOfWeek> DaysOfWeek { get; set; }
+        public string Location { get; set; }
+        [Display(Name = "Skill Level:")]
+        public int? SkillLevel { get; set; }
+        public DayOfWeek[] Days { get; set; }
+
+        //  Map Settings
+        public double? NELat { get; set; }
+        public double? NELng { get; set; }
+        public double? SWLat { get; set; }
+        public double? SWLng { get; set; }
+        public double? CenterLat { get; set; }
+        public double? CenterLng { get; set; }
+        public int? Zoom { get; set; }
+
+        //  Results
         public IEnumerable<Social> Socials { get; set; }
-        public ApplicationUser User { get; set; }
     }
 
     public class Test2
