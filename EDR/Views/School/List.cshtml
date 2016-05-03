@@ -75,6 +75,17 @@
             },
             minLength: 1
         });
+
+        $('.formmain').submit(function () {
+            if ($('#Teacher').val() == "")
+            {
+                $('#TeacherId').prop('value', "");
+            }
+            if ($('#Style').val() == "")
+            {
+                $('#DanceStyleId').prop('value', "");
+            }
+        });
     </script>
 }
 
@@ -95,19 +106,28 @@
     //});
 
     $(function () {
-        
-          var options = {
-              map: ".map_canvas"
-          };
-        
-          $("#Location").geocomplete(options)
-            .on("geocode:result", function(event, result){
 
-                // Set the zoom level you require for the default map
-                var map = $("#Location").geocomplete("map");
-                map.setZoom(10);
-            });
-      });
+        var options = {
+            map: ".map_canvas"
+        };
+
+        $("#Location").geocomplete(options)
+          .on("geocode:result", function(event, result){
+              // Set the zoom level you require for the default map
+              var map = $("#Location").geocomplete("map");
+              var bounds = map.getBounds();
+              var ne = bounds.getNorthEast(); // LatLng of the north-east corner
+              var sw = bounds.getSouthWest(); // LatLng of the south-west corder
+              var center = map.getCenter();
+              $("#NELat").val(ne.lat());
+              $("#NELng").val(ne.lng());
+              $("#SWLat").val(sw.lat());
+              $("#SWLng").val(sw.lng());
+              $("#CenterLat").val(center.lat());
+              $("#CenterLng").val(center.lng());
+              //    map.setZoom(10);
+          });
+    });
 
     $(function () {
         if (navigator.geolocation) {
@@ -116,9 +136,31 @@
 
         function success(position) {
             var loc = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+            @if (Model.CenterLat != null && Model.CenterLng != null)
+            {
+                <text>
+            loc = new google.maps.LatLng(@Model.CenterLat, @Model.CenterLng);
+            </text>
+            }
             var map = $("#Location").geocomplete("map");
-            map.setZoom(10);
+            //  map.setZoom(0);
             map.setCenter(loc);
+        }
+    });
+
+    $(function () {
+        var map = $("#Location").geocomplete("map");
+        @if (Model.Zoom != null)
+        {
+            <text>
+            map.setZoom(@Model.Zoom.ToString());
+            </text>
+        }
+        else
+        {
+            <text>
+            map.setZoom(10);
+            </text>
         }
     });
 
@@ -129,7 +171,7 @@
         //  Map Marker Containers
         //  Build up the Markers
         var map = $("#Location").geocomplete("map");
-    @foreach(var s in Model.Schools)
+        @foreach(var s in Model.Schools)
     {
         <text>
         var marker = new google.maps.Marker({
@@ -144,40 +186,59 @@
         </text>
     }
 
-    function attachMessage(map, marker, num, placeName, address, address2, link) {
-        var message = marker.title;
-        var infowindow = new google.maps.InfoWindow({
-            disableAutoPan: false,
-            maxWidth: 200,
-            content: '<div id="content" class="text-center" style="width: 200px;">' +
-            '<div id="siteNotice">' +
-            '</div>' +
-            '<div style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
-            link +
-            '</div>' +
-            '<div id="bodyContent">' +
-            '<p>' +
-            address + '<br>' +
-            address2 +
-            '</p>' +
-            '</div>' +
-            '</div>'
-        });
-        infowindows.push(infowindow);
+        function attachMessage(map, marker, num, placeName, address, address2, link) {
+            var message = marker.title;
+            var infowindow = new google.maps.InfoWindow({
+                disableAutoPan: false,
+                maxWidth: 200,
+                content: '<div id="content" class="text-center" style="width: 200px;">' +
+                '<div id="siteNotice">' +
+                '</div>' +
+                '<div style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
+                link +
+                '</div>' +
+                '<div id="bodyContent">' +
+                '<p>' +
+                address + '<br>' +
+                address2 +
+                '</p>' +
+                '</div>' +
+                '</div>'
+            });
+            infowindows.push(infowindow);
 
-        //  infowindow.open(map, marker);
+            //  infowindow.open(map, marker);
 
-        google.maps.event.addListener(marker, 'click', function () {
-            clearWindows();
-            infowindow.open(map, marker);
-        });
-    }
-
-    function clearWindows() {
-        for (var i = 0; i < infowindows.length; i++) {
-            infowindows[i].close();
+            google.maps.event.addListener(marker, 'click', function () {
+                clearWindows();
+                infowindow.open(map, marker);
+            });
         }
-    }
+
+        google.maps.event.addListener(map, 'zoom_changed', function () {
+            var map = $("#Location").geocomplete("map");
+            $("#Zoom").val(map.getZoom());
+        });
+
+        google.maps.event.addListener(map, 'dragend', function () {
+            var map = $("#Location").geocomplete("map");
+            var bounds = map.getBounds();
+            var ne = bounds.getNorthEast(); // LatLng of the north-east corner
+            var sw = bounds.getSouthWest(); // LatLng of the south-west corder
+            var center = map.getCenter();
+            $("#NELat").val(ne.lat());
+            $("#NELng").val(ne.lng());
+            $("#SWLat").val(sw.lat());
+            $("#SWLng").val(sw.lng());
+            $("#CenterLat").val(center.lat());
+            $("#CenterLng").val(center.lng());
+        });
+
+        function clearWindows() {
+            for (var i = 0; i < infowindows.length; i++) {
+                infowindows[i].close();
+            }
+        }
     });
 
 
@@ -206,17 +267,17 @@
 
 </script>
 
-@using (Html.BeginForm("List", "School", FormMethod.Get))
+@using (Html.BeginForm("List", "School", FormMethod.Post, new { @class = "formmain" }))
 {
     @Html.HiddenFor(m => m.SearchAddress.Latitude, new { Name = "lat" })
     @Html.HiddenFor(m => m.SearchAddress.Longitude, new { Name = "lng" })
-    @Html.Hidden("NELat", 0)
-    @Html.Hidden("NELng", 0)
-    @Html.Hidden("SWLat", 0)
-    @Html.Hidden("SWLng", 0)
-    @Html.Hidden("CenterLat", 0)
-    @Html.Hidden("CenterLng", 0)
-    @Html.Hidden("Zoom", 0)
+    @Html.HiddenFor(m => m.NELat)
+    @Html.HiddenFor(m => m.NELng)
+    @Html.HiddenFor(m => m.SWLat)
+    @Html.HiddenFor(m => m.SWLng)
+    @Html.HiddenFor(m => m.CenterLat)
+    @Html.HiddenFor(m => m.CenterLng)
+    @Html.HiddenFor(m => m.Zoom)
     <div class="row col-lg-12 col-md-12">
         <div class="col-lg-6 col-md-6">
             <div class="row">
@@ -260,7 +321,6 @@
             @Html.Display("School Name")
         </th>
         <th></th>
-        <th></th>
     </tr>
 
 @foreach (var item in Model.Schools) {
@@ -269,12 +329,7 @@
             @Html.DisplayFor(modelItem => item.Name)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-            @Html.ActionLink("Details", "View", new { id=item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
-        </td>
-        <td>
-            @Html.ActionLink("Join", "Join", new { id = item.Id })
+            @Html.ActionLink("Details", "View", new { id=item.Id })
         </td>
     </tr>
 }

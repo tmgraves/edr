@@ -10,27 +10,31 @@ namespace EDR.Models.ViewModels
 {
     public class LearnViewModel
     {
-        [Display(Name = "Dance Style:")]
-        public IEnumerable<DanceStyle> DanceStyles { get; set; }
-        public int? DanceStyleId { get; set; }
-        [Display(Name = "Place:")]
-        public IEnumerable<Place> Places { get; set; }
-        public int? PlaceId { get; set; }
+        //  Search Fields
         [Display(Name = "Teacher:")]
-        public IEnumerable<Teacher> Teachers { get; set; }
-        public int? TeacherId { get; set; }
+        public string TeacherId { get; set; }
+        public string Teacher { get; set; }
+        [Display(Name = "Dance Style:")]
+        public int? DanceStyleId { get; set; }
+        public string Style { get; set; }
+        public Address SearchAddress { get; set; }
+        public string Location { get; set; }
         [Display(Name = "Skill Level:")]
         public int? SkillLevel { get; set; }
-        [Display(Name = "Your Location:", Prompt = "Enter your location here")]
-        public string Location { get; set; }
-        public Address SearchAddress { get; set; }
-        public int Zoom { get; set; }
         public List<DayOfWeek> Days { get; set; }
         public List<DayOfWeek> DaysOfWeek { get; set; }
-        public IEnumerable<ClassSeries> ClassSeries { get; set; }
+
+        //  Map Settings
+        public double? NELat { get; set; }
+        public double? NELng { get; set; }
+        public double? SWLat { get; set; }
+        public double? SWLng { get; set; }
+        public double? CenterLat { get; set; }
+        public double? CenterLng { get; set; }
+        public int? Zoom { get; set; }
+
+        //  Results
         public IEnumerable<Class> Classes { get; set; }
-        public IEnumerable<Workshop> Workshops { get; set; }
-        public ApplicationUser User { get; set; }
     }
 
     public class SocialViewModel

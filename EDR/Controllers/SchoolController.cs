@@ -28,7 +28,13 @@ namespace EDR.Controllers
             {
                 model.Schools = model.Schools.Where(s => s.Teachers.Select(t => t.ApplicationUser.Id).Contains(model.TeacherId));
             }
-            model.Schools = model.Schools.ToList();
+
+            if (model.NELat != null && model.SWLng != null)
+            {
+                model.Schools = model.Schools.Where(c => c.Longitude >= model.SWLng && c.Longitude <= model.NELng && c.Latitude >= model.SWLat && c.Latitude <= model.NELat);
+            }
+
+            model.Schools = model.Schools.ToList().Take(100);
             return View(model);
         }
 

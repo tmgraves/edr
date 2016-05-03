@@ -80,5 +80,12 @@ namespace EDR.Models.ViewModels
         public string Location { get; set; }
         public string Teacher { get; set; }
         public string Style { get; set; }
+        public double? NELat { get; set; }
+        public double? NELng { get; set; }
+        public double? SWLat { get; set; }
+        public double? SWLng { get; set; }
+        public double? CenterLat { get; set; }
+        public double? CenterLng { get; set; }
+        public int? Zoom { get; set; }
     }
 }

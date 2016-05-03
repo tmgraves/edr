@@ -801,6 +801,7 @@
     <Content Include="Views\Event\Partial\_DanceStylesPartial.cshtml" />
     <Content Include="Views\Team\Partial\_DanceStylesPartial.cshtml" />
     <Content Include="Views\Store\Confirmation.cshtml" />
+    <Content Include="Views\Home\Learn.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>
@@ -834,7 +835,7 @@
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Home\Explore.cshtml" />
     <Content Include="Views\Place\Details.cshtml" />
-    <Content Include="Views\Home\Learn.cshtml" />
+    <Content Include="Views\Home\Learn old.cshtml" />
     <Content Include="Views\Class\Details.cshtml" />
     <Content Include="Views\ClassSeries\Details.cshtml" />
     <Content Include="Views\DanceStyle\Create.cshtml" />

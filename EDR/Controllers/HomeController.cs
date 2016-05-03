@@ -231,93 +231,129 @@ namespace EDR.Controllers
             return View(viewModel);
         }
 
-        public ActionResult Learn(int? danceStyle, string TeacherId, int? PlaceId, int? skillLevel, string location, string[] days, double? CenterLat, double? CenterLng, int? Zoom, double? NELat, double? NELng, double? SWLat, double? SWLng)
+        public ActionResult Learn(LearnViewModel model)
         {
-            var viewModel = new LearnViewModel();
-            viewModel.DanceStyles = DataContext.DanceStyles;
-            viewModel.Places = DataContext.Places;
-            viewModel.Teachers = DataContext.Teachers.Include("ApplicationUser");
-            viewModel.Zoom = Zoom == null ? 10 : (int)Zoom;
-            viewModel.Location = location;
-            viewModel.SearchAddress = new Address();
-
-            if (location != "" && location != null)
+            model.Classes = DataContext.Classes
+                                .Include("Teachers.ApplicationUser")
+                                .Include("DanceStyles")
+                                .Include("Place")
+                                .Include("EventMembers.Member")
+                                .Include("Place")
+                                .Include("Reviews")
+                                .AsQueryable();
+            if (model.DanceStyleId != null)
             {
-                var address = new Address();
-                address = Geolocation.ParseAddress(location);
-                CenterLat = address.Latitude;
-                CenterLng = address.Longitude;
-                NELat = CenterLat + .5;
-                SWLat = CenterLat - .5;
-                NELng = CenterLng + .5;
-                SWLng = CenterLng - .5;
+                model.Classes = model.Classes.Where(c => c.DanceStyles.Select(st => st.Id).Contains((int)model.DanceStyleId));
             }
-            
-            var dayslist = new List<DayOfWeek>();
-            if (days != null)
+            if (model.TeacherId != null)
             {
-                foreach (var s in days)
-                {
-                    dayslist.Add((DayOfWeek)Enum.Parse(typeof(DayOfWeek), s));
-                }
-            }
-            viewModel.Days = dayslist;
-            viewModel.DaysOfWeek = new List<DayOfWeek>() { DayOfWeek.Sunday, DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday };
-            //  viewModel.DanceStyles = new SelectList(DanceStyleLst, "Id", "Name", danceStyle);
-
-            //var PlaceLst = DataContext.Places.ToList();
-            //ViewBag.place = new SelectList(PlaceLst, "Id", "Name", place);
-
-            //var SkillLevelLst = new List<int> { 1, 2, 3, 4, 5 };
-            //ViewBag.skillLevel = new SelectList(SkillLevelLst);
-
-            //var TeacherLst = DataContext.Teachers.ToList();
-            //ViewBag.teacher = new SelectList(TeacherLst, "ApplicationUser.Id", "ApplicationUser.FullName", teacher);
-
-            var teachers = DataContext.Teachers.Include("ApplicationUser");
-            viewModel.Classes = DataContext.Events.OfType<Class>().Include("Teachers").Include("Teachers.ApplicationUser").Include("DanceStyles").Include("EventMembers.Member").Include("Place").Include("Reviews").Where(x => x.IsAvailable == true).Where(y => y.EndDate == null || y.EndDate >= DateTime.Now).OrderBy(z => z.StartDate);
-            //  viewModel.Workshops = DataContext.Events.OfType<Workshop>().Include("Teachers").Include("Teachers.ApplicationUser").Include("DanceStyles").Include("EventMembers.Member").Include("Place").Where(x => x.IsAvailable == true).Where(y => y.EndDate == null || y.EndDate >= DateTime.Now).OrderBy(z => z.StartDate).ToList();
-
-            if (danceStyle != null)
-            {
-                viewModel.Classes = viewModel.Classes.Where(x => x.DanceStyles.Any(s => s.Id == danceStyle));
+                model.Classes = model.Classes.Where(c => c.Teachers.Select(t => t.ApplicationUser.Id).Contains(model.TeacherId));
             }
 
-            if (TeacherId != null && TeacherId != "")
+            if (model.NELat != null && model.SWLng != null)
             {
-                viewModel.Classes = viewModel.Classes.Where(x => x.Teachers.Any(t => t.ApplicationUser.Id == TeacherId));
+                model.Classes = model.Classes.Where(c => c.Place.Longitude >= model.SWLng && c.Place.Longitude <= model.NELng && c.Place.Latitude >= model.SWLat && c.Place.Latitude <= model.NELat);
+            }
+            if (model.SkillLevel != null)
+            {
+                model.Classes = model.Classes.Where(x => x.SkillLevel == model.SkillLevel);
+            }
+            if (model.Days != null)
+            {
+                model.Classes = model.Classes.Where(x => model.Days.Contains(x.Day));
             }
 
-            if (PlaceId != null)
-            {
-                viewModel.Classes = viewModel.Classes.Where(x => x.Place.Id == PlaceId);
-            }
-
-            if (skillLevel != null)
-            {
-                viewModel.Classes = viewModel.Classes.Where(x => x.SkillLevel == skillLevel);
-            }
-
-            if (days != null)
-            {
-                viewModel.Classes = viewModel.Classes.Where(x => viewModel.Days.Contains(x.Day));
-            }
-
-            if (CenterLat != null && CenterLng != null)
-            {
-                //  var myLocation = DbGeography.FromText("POINT(" + address.Longitude.ToString() + " " + address.Latitude.ToString() + ")");
-                //  viewModel.Classes = viewModel.Classes.Where(c => DbGeography.FromText("POINT(" + c.Place.Longitude.ToString() + " " + c.Place.Latitude.ToString() + ")").Distance(myLocation) * .00062 < 50);
-                viewModel.Classes = viewModel.Classes.Where(c => c.Place.Longitude >= SWLng && c.Place.Longitude <= NELng && c.Place.Latitude >= SWLat && c.Place.Latitude <= NELat);
-
-                //  Set Map Location
-                viewModel.SearchAddress = new Address() { Latitude = (double)CenterLat, Longitude = (double)CenterLng };
-                //  Set Map Location
-            }
-
-            viewModel.Classes = viewModel.Classes.Take(25);
-
-            return View(viewModel);
+            model.Classes = model.Classes.ToList().Take(100);
+            return View(model);
         }
+
+        //public ActionResult Learn(int? danceStyle, string TeacherId, int? PlaceId, int? skillLevel, string location, string[] days, double? CenterLat, double? CenterLng, int? Zoom, double? NELat, double? NELng, double? SWLat, double? SWLng)
+        //{
+        //    var viewModel = new LearnViewModel();
+        //    viewModel.DanceStyles = DataContext.DanceStyles;
+        //    viewModel.Places = DataContext.Places;
+        //    viewModel.Teachers = DataContext.Teachers.Include("ApplicationUser");
+        //    viewModel.Zoom = Zoom == null ? 10 : (int)Zoom;
+        //    viewModel.Location = location;
+        //    viewModel.SearchAddress = new Address();
+
+        //    if (location != "" && location != null)
+        //    {
+        //        var address = new Address();
+        //        address = Geolocation.ParseAddress(location);
+        //        CenterLat = address.Latitude;
+        //        CenterLng = address.Longitude;
+        //        NELat = CenterLat + .5;
+        //        SWLat = CenterLat - .5;
+        //        NELng = CenterLng + .5;
+        //        SWLng = CenterLng - .5;
+        //    }
+
+        //    var dayslist = new List<DayOfWeek>();
+        //    if (days != null)
+        //    {
+        //        foreach (var s in days)
+        //        {
+        //            dayslist.Add((DayOfWeek)Enum.Parse(typeof(DayOfWeek), s));
+        //        }
+        //    }
+        //    viewModel.Days = dayslist;
+        //    viewModel.DaysOfWeek = new List<DayOfWeek>() { DayOfWeek.Sunday, DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday };
+        //    //  viewModel.DanceStyles = new SelectList(DanceStyleLst, "Id", "Name", danceStyle);
+
+        //    //var PlaceLst = DataContext.Places.ToList();
+        //    //ViewBag.place = new SelectList(PlaceLst, "Id", "Name", place);
+
+        //    //var SkillLevelLst = new List<int> { 1, 2, 3, 4, 5 };
+        //    //ViewBag.skillLevel = new SelectList(SkillLevelLst);
+
+        //    //var TeacherLst = DataContext.Teachers.ToList();
+        //    //ViewBag.teacher = new SelectList(TeacherLst, "ApplicationUser.Id", "ApplicationUser.FullName", teacher);
+
+        //    var teachers = DataContext.Teachers.Include("ApplicationUser");
+        //    viewModel.Classes = DataContext.Events.OfType<Class>().Include("Teachers").Include("Teachers.ApplicationUser").Include("DanceStyles").Include("EventMembers.Member").Include("Place").Include("Reviews").Where(x => x.IsAvailable == true).Where(y => y.EndDate == null || y.EndDate >= DateTime.Now).OrderBy(z => z.StartDate);
+        //    //  viewModel.Workshops = DataContext.Events.OfType<Workshop>().Include("Teachers").Include("Teachers.ApplicationUser").Include("DanceStyles").Include("EventMembers.Member").Include("Place").Where(x => x.IsAvailable == true).Where(y => y.EndDate == null || y.EndDate >= DateTime.Now).OrderBy(z => z.StartDate).ToList();
+
+        //    if (danceStyle != null)
+        //    {
+        //        viewModel.Classes = viewModel.Classes.Where(x => x.DanceStyles.Any(s => s.Id == danceStyle));
+        //    }
+
+        //    if (TeacherId != null && TeacherId != "")
+        //    {
+        //        viewModel.Classes = viewModel.Classes.Where(x => x.Teachers.Any(t => t.ApplicationUser.Id == TeacherId));
+        //    }
+
+        //    if (PlaceId != null)
+        //    {
+        //        viewModel.Classes = viewModel.Classes.Where(x => x.Place.Id == PlaceId);
+        //    }
+
+        //    if (skillLevel != null)
+        //    {
+        //        viewModel.Classes = viewModel.Classes.Where(x => x.SkillLevel == skillLevel);
+        //    }
+
+        //    if (days != null)
+        //    {
+        //        viewModel.Classes = viewModel.Classes.Where(x => viewModel.Days.Contains(x.Day));
+        //    }
+
+        //    if (CenterLat != null && CenterLng != null)
+        //    {
+        //        //  var myLocation = DbGeography.FromText("POINT(" + address.Longitude.ToString() + " " + address.Latitude.ToString() + ")");
+        //        //  viewModel.Classes = viewModel.Classes.Where(c => DbGeography.FromText("POINT(" + c.Place.Longitude.ToString() + " " + c.Place.Latitude.ToString() + ")").Distance(myLocation) * .00062 < 50);
+        //        viewModel.Classes = viewModel.Classes.Where(c => c.Place.Longitude >= SWLng && c.Place.Longitude <= NELng && c.Place.Latitude >= SWLat && c.Place.Latitude <= NELat);
+
+        //        //  Set Map Location
+        //        viewModel.SearchAddress = new Address() { Latitude = (double)CenterLat, Longitude = (double)CenterLng };
+        //        //  Set Map Location
+        //    }
+
+        //    viewModel.Classes = viewModel.Classes.Take(25);
+
+        //    return View(viewModel);
+        //}
 
         public ActionResult Teachers()
         {
