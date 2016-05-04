@@ -55,6 +55,7 @@ namespace EDR.Models
 
     public class Team : Organization
     {
+        [Range(1, 100)]
         public int SkillLevel { get; set; }
         public int? SchoolId { get; set; }
         [ForeignKey("SchoolId")]

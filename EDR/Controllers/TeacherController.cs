@@ -23,38 +23,40 @@ namespace EDR.Controllers
         public ActionResult Manage()
         {
             var id = User.Identity.GetUserId();
-            var teacher = DataContext.Teachers.Include("Schools").Single(t => t.ApplicationUser.Id == id);
+            var teacher = DataContext.Teachers
+                                .Include("Schools")
+                                .Include("Teams")
+                                .Single(t => t.ApplicationUser.Id == id);
             return View(teacher);
         }
 
         public ActionResult List(TeacherListViewModel model)
         {
-            model.Teachers = DataContext.Teachers.Include("ApplicationUser").Include("DanceStyles").Include("ApplicationUser.UserPictures").Include("Classes").Include("Classes.Reviews");
-            model.DanceStyles = DataContext.DanceStyles;
-            model.Zoom = model.Zoom == 0 ? 10 : model.Zoom;
+            model.Teachers = DataContext.Teachers
+                                .Include("ApplicationUser")
+                                .Include("DanceStyles")
+                                .Include("ApplicationUser.UserPictures")
+                                .Include("Classes")
+                                .Include("Classes.Reviews");
 
-            if (model.Location != "" && model.Location != null)
+            if (model.TeacherId != null)
             {
-                var address = new Address();
-                address = Geolocation.ParseAddress(model.Location);
-                model.CenterLat = address.Latitude;
-                model.CenterLng = address.Longitude;
-                model.NELat = model.CenterLat + .5;
-                model.SWLat = model.CenterLat - .5;
-                model.NELng = model.CenterLng + .5;
-                model.SWLng = model.CenterLng - .5;
+                model.Teachers = model.Teachers.Where(t => t.ApplicationUser.Id == model.TeacherId);
             }
-
-            if (model.NELat != null && model.NELng != null)
+            else if (model.Teacher != null)
             {
-                model.Teachers = model.Teachers.Where(t => t.ApplicationUser.Longitude != null && t.ApplicationUser.Longitude >= model.SWLng && t.ApplicationUser.Longitude <= model.NELng && t.ApplicationUser.Latitude != null && t.ApplicationUser.Latitude >= model.SWLat && t.ApplicationUser.Latitude <= model.NELat);
+                model.Teachers = model.Teachers.Where(t => t.ApplicationUser.FullName.ToLower().Contains(model.Teacher.ToLower()));
             }
-
             if (model.DanceStyleId != null)
             {
-                model.Teachers = model.Teachers.Where(t => t.DanceStyles.Any(s => s.Id == model.DanceStyleId));
+                model.Teachers = model.Teachers.Where(t => t.DanceStyles.Select(st => st.Id).Contains((int)model.DanceStyleId));
+            }
+            if (model.NELat != null && model.SWLng != null)
+            {
+                model.Teachers = model.Teachers.Where(c => c.ApplicationUser.Longitude >= model.SWLng && c.ApplicationUser.Longitude <= model.NELng && c.ApplicationUser.Latitude >= model.SWLat && c.ApplicationUser.Latitude <= model.NELat);
             }
 
+            model.Teachers = model.Teachers.ToList().Take(100);
             return View(model);
         }
 
@@ -121,7 +123,7 @@ namespace EDR.Controllers
 
         public JsonResult Search(string searchString)
         {
-            var teachers = DataContext.Teachers.Where(t => (t.ApplicationUser.FirstName + " " + t.ApplicationUser.LastName).Contains(searchString)).Select(s => new { Id = s.ApplicationUser.Id, Name = s.ApplicationUser.FirstName + " " + s.ApplicationUser.LastName }).ToList();
+            var teachers = DataContext.Teachers.Where(t => (t.ApplicationUser.FirstName + " " + t.ApplicationUser.LastName).ToLower().Contains(searchString.ToLower())).Select(s => new { Id = s.ApplicationUser.Id, Name = s.ApplicationUser.FirstName + " " + s.ApplicationUser.LastName }).ToList();
             return Json(teachers, JsonRequestBehavior.AllowGet);
         }
 
@@ -161,7 +163,6 @@ namespace EDR.Controllers
         //    return View(viewModel);
         //}
 
-        [Authorize]
         public ActionResult Home(string username)
         {
             if (String.IsNullOrWhiteSpace(username))

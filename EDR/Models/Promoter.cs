@@ -26,5 +26,6 @@ namespace EDR.Models
         public virtual ICollection<Social> Socials { get; set; }
         public virtual ICollection<Place> Places { get; set; }
         public ICollection<SocialPromoterInvitation> SocialPromoterInvitations { get; set; }
+        public virtual ICollection<DanceStyle> DanceStyles { get; set; }
     }
 }

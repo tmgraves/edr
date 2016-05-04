@@ -1,82 +1,80 @@
 ﻿@model EDR.Models.ViewModels.PlaceListViewModel
-@using MvcCheckBoxList.Model
 
 @{
-    ViewBag.Title = "Eat. Dance. Repeat. Places";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Places for Class and Dancing";
 }
 
-<div class="container" style="padding: 10px;">
+<h1 class="text-center">Places</h1>
+
 <style>
-    #map-canvas {
+    .map_canvas {
         width: 100%;
-        height: 400px;
+        height: 200px;
     }
 </style>
-<script src="https://maps.googleapis.com/maps/api/js"></script>
-<script>
-    var map;
-    var markers = [];
-    var infowindows = [];
-    var lat = 0;
-    var lng = 0;
 
-    function initialize() {
-        @if(Model.CenterLat != null && Model.CenterLng != null)
-        {
-            <text>
-                lat = '@Model.CenterLat';
-                lng = '@Model.CenterLng';
-            </text>
-        }
-        var mapOptions = {
-            zoom: @Model.Zoom,
-            center: new google.maps.LatLng(lat, lng)
-        };
+@section Scripts
+{
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/foolproof")
+    @Scripts.Render("~/bundles/jqueryUI")
+    @Scripts.Render("~/bundles/GeoComplete")
 
-        map = new google.maps.Map(document.getElementById('map-canvas'),
-            mapOptions);
-
-        // Try W3C Geolocation (Preferred)
-        if (navigator.geolocation) {
-            browserSupportFlag = true;
-            navigator.geolocation.getCurrentPosition(function (position) {
-                initialLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-                map.setCenter(initialLocation);
-            }, function () {
-                handleNoGeolocation(browserSupportFlag);
-            });
-        }
-            // Browser doesn't support Geolocation
-        else {
-            browserSupportFlag = false;
-            handleNoGeolocation(browserSupportFlag);
-        }
-
-        @{
-            int idx = 1;
-            var today = DateTime.Today;
-            foreach(var pl in Model.Places)
-            {
-                <text>
-        var marker = new google.maps.Marker({
-            position: new google.maps.LatLng('@pl.Latitude', '@pl.Longitude'),
-            map: map,
-            title: '@pl.Name',
-            icon: "http://maps.google.com/mapfiles/kml/paddle/" + @idx + "-lv.png"
+    <script type="text/javascript">
+        $('#Style').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '@Url.Action("Search", "DanceStyle")',
+                    data: { searchString: request.term },
+                    dataType: 'json',
+                    type: 'GET',
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return {
+                                label: item.Name,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+            select: function (event, ui) {
+                $('#Style').val(ui.item.label);
+                $('#DanceStyleId').val(ui.item.value);
+                return false;
+            },
+            minLength: 1
         });
 
-        attachMessage(marker, '@pl.Id', '@pl.Name', '@pl.Address <br/> @pl.City , @pl.State  @pl.Zip', '<a href="@Url.Action("Details", "Place", new { id = pl.Id })">' + marker.title + '</a>', 5, 5);
-        markers.push(marker);
+        $('#Teacher').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '@Url.Action("Search", "Teacher")',
+                    data: { searchString: request.term },
+                    dataType: 'json',
+                    type: 'GET',
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return {
+                                label: item.Name,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+            select: function (event, ui) {
+                $('#Teacher').val(ui.item.label);
+                $('#TeacherId').val(ui.item.value);
+                return false;
+            },
+            minLength: 1
+        });
 
-        </text>
-                idx += 1;
-            }
-        }
-
-        //  clearMarkers();
-
-        google.maps.event.addListener(map, 'idle', function () {
+        $('.formmain').submit(function () {
+            var map = $("#Location").geocomplete("map");
+            $("#Zoom").val(map.getZoom());
             var bounds = map.getBounds();
             var ne = bounds.getNorthEast(); // LatLng of the north-east corner
             var sw = bounds.getSouthWest(); // LatLng of the south-west corder
@@ -87,145 +85,239 @@
             $("#SWLng").val(sw.lng());
             $("#CenterLat").val(center.lat());
             $("#CenterLng").val(center.lng());
-            $("#Zoom").val(map.getZoom());
-        });
-
-        google.maps.event.addListener(map, 'dragend', function () {
-            $("#location").val("");
-        });
-
-        google.maps.event.addListener(map, 'zoom_changed', function () {
-            $("#location").val("");
-        });
-    }
-
-    function clearMarkers() {
-        setAllMap(null);
-    }
-
-    function setAllMap(map) {
-        for (var i = 0; i < markers.length; i++) {
-            markers[i].setMap(map);
-        }
-    }
-
-    function clearWindows() {
-        for (var i = 0; i < infowindows.length; i++) {
-            infowindows[i].close();
-        }
-    }
-
-    // The five markers show a secret message when clicked
-    // but that message is not within the marker's instance data
-    function attachMessage(marker, num, placeName, address, link, students, classes) {
-        var message = marker.title;
-        var infowindow = new google.maps.InfoWindow({
-            disableAutoPan: true,
-            content: '<div id="content">' +
-            '<div id="siteNotice">' +
-            '</div>' +
-            '<h4 id="firstHeading" class="firstHeading">' + link + '</h4>' +
-            '<div id="bodyContent">' +
-            '<p>' +
-            address + '<br/>' +
-            '</p>' +
-            '</div>' +
-            '</div>'
-        });
-        infowindows.push(infowindow);
-
-        //  infowindow.open(map, marker);
-
-        google.maps.event.addListener(marker, 'click', function () {
-            clearWindows();
-            infowindow.open(map, marker);
-        });
-    }
-
-    function openPlace(id, lati, long) {
-        var latLng = new google.maps.LatLng(lati, long); //Makes a latlng
-        map.panTo(latLng); //Make map global
-        markers[id].setMap(map);
-        clearWindows();
-        infowindows[id].open(map, markers[id]);
-        return false;
-    }
-
-    google.maps.event.addDomListener(window, 'load', initialize);
-    $(function () {
-        $(document).ready(function () {
-            //  var dd = $('#PlaceType');
-            //  dd.prop('selectedIndex', '@Model.Type');
-        });
-    });
-    </script>
-
-    <div class="row">
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <h1 class="page-header">All Places</h1>
-
-            @using (Html.BeginForm("List", "Place", FormMethod.Get))
+            if ($('#Teacher').val() == "")
             {
-                @Html.HiddenFor(x => x.NELat, 0)
-                @Html.HiddenFor(x => x.NELng, 0)
-                @Html.HiddenFor(x => x.SWLat, 0)
-                @Html.HiddenFor(x => x.SWLng, 0)
-                @Html.HiddenFor(x => x.CenterLat, 0)
-                @Html.HiddenFor(x => x.CenterLng, 0)
-                @Html.HiddenFor(x => x.Zoom, 0)
-                <div class="row col-lg-12 col-md-12">
-                    <div class="col-lg-12 col-md-12" style="margin-bottom: 5px;">
-                        <div class="row">
-                            <div class="form-group">
-                                @Html.LabelFor(model => model.Location, htmlAttributes: new { @class = "control-label col-md-2 col-lg-2 input-lg" })
-                                <div class="col-md-10 col-lg-10">
-                                    @Html.TextBoxFor(x => x.Location, null, new { @class = "form-control input-lg", @id = "location", @placeholder = "Enter your location (Los Angeles, CA, 90065, etc)" })
-                                    @Html.ValidationMessageFor(model => model.Location, "", new { @class = "text-danger" })
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-6">
-                        <div class="row">
-                            <div class="form-group">
-                                @Html.LabelFor(model => model.DanceStyles, htmlAttributes: new { @class = "control-label col-md-3 col-lg-3" })
-                                <div class="col-md-9 col-lg-9">
-                                    @Html.DropDownListFor(x => x.DanceStyleId, new SelectList(Model.DanceStyles.OrderBy(s => s.Name), "Id", "Name", Model.DanceStyleId), "Pick a Dance Style", new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(model => model.DanceStyles, "", new { @class = "text-danger" })
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-6">
-                        <div class="row">
-                            <div class="form-group">
-                                @Html.LabelFor(model => model.Type, htmlAttributes: new { @class = "control-label col-md-3 col-lg-3" })
-                                <div class="col-md-9 col-lg-9">
-                                    @Html.EnumDropDownListFor(model => model.Type, "Pick a Place Type", htmlAttributes: new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row col-lg-12 col-md-12" style="margin: 5px;">
-                    <input type="submit" value="Search Places" class="btn btn-warning" />
-                </div>
+                $('#TeacherId').prop('value', "");
             }
+            if ($('#Style').val() == "")
+            {
+                $('#DanceStyleId').prop('value', "");
+            }
+        });
+    </script>
+}
 
-            <div class="col-sm-6 col-md-6 col-lg-6 col-xs-6" style="height: 400px; overflow-x: auto;">
-                @if (Model.Places.Count() > 0)
-                {
-                    @Html.Partial("~/Views/Shared/_CompactPlaceListPartial.cshtml", Model.Places)
-                }
-                else
-                {
-                    @:No Places
+<script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="../../Scripts/jquery.geocomplete.js"></script>
+<script>
+    $(function () {
+
+        var options = {
+            map: ".map_canvas"
+        };
+
+        $("#Location").geocomplete(options)
+          .on("geocode:result", function(event, result){
+              //// Set the zoom level you require for the default map
+              //var map = $("#Location").geocomplete("map");
+              //var bounds = map.getBounds();
+              //var ne = bounds.getNorthEast(); // LatLng of the north-east corner
+              //var sw = bounds.getSouthWest(); // LatLng of the south-west corder
+              //var center = map.getCenter();
+              //$("#NELat").val(ne.lat());
+              //$("#NELng").val(ne.lng());
+              //$("#SWLat").val(sw.lat());
+              //$("#SWLng").val(sw.lng());
+              //$("#CenterLat").val(center.lat());
+              //$("#CenterLng").val(center.lng());
+              ////    map.setZoom(10);
+          });
+    });
+
+    $(function () {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(success);
+        }
+
+        function success(position) {
+            var loc = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+            @if (Model.CenterLat != null && Model.CenterLng != null)
+            {
+                <text>
+            loc = new google.maps.LatLng(@Model.CenterLat, @Model.CenterLng);
+            </text>
             }
+            var map = $("#Location").geocomplete("map");
+            //  map.setZoom(0);
+            map.setCenter(loc);
+        }
+    });
+
+    $(function () {
+        var map = $("#Location").geocomplete("map");
+        @if (Model.Zoom != null)
+        {
+            <text>
+        map.setZoom(@Model.Zoom.ToString());
+        </text>
+        }
+        else
+        {
+            <text>
+        map.setZoom(10);
+        </text>
+        }
+    });
+
+    $(function () {
+        //  Map Marker Containers
+        var markers = [];
+        var infowindows = [];
+        //  Map Marker Containers
+        //  Build up the Markers
+        var map = $("#Location").geocomplete("map");
+        @foreach(var s in Model.Places)
+    {
+        <text>
+        var marker = new google.maps.Marker({
+            position: new google.maps.LatLng('@s.Latitude', @s.Longitude),
+            map: map,
+            title: '@s.Name',
+            icon: "http://maps.google.com/mapfiles/kml/pal2/icon2.png"
+        });
+
+        attachMessage(map, marker, '@s.Id', '@s.Name', '@s.Address', '@(s.City + ", " + s.State + " " + s.Zip)', '<a href="@Url.Action("Details", "Place", new { id = s.Id })">' + '@s.Name' + '</a>');
+        markers.push(marker);
+        </text>
+    }
+
+        function attachMessage(map, marker, num, placeName, address, address2, link) {
+            var message = marker.title;
+            var infowindow = new google.maps.InfoWindow({
+                disableAutoPan: false,
+                maxWidth: 200,
+                content: '<div id="content" class="text-center" style="width: 200px;">' +
+                '<div id="siteNotice">' +
+                '</div>' +
+                '<div style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
+                link +
+                '</div>' +
+                '<div id="bodyContent">' +
+                '<p>' +
+                address + '<br>' +
+                address2 +
+                '</p>' +
+                '</div>' +
+                '</div>'
+            });
+            infowindows.push(infowindow);
+
+            //  infowindow.open(map, marker);
+
+            google.maps.event.addListener(marker, 'click', function () {
+                clearWindows();
+                infowindow.open(map, marker);
+            });
+        }
+
+        //google.maps.event.addListener(map, 'zoom_changed', function () {
+        //    var map = $("#Location").geocomplete("map");
+        //    $("#Zoom").val(map.getZoom());
+        //});
+
+        function clearWindows() {
+            for (var i = 0; i < infowindows.length; i++) {
+                infowindows[i].close();
+            }
+        }
+    });
+</script>
+
+@using (Html.BeginForm("List", "Place", FormMethod.Post, new { @class = "formmain" }))
+{
+    @Html.HiddenFor(m => m.SearchAddress.Latitude, new { Name = "lat" })
+    @Html.HiddenFor(m => m.SearchAddress.Longitude, new { Name = "lng" })
+    @Html.HiddenFor(m => m.NELat)
+    @Html.HiddenFor(m => m.NELng)
+    @Html.HiddenFor(m => m.SWLat)
+    @Html.HiddenFor(m => m.SWLng)
+    @Html.HiddenFor(m => m.CenterLat)
+    @Html.HiddenFor(m => m.CenterLng)
+    @Html.HiddenFor(m => m.Zoom)
+    <div class="container bg-info text-center" style="padding: 10px;">
+        <div class="form-inline">
+            <div class="form-group">
+                @Html.TextBoxFor(m => m.Location, new { placeholder = "Location", @class = "form-control" })
             </div>
-            <div class="col-sm-6 col-md-6 col-lg-6 col-xs-6">
-                <div class="container" id="map-canvas"></div>
+            <div class="form-group">
+                @Html.HiddenFor(m => m.DanceStyleId)
+                @Html.TextBoxFor(m => m.Style, new { placeholder = "Dance Style", @class = "form-control" })
+            </div>
+            <div class="form-group">
+                @Html.HiddenFor(m => m.TeacherId)
+                @Html.TextBoxFor(m => m.Teacher, new { placeholder = "Teacher", @class = "form-control" })
+            </div>
+            <div class="form-group">
+                @Html.EnumDropDownListFor(model => model.Type, "Pick a Place Type", htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Search Places" class="btn btn-warning" />
             </div>
         </div>
+
+        @*<div class="col-lg-6 col-md-6">
+                <div class="row">
+                    <div class="form-group">
+                        @Html.Label("Location:", htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                        <div class="col-md-8 col-lg-8">
+                            @Html.TextBoxFor(m => m.Location, new { placeholder = "Search for a Location", @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 5px;">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.DanceStyleId, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                        <div class="col-md-8 col-lg-8">
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 5px;">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TeacherId, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                        <div class="col-md-8 col-lg-8">
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 5px;">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.SkillLevel, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                        <div class="col-md-8 col-lg-8">
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 5px;">
+                    <div class="form-group">
+                        @Html.Label("Days:", htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
+                        <div class="col-md-8 col-lg-8">
+                        </div>
+                    </div>
+                </div>
+            </div>*@
     </div>
-</div>
+}
+
+<div class="map_canvas"></div>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.Display("Place")
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model.Places)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.ActionLink(item.Name, "Details", "Place", new { id = item.Id }, null)
+            </td>
+        </tr>
+    }
+
+</table>

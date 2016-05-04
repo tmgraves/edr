@@ -25,11 +25,24 @@ namespace EDR.Controllers
             return View(model);
         }
 
-        public ActionResult List()
+        public ActionResult List(OwnerListViewModel model)
         {
-            var model = new OwnerListViewModel();
             model.Owners = DataContext.Owners.Include("ApplicationUser");
 
+            if (model.OwnerId != null)
+            {
+                model.Owners = model.Owners.Where(t => t.ApplicationUser.Id == model.OwnerId);
+            }
+            else if (model.OwnerName != null)
+            {
+                model.Owners = model.Owners.Where(t => t.ApplicationUser.FullName.ToLower().Contains(model.OwnerName.ToLower()));
+            }
+            if (model.NELat != null && model.SWLng != null)
+            {
+                model.Owners = model.Owners.Where(c => c.ApplicationUser.Longitude >= model.SWLng && c.ApplicationUser.Longitude <= model.NELng && c.ApplicationUser.Latitude >= model.SWLat && c.ApplicationUser.Latitude <= model.NELat);
+            }
+
+            model.Owners = model.Owners.ToList().Take(100);
             return View(model);
         }
 
@@ -273,6 +286,12 @@ namespace EDR.Controllers
             return PartialView("~/Views/Shared/_MediaUpdatesPartial.cshtml", lstMedia);
             //  Media Updates
 
+        }
+
+        public JsonResult Search(string searchString)
+        {
+            var owners = DataContext.Owners.Where(t => (t.ApplicationUser.FirstName + " " + t.ApplicationUser.LastName).ToLower().Contains(searchString.ToLower())).Select(s => new { Id = s.ApplicationUser.Id, Name = s.ApplicationUser.FirstName + " " + s.ApplicationUser.LastName }).ToList();
+            return Json(owners, JsonRequestBehavior.AllowGet);
         }
     }
 }

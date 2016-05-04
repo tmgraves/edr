@@ -349,12 +349,10 @@
     <Compile Include="Models\ViewModels\DanceStyleViewModels.cs" />
     <Compile Include="Models\ViewModels\EventViewModels.cs" />
     <Compile Include="Models\ViewModels\HomeViewModels.cs" />
-    <Compile Include="Models\ViewModels\OwnerListViewModel.cs" />
     <Compile Include="Models\ViewModels\PictureViewModels.cs" />
     <Compile Include="Models\ViewModels\PlaceCreateViewModel.cs" />
     <Compile Include="Models\ViewModels\PlaceEditViewModel.cs" />
     <Compile Include="Models\ViewModels\PlaceViewModels.cs" />
-    <Compile Include="Models\ViewModels\PromoterListViewModel.cs" />
     <Compile Include="Models\ViewModels\SchoolViewModels.cs" />
     <Compile Include="Models\ViewModels\StoreViewModels.cs" />
     <Compile Include="Models\ViewModels\TeacherViewModels.cs" />
@@ -400,10 +398,9 @@
     <Compile Include="Models\ViewModels\OwnerEditViewModel.cs" />
     <Compile Include="Models\ViewModels\OwnerViewViewModel.cs" />
     <Compile Include="Models\ViewModels\PlaceDetailViewModel.cs" />
-    <Compile Include="Models\ViewModels\PlaceListViewModel.cs" />
     <Compile Include="Models\ViewModels\PromoterApplyViewModel.cs" />
     <Compile Include="Models\ViewModels\PromoterEditViewModel.cs" />
-    <Compile Include="Models\ViewModels\PromoterViewViewModel.cs" />
+    <Compile Include="Models\ViewModels\PromoterViewModels.cs" />
     <Compile Include="Models\ViewModels\TeacherApplyViewModel.cs" />
     <Compile Include="Models\ViewModels\TeacherEditViewModel.cs" />
     <Compile Include="Models\ViewModels\TeacherListViewModel.cs" />
@@ -803,6 +800,8 @@
     <Content Include="Views\Store\Confirmation.cshtml" />
     <Content Include="Views\Home\Learn.cshtml" />
     <Content Include="Views\Home\Social.cshtml" />
+    <Content Include="Views\Place\List.cshtml" />
+    <Content Include="Views\Teacher\List.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>
@@ -836,7 +835,6 @@
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Home\Explore.cshtml" />
     <Content Include="Views\Place\Details.cshtml" />
-    <Content Include="Views\Home\Learn old.cshtml" />
     <Content Include="Views\Class\Details.cshtml" />
     <Content Include="Views\ClassSeries\Details.cshtml" />
     <Content Include="Views\DanceStyle\Create.cshtml" />
@@ -846,7 +844,6 @@
     <Content Include="Views\Event\Signup.cshtml" />
     <Content Include="Views\Class\CreateReview.cshtml" />
     <Content Include="Views\Home\Teachers.cshtml" />
-    <Content Include="Views\Home\Social old.cshtml" />
     <Content Include="Views\Account\TeacherProfile.cshtml" />
     <Content Include="Views\Teacher\Apply.cshtml" />
     <Content Include="Views\Teacher\Edit.cshtml" />
@@ -857,8 +854,7 @@
     <Content Include="Views\Dancer\Edit.cshtml" />
     <Content Include="Views\Class\Create.cshtml" />
     <Content Include="Views\Event\Create old.cshtml" />
-    <Content Include="Views\Teacher\List.cshtml" />
-    <Content Include="Views\Place\List.cshtml" />
+    <Content Include="Views\Teacher\List old.cshtml" />
     <Content Include="Views\Owner\List.cshtml" />
     <Content Include="Views\Promoter\List.cshtml" />
     <Content Include="Views\Dancer\List.cshtml" />

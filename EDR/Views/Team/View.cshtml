@@ -5,7 +5,10 @@
 }
 
 <h2>Details</h2>
-@Html.ActionLink("Manage", "Manage", new { id = Model.Team.Id }, null)
+<p>
+    @Html.ActionLink("View all Teams", "Index") |
+    @Html.ActionLink("Manage", "Manage", new { id = Model.Team.Id }, null)
+</p>
 <div>
     <h4>Team</h4>
     <hr />
@@ -17,7 +20,16 @@
         <dd>
             @Html.DisplayFor(model => model.Team.Name)
         </dd>
-
+    </dl>
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.Label("School")
+        </dt>
+        <dd>
+            @Html.ActionLink(Model.Team.School.Name, "View", "School", new { id = Model.Team.School.Id }, null)
+        </dd>
+    </dl>
+    <dl class="dl-horizontal">
         <dt>
             @Html.DisplayNameFor(model => model.Team.Description)
         </dt>
@@ -25,7 +37,8 @@
         <dd>
             @Html.DisplayFor(model => model.Team.Description)
         </dd>
-
+    </dl>
+    <dl class="dl-horizontal">
         <dt>
             @Html.DisplayNameFor(model => model.Team.FacebookLink)
         </dt>
@@ -33,7 +46,8 @@
         <dd>
             @Html.DisplayFor(model => model.Team.FacebookLink)
         </dd>
-
+    </dl>
+    <dl class="dl-horizontal">
         <dt>
             @Html.DisplayNameFor(model => model.Team.Public)
         </dt>
@@ -41,7 +55,8 @@
         <dd>
             @Html.DisplayFor(model => model.Team.Public)
         </dd>
-
+    </dl>
+    <dl class="dl-horizontal">
         <dt>
             @Html.DisplayNameFor(model => model.Team.DateStarted)
         </dt>
@@ -49,7 +64,8 @@
         <dd>
             @Html.DisplayFor(model => model.Team.DateStarted)
         </dd>
-
+    </dl>
+    <dl class="dl-horizontal">
         <dt>
             @Html.DisplayNameFor(model => model.Team.Address)
         </dt>
@@ -57,7 +73,8 @@
         <dd>
             @Html.DisplayFor(model => model.Team.Address)
         </dd>
-
+    </dl>
+    <dl class="dl-horizontal">
         <dt>
             @Html.DisplayNameFor(model => model.Team.Address2)
         </dt>
@@ -65,7 +82,8 @@
         <dd>
             @Html.DisplayFor(model => model.Team.Address2)
         </dd>
-
+    </dl>
+    <dl class="dl-horizontal">
         <dt>
             @Html.DisplayNameFor(model => model.Team.City)
         </dt>
@@ -73,7 +91,8 @@
         <dd>
             @Html.DisplayFor(model => model.Team.City)
         </dd>
-
+    </dl>
+    <dl class="dl-horizontal">
         <dt>
             @Html.DisplayNameFor(model => model.Team.State)
         </dt>
@@ -81,7 +100,8 @@
         <dd>
             @Html.DisplayFor(model => model.Team.State)
         </dd>
-
+    </dl>
+    <dl class="dl-horizontal">
         <dt>
             @Html.DisplayNameFor(model => model.Team.Zip)
         </dt>
@@ -89,7 +109,8 @@
         <dd>
             @Html.DisplayFor(model => model.Team.Zip)
         </dd>
-
+    </dl>
+    <dl class="dl-horizontal">
         <dt>
             @Html.DisplayNameFor(model => model.Team.Country)
         </dt>
@@ -97,26 +118,5 @@
         <dd>
             @Html.DisplayFor(model => model.Team.Country)
         </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.Latitude)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Team.Latitude)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.Longitude)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Team.Longitude)
-        </dd>
-
     </dl>
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Team.Id }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>

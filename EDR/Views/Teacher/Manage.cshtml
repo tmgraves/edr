@@ -5,6 +5,7 @@
 }
 
 <h2>Manage</h2>
+@Html.ActionLink("View Profile", "Home", new { id = User.Identity.Name })
 
 <div class="container-fluid">
     <div class="col-lg-6 col-md-6">
@@ -43,6 +44,26 @@
                 @*<a class="btn btn-primary" href="@Url.Action("ImportClassFromFacebook", "Event")">
                     <h4>More Events...</h4>
                 </a>*@
+            </div>
+        </div>
+        <div class="panel panel-info">
+            <h4 class="col-lg-6 col-md-6 col-sm-6 col-xs-6">My Teams</h4>
+            <div class="panel-body">
+                <div class="row">
+                </div>
+                @if (Model.Teams != null && Model.Teams.Count() > 0)
+                {
+                    foreach (var t in Model.Teams.OrderBy(s => s.Name))
+                    {
+                        <div class="row" style="padding: 2px;">
+                            @Html.ActionLink(t.Name, "View", "Team", new { id = t.Id }, new { @class = "btn btn-link" })
+                        </div>
+                    }
+                }
+                else
+                {
+                    @: No Teams
+                }
             </div>
         </div>
     </div>

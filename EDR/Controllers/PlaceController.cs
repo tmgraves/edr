@@ -17,39 +17,41 @@ namespace EDR.Controllers
     {
         public ActionResult List(PlaceListViewModel model)
         {
-            model.Places = DataContext.Places.Include("Events").Include("Events.DanceStyles").Include("Events.Reviews").Where(p => p.Public).ToList();
-            model.DanceStyles = DataContext.DanceStyles;
-            model.Zoom = model.Zoom == 0 ? 10 : model.Zoom;
-
-            model.Type = model.TypeParam;
-
-            if (model.Location != "" && model.Location != null)
+            if (model.TypeParam != null)
             {
-                var address = new Address();
-                address = Geolocation.ParseAddress(model.Location);
-                model.CenterLat = address.Latitude;
-                model.CenterLng = address.Longitude;
-                model.NELat = model.CenterLat + .5;
-                model.SWLat = model.CenterLat - .5;
-                model.NELng = model.CenterLng + .5;
-                model.SWLng = model.CenterLng - .5;
+                model.Type = model.TypeParam;
             }
 
-            if (model.NELat != null && model.NELng != null)
+            model.Places = DataContext.Places
+                                .Include("Events")
+                                .Include("Events.DanceStyles")
+                                .Include("Events.Reviews")
+                                .Where(p => p.Public)
+                                .AsQueryable();
+            if (model.Type != null)
+            {
+                model.Places = model.Places.Where(c => c.PlaceType == model.Type);
+            }
+            if (model.DanceStyleId != null)
+            {
+                model.Places = model.Places.Where(c => c.Events.Any(e => e.DanceStyles.Select(st => st.Id).Contains((int)model.DanceStyleId)));
+            }
+            if (model.TeacherId != null)
+            {
+                model.Places =
+                        (from p in model.Places
+                         join c in DataContext.Classes.Include("Place").Include("Teachers.ApplicationUser")
+                         on p.Id equals c.Place.Id
+                         where c.Teachers.Select(ts => ts.ApplicationUser.Id).Contains(model.TeacherId)
+                         select p);
+                //  model.Places = model.Places.Where(c => c.Events.OfType<Class>().Any(cl => cl.Teachers.Select(t => t.ApplicationUser.Id).Contains(model.TeacherId)));
+            }
+            if (model.NELat != null && model.SWLng != null)
             {
                 model.Places = model.Places.Where(c => c.Longitude >= model.SWLng && c.Longitude <= model.NELng && c.Latitude >= model.SWLat && c.Latitude <= model.NELat);
             }
 
-            if (model.DanceStyleId != null)
-            {
-                model.Places = model.Places.Where(p => p.Events.Any(e => e.DanceStyles != null && e.DanceStyles.Any(s => s.Id == model.DanceStyleId)));
-            }
-
-            if (model.Type != null)
-            {
-                model.Places = model.Places.Where(p => p.PlaceType == model.Type);
-            }
-
+            model.Places = model.Places.ToList().Take(100);
             return View(model);
         }
 

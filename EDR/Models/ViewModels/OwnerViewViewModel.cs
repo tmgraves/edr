@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.ComponentModel.DataAnnotations;
 
 namespace EDR.Models.ViewModels
 {
@@ -20,5 +21,27 @@ namespace EDR.Models.ViewModels
         public IEnumerable<Social> NewSocials { get; set; }
         public IEnumerable<Teacher> Teachers { get; set; }
         public IEnumerable<ApplicationUser> Dancers { get; set; }
+    }
+
+    public class OwnerListViewModel
+    {
+        //  Search Fields
+        [Display(Name = "Owner:")]
+        public string OwnerId { get; set; }
+        public string OwnerName { get; set; }
+        public Address SearchAddress { get; set; }
+        public string Location { get; set; }
+
+        //  Map Settings
+        public double? NELat { get; set; }
+        public double? NELng { get; set; }
+        public double? SWLat { get; set; }
+        public double? SWLng { get; set; }
+        public double? CenterLat { get; set; }
+        public double? CenterLng { get; set; }
+        public int? Zoom { get; set; }
+
+        //  Results
+        public IEnumerable<Owner> Owners { get; set; }
     }
 }

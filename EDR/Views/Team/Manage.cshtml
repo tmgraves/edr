@@ -12,6 +12,8 @@
     @Scripts.Render("~/bundles/jqueryUI")
 <script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
 <script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
+@Scripts.Render("~/bundles/GeoComplete")
+<script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
 
 <script type="text/javascript">
     $.validator.setDefaults({
@@ -136,6 +138,44 @@
 </script>
 
 <script type="text/javascript">
+    $(function () {
+        $("#Team_Address").geocomplete({
+            details: "form",
+            types: ["geocode", "establishment"],
+        })
+        .bind("geocode:result", function (event, result) {
+            $('#Team_Latitude').prop("value", result.geometry.location.lat());
+            $('#Team_Longitude').prop("value", result.geometry.location.lng());
+            var street_num;
+            var street_name;
+            $.each(result.address_components, function (i, address_component) {
+                //alert(address_component.types[0]);
+                //alert(address_component.long_name);
+                if (address_component.types[0] == "street_number") {
+                    street_num = address_component.long_name;
+                }
+                else if (address_component.types[0] == "route") {
+                    street_name = address_component.long_name;
+                }
+                else if (address_component.types[0] == "locality") {
+                    $('#Team_City').prop("value", address_component.long_name);
+                }
+                else if (address_component.types[0] == "administrative_area_level_1") {
+                    $('#Team_State').prop("value", address_component.long_name);
+                }
+                else if (address_component.types[0] == "postal_code") {
+                    $('#Team_Zip').prop("value", address_component.long_name);
+                }
+                else if (address_component.types[0] == "country") {
+                    $('#Team_Country').prop("value", address_component.long_name);
+                }
+            });
+            //alert(street_num + " " + street_name);
+            $('#Team_Address').prop("value", street_num + " " + street_name);
+            //  console.log(result);
+        });
+    });
+
     $('#rehearsalplace').autocomplete({
         source: function (request, response) {
             $.ajax({
@@ -239,6 +279,12 @@
 }
 
 <h2>Details</h2>
+<p>
+    @Html.ActionLink("View Profile Page", "View", new { id = Model.Team.Id })
+</p>
+<p>
+    @Html.ActionLink("View all Teams", "Index")
+</p>
 <hr />
 
 <div class="container-fluid">
@@ -252,117 +298,108 @@
                     </div>
                     <dl class="dl-horizontal">
                         <dt>
-                            @Html.DisplayNameFor(model => model.Team.Name)
+                            @Html.LabelFor(model => model.Team.Name, htmlAttributes: new { @class = "control-label col-md-2" })
                         </dt>
-
                         <dd>
                             @Html.DisplayFor(model => model.Team.Name)
                         </dd>
-
+                    </dl>
+                    <dl class="dl-horizontal">
                         <dt>
-                            @Html.DisplayNameFor(model => model.Team.Description)
+                            @Html.Label("School", htmlAttributes: new { @class = "control-label col-md-2" })
                         </dt>
-
+                        <dd>
+                            @Html.ActionLink(Model.Team.School.Name, "View", "School", new { id = Model.Team.School.Id }, null)
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.LabelFor(model => model.Team.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+                        </dt>
                         <dd>
                             @Html.DisplayFor(model => model.Team.Description)
                         </dd>
-
+                    </dl>
+                    <dl class="dl-horizontal">
                         <dt>
-                            @Html.DisplayNameFor(model => model.Team.FacebookLink)
+                            @Html.LabelFor(model => model.Team.FacebookLink, htmlAttributes: new { @class = "control-label col-md-2" })
                         </dt>
-
                         <dd>
                             @Html.DisplayFor(model => model.Team.FacebookLink)
                         </dd>
-
+                    </dl>
+                    <dl class="dl-horizontal">
                         <dt>
-                            @Html.DisplayNameFor(model => model.Team.Public)
+                            @Html.LabelFor(model => model.Team.Public, htmlAttributes: new { @class = "control-label col-md-2" })
                         </dt>
-
-                        <dd>
+                        <dd class="checkbox">
                             @Html.DisplayFor(model => model.Team.Public)
                         </dd>
-
+                    </dl>
+                    <dl class="dl-horizontal">
                         <dt>
-                            @Html.DisplayNameFor(model => model.Team.DateStarted)
+                            @Html.LabelFor(model => model.Team.DateStarted, htmlAttributes: new { @class = "control-label col-md-2" })
                         </dt>
-
                         <dd>
                             @Html.DisplayFor(model => model.Team.DateStarted)
                         </dd>
-
+                    </dl>
+                    <dl class="dl-horizontal">
                         <dt>
-                            @Html.DisplayNameFor(model => model.Team.Address)
+                            @Html.LabelFor(model => model.Team.Address, htmlAttributes: new { @class = "control-label col-md-2" })
                         </dt>
-
                         <dd>
                             @Html.DisplayFor(model => model.Team.Address)
                         </dd>
-
+                    </dl>
+                    <dl class="dl-horizontal">
                         <dt>
-                            @Html.DisplayNameFor(model => model.Team.Address2)
+                            @Html.LabelFor(model => model.Team.Address2, htmlAttributes: new { @class = "control-label col-md-2" })
                         </dt>
-
                         <dd>
                             @Html.DisplayFor(model => model.Team.Address2)
                         </dd>
-
+                    </dl>
+                    <dl class="dl-horizontal">
                         <dt>
-                            @Html.DisplayNameFor(model => model.Team.City)
+                            @Html.LabelFor(model => model.Team.City, htmlAttributes: new { @class = "control-label col-md-2" })
                         </dt>
-
                         <dd>
                             @Html.DisplayFor(model => model.Team.City)
                         </dd>
-
+                    </dl>
+                    <dl class="dl-horizontal">
                         <dt>
-                            @Html.DisplayNameFor(model => model.Team.State)
+                            @Html.LabelFor(model => model.Team.State, htmlAttributes: new { @class = "control-label col-md-2" })
                         </dt>
-
                         <dd>
                             @Html.DisplayFor(model => model.Team.State)
                         </dd>
-
+                    </dl>
+                    <dl class="dl-horizontal">
                         <dt>
-                            @Html.DisplayNameFor(model => model.Team.Zip)
+                            @Html.LabelFor(model => model.Team.Zip, htmlAttributes: new { @class = "control-label col-md-2" })
                         </dt>
-
                         <dd>
                             @Html.DisplayFor(model => model.Team.Zip)
                         </dd>
-
+                    </dl>
+                    <dl class="dl-horizontal">
                         <dt>
-                            @Html.DisplayNameFor(model => model.Team.Country)
+                            @Html.LabelFor(model => model.Team.Country, htmlAttributes: new { @class = "control-label col-md-2" })
                         </dt>
-
                         <dd>
                             @Html.DisplayFor(model => model.Team.Country)
                         </dd>
-
-                        <dt>
-                            @Html.DisplayNameFor(model => model.Team.Latitude)
-                        </dt>
-
-                        <dd>
-                            @Html.DisplayFor(model => model.Team.Latitude)
-                        </dd>
-
-                        <dt>
-                            @Html.DisplayNameFor(model => model.Team.Longitude)
-                        </dt>
-
-                        <dd>
-                            @Html.DisplayFor(model => model.Team.Longitude)
-                        </dd>
-
                     </dl>
-
                 </div>
                 <div id="editdiv" style="display: none;">
                     @Html.ValidationSummary("", new { @class = "text-danger" })
                     @using (Html.BeginForm("Save", "Team", FormMethod.Post, new { @id = "saveform", @class = "main" }))
             {
                         @Html.HiddenFor(x => x.Team.Id)
+                        @Html.HiddenFor(model => model.Team.Latitude)
+                        @Html.HiddenFor(model => model.Team.Longitude)
                         <div class="text-right" style="padding-bottom: 10px;">
                             <input type="submit" id="btnsave" value="Save" class="btn btn-primary" />
                             <input id="btncanceledit" type="button" class="btn btn-primary" value="Cancel" />
@@ -375,6 +412,8 @@
                                 @Html.EditorFor(model => model.Team.Name, new { htmlAttributes = new { @class = "form-control" } })
                                 @Html.ValidationMessageFor(model => model.Team.Name, "", new { @class = "text-danger" })
                             </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
                             <dt>
                                 @Html.LabelFor(model => model.Team.Description, htmlAttributes: new { @class = "control-label col-md-2" })
                             </dt>
@@ -382,6 +421,8 @@
                                 @Html.EditorFor(model => model.Team.Description, new { htmlAttributes = new { @class = "form-control" } })
                                 @Html.ValidationMessageFor(model => model.Team.Description, "", new { @class = "text-danger" })
                             </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
                             <dt>
                                 @Html.LabelFor(model => model.Team.FacebookLink, htmlAttributes: new { @class = "control-label col-md-2" })
                             </dt>
@@ -389,6 +430,8 @@
                                 @Html.EditorFor(model => model.Team.FacebookLink, new { htmlAttributes = new { @class = "form-control" } })
                                 @Html.ValidationMessageFor(model => model.Team.FacebookLink, "", new { @class = "text-danger" })
                             </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
                             <dt>
                                 @Html.LabelFor(model => model.Team.Public, htmlAttributes: new { @class = "control-label col-md-2" })
                             </dt>
@@ -396,6 +439,8 @@
                                 @Html.EditorFor(model => model.Team.Public)
                                 @Html.ValidationMessageFor(model => model.Team.Public, "", new { @class = "text-danger" })
                             </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
                             <dt>
                                 @Html.LabelFor(model => model.Team.DateStarted, htmlAttributes: new { @class = "control-label col-md-2" })
                             </dt>
@@ -403,6 +448,8 @@
                                 @Html.EditorFor(model => model.Team.DateStarted, new { htmlAttributes = new { @class = "form-control" } })
                                 @Html.ValidationMessageFor(model => model.Team.DateStarted, "", new { @class = "text-danger" })
                             </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
                             <dt>
                                 @Html.LabelFor(model => model.Team.Address, htmlAttributes: new { @class = "control-label col-md-2" })
                             </dt>
@@ -410,6 +457,8 @@
                                 @Html.EditorFor(model => model.Team.Address, new { htmlAttributes = new { @class = "form-control" } })
                                 @Html.ValidationMessageFor(model => model.Team.Address, "", new { @class = "text-danger" })
                             </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
                             <dt>
                                 @Html.LabelFor(model => model.Team.Address2, htmlAttributes: new { @class = "control-label col-md-2" })
                             </dt>
@@ -417,6 +466,8 @@
                                 @Html.EditorFor(model => model.Team.Address2, new { htmlAttributes = new { @class = "form-control" } })
                                 @Html.ValidationMessageFor(model => model.Team.Address2, "", new { @class = "text-danger" })
                             </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
                             <dt>
                                 @Html.LabelFor(model => model.Team.City, htmlAttributes: new { @class = "control-label col-md-2" })
                             </dt>
@@ -424,6 +475,8 @@
                                 @Html.EditorFor(model => model.Team.City, new { htmlAttributes = new { @class = "form-control" } })
                                 @Html.ValidationMessageFor(model => model.Team.City, "", new { @class = "text-danger" })
                             </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
                             <dt>
                                 @Html.LabelFor(model => model.Team.State, htmlAttributes: new { @class = "control-label col-md-2" })
                             </dt>
@@ -431,6 +484,8 @@
                                 @Html.EditorFor(model => model.Team.State, new { htmlAttributes = new { @class = "form-control" } })
                                 @Html.ValidationMessageFor(model => model.Team.State, "", new { @class = "text-danger" })
                             </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
                             <dt>
                                 @Html.LabelFor(model => model.Team.Zip, htmlAttributes: new { @class = "control-label col-md-2" })
                             </dt>
@@ -438,6 +493,8 @@
                                 @Html.EditorFor(model => model.Team.Zip, new { htmlAttributes = new { @class = "form-control" } })
                                 @Html.ValidationMessageFor(model => model.Team.Zip, "", new { @class = "text-danger" })
                             </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
                             <dt>
                                 @Html.LabelFor(model => model.Team.Country, htmlAttributes: new { @class = "control-label col-md-2" })
                             </dt>
@@ -842,6 +899,3 @@
         </div>
     </div>
 </div>
-<p>
-    @Html.ActionLink("Back to List", "Index")
-</p>

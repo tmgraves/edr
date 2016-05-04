@@ -7,25 +7,26 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EDR.Models.ViewModels
 {
-    public class TeacherViewViewModel
+    public class PromoterViewViewModel
     {
-        public Teacher Teacher { get; set; }
+        // TODO: FILL IN PROPERTIES NEEDED FOR VIEW
+
+        public Promoter Promoter { get; set; }
         public Address Address { get; set; }
-        public EventListViewModel Events { get; set; }
-        public ClassNewViewModel NewClassModel { get; set; }
-        public EventListViewModel NewClasses { get; set; }
-        public IEnumerable<ApplicationUser> NewStudents { get; set; }
         public IEnumerable<EventMedia> MediaUpdates { get; set; }
+        public EventListViewModel NewSocials { get; set; }
+        public IEnumerable<ApplicationUser> NewDancers { get; set; }
+        public EventListViewModel Events { get; set; }
         public List<RoleName> Roles { get; set; }
         public List<FacebookEvent> FacebookEvents { get; set; }
     }
 
-    public class TeacherListViewModel
+    public class PromoterListViewModel
     {
         //  Search Fields
-        [Display(Name = "Teacher:")]
-        public string TeacherId { get; set; }
-        public string Teacher { get; set; }
+        [Display(Name = "Promoter:")]
+        public string PromoterId { get; set; }
+        public string PromoterName { get; set; }
         [Display(Name = "Dance Style:")]
         public int? DanceStyleId { get; set; }
         public string Style { get; set; }
@@ -42,6 +43,6 @@ namespace EDR.Models.ViewModels
         public int? Zoom { get; set; }
 
         //  Results
-        public IEnumerable<Teacher> Teachers { get; set; }
+        public IEnumerable<Promoter> Promoters { get; set; }
     }
 }

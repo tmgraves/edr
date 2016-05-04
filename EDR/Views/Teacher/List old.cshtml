@@ -1,0 +1,242 @@
+﻿@model EDR.Models.ViewModels.TeacherListViewModel
+@using EDR.Utilities
+
+@{
+    ViewBag.Title = "Eat. Dance. Repeat. Teachers";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container" style="padding: 10px;">
+    <style>
+        #map-canvas {
+            width: 100%;
+            height: 400px;
+        }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js"></script>
+    <script>
+    var map;
+    var markers = [];
+    var infowindows = [];
+    var lat = 0;
+    var lng = 0;
+
+    $(function () {
+        navigator.geolocation.getCurrentPosition(showPosition, positionError);
+
+        function showPosition(position) {
+            var coordinates = position.coords;
+            lat = coordinates.latitude;
+            lng = coordinates.longitude;
+        }
+
+        function positionError(position) {
+            alert("Error " + position.code);
+        }
+    });
+
+    function initialize() {
+        @if(Model.CenterLat != null && Model.CenterLng != null)
+        {
+            <text>
+                lat = '@Model.CenterLat';
+                lng = '@Model.CenterLng';
+            </text>
+        }
+        var mapOptions = {
+            zoom: @Model.Zoom,
+            center: new google.maps.LatLng(lat, lng)
+        };
+
+        map = new google.maps.Map(document.getElementById('map-canvas'),
+            mapOptions);
+
+        @{
+            int idx = 1;
+            var today = DateTime.Today;
+            foreach(var t in Model.Teachers)
+            {
+                <text>
+        var marker = new google.maps.Marker({
+            position: new google.maps.LatLng('@t.ApplicationUser.Latitude', '@t.ApplicationUser.Longitude'),
+            map: map,
+            title: '@t.ApplicationUser.FullName',
+            icon: "http://maps.google.com/mapfiles/kml/paddle/" + @idx + "-lv.png"
+        });
+
+        attachMessage(marker, '@t.Id', '@t.ApplicationUser.FullName', '@t.ApplicationUser.City , @t.ApplicationUser.State  @t.ApplicationUser.ZipCode', '<a href="@Url.Action("Home", "Teacher", new { username = t.ApplicationUser.UserName })">' + marker.title + '</a>');
+        markers.push(marker);
+
+        </text>
+                idx += 1;
+            }
+        }
+
+        //  clearMarkers();
+
+        google.maps.event.addListener(map, 'idle', function () {
+            var bounds = map.getBounds();
+            var ne = bounds.getNorthEast(); // LatLng of the north-east corner
+            var sw = bounds.getSouthWest(); // LatLng of the south-west corder
+            var center = map.getCenter();
+            $("#NELat").val(ne.lat());
+            $("#NELng").val(ne.lng());
+            $("#SWLat").val(sw.lat());
+            $("#SWLng").val(sw.lng());
+            $("#CenterLat").val(center.lat());
+            $("#CenterLng").val(center.lng());
+            $("#Zoom").val(map.getZoom());
+        });
+
+        google.maps.event.addListener(map, 'dragend', function () {
+            $("#location").val("");
+        });
+
+        google.maps.event.addListener(map, 'zoom_changed', function () {
+            $("#location").val("");
+        });
+    }
+
+    function clearMarkers() {
+        setAllMap(null);
+    }
+
+    function setAllMap(map) {
+        for (var i = 0; i < markers.length; i++) {
+            markers[i].setMap(map);
+        }
+    }
+
+    function clearWindows() {
+        for (var i = 0; i < infowindows.length; i++) {
+            infowindows[i].close();
+        }
+    }
+
+    // The five markers show a secret message when clicked
+    // but that message is not within the marker's instance data
+    function attachMessage(marker, num, placeName, address, link) {
+        var message = marker.title;
+        var infowindow = new google.maps.InfoWindow({
+            disableAutoPan: true,
+            content: '<div id="content">' +
+            '<div id="siteNotice">' +
+            '</div>' +
+            '<h4 id="firstHeading" class="firstHeading">' + link + '</h4>' +
+            '<div id="bodyContent">' +
+            '<p>' +
+            address + '<br/>' +
+            '</p>' +
+            '</div>' +
+            '</div>'
+        });
+        infowindows.push(infowindow);
+
+        //  infowindow.open(map, marker);
+
+        google.maps.event.addListener(marker, 'click', function () {
+            clearWindows();
+            infowindow.open(map, marker);
+        });
+    }
+
+    function openItem(id, lati, long) {
+        var latLng = new google.maps.LatLng(lati, long); //Makes a latlng
+        map.panTo(latLng); //Make map global
+        markers[id].setMap(map);
+        clearWindows();
+        infowindows[id].open(map, markers[id]);
+        return false;
+    }
+
+    google.maps.event.addDomListener(window, 'load', initialize);
+</script>
+    
+<div class="container" style="padding: 10px;">
+
+        <h2>Dance Teachers</h2>
+        @using (Html.BeginForm("List", "Teacher", FormMethod.Get))
+        {
+            @Html.HiddenFor(x => x.NELat, 0)
+            @Html.HiddenFor(x => x.NELng, 0)
+            @Html.HiddenFor(x => x.SWLat, 0)
+            @Html.HiddenFor(x => x.SWLng, 0)
+            @Html.HiddenFor(x => x.CenterLat, 0)
+            @Html.HiddenFor(x => x.CenterLng, 0)
+            @Html.HiddenFor(x => x.Zoom, 0)
+            <div class="row col-lg-12 col-md-12">
+                <div class="col-lg-12 col-md-12" style="margin-bottom: 5px;">
+                    <div class="row">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Location, htmlAttributes: new { @class = "control-label col-md-2 col-lg-2 input-lg" })
+                            <div class="col-md-10 col-lg-10">
+                                @Html.TextBoxFor(x => x.Location, null, new { @class = "form-control input-lg", @id = "location", @placeholder = "Enter your location (Los Angeles, CA, 90065, etc)" })
+                                @Html.ValidationMessageFor(model => model.Location, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6">
+                    <div class="row">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.DanceStyles, htmlAttributes: new { @class = "control-label col-md-3 col-lg-3" })
+                            <div class="col-md-9 col-lg-9">
+                                @Html.DropDownListFor(x => x.DanceStyleId, new SelectList(Model.DanceStyles.OrderBy(s => s.Name), "Id", "Name", Model.DanceStyleId), "Pick a Dance Style", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.DanceStyles, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6">
+                </div>
+            </div>
+            <div class="row col-lg-12 col-md-12" style="margin: 5px;">
+                <input type="submit" value="Search Teachers" class="btn btn-warning" />
+            </div>
+        }
+        <div class="col-sm-6 col-md-6 col-lg-6 col-xs-6">
+            @if (Model.Teachers != null)
+            {
+                int rowNo = 0;
+                foreach (var t in Model.Teachers)
+                {
+                    <a class="col-lg-12 col-md-12 btn btn-default" style="text-align: left; vertical-align: top; width: 100%;" onclick="openItem(@rowNo, @t.ApplicationUser.Latitude, @t.ApplicationUser.Longitude); return false;">
+                        <div class="col-lg-2 col-md-2 croppedpic" style="display: inline-block; height: 75px;">
+                            @if (t.ApplicationUser.UserPictures != null && t.ApplicationUser.UserPictures.Count > 0)
+                            {
+                                <img src="@Url.Content(t.ApplicationUser.UserPictures.First().Filename)" style="width: 100%;" />
+                            }
+                            else
+                            {
+                                <img src="@Url.Content("~/Content/images/NoPic.png")" style="width: 100%;" />
+                            }
+                        </div>
+                        <div class="col-lg-8 col-md-8" style="display: inline-block; vertical-align: top;">
+                            @(rowNo += 1). 
+                            <span class="text-primary">@t.ApplicationUser.FullName</span>
+                            @if (t.ApplicationUser.ZipCode != null)
+                            {
+                                var address = Geolocation.ParseAddress(t.ApplicationUser.ZipCode);
+                                <br /><span class="small">@address.City , @address.State</span>
+                            }
+                            @if (t.DanceStyles != null)
+                            {
+                                <br />
+                                foreach (var s in t.DanceStyles)
+                                {
+                                    <span class="label label-info">@s.Name</span>
+                                }
+                            }
+                        </div>
+                        <div class="col-lg-2 col-md-2">
+                            @t.Classes.Sum(c => c.Reviews.Sum(r => r.Like ? 1 : 0)) <i class="glyphicon glyphicon-thumbs-up"></i> | @t.Classes.Sum(c => c.Reviews.Sum(r => !r.Like ? 1 : 0)) <i class="glyphicon glyphicon-thumbs-down"></i>
+                        </div>
+                    </a>
+                }
+            }
+        </div>
+        <div class="col-sm-6 col-md-6 col-lg-6 col-xs-6">
+            <div class="container" id="map-canvas"></div>
+        </div>
+    </div>
+</div>

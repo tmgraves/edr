@@ -10,6 +10,7 @@ using EDR.Data;
 using EDR.Models;
 using EDR.Models.ViewModels;
 using System.Data.Entity.Validation;
+using Microsoft.AspNet.Identity;
 
 namespace EDR.Controllers
 {
@@ -41,8 +42,6 @@ namespace EDR.Controllers
             }
 
             model.Teams = model.Teams.ToList().Take(100);
-
-            model.Teams = DataContext.Teams.ToList();
             return View(model);
         }
 
@@ -54,7 +53,7 @@ namespace EDR.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             var model = new TeamViewViewModel();
-            model.Team = DataContext.Teams.Find(id);
+            model.Team = DataContext.Teams.Include("School").Single(t => t.Id == id);
             if (model.Team == null)
             {
                 return HttpNotFound();
@@ -73,6 +72,7 @@ namespace EDR.Controllers
                             .Include("Performances.Place")
                             .Include("Performances.Event.Place")
                             .Include("DanceStyles")
+                            .Include("School")
                             .Single(e => e.Id == id);
             if (model.Team == null)
             {
@@ -96,6 +96,7 @@ namespace EDR.Controllers
         }
 
         // GET: Team/Create
+        [Authorize(Roles = "Teacher")]
         public ActionResult Create(int? schoolId)
         {
             var model = new TeamCreateViewModel();
@@ -106,12 +107,17 @@ namespace EDR.Controllers
         // POST: Team/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Teacher")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(TeamCreateViewModel model)
         {
             if (ModelState.IsValid)
             {
+                model.Team.DateStarted = DateTime.Now;
+                var userid = User.Identity.GetUserId();
+                model.Team.Teachers = new List<Teacher>();
+                model.Team.Teachers.Add(DataContext.Teachers.Single(t => t.ApplicationUser.Id == userid));
                 DataContext.Teams.Add(model.Team);
                 DataContext.SaveChanges();
                 return RedirectToAction("Index");

@@ -25,11 +25,30 @@ namespace EDR.Controllers
             return View(model);
         }
 
-        public ActionResult List()
+        public ActionResult List(PromoterListViewModel model)
         {
-            var model = new PromoterListViewModel();
-            model.Promoters = DataContext.Promoters.Include("ApplicationUser");
+            model.Promoters = DataContext.Promoters
+                                    .Include("DanceStyles")
+                                    .Include("ApplicationUser");
 
+            if (model.PromoterId != null)
+            {
+                model.Promoters = model.Promoters.Where(t => t.ApplicationUser.Id == model.PromoterId);
+            }
+            else if (model.PromoterName != null)
+            {
+                model.Promoters = model.Promoters.Where(t => t.ApplicationUser.FullName.ToLower().Contains(model.PromoterName.ToLower()));
+            }
+            if (model.DanceStyleId != null)
+            {
+                model.Promoters = model.Promoters.Where(t => t.DanceStyles.Select(st => st.Id).Contains((int)model.DanceStyleId));
+            }
+            if (model.NELat != null && model.SWLng != null)
+            {
+                model.Promoters = model.Promoters.Where(c => c.ApplicationUser.Longitude >= model.SWLng && c.ApplicationUser.Longitude <= model.NELng && c.ApplicationUser.Latitude >= model.SWLat && c.ApplicationUser.Latitude <= model.NELat);
+            }
+
+            model.Promoters = model.Promoters.ToList().Take(100);
             return View(model);
         }
 
@@ -326,6 +345,11 @@ namespace EDR.Controllers
             return PartialView("~/Views/Shared/_MediaUpdatesPartial.cshtml", lstMedia);
             //  Media Updates
 
+        }
+        public JsonResult Search(string searchString)
+        {
+            var promoters = DataContext.Promoters.Where(t => (t.ApplicationUser.FirstName + " " + t.ApplicationUser.LastName).ToLower().Contains(searchString.ToLower())).Select(s => new { Id = s.ApplicationUser.Id, Name = s.ApplicationUser.FirstName + " " + s.ApplicationUser.LastName }).ToList();
+            return Json(promoters, JsonRequestBehavior.AllowGet);
         }
     }
 }
