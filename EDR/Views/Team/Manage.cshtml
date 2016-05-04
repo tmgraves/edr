@@ -309,7 +309,10 @@
                             @Html.Label("School", htmlAttributes: new { @class = "control-label col-md-2" })
                         </dt>
                         <dd>
-                            @Html.ActionLink(Model.Team.School.Name, "View", "School", new { id = Model.Team.School.Id }, null)
+                            @if (Model.Team.School != null)
+                            {
+                                @Html.ActionLink(Model.Team.School.Name, "View", "School", new { id = Model.Team.School.Id }, null)
+                            }
                         </dd>
                     </dl>
                     <dl class="dl-horizontal">
@@ -392,14 +395,23 @@
                             @Html.DisplayFor(model => model.Team.Country)
                         </dd>
                     </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.LabelFor(model => model.Team.SkillLevel, htmlAttributes: new { @class = "control-label col-md-2" })
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Team.SkillLevel)
+                        </dd>
+                    </dl>
                 </div>
                 <div id="editdiv" style="display: none;">
                     @Html.ValidationSummary("", new { @class = "text-danger" })
-                    @using (Html.BeginForm("Save", "Team", FormMethod.Post, new { @id = "saveform", @class = "main" }))
+                    @using (Html.BeginForm("Manage", "Team", FormMethod.Post, new { @id = "saveform", @class = "main" }))
             {
                         @Html.HiddenFor(x => x.Team.Id)
                         @Html.HiddenFor(model => model.Team.Latitude)
                         @Html.HiddenFor(model => model.Team.Longitude)
+                        @Html.HiddenFor(x => x.Team.SchoolId)
                         <div class="text-right" style="padding-bottom: 10px;">
                             <input type="submit" id="btnsave" value="Save" class="btn btn-primary" />
                             <input id="btncanceledit" type="button" class="btn btn-primary" value="Cancel" />
@@ -501,6 +513,15 @@
                             <dd>
                                 @Html.EditorFor(model => model.Team.Country, new { htmlAttributes = new { @class = "form-control" } })
                                 @Html.ValidationMessageFor(model => model.Team.Country, "", new { @class = "text-danger" })
+                            </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.LabelFor(model => model.Team.SkillLevel, htmlAttributes: new { @class = "control-label col-md-2" })
+                            </dt>
+                            <dd>
+                                @Html.EditorFor(model => model.Team.SkillLevel, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Team.SkillLevel, "", new { @class = "text-danger" })
                             </dd>
                         </dl>
 

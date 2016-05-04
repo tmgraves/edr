@@ -26,7 +26,10 @@
             @Html.Label("School")
         </dt>
         <dd>
-            @Html.ActionLink(Model.Team.School.Name, "View", "School", new { id = Model.Team.School.Id }, null)
+            @if (Model.Team.School != null)
+            {
+                @Html.ActionLink(Model.Team.School.Name, "View", "School", new { id = Model.Team.School.Id }, null)
+            }
         </dd>
     </dl>
     <dl class="dl-horizontal">

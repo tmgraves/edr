@@ -174,7 +174,7 @@
             position: new google.maps.LatLng('@s.Latitude', @s.Longitude),
             map: map,
             title: '@s.Name',
-            icon: "http://maps.google.com/mapfiles/kml/pal2/icon2.png"
+            icon: "../../Content/images/MapMarker.png"
         });
 
         attachMessage(map, marker, '@s.Id', '@s.Name', '@s.Address', '@(s.City + ", " + s.State + " " + s.Zip)', '<a href="@Url.Action("Details", "Place", new { id = s.Id })">' + '@s.Name' + '</a>');

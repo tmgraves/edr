@@ -83,7 +83,7 @@ namespace EDR.Controllers
 
         [Authorize(Roles = "Teacher")]
         [HttpPost]
-        public ActionResult Save(TeamManageViewModel model)
+        public ActionResult Manage(TeamManageViewModel model)
         {
             var t = ModelState.IsValidField("Team");
             if (ModelState.IsValidField("Team"))

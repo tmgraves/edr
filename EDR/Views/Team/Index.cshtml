@@ -73,6 +73,18 @@
         });
 
         $('.formmain').submit(function () {
+            var map = $("#Location").geocomplete("map");
+            $("#Zoom").val(map.getZoom());
+            var bounds = map.getBounds();
+            var ne = bounds.getNorthEast(); // LatLng of the north-east corner
+            var sw = bounds.getSouthWest(); // LatLng of the south-west corder
+            var center = map.getCenter();
+            $("#NELat").val(ne.lat());
+            $("#NELng").val(ne.lng());
+            $("#SWLat").val(sw.lat());
+            $("#SWLng").val(sw.lng());
+            $("#CenterLat").val(center.lat());
+            $("#CenterLng").val(center.lng());
             if ($('#Teacher').val() == "")
             {
                 $('#TeacherId').prop('value', "");
@@ -97,19 +109,6 @@
 
         $("#Location").geocomplete(options)
           .on("geocode:result", function(event, result){
-              // Set the zoom level you require for the default map
-              var map = $("#Location").geocomplete("map");
-              var bounds = map.getBounds();
-              var ne = bounds.getNorthEast(); // LatLng of the north-east corner
-              var sw = bounds.getSouthWest(); // LatLng of the south-west corder
-              var center = map.getCenter();
-              $("#NELat").val(ne.lat());
-              $("#NELng").val(ne.lng());
-              $("#SWLat").val(sw.lat());
-              $("#SWLng").val(sw.lng());
-              $("#CenterLat").val(center.lat());
-              $("#CenterLng").val(center.lng());
-              //    map.setZoom(10);
           });
     });
 
@@ -162,7 +161,7 @@
             position: new google.maps.LatLng('@s.Latitude', @s.Longitude),
             map: map,
             title: '@s.Name',
-            icon: "http://maps.google.com/mapfiles/kml/pal2/icon2.png"
+            icon: "../../Content/images/MapMarker.png"
         });
 
         attachMessage(map, marker, '@s.Id', '@s.Name', '@s.Address', '@(s.City + ", " + s.State + " " + s.Zip)', '<a href="@Url.Action("View", "Team", new { id = s.Id })">' + '@s.Name' + '</a>');
@@ -198,25 +197,6 @@
                 infowindow.open(map, marker);
             });
         }
-
-        google.maps.event.addListener(map, 'zoom_changed', function () {
-            var map = $("#Location").geocomplete("map");
-            $("#Zoom").val(map.getZoom());
-        });
-
-        google.maps.event.addListener(map, 'dragend', function () {
-            var map = $("#Location").geocomplete("map");
-            var bounds = map.getBounds();
-            var ne = bounds.getNorthEast(); // LatLng of the north-east corner
-            var sw = bounds.getSouthWest(); // LatLng of the south-west corder
-            var center = map.getCenter();
-            $("#NELat").val(ne.lat());
-            $("#NELng").val(ne.lng());
-            $("#SWLat").val(sw.lat());
-            $("#SWLng").val(sw.lng());
-            $("#CenterLat").val(center.lat());
-            $("#CenterLng").val(center.lng());
-        });
 
         function clearWindows() {
             for (var i = 0; i < infowindows.length; i++) {

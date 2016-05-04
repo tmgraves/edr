@@ -14,6 +14,35 @@
         width: 100%;
         height: 200px;
     }
+
+    .image-container
+    {
+        width: 100px;
+        height: 100px;
+    }
+
+    .item-image {
+        vertical-align: middle;
+        max-width: 100px;
+        max-height: 100px;
+    }
+
+    .helper {
+        display: inline-block;
+        height: 100%;
+        vertical-align: middle;
+    }
+    .item-title{
+        font-weight: bold;
+        white-space: nowrap; 
+        width: 100%; 
+        overflow: hidden;
+        text-overflow: ellipsis; 
+    }
+    .item-link
+    {
+        width: 100%;
+    }
 </style>
 
 @section Scripts
@@ -76,6 +105,18 @@
         });
 
         $('.formmain').submit(function () {
+            var map = $("#Location").geocomplete("map");
+            $("#Zoom").val(map.getZoom());
+            var bounds = map.getBounds();
+            var ne = bounds.getNorthEast(); // LatLng of the north-east corner
+            var sw = bounds.getSouthWest(); // LatLng of the south-west corder
+            var center = map.getCenter();
+            $("#NELat").val(ne.lat());
+            $("#NELng").val(ne.lng());
+            $("#SWLat").val(sw.lat());
+            $("#SWLng").val(sw.lng());
+            $("#CenterLat").val(center.lat());
+            $("#CenterLng").val(center.lng());
             if ($('#Teacher').val() == "")
             {
                 $('#TeacherId').prop('value', "");
@@ -112,19 +153,19 @@
 
         $("#Location").geocomplete(options)
           .on("geocode:result", function(event, result){
-              // Set the zoom level you require for the default map
-              var map = $("#Location").geocomplete("map");
-              var bounds = map.getBounds();
-              var ne = bounds.getNorthEast(); // LatLng of the north-east corner
-              var sw = bounds.getSouthWest(); // LatLng of the south-west corder
-              var center = map.getCenter();
-              $("#NELat").val(ne.lat());
-              $("#NELng").val(ne.lng());
-              $("#SWLat").val(sw.lat());
-              $("#SWLng").val(sw.lng());
-              $("#CenterLat").val(center.lat());
-              $("#CenterLng").val(center.lng());
-              //    map.setZoom(10);
+              //// Set the zoom level you require for the default map
+              //var map = $("#Location").geocomplete("map");
+              //var bounds = map.getBounds();
+              //var ne = bounds.getNorthEast(); // LatLng of the north-east corner
+              //var sw = bounds.getSouthWest(); // LatLng of the south-west corder
+              //var center = map.getCenter();
+              //$("#NELat").val(ne.lat());
+              //$("#NELng").val(ne.lng());
+              //$("#SWLat").val(sw.lat());
+              //$("#SWLng").val(sw.lng());
+              //$("#CenterLat").val(center.lat());
+              //$("#CenterLng").val(center.lng());
+              ////    map.setZoom(10);
           });
     });
 
@@ -177,7 +218,7 @@
             position: new google.maps.LatLng('@s.Place.Latitude', @s.Place.Longitude),
             map: map,
             title: '@s.Name',
-            icon: "http://maps.google.com/mapfiles/kml/pal2/icon2.png"
+            icon: "../../Content/images/MapMarker.png"
         });
 
         attachMessage(map, marker, '@s.Id', '@s.Name', '@s.Place.Address', '@(s.Place.City + ", " + s.Place.State + " " + s.Place.Zip)', '<a href="@Url.Action("View", "Event", new { id = s.Id, eventType = EDR.Enums.EventType.Class })">' + '@s.Name' + '</a>');
@@ -214,24 +255,24 @@
             });
         }
 
-        google.maps.event.addListener(map, 'zoom_changed', function () {
-            var map = $("#Location").geocomplete("map");
-            $("#Zoom").val(map.getZoom());
-        });
+        //google.maps.event.addListener(map, 'zoom_changed', function () {
+        //    var map = $("#Location").geocomplete("map");
+        //    $("#Zoom").val(map.getZoom());
+        //});
 
-        google.maps.event.addListener(map, 'dragend', function () {
-            var map = $("#Location").geocomplete("map");
-            var bounds = map.getBounds();
-            var ne = bounds.getNorthEast(); // LatLng of the north-east corner
-            var sw = bounds.getSouthWest(); // LatLng of the south-west corder
-            var center = map.getCenter();
-            $("#NELat").val(ne.lat());
-            $("#NELng").val(ne.lng());
-            $("#SWLat").val(sw.lat());
-            $("#SWLng").val(sw.lng());
-            $("#CenterLat").val(center.lat());
-            $("#CenterLng").val(center.lng());
-        });
+        //google.maps.event.addListener(map, 'dragend', function () {
+        //    var map = $("#Location").geocomplete("map");
+        //    var bounds = map.getBounds();
+        //    var ne = bounds.getNorthEast(); // LatLng of the north-east corner
+        //    var sw = bounds.getSouthWest(); // LatLng of the south-west corder
+        //    var center = map.getCenter();
+        //    $("#NELat").val(ne.lat());
+        //    $("#NELng").val(ne.lng());
+        //    $("#SWLat").val(sw.lat());
+        //    $("#SWLng").val(sw.lng());
+        //    $("#CenterLat").val(center.lat());
+        //    $("#CenterLng").val(center.lng());
+        //});
 
         function clearWindows() {
             for (var i = 0; i < infowindows.length; i++) {
@@ -392,24 +433,35 @@
 
 <div class="map_canvas"></div>
 
-<table class="table">
-    <tr>
-        <th>
-            @Html.Display("Class/Workshop")
-        </th>
-        <th></th>
-    </tr>
-
-    @foreach (var item in Model.Classes)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.ActionLink(item.Name, "View", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Class }, null)
-            </td>
-        </tr>
-    }
-
-</table>
+@foreach (var item in Model.Classes)
+{
+     <div class="col-lg-6" style="padding-top: 10px;">
+         <a class="btn btn-default item-link" href="@Url.Action("View", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Class })">
+             <div class="col-lg-3 bg-success" style="height: 100px;">
+                 <span class="helper"></span><img src='@item.PhotoUrl' style="max-height: 100px; max-width: 100px; vertical-align: middle;" />
+             </div>
+             <div class="col-lg-6 text-left">
+                 @item.Reviews.Count()<br />
+                 <div class="item-title text-primary">
+                     @item.Name
+                 </div>
+                 <div class="small">
+                     @Html.DisplayFor(modelItem => item.Place.Address)<br />
+                     @Html.DisplayFor(modelItem => item.Place.City), @Html.DisplayFor(modelItem => item.Place.StateName) @Html.DisplayFor(modelItem => item.Place.Zip)
+                 </div>
+             </div>
+             <div class="col-lg-3 bg-info text-right small" style="padding: 5px;">
+                 <strong>@item.NextDate.DayOfWeek</strong><br />
+                 <strong>@item.NextDate.ToString("MMMM dd, yyyy")</strong><br />
+                 @Convert.ToDateTime(item.StartTime).ToShortTimeString()<br />
+             </div>
+             <div class="col-lg-3 text-right">
+                 @foreach(var s in item.DanceStyles)
+                 {
+                     <span class="label label-default">@s.Name</span><text> </text>
+                 }
+             </div>
+         </a>
+    </div>
+}
+</div>

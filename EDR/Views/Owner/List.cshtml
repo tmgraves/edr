@@ -135,7 +135,7 @@
             position: new google.maps.LatLng('@s.ApplicationUser.Latitude', @s.ApplicationUser.Longitude),
             map: map,
             title: '@s.ApplicationUser.FullName',
-            icon: "http://maps.google.com/mapfiles/kml/pal2/icon2.png"
+            icon: "../../Content/images/MapMarker.png"
         });
 
         attachMessage(map, marker, '@s.Id', '@s.ApplicationUser.FullName', '@(s.ApplicationUser.City + ", " + s.ApplicationUser.State + " " + s.ApplicationUser.ZipCode)', '<a href="@Url.Action("Home", "Owner", new { username = s.ApplicationUser.UserName })">' + '@s.ApplicationUser.FullName' + '</a>');
