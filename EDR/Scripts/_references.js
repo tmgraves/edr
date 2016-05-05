@@ -94,6 +94,7 @@
 /// <reference path="dhtmlxscheduler/locale/recurring/locale_recurring_ua.js" />
 /// <reference path="jquery.form.js" />
 /// <reference path="jquery.geocomplete.js" />
+/// <reference path="jquery.rateyo.js" />
 /// <reference path="jquery.unobtrusive-ajax.js" />
 /// <reference path="jquery.validate.js" />
 /// <reference path="jquery.validate.unobtrusive.js" />

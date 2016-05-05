@@ -450,6 +450,7 @@
     <Content Include="Content\images\facebookSmall.png" />
     <Content Include="Content\images\indicator.white.gif" />
     <Content Include="Content\images\instagram.png" />
+    <Content Include="Content\images\MapMarker.png" />
     <Content Include="Content\images\MissingImage.jpg" />
     <Content Include="Content\images\MissingImageThumbnail.jpg" />
     <Content Include="Content\images\NoImage.png" />
@@ -482,6 +483,7 @@
     <Content Include="Content\images\www.png" />
     <Content Include="Content\images\yelp.png" />
     <Content Include="Content\images\youtube.png" />
+    <Content Include="Content\jquery.rateyo.css" />
     <Content Include="Content\sidebar.bootstrap.css" />
     <Content Include="Content\timepicker\bootstrap-datepicker.css" />
     <Content Include="Content\timepicker\jquery.timepicker.css" />
@@ -709,6 +711,7 @@
     <Content Include="Scripts\jquery.form.js" />
     <Content Include="Scripts\jquery.geocomplete.js" />
     <Content Include="Scripts\jquery.geocomplete.min.js" />
+    <Content Include="Scripts\jquery.rateyo.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\jquery.validate.js" />

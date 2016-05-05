@@ -52,6 +52,8 @@
     @Scripts.Render("~/bundles/foolproof")
     @Scripts.Render("~/bundles/jqueryUI")
     @Scripts.Render("~/bundles/GeoComplete")
+<link rel="stylesheet" href="~/Content/jquery.rateyo.css" />
+<script src="~/Scripts/jquery.rateyo.js"></script>
 
     <script type="text/javascript">
         $('#Style').autocomplete({
@@ -204,14 +206,15 @@
         }
     });
 
+    //  Global Map Variables
+    var markers = [];
+    var infowindows = [];
     $(function () {
         //  Map Marker Containers
-        var markers = [];
-        var infowindows = [];
         //  Map Marker Containers
         //  Build up the Markers
         var map = $("#Location").geocomplete("map");
-        @foreach(var s in Model.Classes)
+        @foreach(var s in Model.Classes.OrderBy(c => c.NextDate))
     {
         <text>
         var marker = new google.maps.Marker({
@@ -274,12 +277,23 @@
         //    $("#CenterLng").val(center.lng());
         //});
 
-        function clearWindows() {
-            for (var i = 0; i < infowindows.length; i++) {
-                infowindows[i].close();
-            }
-        }
     });
+
+    function clearWindows() {
+        for (var i = 0; i < infowindows.length; i++) {
+            infowindows[i].close();
+        }
+    };
+
+    function openEvent(id, lati, long) {
+        var latLng = new google.maps.LatLng(lati, long); //Makes a latlng
+        var map = $("#Location").geocomplete("map");
+        map.panTo(latLng); //Make map global
+        markers[id].setMap(map);
+        clearWindows();
+        infowindows[id].open(map, markers[id]);
+        return false;
+    };
 
     $(function () {
         $( ".toggle" ).click(function() {
@@ -345,6 +359,34 @@
     //    });
     //}
 
+</script>
+
+<script>
+    //$(function () {
+    //    $(".rateYo").rateYo({
+    //        readOnly: true,
+    //        starWidth: "15px",
+    //        onInit: function (rating, rateYoInstance) {
+    //            alert("here")
+    //            var t = $(this);
+    //            //  alert(t.parent('div').find('.ratingval').prop('value'));
+    //            $(this).rateYo("option", "rating", t.parent('div').find('.ratingval').prop('value'));
+    //        }
+    //    });
+    //});
+
+    $(function () {
+ 
+        $(".rateYo").rateYo({
+            starWidth: "15px",
+            onInit: function (rating, rateYoInstance) {
+                //  alert("init");
+                var t = $(this);
+                $(this).rateYo("option", "rating", t.parent('div').find('.ratingval').prop('value'));
+                $(this).rateYo("option", "readOnly", true);
+            }
+        });
+    });
 </script>
 
 @using (Html.BeginForm("Learn", "Home", FormMethod.Post, new { @class = "formmain" }))
@@ -433,35 +475,48 @@
 
 <div class="map_canvas"></div>
 
-@foreach (var item in Model.Classes)
-{
-     <div class="col-lg-6" style="padding-top: 10px;">
-         <a class="btn btn-default item-link" href="@Url.Action("View", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Class })">
-             <div class="col-lg-3 bg-success" style="height: 100px;">
-                 <span class="helper"></span><img src='@item.PhotoUrl' style="max-height: 100px; max-width: 100px; vertical-align: middle;" />
-             </div>
-             <div class="col-lg-6 text-left">
-                 @item.Reviews.Count()<br />
-                 <div class="item-title text-primary">
-                     @item.Name
-                 </div>
-                 <div class="small">
-                     @Html.DisplayFor(modelItem => item.Place.Address)<br />
-                     @Html.DisplayFor(modelItem => item.Place.City), @Html.DisplayFor(modelItem => item.Place.StateName) @Html.DisplayFor(modelItem => item.Place.Zip)
-                 </div>
-             </div>
-             <div class="col-lg-3 bg-info text-right small" style="padding: 5px;">
-                 <strong>@item.NextDate.DayOfWeek</strong><br />
-                 <strong>@item.NextDate.ToString("MMMM dd, yyyy")</strong><br />
-                 @Convert.ToDateTime(item.StartTime).ToShortTimeString()<br />
-             </div>
-             <div class="col-lg-3 text-right">
-                 @foreach(var s in item.DanceStyles)
-                 {
-                     <span class="label label-default">@s.Name</span><text> </text>
-                 }
-             </div>
-         </a>
-    </div>
-}
+<div class="container">
+    @{ 
+        int rowNo = 0;
+    }
+    @foreach (var item in Model.Classes.OrderBy(c => c.NextDate))
+    {
+        <text>
+        <div class="col-lg-6" style="padding: 5px !important;">
+            <div class="row box-default" style="padding: 5px;">
+                <div class="col-lg-3 bg-success" style="height: 100px;">
+                    <span class="helper"></span><img src='@item.PhotoUrl' style="max-height: 100px; max-width: 100px; vertical-align: middle;" />
+                </div>
+                <div class="col-lg-6 text-left">
+                    <div id="parentc">
+                        <input id="rv" type="hidden" value="@(item.Reviews.Count() != 0 ? item.Reviews.Average(r => r.Rating) : 0)" class="ratingval" />
+                        <div id="cont" class="rateYo"></div>
+                    </div>
+                    <div class="item-title text-primary">
+                        <a href="@Url.Action("View", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Class })">
+                            @(rowNo + 1). @item.Name
+                        </a>
+                    </div>
+                    <div class="small" style="margin-top: 5px;">
+                        @Html.DisplayFor(modelItem => item.Place.Address)<br />
+                        @Html.DisplayFor(modelItem => item.Place.City), @Html.DisplayFor(modelItem => item.Place.StateName) @Html.DisplayFor(modelItem => item.Place.Zip)
+                    </div>
+                        <a href="#" onclick="openEvent(@rowNo, @item.Place.Latitude, @item.Place.Longitude); return false;">View on Map</a>
+                    </div>
+                <div class="col-lg-3 bg-success text-right small" style="padding: 5px;">
+                    <strong>@item.NextDate.DayOfWeek</strong><br />
+                    <strong>@item.NextDate.ToString("MMMM dd, yyyy")</strong><br />
+                    @Convert.ToDateTime(item.StartTime).ToShortTimeString()<br />
+                </div>
+                <div class="text-right col-lg-3" style="padding: 0px !important; margin-top: 2px; white-space: normal;">
+                    @foreach (var s in item.DanceStyles)
+                    {
+                        <span class="label label-default pull-right" style="margin: 1px;">@s.Name</span><text> </text>
+                    }
+                </div>
+            </div>
+        </div>
+        </text>
+        rowNo++;
+    }
 </div>

@@ -195,3 +195,10 @@ facebookvideoimage img
 .linebehind:after {
   left: 1.5%;
 }
+
+.box-default
+{
+    border: 1px solid #e8e8e8;
+    width: 100%;
+    //  border: 1px solid #f5f5f5;
+}

@@ -2,77 +2,71 @@
 
 @{
     Layout = null;
-    ViewBag.Title = "ManageInstance";
 }
-@section Scripts
-{
-    @Scripts.Render("~/bundles/jqueryval")
-    @Scripts.Render("~/bundles/foolproof")
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
-    @Scripts.Render("~/bundles/jqueryUI")
-    @Scripts.Render("~/bundles/GeoComplete")
-    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
-    @*@Scripts.Render("~/bundles/TimePicker")
-        @Styles.Render("~/Content/TimePickercss")*@
 
-    <script src="https://jonthornton.github.io/jquery-timepicker/jquery.timepicker.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://jonthornton.github.io/jquery-timepicker/jquery.timepicker.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.js"></script>
-    @*<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/css/bootstrap-datepicker.standalone.css" />*@
-    @*<script src="~/Scripts/timepicker/pikaday.js"></script>*@
-    @*<link rel="stylesheet" type="text/css" href="~/Content/timepicker/pikaday.css" />*@
-    @*<script src="~/Scripts/timepicker/jquery.ptTimeSelect.js"></script>*@
-    @*<link rel="stylesheet" type="text/css" href="~/Content/timepicker/jquery.ptTimeSelect.css" />*@
-    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/themes/ui-lightness/jquery-ui.css" type="text/css" media="all" />
-    @*<script src="~/Scripts/timepicker/moment.min.js"></script>*@
-    @*<script src="~/Scripts/timepicker/site.js"></script>*@
-    <link rel="stylesheet" type="text/css" href="~/Content/timepicker/site.css" />
-    <script src="~/Scripts/timepicker/datepair.js"></script>
-    <script src="~/Scripts/timepicker/jquery.datepair.js"></script>
-}
-@using (Html.BeginForm("Text3", "Home", FormMethod.Post, new { @id = "saveform", @class = "main" }))
-{
-    <h2>Payment Info</h2>
-    <div class="form-group">
-        <label for="inputPassword3" class="col-sm-2 control-label">Card Number</label>
-        <div class="col-sm-10">
-            <input id="CCNumber" name="CCNumber" type="text" size="20" value="" autocomplete="off" required class="form-control" />
-        </div>
-    </div>
-    <div class="form-group">
-        <label for="inputPassword3" class="col-sm-2 control-label">Expiration Date (MM/YYYY)</label>
-        <div class="col-sm-10">
-            <div class="col-lg-1">
-                <input type="text" size="2" id="CCMonth" name="CCMonth" required class="form-control" />
-            </div>
-            <span class="col-lg-1"> / </span>
-            <div class="col-lg-1">
-                <input type="text" size="2" id="CCYear" name="CCYear" required class="form-control" />
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <label for="inputPassword3" class="col-sm-2 control-label">CVC</label>
-        <div class="col-sm-10">
-            <input id="SecurityCode" name="SecurityCode" size="4" type="text" value="" autocomplete="off" required class="form-control" />
-        </div>
-    </div>
-    <div class="form-group">
-        <label for="amount" class="col-sm-2 control-label">Amount</label>
-        <div class="col-sm-10">
-            <input id="Amount" name="Amount" type="text" size="20" value="" autocomplete="off" required class="form-control" />
-        </div>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>RateYo - Scratchpad</title>
+    <meta charset="utf-8"></meta>
+    <link rel="stylesheet" href="../min/jquery.rateyo.min.css" />
+</head>
+<body>
+
+    <div>
+        <div id="rateYo1" style="margin: 10px auto"></div>
+        <div class="counter" style="float: left;
+                            font-weight: bold;
+                            margin-left: 10px;
+                            margin-top: 7px;"></div>
+        <div style="clear: both"></div>
     </div>
 
-    @*<p>
-        Api ID<input type="text" id="ApiLoginID" name="ApiLoginID" />
-    </p>
-    <p>
-        Key<input type="text" id="ApiTransactionKey" name="ApiTransactionKey" />
-    </p>
-    <p>
-        Amount<input type="text" id="amount" name="amount" />
-    </p>*@
+    <div class="rateyo-readonly-widg"></div>
 
-    <input type="submit" id="btnsave" value="Save" class="btn btn-primary" />
-}
+    <div class="rateyo"></div>
+    <div class="rateyo"></div>
+    <div class="rateyo"></div>
+    <div class="rateyo"></div>
+    <script src="~/Scripts/jquery-2.1.1.js"></script>
+    <script type="text/javascript" src="~/Scripts/jquery.rateyo.js"></script>
+
+    <script>
+      $(function () {
+        var rating = 1.6;
+        $(".counter").text(rating);
+        $("#rateYo1").on("rateyo.init", function () { console.log("rateyo.init"); });
+        $("#rateYo1").rateYo({
+          rating: rating,
+          numStars: 5,
+          precision: 2,
+          starWidth: "64px",
+          spacing: "5px",
+          multiColor: {
+            startColor: "#000000",
+            endColor  : "#ffffff"
+          },
+          onInit: function () {
+            alert("On Init");
+          },
+          onSet: function () {
+              alert("On Set");
+          }
+        }).on("rateyo.set", function () { alert("rateyo.set"); })
+          .on("rateyo.change", function () { alert("rateyo.change"); });
+        $(".rateyo").rateYo();
+        $(".rateyo-readonly-widg").rateYo({
+          rating: rating,
+          numStars: 5,
+          precision: 2,
+          minValue: 1,
+          maxValue: 5
+        }).on("rateyo.change", function (e, data) {
+
+          alert(data.rating);
+        });
+      });
+    </script>
+</body>
+</html>

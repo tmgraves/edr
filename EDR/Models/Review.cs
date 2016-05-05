@@ -14,6 +14,7 @@ namespace EDR.Models
         public string ReviewText { get; set; }
 
         public bool Like { get; set; }
+        public int Rating { get; set; }
 
         public DateTime ReviewDate { get; set; }
 
