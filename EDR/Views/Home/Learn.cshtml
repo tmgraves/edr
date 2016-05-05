@@ -133,7 +133,6 @@
 
 <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script src="../../Scripts/jquery.geocomplete.js"></script>
 <script>
     //$(function () {
     //    $("#Location").geocomplete({
@@ -501,7 +500,7 @@
                         @Html.DisplayFor(modelItem => item.Place.Address)<br />
                         @Html.DisplayFor(modelItem => item.Place.City), @Html.DisplayFor(modelItem => item.Place.StateName) @Html.DisplayFor(modelItem => item.Place.Zip)
                     </div>
-                        <a href="#" onclick="openEvent(@rowNo, @item.Place.Latitude, @item.Place.Longitude); return false;">View on Map</a>
+                        <a href="#" class="small" onclick="openEvent(@rowNo, @item.Place.Latitude, @item.Place.Longitude); return false;">View on Map</a>
                     </div>
                 <div class="col-lg-3 bg-success text-right small" style="padding: 5px;">
                     <strong>@item.NextDate.DayOfWeek</strong><br />

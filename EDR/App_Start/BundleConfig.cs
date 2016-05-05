@@ -60,6 +60,14 @@ namespace EDR
                         "~/Scripts/timepicker/datepair.js",
                         "~/Scripts/timepicker/jquery.datepair.js"));
 
+            //  rate Yo
+            bundles.Add(new StyleBundle("~/Content/RateYo").Include(
+                      "~/Content/jquery.rateyo.css"));
+
+            //  rate Yo
+            bundles.Add(new ScriptBundle("~/bundles/RateYo").Include(
+                        "~/Scripts/jquery.rateyo.js"));
+
             // Set EnableOptimizations to false for debugging. For more information,
             // visit http://go.microsoft.com/fwlink/?LinkId=301862
             BundleTable.EnableOptimizations = true;
