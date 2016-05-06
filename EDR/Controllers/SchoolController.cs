@@ -19,6 +19,7 @@ namespace EDR.Controllers
             model.Schools = DataContext.Schools
                                 .Include("Teachers.ApplicationUser")
                                 .Include("Classes.DanceStyles")
+                                .Include("Reviews")
                                 .AsQueryable();
             if (model.DanceStyleId != null)
             {

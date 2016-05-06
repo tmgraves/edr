@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EDR.Models
 {
@@ -23,5 +24,8 @@ namespace EDR.Models
         public virtual Teacher Teacher { get; set; }
 
         public virtual Place Place { get; set; }
+        public int? SchoolId { get; set; }
+        [ForeignKey("SchoolId")]
+        public School School { get; set; }
     }
 }

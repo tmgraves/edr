@@ -14,6 +14,7 @@ namespace EDR.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public string FacebookLink { get; set; }
+        public string PhotoUrl { get; set; }
         public bool Public { get; set; }
         [DataType(DataType.Date)]
         [Display(Name = "Date Started")]
@@ -31,6 +32,7 @@ namespace EDR.Models
         public double Longitude { get; set; }
         public ICollection<OrganizationMember> Members { get; set; }
         public ICollection<DanceStyle> DanceStyles { get; set; }
+        public ICollection<Review> Reviews { get; set; }
     }
 
     public class School : Organization

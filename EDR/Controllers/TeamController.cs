@@ -22,6 +22,7 @@ namespace EDR.Controllers
             model.Teams = DataContext.Teams
                                 .Include("Teachers.ApplicationUser")
                                 .Include("DanceStyles")
+                                .Include("Reviews")
                                 .AsQueryable();
             if (model.DanceStyleId != null)
             {

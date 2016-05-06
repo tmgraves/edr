@@ -805,6 +805,10 @@
     <Content Include="Views\Home\Social.cshtml" />
     <Content Include="Views\Place\List.cshtml" />
     <Content Include="Views\Teacher\List.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Classes.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Socials.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Schools.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Teams.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>
