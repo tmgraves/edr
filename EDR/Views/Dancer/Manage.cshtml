@@ -1,4 +1,4 @@
-﻿@model EDR.Models.ApplicationUser
+﻿@model EDR.Models.ViewModels.DancerManageViewModel
 
 @{
     ViewBag.Title = "Manage";
@@ -11,75 +11,278 @@
     <div class="col-lg-6 col-md-6">
         <div class="panel panel-default">
             <div class="panel-body ">
-                <h3>My Profile Info</h3>
-                <div class="form-group">
-
-                </div>
-                <div class="row">
-                    @Html.Partial("~/Views/Shared/_ProfilePicturePartial.cshtml", new EDR.Models.ViewModels.ProfilePicture() { User = Model })
-                </div>
-                <div class="row form-group">
-                    <div class="col-lg-4">
-                        @Html.LabelFor(model => model.FullName, new { htmlAttributes = new { @class = "control-label" } })
+                <div id="viewdiv">
+                    <div class="text-right" style="padding-bottom: 10px;">
+                        <input id="btnEdit" type="button" class="btn btn-primary" value="Edit" />
                     </div>
-                    @Html.DisplayFor(model => model.FullName, new { htmlAttributes = new { @class = "form-control" } })
+                    <div class="form-group text-center">
+                        <div class="helper" style="height: 150px !important;">
+                            <span></span><img src='@Url.Content(Model.Dancer.PhotoUrl)' />
+                            <p>
+                                <a style="font-size: small;" href="@Url.Action("ChangePicture", "Dancer")">Change Picture</a>
+                            </p>
+                        </div>
+                    </div>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Dancer.FirstName)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Dancer.FirstName)
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Dancer.LastName)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Dancer.LastName)
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Dancer.Address)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Dancer.Address)
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Dancer.City)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Dancer.City)
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Dancer.State)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Dancer.State)
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Dancer.ZipCode)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Dancer.ZipCode)
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Dancer.Country)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Dancer.Country)
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Dancer.Experience)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Dancer.Experience) Year(s)
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayName("Facebook Username")
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Dancer.FacebookUsername)
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Dancer.InstagramUsername)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Dancer.InstagramUsername)
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Dancer.YouTubeUsername)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Dancer.YouTubeUsername)
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Dancer.SpotifyId)
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(model => model.Dancer.SpotifyId)
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Dancer.SpotifyUri)
+                        </dt>
+                        <dd>
+                            <div class="item-short">@Model.Dancer.SpotifyUri</div>
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayName("Dance Styles")
+                        </dt>
+                        <dd>
+                            <p>
+                                <input type="text" placeholder="Dance Style" class="form-control" />
+                            </p>
+                            @if (Model.Dancer.DanceStyles.Count > 0)
+                            {
+                                @Html.Partial("~/Views/Shared/_DanceStyleLabelPartial.cshtml", Model.Dancer.DanceStyles)
+                            }
+                            else
+                            {
+                                @: <span class="text-warning">NO DANCE STYLES SELECTED</span>
+                            }
+                        </dd>
+                    </dl>
                 </div>
-                <div class="row form-group">
-                    <div class="col-lg-4">
-                        @Html.LabelFor(model => model.City, new { htmlAttributes = new { @class = "control-label" } })
+                <div id="editdiv" style="display: none;">
+                @Html.ValidationSummary("", new { @class = "text-danger" })
+                @using (Html.BeginForm("Manage", "Dancer", FormMethod.Post, new { @id = "saveform", @class = "main" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.Dancer.Id)
+                    @Html.HiddenFor(model => model.Dancer.UserName)
+                    @Html.HiddenFor(model => model.Dancer.Email)
+                    @Html.HiddenFor(model => model.Dancer.Latitude)
+                    @Html.HiddenFor(model => model.Dancer.Longitude)
+                    @Html.HiddenFor(model => model.Dancer.PhotoUrl)
+                    <div class="text-right" style="padding-bottom: 10px;">
+                        <input type="submit" id="btnsave" value="Save" class="btn btn-primary" />
+                        <input id="btncanceledit" type="button" class="btn btn-primary" value="Cancel" />
                     </div>
-                    @Html.DisplayFor(model => model.City, new { htmlAttributes = new { @class = "form-control" } })
-                </div>
-                <div class="row form-group">
-                    <div class="col-lg-4">
-                        @Html.LabelFor(model => model.Experience, new { htmlAttributes = new { @class = "control-label" } })
+                    <div class="form-group text-center">
+                        <div class="helper" style="height: 150px !important;">
+                            <span></span><img src='@Url.Content(Model.Dancer.PhotoUrl)' />
+                        </div>
                     </div>
-                    @Html.DisplayFor(model => model.Experience, new { htmlAttributes = new { @class = "form-control" } }) Year(s)
-                </div>
-                <div class="row form-group">
-                    <div class="col-lg-4">
-                        @Html.LabelFor(model => model.DanceStyles, new { htmlAttributes = new { @class = "control-label" } })
-                    </div>
-                    <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8" style="display: inline-block;">
-                        @if (Model.DanceStyles.Count > 0)
-                        {
-                            @Html.Partial("~/Views/Shared/_DanceStyleLabelPartial.cshtml", Model.DanceStyles)
-                        }
-                        else
-                        {
-                            @: <span class="text-warning">NO DANCE STYLES SELECTED</span>
-                        }
-                    </div>
-                </div>
-                <div class="row form-group">
-                    <div class="col-lg-4">
-                        @Html.LabelFor(model => model.FacebookUsername, new { htmlAttributes = new { @class = "control-label" } })
-                    </div>
-                    @Html.DisplayFor(model => model.FacebookUsername, new { htmlAttributes = new { @class = "form-control" } })
-                </div>
-                <div class="row form-group">
-                    <div class="col-lg-4">
-                        @Html.LabelFor(model => model.InstagramUsername, new { htmlAttributes = new { @class = "control-label" } })
-                    </div>
-                    @Html.DisplayFor(model => model.InstagramUsername, new { htmlAttributes = new { @class = "form-control" } })
-                </div>
-                <div class="row form-group">
-                    <div class="col-lg-4">
-                        @Html.LabelFor(model => model.YouTubeUsername, new { htmlAttributes = new { @class = "control-label" } })
-                    </div>
-                    @Html.DisplayFor(model => model.YouTubeUsername, new { htmlAttributes = new { @class = "form-control" } })
-                </div>
-                <div class="row form-group">
-                    <div class="col-lg-4">
-                        @Html.LabelFor(model => model.SpotifyId, new { htmlAttributes = new { @class = "control-label" } })
-                    </div>
-                    @Html.DisplayFor(model => model.SpotifyId, new { htmlAttributes = new { @class = "form-control" } })
-                </div>
-                <div class="row form-group">
-                    <div class="col-lg-4">
-                        @Html.Label("Spotify Playlist", new { htmlAttributes = new { @class = "control-label" } })
-                    </div>
-                    @Html.DisplayFor(model => model.SpotifyUri, new { htmlAttributes = new { @class = "form-control" } })
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.LabelFor(model => model.Dancer.FirstName, htmlAttributes: new { @class = "control-label col-md-2" })
+                        </dt>
+                        <dd>
+                            @Html.EditorFor(model => model.Dancer.FirstName, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Dancer.FirstName, "", new { @class = "text-danger" })
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.LabelFor(model => model.Dancer.LastName, htmlAttributes: new { @class = "control-label col-md-2" })
+                        </dt>
+                        <dd>
+                            @Html.EditorFor(model => model.Dancer.LastName, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Dancer.LastName, "", new { @class = "text-danger" })
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.LabelFor(model => model.Dancer.Address, htmlAttributes: new { @class = "control-label col-md-2" })
+                        </dt>
+                        <dd>
+                            @Html.EditorFor(model => model.Dancer.Address, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Dancer.Address, "", new { @class = "text-danger" })
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.LabelFor(model => model.Dancer.City, htmlAttributes: new { @class = "control-label col-md-2" })
+                        </dt>
+                        <dd>
+                            @Html.EditorFor(model => model.Dancer.City, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Dancer.City, "", new { @class = "text-danger" })
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.LabelFor(model => model.Dancer.State, htmlAttributes: new { @class = "control-label col-md-2" })
+                        </dt>
+                        <dd>
+                            @Html.EditorFor(model => model.Dancer.State, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Dancer.State, "", new { @class = "text-danger" })
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.LabelFor(model => model.Dancer.ZipCode, htmlAttributes: new { @class = "control-label col-md-2" })
+                        </dt>
+                        <dd>
+                            @Html.EditorFor(model => model.Dancer.ZipCode, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Dancer.ZipCode, "", new { @class = "text-danger" })
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.LabelFor(model => model.Dancer.Country, htmlAttributes: new { @class = "control-label col-md-2" })
+                        </dt>
+                        <dd>
+                            @Html.EditorFor(model => model.Dancer.Country, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Dancer.Country, "", new { @class = "text-danger" })
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.LabelFor(model => model.Dancer.StartDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                        </dt>
+                        <dd>
+                            @Html.TextBoxFor(m => m.Dancer.StartDate, "{0:yyyy-MM-dd}", htmlAttributes: new { @type = "date", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Dancer.StartDate, "", new { @class = "text-danger" })
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayName("Facebook Username")
+                        </dt>
+                        <dd>
+                            @Html.DisplayFor(m => m.Dancer.FacebookUsername)
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Dancer.InstagramUsername)
+                        </dt>
+                        <dd>
+                            @Html.EditorFor(model => model.Dancer.InstagramUsername, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Dancer.InstagramUsername, "", new { @class = "text-danger" })
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Dancer.YouTubeUsername)
+                        </dt>
+                        <dd>
+                            @Html.EditorFor(model => model.Dancer.YouTubeUsername, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Dancer.YouTubeUsername, "", new { @class = "text-danger" })
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Dancer.SpotifyId)
+                        </dt>
+                        <dd>
+                            @Html.EditorFor(model => model.Dancer.SpotifyId, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Dancer.SpotifyId, "", new { @class = "text-danger" })
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.Dancer.SpotifyUri)
+                        </dt>
+                        <dd>
+                            @Html.EditorFor(model => model.Dancer.SpotifyUri, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Dancer.SpotifyUri, "", new { @class = "text-danger" })
+                        </dd>
+                    </dl>
+                }
                 </div>
             </div>
         </div>
@@ -98,7 +301,7 @@
                             <th class="text-center">Used/Total</th>
                         </tr>
                     </thead>
-                    @foreach (var item in Model.Tickets)
+                    @foreach (var item in Model.Dancer.Tickets)
                     {
                         <tr>
                             <td class="text-left">
@@ -127,7 +330,7 @@
                     }
                 </table>
                 @*<table class="table table-condensed table-bordered">
-                    @foreach (var s in Model.Tickets.Select(t => t.Ticket.School).Distinct().ToList())
+                    @foreach (var s in Model.Dancer.Tickets.Select(t => t.Ticket.School).Distinct().ToList())
                     {
                         <tr>
                             <td>
@@ -148,7 +351,7 @@
                                             <th class="text-center">Used</th>
                                         </tr>
                                     </thead>
-                                    @foreach (var item in Model.Tickets.Where(t => t.Ticket.EventId == null && t.Ticket.SchoolId == s.Id))
+                                    @foreach (var item in Model.Dancer.Tickets.Where(t => t.Ticket.EventId == null && t.Ticket.SchoolId == s.Id))
                                     {
                                         <tr>
                                             <td class="text-left">
@@ -177,10 +380,10 @@
                                             </td>
                                             <td></td>
                                             <td class="text-right">
-                                                @String.Format("{0:N0}", Model.Tickets.Where(t => t.Ticket.EventId == null && t.Ticket.SchoolId == s.Id).Sum(t => t.Quantity * t.Ticket.Quantity))
+                                                @String.Format("{0:N0}", Model.Dancer.Tickets.Where(t => t.Ticket.EventId == null && t.Ticket.SchoolId == s.Id).Sum(t => t.Quantity * t.Ticket.Quantity))
                                             </td>
                                             <td class="text-right">
-                                                @String.Format("{0:N0}", Model.Tickets.Where(t => t.Ticket.EventId == null && t.Ticket.SchoolId == s.Id).Sum(t => t.EventRegistrations.Count()))
+                                                @String.Format("{0:N0}", Model.Dancer.Tickets.Where(t => t.Ticket.EventId == null && t.Ticket.SchoolId == s.Id).Sum(t => t.EventRegistrations.Count()))
                                             </td>
                                         </tr>
                                     </tfoot>
@@ -194,7 +397,7 @@
                                             <th class="text-center">Date Registered</th>
                                         </tr>
                                     </thead>
-                                    @foreach (var item in Model.EventRegistrations.Where(r => r.UserTicket.Ticket.SchoolId == s.Id))
+                                    @foreach (var item in Model.Dancer.EventRegistrations.Where(r => r.UserTicket.Ticket.SchoolId == s.Id))
                                     {
                                         <tr>
                                             <td>
@@ -223,7 +426,7 @@
                             <th class="text-center">Date Registered</th>
                         </tr>
                     </thead>
-                    @foreach (var item in Model.EventRegistrations.OrderByDescending(r => r.Instance.DateTime))
+                    @foreach (var item in Model.Dancer.EventRegistrations.OrderByDescending(r => r.Instance.DateTime))
                     {
                         <tr>
                             <td>
@@ -252,7 +455,7 @@
                             <th class="text-center">Total</th>
                         </tr>
                     </thead>
-                    @foreach (var item in Model.Tickets.Where(t => t.Ticket.EventId != null))
+                    @foreach (var item in Model.Dancer.Tickets.Where(t => t.Ticket.EventId != null))
                     {
                         <tr>
                             <td>
@@ -277,3 +480,112 @@
         </div>*@
     </div>
 </div>
+
+@section Scripts
+{
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/foolproof")
+    @Scripts.Render("~/bundles/jqueryUI")
+    <script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
+    @Scripts.Render("~/bundles/GeoComplete")
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+
+    <script type="text/javascript">
+    $.validator.setDefaults({
+        ignore: ""
+    })
+
+    $('#stylesearch').autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: '@Url.Action("Search", "DanceStyle")',
+                data: { searchString: request.term },
+                dataType: 'json',
+                type: 'GET',
+                success: function (data) {
+                    response($.map(data, function (item) {
+                        return {
+                            label: item.Name,
+                            value: item.Id
+                        }
+                    }));
+                }
+            })
+        },
+        select: function (event, ui) {
+            $('#stylesearch').val(ui.item.label);
+            $('#NewStyleId').val(ui.item.value);
+            return false;
+        },
+        minLength: 1
+    });
+
+    $(function () {
+        $('#saveform.main').valid();
+
+        $('#btnEdit').click(function () {
+            $('#viewdiv').hide();
+            $('#editdiv').show();
+            try
+            {
+                var valid = $('#saveform.main').valid();
+            }
+            catch(err)
+            {
+                document.getElementById("demo").innerHTML = err.message;
+            }
+        });
+        $('#btncanceledit').click(function () {
+            $('#viewdiv').show();
+            $('#editdiv').hide();
+        });
+
+        $('#saveform.main').submit(function () {
+            var valid = $('#saveform.main').valid();
+        });
+    });
+    </script>
+
+    <script type="text/javascript">
+    $(function () {
+        $("#Dancer_Address").geocomplete({
+            details: "form",
+            types: ["geocode", "establishment"],
+        })
+        .bind("geocode:result", function (event, result) {
+            $('#Dancer_Latitude').prop("value", result.geometry.location.lat());
+            $('#Dancer_Longitude').prop("value", result.geometry.location.lng());
+            var street_num;
+            var street_name;
+            $.each(result.address_components, function (i, address_component) {
+                //alert(address_component.types[0]);
+                //alert(address_component.long_name);
+                if (address_component.types[0] == "street_number") {
+                    street_num = address_component.long_name;
+                }
+                else if (address_component.types[0] == "route") {
+                    street_name = address_component.long_name;
+                }
+                else if (address_component.types[0] == "locality") {
+                    $('#Dancer_City').prop("value", address_component.long_name);
+                }
+                else if (address_component.types[0] == "administrative_area_level_1") {
+                    $('#Dancer_State').prop("value", address_component.long_name);
+                }
+                else if (address_component.types[0] == "postal_code") {
+                    $('#Dancer_Zip').prop("value", address_component.long_name);
+                }
+                else if (address_component.types[0] == "country") {
+                    $('#Dancer_Country').prop("value", address_component.long_name);
+                }
+            });
+            //alert(street_num + " " + street_name);
+            $('#Dancer_Address').prop("value", street_num + " " + street_name);
+            //  console.log(result);
+        });
+    });
+
+    </script>
+}

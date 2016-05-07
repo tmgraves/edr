@@ -202,3 +202,52 @@ facebookvideoimage img
     width: 100%;
     //  border: 1px solid #f5f5f5;
 }
+
+.map_canvas {
+    width: 100%;
+    height: 200px;
+}
+.image-container {
+    width: 100px;
+    height: 100px;
+}
+
+.item-image {
+    vertical-align: middle;
+    max-width: 100px;
+    max-height: 100px;
+}
+
+.helper{
+    height: 100px;
+}
+
+.helper span {
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+
+.helper img {
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.item-title {
+    font-weight: bold;
+    white-space: nowrap;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.item-link {
+    width: 100%;
+}
+
+.item-short {
+    white-space: nowrap;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

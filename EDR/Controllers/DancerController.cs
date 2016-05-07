@@ -36,7 +36,8 @@ namespace EDR.Controllers
         public ActionResult Manage()
         {
             var userid = User.Identity.GetUserId();
-            var model = DataContext.Users
+            var model = new DancerManageViewModel();
+            model.Dancer = DataContext.Users
                             .Include("Tickets")
                             .Include("Tickets.EventRegistrations")
                             .Include("Tickets.Ticket")
@@ -46,6 +47,22 @@ namespace EDR.Controllers
                             .Include("EventRegistrations.Instance.Event")
                             .Single(s => s.Id == userid);
 
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public ActionResult Manage(DancerManageViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var dancer = DataContext.Users.Single(d => d.Id == model.Dancer.Id);
+                TryUpdateModel(dancer, "Dancer");
+                DataContext.Entry(dancer).State = EntityState.Modified;
+                DataContext.SaveChanges();
+                return RedirectToAction("Manage", "Dancer", new { username = dancer.UserName });
+            }
             return View(model);
         }
 
@@ -833,6 +850,7 @@ namespace EDR.Controllers
                     if (p.Id == id)
                     {
                         p.ProfilePicture = true;
+                        dancer.PhotoUrl = p.Filename;
                     }
                     else
                     {

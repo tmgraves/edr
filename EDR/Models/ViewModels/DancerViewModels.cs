@@ -60,4 +60,11 @@ namespace EDR.Models.ViewModels
         public EventType? Type { get; set; }
         public List<FacebookEvent> FacebookEvents { get; set; }
     }
+
+    public class DancerManageViewModel
+    {
+        // TODO: FILL IN PROPERTIES NEEDED FOR VIEW
+
+        public ApplicationUser Dancer { get; set; }
+    }
 }

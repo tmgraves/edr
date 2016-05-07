@@ -106,6 +106,7 @@
 /// <reference path="qunit.js" />
 /// <reference path="respond.js" />
 /// <reference path="respond.matchmedia.addlistener.js" />
+/// <reference path="searchhelper.js" />
 /// <reference path="timepicker/bootstrap-datepicker.js" />
 /// <reference path="timepicker/datepair.js" />
 /// <reference path="timepicker/jquery.datepair.js" />

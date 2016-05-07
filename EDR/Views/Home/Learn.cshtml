@@ -9,41 +9,54 @@
     @Html.ActionLink("Find a Teacher", "List", "Teacher", null, null)
 </p>
 
-<style>
-    .map_canvas {
-        width: 100%;
-        height: 200px;
-    }
+@using (Html.BeginForm("Learn", "Home", FormMethod.Post, new { @class = "formmain" }))
+{
+    @Html.HiddenFor(m => m.SearchAddress.Latitude, new { Name = "lat", @class = "latfield" })
+    @Html.HiddenFor(m => m.SearchAddress.Longitude, new { Name = "lng", @class = "lngfield" })
+    @Html.HiddenFor(m => m.NELat, new { @class = "nelatfield" })
+    @Html.HiddenFor(m => m.NELng, new { @class = "nelngfield" })
+    @Html.HiddenFor(m => m.SWLat, new { @class = "swlatfield" })
+    @Html.HiddenFor(m => m.SWLng, new { @class = "swlngfield" })
+    @Html.HiddenFor(m => m.CenterLat, new { @class = "clatfield" })
+    @Html.HiddenFor(m => m.CenterLng, new { @class = "clngfield" })
+    @Html.HiddenFor(m => m.Zoom, new { @class = "czoomfield" })
+    <div class="container bg-info text-center" style="padding: 10px;">
+        <div class="form-inline">
+            <div class="form-group">
+                @Html.TextBoxFor(m => m.Location, new { placeholder = "Location", @class = "form-control locationsearch" })
+            </div>
+            <div class="form-group">
+                @Html.HiddenFor(m => m.DanceStyleId, new { @class = "stylesearchid" })
+                @Html.TextBoxFor(m => m.Style, new { placeholder = "Dance Style", @class = "form-control stylesearch" })
+            </div>
+            <div class="form-group">
+                @Html.HiddenFor(m => m.TeacherId, new { @class = "teachersearchid" })
+                @Html.TextBoxFor(m => m.Teacher, new { placeholder = "Teacher", @class = "form-control teachersearch" })
+            </div>
+            <div class="form-group">
+                @Html.DropDownListFor(m => m.SkillLevel, new SelectList(new List<int> { 1, 2, 3, 4, 5 }), "Skill Level", new { @class = "form-control text-center" })
+            </div>
+            <div class="form-group">
+                <a href="#days" class="toggle btn btn-default">Day of Week <span class="caret"></span></a>
+                <div id="daysdiv" class="well text-left" style="display: none;">
+                    @Html.CheckBoxListFor(model => model.Days,
+                                                    model => (Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>().Select(enu => new SelectListItem() { Text = enu.ToString(), Value = enu.ToString() })).ToList(),
+                                                    item => item.Value,
+                                                    item => item.Text,
+                                                    model => (Model.Days != null ? (Model.Days.Select(d => new SelectListItem() { Text = d.ToString(), Value = d.ToString() })) : null),
+                                                    new MvcCheckBoxList.Model.HtmlListInfo(MvcCheckBoxList.Model.HtmlTag.table, 1, new { @class = "checkboxlist text-warning" }, MvcCheckBoxList.Model.TextLayout.Default))
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Search Classes" class="btn btn-warning" />
+            </div>
+        </div>
+    </div>
+}
 
-    .image-container
-    {
-        width: 100px;
-        height: 100px;
-    }
+<div class="map_canvas"></div>
 
-    .item-image {
-        vertical-align: middle;
-        max-width: 100px;
-        max-height: 100px;
-    }
-
-    .helper {
-        display: inline-block;
-        height: 100%;
-        vertical-align: middle;
-    }
-    .item-title{
-        font-weight: bold;
-        white-space: nowrap; 
-        width: 100%; 
-        overflow: hidden;
-        text-overflow: ellipsis; 
-    }
-    .item-link
-    {
-        width: 100%;
-    }
-</style>
+@Html.DisplayFor(m => m.Classes, "Classes")
 
 @section Scripts
 {
@@ -52,87 +65,87 @@
     @Scripts.Render("~/bundles/foolproof")
     @Scripts.Render("~/bundles/jqueryUI")
     @Scripts.Render("~/bundles/GeoComplete")
-<link rel="stylesheet" href="~/Content/jquery.rateyo.css" />
-<script src="~/Scripts/jquery.rateyo.js"></script>
+<script src="../../Scripts/searchhelper.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="../../Scripts/jquery.geocomplete.js"></script>
+    <link rel="stylesheet" href="~/Content/jquery.rateyo.css" />
+    <script src="~/Scripts/jquery.rateyo.js"></script>
 
-    <script type="text/javascript">
-        $('#Style').autocomplete({
-            source: function (request, response) {
-                $.ajax({
-                    url: '@Url.Action("Search", "DanceStyle")',
-                    data: { searchString: request.term },
-                    dataType: 'json',
-                    type: 'GET',
-                    success: function (data) {
-                        response($.map(data, function (item) {
-                            return {
-                                label: item.Name,
-                                value: item.Id
-                            }
-                        }));
-                    }
-                })
-            },
-            select: function (event, ui) {
-                $('#Style').val(ui.item.label);
-                $('#DanceStyleId').val(ui.item.value);
-                return false;
-            },
-            minLength: 1
-        });
+    @*<script type="text/javascript">
+            $('#Style').autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '@Url.Action("Search", "DanceStyle")',
+                        data: { searchString: request.term },
+                        dataType: 'json',
+                        type: 'GET',
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return {
+                                    label: item.Name,
+                                    value: item.Id
+                                }
+                            }));
+                        }
+                    })
+                },
+                select: function (event, ui) {
+                    $('#Style').val(ui.item.label);
+                    $('#DanceStyleId').val(ui.item.value);
+                    return false;
+                },
+                minLength: 1
+            });
 
-        $('#Teacher').autocomplete({
-            source: function (request, response) {
-                $.ajax({
-                    url: '@Url.Action("Search", "Teacher")',
-                    data: { searchString: request.term },
-                    dataType: 'json',
-                    type: 'GET',
-                    success: function (data) {
-                        response($.map(data, function (item) {
-                            return {
-                                label: item.Name,
-                                value: item.Id
-                            }
-                        }));
-                    }
-                })
-            },
-            select: function (event, ui) {
-                $('#Teacher').val(ui.item.label);
-                $('#TeacherId').val(ui.item.value);
-                return false;
-            },
-            minLength: 1
-        });
+            $('#Teacher').autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '@Url.Action("Search", "Teacher")',
+                        data: { searchString: request.term },
+                        dataType: 'json',
+                        type: 'GET',
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return {
+                                    label: item.Name,
+                                    value: item.Id
+                                }
+                            }));
+                        }
+                    })
+                },
+                select: function (event, ui) {
+                    $('#Teacher').val(ui.item.label);
+                    $('#TeacherId').val(ui.item.value);
+                    return false;
+                },
+                minLength: 1
+            });
 
-        $('.formmain').submit(function () {
-            var map = $("#Location").geocomplete("map");
-            $("#Zoom").val(map.getZoom());
-            var bounds = map.getBounds();
-            var ne = bounds.getNorthEast(); // LatLng of the north-east corner
-            var sw = bounds.getSouthWest(); // LatLng of the south-west corder
-            var center = map.getCenter();
-            $("#NELat").val(ne.lat());
-            $("#NELng").val(ne.lng());
-            $("#SWLat").val(sw.lat());
-            $("#SWLng").val(sw.lng());
-            $("#CenterLat").val(center.lat());
-            $("#CenterLng").val(center.lng());
-            if ($('#Teacher').val() == "")
-            {
-                $('#TeacherId').prop('value', "");
-            }
-            if ($('#Style').val() == "")
-            {
-                $('#DanceStyleId').prop('value', "");
-            }
-        });
-    </script>
-}
-
-<script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+            $('.formmain').submit(function () {
+                var map = $("#Location").geocomplete("map");
+                $("#Zoom").val(map.getZoom());
+                var bounds = map.getBounds();
+                var ne = bounds.getNorthEast(); // LatLng of the north-east corner
+                var sw = bounds.getSouthWest(); // LatLng of the south-west corder
+                var center = map.getCenter();
+                $("#NELat").val(ne.lat());
+                $("#NELng").val(ne.lng());
+                $("#SWLat").val(sw.lat());
+                $("#SWLng").val(sw.lng());
+                $("#CenterLat").val(center.lat());
+                $("#CenterLng").val(center.lng());
+                if ($('#Teacher').val() == "")
+                {
+                    $('#TeacherId').prop('value', "");
+                }
+                if ($('#Style').val() == "")
+                {
+                    $('#DanceStyleId').prop('value', "");
+                }
+            });
+        </script>*@
 <script>
     //$(function () {
     //    $("#Location").geocomplete({
@@ -146,31 +159,31 @@
     //    //});
     //});
 
-    $(function () {
+    //$(function () {
 
-        var options = {
-            map: ".map_canvas"
-        };
+    //    var options = {
+    //        map: ".map_canvas"
+    //    };
 
-        $("#Location").geocomplete(options)
-          .on("geocode:result", function(event, result){
-              //// Set the zoom level you require for the default map
-              //var map = $("#Location").geocomplete("map");
-              //var bounds = map.getBounds();
-              //var ne = bounds.getNorthEast(); // LatLng of the north-east corner
-              //var sw = bounds.getSouthWest(); // LatLng of the south-west corder
-              //var center = map.getCenter();
-              //$("#NELat").val(ne.lat());
-              //$("#NELng").val(ne.lng());
-              //$("#SWLat").val(sw.lat());
-              //$("#SWLng").val(sw.lng());
-              //$("#CenterLat").val(center.lat());
-              //$("#CenterLng").val(center.lng());
-              ////    map.setZoom(10);
-          });
-    });
+    //    $("#Location").geocomplete(options)
+    //      .on("geocode:result", function(event, result){
+    //          //// Set the zoom level you require for the default map
+    //          //var map = $("#Location").geocomplete("map");
+    //          //var bounds = map.getBounds();
+    //          //var ne = bounds.getNorthEast(); // LatLng of the north-east corner
+    //          //var sw = bounds.getSouthWest(); // LatLng of the south-west corder
+    //          //var center = map.getCenter();
+    //          //$("#NELat").val(ne.lat());
+    //          //$("#NELng").val(ne.lng());
+    //          //$("#SWLat").val(sw.lat());
+    //          //$("#SWLng").val(sw.lng());
+    //          //$("#CenterLat").val(center.lat());
+    //          //$("#CenterLng").val(center.lng());
+    //          ////    map.setZoom(10);
+    //      });
+    //});
 
-    $(function () {
+    @*$(function () {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(success);
         }
@@ -203,7 +216,7 @@
         map.setZoom(10);
         </text>
         }
-    });
+    });*@
 
     //  Global Map Variables
     var markers = [];
@@ -256,26 +269,6 @@
                 infowindow.open(map, marker);
             });
         }
-
-        //google.maps.event.addListener(map, 'zoom_changed', function () {
-        //    var map = $("#Location").geocomplete("map");
-        //    $("#Zoom").val(map.getZoom());
-        //});
-
-        //google.maps.event.addListener(map, 'dragend', function () {
-        //    var map = $("#Location").geocomplete("map");
-        //    var bounds = map.getBounds();
-        //    var ne = bounds.getNorthEast(); // LatLng of the north-east corner
-        //    var sw = bounds.getSouthWest(); // LatLng of the south-west corder
-        //    var center = map.getCenter();
-        //    $("#NELat").val(ne.lat());
-        //    $("#NELng").val(ne.lng());
-        //    $("#SWLat").val(sw.lat());
-        //    $("#SWLng").val(sw.lng());
-        //    $("#CenterLat").val(center.lat());
-        //    $("#CenterLng").val(center.lng());
-        //});
-
     });
 
     function clearWindows() {
@@ -335,6 +328,19 @@
         //})
     });
 
+    $(function () {
+
+        $(".rateYo").rateYo({
+            starWidth: "15px",
+            onInit: function (rating, rateYoInstance) {
+                //  alert("init");
+                var t = $(this);
+                $(this).rateYo("option", "rating", t.parent('div').find('.ratingval').prop('value'));
+                $(this).rateYo("option", "readOnly", true);
+            }
+        });
+    });
+
     //$(function () {
     //    $("#Location").geocomplete({
     //        map: ".map_canvas",
@@ -358,9 +364,6 @@
     //    });
     //}
 
-</script>
-
-<script>
     //$(function () {
     //    $(".rateYo").rateYo({
     //        readOnly: true,
@@ -373,150 +376,7 @@
     //        }
     //    });
     //});
-
-    $(function () {
- 
-        $(".rateYo").rateYo({
-            starWidth: "15px",
-            onInit: function (rating, rateYoInstance) {
-                //  alert("init");
-                var t = $(this);
-                $(this).rateYo("option", "rating", t.parent('div').find('.ratingval').prop('value'));
-                $(this).rateYo("option", "readOnly", true);
-            }
-        });
-    });
 </script>
 
-@using (Html.BeginForm("Learn", "Home", FormMethod.Post, new { @class = "formmain" }))
-{
-    @Html.HiddenFor(m => m.SearchAddress.Latitude, new { Name = "lat" })
-    @Html.HiddenFor(m => m.SearchAddress.Longitude, new { Name = "lng" })
-    @Html.HiddenFor(m => m.NELat)
-    @Html.HiddenFor(m => m.NELng)
-    @Html.HiddenFor(m => m.SWLat)
-    @Html.HiddenFor(m => m.SWLng)
-    @Html.HiddenFor(m => m.CenterLat)
-    @Html.HiddenFor(m => m.CenterLng)
-    @Html.HiddenFor(m => m.Zoom)
-    <div class="container bg-info text-center" style="padding: 10px;">
-        <div class="form-inline">
-            <div class="form-group">
-                @Html.TextBoxFor(m => m.Location, new { placeholder = "Location", @class = "form-control" })
-            </div>
-            <div class="form-group">
-                @Html.HiddenFor(m => m.DanceStyleId)
-                @Html.TextBoxFor(m => m.Style, new { placeholder = "Dance Style", @class = "form-control" })
-            </div>
-            <div class="form-group">
-                @Html.HiddenFor(m => m.TeacherId)
-                @Html.TextBoxFor(m => m.Teacher, new { placeholder = "Teacher", @class = "form-control" })
-            </div>
-            <div class="form-group">
-                @Html.DropDownListFor(m => m.SkillLevel, new SelectList(new List<int> { 1, 2, 3, 4, 5 }), "Skill Level", new { @class = "form-control text-center" })
-            </div>
-            <div class="form-group">
-                <a href="#days" class="toggle btn btn-default">Day of Week <span class="caret"></span></a>
-                <div id="daysdiv" class="well text-left" style="display: none;">
-                    @Html.CheckBoxListFor(model => model.Days,
-                                                    model => (Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>().Select(enu => new SelectListItem() { Text = enu.ToString(), Value = enu.ToString() })).ToList(),
-                                                    item => item.Value,
-                                                    item => item.Text,
-                                                    model => (Model.Days != null ? (Model.Days.Select(d => new SelectListItem() { Text = d.ToString(), Value = d.ToString() })) : null),
-                                                    new MvcCheckBoxList.Model.HtmlListInfo(MvcCheckBoxList.Model.HtmlTag.table, 1, new { @class = "checkboxlist text-warning" }, MvcCheckBoxList.Model.TextLayout.Default))
-                </div>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Search Classes" class="btn btn-warning" />
-            </div>
-        </div>
-
-        @*<div class="col-lg-6 col-md-6">
-                <div class="row">
-                    <div class="form-group">
-                        @Html.Label("Location:", htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
-                        <div class="col-md-8 col-lg-8">
-                            @Html.TextBoxFor(m => m.Location, new { placeholder = "Search for a Location", @class = "form-control" })
-                        </div>
-                    </div>
-                </div>
-                <div class="row" style="margin-top: 5px;">
-                    <div class="form-group">
-                        @Html.LabelFor(model => model.DanceStyleId, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
-                        <div class="col-md-8 col-lg-8">
-                        </div>
-                    </div>
-                </div>
-                <div class="row" style="margin-top: 5px;">
-                    <div class="form-group">
-                        @Html.LabelFor(model => model.TeacherId, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
-                        <div class="col-md-8 col-lg-8">
-                        </div>
-                    </div>
-                </div>
-                <div class="row" style="margin-top: 5px;">
-                    <div class="form-group">
-                        @Html.LabelFor(model => model.SkillLevel, htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
-                        <div class="col-md-8 col-lg-8">
-                        </div>
-                    </div>
-                </div>
-                <div class="row" style="margin-top: 5px;">
-                    <div class="form-group">
-                        @Html.Label("Days:", htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })
-                        <div class="col-md-8 col-lg-8">
-                        </div>
-                    </div>
-                </div>
-            </div>*@
-    </div>
 }
 
-<div class="map_canvas"></div>
-
-@Html.DisplayFor(m => m.Classes, "Classes")
-@*<div class="container">
-    @{ 
-        int rowNo = 0;
-    }
-    @foreach (var item in Model.Classes.OrderBy(c => c.NextDate))
-    {
-        <text>
-        <div class="col-lg-6" style="padding: 5px !important;">
-            <div class="row box-default" style="padding: 5px;">
-                <div class="col-lg-3 bg-success" style="height: 100px;">
-                    <span class="helper"></span><img src='@item.PhotoUrl' style="max-height: 100px; max-width: 100px; vertical-align: middle;" />
-                </div>
-                <div class="col-lg-6 text-left">
-                    <div id="parentc">
-                        <input id="rv" type="hidden" value="@(item.Reviews.Count() != 0 ? item.Reviews.Average(r => r.Rating) : 0)" class="ratingval" />
-                        <div id="cont" class="rateYo"></div>
-                    </div>
-                    <div class="item-title text-primary">
-                        <a href="@Url.Action("View", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Class })">
-                            @(rowNo + 1). @item.Name
-                        </a>
-                    </div>
-                    <div class="small" style="margin-top: 5px;">
-                        @Html.DisplayFor(modelItem => item.Place.Address)<br />
-                        @Html.DisplayFor(modelItem => item.Place.City), @Html.DisplayFor(modelItem => item.Place.StateName) @Html.DisplayFor(modelItem => item.Place.Zip)
-                    </div>
-                        <a href="#" class="small" onclick="openEvent(@rowNo, @item.Place.Latitude, @item.Place.Longitude); return false;">View on Map</a>
-                    </div>
-                <div class="col-lg-3 bg-success text-right small" style="padding: 5px;">
-                    <strong>@item.NextDate.DayOfWeek</strong><br />
-                    <strong>@item.NextDate.ToString("MMMM dd, yyyy")</strong><br />
-                    @Convert.ToDateTime(item.StartTime).ToShortTimeString()<br />
-                </div>
-                <div class="text-right col-lg-3" style="padding: 0px !important; margin-top: 2px; white-space: normal;">
-                    @foreach (var s in item.DanceStyles)
-                    {
-                        <span class="label label-default pull-right" style="margin: 1px;">@s.Name</span><text> </text>
-                    }
-                </div>
-            </div>
-        </div>
-        </text>
-        rowNo++;
-    }
-</div>*@
