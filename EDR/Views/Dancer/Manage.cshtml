@@ -127,24 +127,6 @@
                             <div class="item-short">@Model.Dancer.SpotifyUri</div>
                         </dd>
                     </dl>
-                    <dl class="dl-horizontal">
-                        <dt>
-                            @Html.DisplayName("Dance Styles")
-                        </dt>
-                        <dd>
-                            <p>
-                                <input type="text" placeholder="Dance Style" class="form-control" />
-                            </p>
-                            @if (Model.Dancer.DanceStyles.Count > 0)
-                            {
-                                @Html.Partial("~/Views/Shared/_DanceStyleLabelPartial.cshtml", Model.Dancer.DanceStyles)
-                            }
-                            else
-                            {
-                                @: <span class="text-warning">NO DANCE STYLES SELECTED</span>
-                            }
-                        </dd>
-                    </dl>
                 </div>
                 <div id="editdiv" style="display: none;">
                 @Html.ValidationSummary("", new { @class = "text-danger" })
@@ -283,6 +265,33 @@
                         </dd>
                     </dl>
                 }
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body ">
+                <h3>Dance Styles</h3>
+                <hr />
+                @using (Ajax.BeginForm("AddStyle", new AjaxOptions()
+                    {
+                        UpdateTargetId = "styles",
+                        OnSuccess = "done(this)"
+                    }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+                    @Html.HiddenFor(m => m.Dancer.Id)
+
+                    <div class="form-inline">
+                        <div class="form-group">
+                            @Html.HiddenFor(s => s.NewStyleId, new { @class = "stylesearchId" })
+                            <input type="text" placeholder="Dance Style" class="form-control stylesearch" />
+                            <input class="btn btn-primary" type="submit" value="Add" />
+                        </div>
+                    </div>
+                }
+                <div id="styles">
+                    @Html.Partial("~/Views/Shared/_DancerStylesPartial.cshtml", new EDR.Models.ViewModels.DancerStylesViewModel() { Id = Model.Dancer.Id, Styles = Model.Dancer.DanceStyles.ToList(), Controller = "Dancer" })
                 </div>
             </div>
         </div>
@@ -497,10 +506,10 @@
         ignore: ""
     })
 
-    $('#stylesearch').autocomplete({
+    $('.stylesearch').autocomplete({
         source: function (request, response) {
             $.ajax({
-                url: '@Url.Action("Search", "DanceStyle")',
+                url: '../DanceStyle/Search',
                 data: { searchString: request.term },
                 dataType: 'json',
                 type: 'GET',
@@ -515,12 +524,57 @@
             })
         },
         select: function (event, ui) {
-            $('#stylesearch').val(ui.item.label);
-            $('#NewStyleId').val(ui.item.value);
+            $('.stylesearch').val(ui.item.label);
+            $('.stylesearchId').val(ui.item.value);
             return false;
         },
         minLength: 1
     });
+
+    //var obj = {
+    //    "flammable": "inflammable",
+    //    "duh": "no duh"
+    //};
+    //$.each(obj, function (key, value) {
+    //    alert(key + ": " + value);
+    //});
+    
+    //    $.ajax({
+    //    url: '../DanceStyle/Search',
+    //    type: "GET",
+    //    data: { searchString: "" },
+    //    dataType: 'json',
+    //    success: function (result) {
+    //        $.each(result, function (key, value) {
+    //            alert(value["Name"]);
+    //            //$.each(value, function (x, y) {
+    //            //    alert(x + ": " + y);
+    //            //});
+    //        });
+    //    }
+    //});
+
+    //function addStyleResponse(result) {
+    //    //  alert(JSON.stringify(result));
+    //    //$.each(result, function (key, value) {
+    //    //    alert(value.Id + ": " + value.Name);
+    //    //});
+    //    $("#styles").append("<a class='label label-info' style='margin-right: 5px !important;' href='/DanceStyle/Details?styleName=JuJu'>JuJu</a>");
+    //    //alert($("#styles").html());
+    //    //alert(result[0].Id);
+    //    //alert(result[0].Name);
+    //    //var o = JSON.parse(result)
+    //    //for (var key in o)
+    //    //{
+    //    //    alert(o[key].Id);
+    //    //    alert(o[key].Name);
+    //    //}
+    //}
+
+    function done(form) {
+        $('.stylesearch').prop('value', "");
+        $('.stylesearchid').prop('value', "");
+    }
 
     $(function () {
         $('#saveform.main').valid();

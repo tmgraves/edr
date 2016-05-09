@@ -89,6 +89,59 @@ namespace EDR.Utilities
             return picture;
         }
 
+        public static UploadFile UploadFromPath(string imageData)
+        {
+            UploadFile newFile = new UploadFile();
+            try
+            {
+                //  string dataWithoutJpegMarker = imageData.Replace("data:png;base64,", String.Empty);
+                newFile.FileName = Guid.NewGuid().ToString() + ".png";
+                string imageDataClean = imageData.Split(',')[1];
+                byte[] filebytes = Convert.FromBase64String(imageDataClean);
+                string writePath = Path.Combine(HttpContext.Current.Server.MapPath("~/MyUploads"), newFile.FileName);
+                using (FileStream fs = new FileStream(writePath,
+                                                FileMode.OpenOrCreate,
+                                                FileAccess.Write,
+                                                FileShare.None))
+                {
+                    fs.Write(filebytes, 0, filebytes.Length);
+                }
+                newFile.FilePath = "~/MyUploads/" + newFile.FileName;
+                newFile.UploadStatus = "Success";
+                return newFile;
+            }
+            catch (Exception ex)
+            {
+                newFile.UploadStatus = "Failed";
+                return newFile;
+            }
+            
+            //UploadFile newFile = new UploadFile();
+            //try
+            //{
+            //    newFile.FileName = DateTime.Now.ToString().Replace("/", "-").Replace(" ", "- ").Replace(":", "") + ".png";
+            //    string fileNameWitPath = HttpContext.Current.Server.MapPath("~/MyUploads") + newFile.FileName;
+            //    using (FileStream fs = new FileStream(fileNameWitPath, FileMode.Create))
+            //    {
+            //        using (BinaryWriter bw = new BinaryWriter(fs))
+            //        {
+            //            byte[] data = Convert.FromBase64String(imageData);
+            //            bw.Write(data);
+            //            bw.Close();
+            //        }
+            //    }
+
+            //    newFile.FilePath = "~/MyUploads/" + newFile.FileName;
+            //    newFile.UploadStatus = "Success";
+            //    return newFile;
+            //}
+            //catch (Exception ex)
+            //{
+            //    var t = ex.Message;
+            //    return newFile;
+            //}
+        }
+
         public static UploadFile LoadPicture(HttpPostedFileBase file)
         {
             UploadFile newFile = new UploadFile();

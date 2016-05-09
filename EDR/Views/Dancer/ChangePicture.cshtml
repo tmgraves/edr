@@ -4,68 +4,98 @@
     ViewBag.Title = "ChangePicture";
 }
 
+<style>
+    img {
+        max-width: 100%; /* This rule is very important, please do not ignore this! */
+    }
+
+    input[type="file"] {
+        display: none;
+    }
+</style>
+
 <div class="container" style="padding: 10px;">
     <h2>Change Picture</h2>
     @ViewBag.Message
     <div class="container">
         <div class="row">
             <div class="col-md-2">
-                @if (Model.Dancer.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault() != null)
+                <img id="profilepic" class="img-thumbnail" src="@Url.Content(Model.Dancer.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
+                @*@if (Model.Dancer.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault() != null)
                 {
                     <img class="img-thumbnail" src="@Url.Content(Model.Dancer.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault().ThumbnailFilename)" />
                 }
                 else
                 {
                     <img class="img-thumbnail" src="~/Content/images/NoProfilePic.gif" />
-                }
+                }*@
             </div>
             <div class="col-md-10">
                 <h3>Upload a New Picture</h3>
-                @using (Html.BeginForm("UploadPicture",
+                <div class="container">
+                    <div class="row" style="padding: 5px;">
+                        <div class="col-sm-6">
+                            <label for="imgInp" class="btn btn-primary">
+                                Choose File
+                            </label>
+                            <input id="imgInp" type="file" accept="image/*" />
+                            <button id="btnupload" class="btn btn-danger" style="display: none;">Upload</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div>
+                                <img class="img-responsive" id="image" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @*@using (Html.BeginForm("UploadPicture",
                                     "Dancer",
                                     FormMethod.Post,
                                     new { enctype = "multipart/form-data" }))
                 {
                     @Html.Partial("~/Views/Shared/_FileUploadPartial.cshtml")
-                    @*<div class="form-group form-inline">
-                            <input type="file" name="file" id="file" class="form-control" accept="image/*" />
-                            <input id="submit" type="submit" class="btn btn-default" value="Submit" />
-                        </div>
-                        <p>
-                            @ViewBag.Message
-                        </p>
+                }*@
+                @*<div class="form-group form-inline">
+            <input type="file" name="file" id="file" class="form-control" accept="image/*" />
+            <input id="submit" type="submit" class="btn btn-default" value="Submit" />
+        </div>
+        <p>
+            @ViewBag.Message
+        </p>
 
-                        <script type="text/javascript">
-                        $('#submit').click(function () {
-                            //  Check file type is image
-                            var fupload = document.getElementById("file");
-                            if (fupload.files[0].type.match('image/*')) {
-                                return true;
-                            }
-                            else {
-                                alert("You must select an image file for upload");
-                                return false;
-                            }
-                            //  Check file type is image
+        <script type="text/javascript">
+        $('#submit').click(function () {
+            //  Check file type is image
+            var fupload = document.getElementById("file");
+            if (fupload.files[0].type.match('image/*')) {
+                return true;
+            }
+            else {
+                alert("You must select an image file for upload");
+                return false;
+            }
+            //  Check file type is image
 
-                            //check whether browser fully supports all File API
-                                if (window.File && window.FileReader && window.FileList && window.Blob) {
-                                    //get the file size and file type from file input field
-                                    var fsize = $('#file')[0].files[0].size;
+            //check whether browser fully supports all File API
+                if (window.File && window.FileReader && window.FileList && window.Blob) {
+                    //get the file size and file type from file input field
+                    var fsize = $('#file')[0].files[0].size;
 
-                                    if (fsize > 1048576) //do something if file size more than 1 mb (1048576)
-                                    {
-                                        alert("File is too big.  Please try another.");
-                                        return false;
-                                    } else {
-                                        return true;
-                                    }
-                                } else {
-                                    alert("Please upgrade your browser, because your current browser lacks some new features we need!");
-                                }
-                            });
-                        </script>*@
+                    if (fsize > 1048576) //do something if file size more than 1 mb (1048576)
+                    {
+                        alert("File is too big.  Please try another.");
+                        return false;
+                    } else {
+                        return true;
+                    }
+                } else {
+                    alert("Please upgrade your browser, because your current browser lacks some new features we need!");
                 }
+            });
+        </script>*@
+
 
             </div>
         </div>
@@ -156,3 +186,85 @@
             <a class="btn btn-primary" href="@Url.Action("Home", "Dancer", new { username = Model.Dancer.UserName })">Back to Dancer Page</a>
     }
 </div>
+
+@section Scripts
+{
+    <!-- Scripts -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jqueryUI")
+    <link href="../../Content/cropper.css" rel="stylesheet">
+    <script src="../../Scripts/cropper.js"></script>
+
+    <script>
+        function loadImage(input) {
+            if (input.files && input.files[0]) {
+                if (input.files[0].size < 1000000)
+                {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        $('#image').cropper({
+                            aspectRatio: 10 / 10,
+                            zoomable: false,
+                        });
+                        $("#image").cropper('replace', e.target.result);
+                        $("#btnupload").show();
+                    }
+
+                    reader.readAsDataURL(input.files[0]);
+                }
+                else
+                {
+                    alert("Pick a smaller file");
+                }
+            }
+        }
+
+        $("#imgInp").change(function () {
+            loadImage(this);
+        });
+
+        $(function () {
+            $('#btnupload').click(function () {
+                try {
+                    var imageData = $("#image").cropper("getCroppedCanvas").toDataURL('png', 1);
+                    $.ajax({
+                        url: "../../Dancer/UploadImageAsync",
+                        type: 'POST',
+                        data: { 'imageData': imageData },
+                        dataType: 'json',
+                        timeout: 300000,
+                        success: function (result) {
+                            var status;
+                            var filePath;
+                            $.each(result, function (key, value) {
+                                if (key == "UploadStatus")
+                                {
+                                    status = value;
+                                }
+                                else{
+                                    filePath = value;
+                                }
+                            });
+                            if (status == "Success")
+                            {
+                                $('#profilepic').attr('src', filePath);
+                                $("#image").cropper('destroy');
+                                $('#image').attr('src', "");
+                                $("#btnupload").hide();
+                            }
+                            else
+                            {
+                                alert("Upload Failed");
+                            }
+                        }
+                    });
+                }
+                catch (err) {
+                    alert(err.message);
+                }
+            });
+        });
+    </script>
+}

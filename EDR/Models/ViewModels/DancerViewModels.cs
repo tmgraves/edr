@@ -64,7 +64,14 @@ namespace EDR.Models.ViewModels
     public class DancerManageViewModel
     {
         // TODO: FILL IN PROPERTIES NEEDED FOR VIEW
-
         public ApplicationUser Dancer { get; set; }
+        public int? NewStyleId { get; set; }
+    }
+
+    public class DancerStylesViewModel
+    {
+        public string Id { get; set; }
+        public string Controller { get; set; }
+        public List<DanceStyle> Styles { get; set; }
     }
 }

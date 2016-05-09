@@ -22,12 +22,13 @@ namespace EDR.Controllers
         [AccessDeniedAuthorize(Roles = "Teacher", AccessDeniedAction = "Apply", AccessDeniedController = "Teacher")]
         public ActionResult Manage()
         {
+            var model = new TeacherManageViewModel();
             var id = User.Identity.GetUserId();
-            var teacher = DataContext.Teachers
+            model.Teacher = DataContext.Teachers
                                 .Include("Schools")
                                 .Include("Teams")
                                 .Single(t => t.ApplicationUser.Id == id);
-            return View(teacher);
+            return View(model);
         }
 
         public ActionResult List(TeacherListViewModel model)
@@ -119,6 +120,28 @@ namespace EDR.Controllers
             ////  Set Role
 
             return viewModel;
+        }
+
+        [Authorize]
+        public PartialViewResult AddStyle(TeacherManageViewModel model)
+        {
+            var teacher = DataContext.Teachers.Include("ApplicationUser").Include("DanceStyles").Single(u => u.ApplicationUser.Id == model.Teacher.ApplicationUser.Id);
+            if (!teacher.DanceStyles.Select(s => s.Id).Contains((int)model.NewStyleId))
+            {
+                teacher.DanceStyles.Add(DataContext.DanceStyles.Single(s => s.Id == model.NewStyleId));
+                DataContext.SaveChanges();
+            }
+            var styles = DataContext.Teachers.Single(u => u.ApplicationUser.Id == model.Teacher.ApplicationUser.Id).DanceStyles.ToList();
+            return PartialView("~/Views/Shared/_DancerStylesPartial.cshtml", new DancerStylesViewModel() { Id = model.Teacher.ApplicationUser.Id, Styles = styles, Controller = "Teacher" });
+        }
+
+        [Authorize]
+        public PartialViewResult DeleteStyle(string id, int styleId)
+        {
+            var teacher = DataContext.Teachers.Single(u => u.ApplicationUser.Id == id);
+            teacher.DanceStyles.Remove(DataContext.DanceStyles.Single(s => s.Id == styleId));
+            DataContext.SaveChanges();
+            return PartialView("~/Views/Shared/_DancerStylesPartial.cshtml", new DancerStylesViewModel() { Id = id, Styles = teacher.DanceStyles.ToList(), Controller = "Teacher" });
         }
 
         public JsonResult Search(string searchString)

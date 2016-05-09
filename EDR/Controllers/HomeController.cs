@@ -408,5 +408,10 @@ namespace EDR.Controllers
             StoreController.PostTransaction(model);
             return RedirectToAction("Test3", "Home");
         }
+
+        public ActionResult Test5()
+        {
+            return View();
+        }
     }
 }

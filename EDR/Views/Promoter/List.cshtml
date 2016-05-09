@@ -71,7 +71,7 @@
             icon: "../../Content/images/MapMarker.png"
         });
 
-        attachMessage(map, marker, '@s.Id', '@s.ApplicationUser.FullName', '@(s.ApplicationUser.City + ", " + s.ApplicationUser.State + " " + s.ApplicationUser.ZipCode)', '<a href="@Url.Action("Home", "Teacher", new { username = s.ApplicationUser.UserName })">' + '@s.ApplicationUser.FullName' + '</a>');
+        attachMessage(map, marker, '@s.Id', '@s.ApplicationUser.FullName', '@(s.ApplicationUser.City + ", " + s.ApplicationUser.State + " " + s.ApplicationUser.ZipCode)', '<a href="@Url.Action("Home", "Promoter", new { username = s.ApplicationUser.UserName })">' + '@s.ApplicationUser.FullName' + '</a>');
         markers.push(marker);
         </text>
     }

@@ -1,0 +1,29 @@
+﻿@model EDR.Models.ViewModels.DancerStylesViewModel
+
+<table class="table table-condensed">
+<thead>
+    <tr>
+        <th>
+            Style
+        </th>
+        <th class="col-lg-1">
+        </th>
+    </tr>
+</thead>
+@foreach(var s in Model.Styles.OrderBy(s => s.Name))
+{
+    <tr>
+        <td>
+            @s.Name
+        </td>
+        <td>
+            @Ajax.ActionLink("Delete", "DeleteStyle", Model.Controller, new { id = Model.Id, styleId = s.Id },
+                new AjaxOptions()
+                {
+                    UpdateTargetId = "styles",
+                    OnSuccess = "done(this)"
+                })
+        </td>
+    </tr>
+}
+</table>

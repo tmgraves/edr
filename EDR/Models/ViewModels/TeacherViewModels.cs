@@ -44,4 +44,10 @@ namespace EDR.Models.ViewModels
         //  Results
         public IEnumerable<Teacher> Teachers { get; set; }
     }
+
+    public class TeacherManageViewModel
+    {
+        public Teacher Teacher { get; set; }
+        public int? NewStyleId { get; set; }
+    }
 }

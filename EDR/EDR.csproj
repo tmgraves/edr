@@ -435,6 +435,7 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\cropper.css" />
     <Content Include="Content\images\camera.png" />
     <Content Include="Content\images\class.jpg" />
     <Content Include="Content\images\comment.png" />
@@ -524,6 +525,7 @@
     <Content Include="Media\linked\ajax-loader-round.gif" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\cropper.js" />
     <Content Include="Scripts\DayPilot\daypilot-all.min.js" />
     <Content Include="Scripts\dhtmlxScheduler\dhtmlxscheduler.css" />
     <Content Include="Scripts\dhtmlxScheduler\dhtmlxscheduler.js" />
@@ -814,6 +816,8 @@
     <Content Include="Views\Shared\DisplayTemplates\Owners.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Teachers.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Places.cshtml" />
+    <Content Include="Views\Shared\_DancerStylesPartial.cshtml" />
+    <Content Include="Views\Home\Test5.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

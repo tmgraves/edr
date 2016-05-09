@@ -1,4 +1,4 @@
-﻿@model EDR.Models.Teacher
+﻿@model EDR.Models.ViewModels.TeacherManageViewModel
 
 @{
     ViewBag.Title = "Manage";
@@ -13,11 +13,11 @@
             <div class="panel-body ">
                 <dl class="dl-horizontal">
                     <dt>
-                        @Html.DisplayNameFor(model => model.ApplicationUser.FullName)
+                        @Html.DisplayNameFor(model => model.Teacher.ApplicationUser.FullName)
                     </dt>
 
                     <dd>
-                        @Html.DisplayFor(model => model.ApplicationUser.FullName)
+                        @Html.DisplayFor(model => model.Teacher.ApplicationUser.FullName)
                     </dd>
                 </dl>
             </div>
@@ -28,9 +28,9 @@
             <div class="panel-body">
                 <div class="row">
                 </div>
-                @if (Model.Schools != null && Model.Schools.Count() > 0)
+                @if (Model.Teacher.Schools != null && Model.Teacher.Schools.Count() > 0)
                 {
-                    foreach (var sch in Model.Schools.OrderBy(s => s.Name))
+                    foreach (var sch in Model.Teacher.Schools.OrderBy(s => s.Name))
                     {
                         <div class="row" style="padding: 2px;">
                             @Html.ActionLink(sch.Name, "View", "School", new { id = sch.Id }, new { @class = "btn btn-link" })
@@ -51,9 +51,9 @@
             <div class="panel-body">
                 <div class="row">
                 </div>
-                @if (Model.Teams != null && Model.Teams.Count() > 0)
+                @if (Model.Teacher.Teams != null && Model.Teacher.Teams.Count() > 0)
                 {
-                    foreach (var t in Model.Teams.OrderBy(s => s.Name))
+                    foreach (var t in Model.Teacher.Teams.OrderBy(s => s.Name))
                     {
                         <div class="row" style="padding: 2px;">
                             @Html.ActionLink(t.Name, "View", "Team", new { id = t.Id }, new { @class = "btn btn-link" })
@@ -64,6 +64,32 @@
                 {
                     @: No Teams
                 }
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body ">
+                <h4>Dance Styles</h4>
+                @using (Ajax.BeginForm("AddStyle", new AjaxOptions()
+                    {
+                        UpdateTargetId = "styles",
+                        OnSuccess = "done(this)"
+                    }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true)
+                    @Html.HiddenFor(m => m.Teacher.ApplicationUser.Id)
+
+                    <div class="form-inline">
+                        <div class="form-group">
+                            @Html.HiddenFor(m => m.NewStyleId, new { @class = "stylesearchId" })
+                            <input type="text" placeholder="Dance Style" class="form-control stylesearch" />
+                            <input class="btn btn-primary" type="submit" value="Add" />
+                        </div>
+                    </div>
+                }
+                <div id="styles">
+                    @Html.Partial("~/Views/Shared/_DancerStylesPartial.cshtml", new EDR.Models.ViewModels.DancerStylesViewModel() { Id = Model.Teacher.ApplicationUser.Id, Styles = Model.Teacher.DanceStyles.ToList(), Controller = "Teacher" })
+                </div>
             </div>
         </div>
     </div>
@@ -79,7 +105,7 @@
                             <th></th>
                         </tr>
                     </thead>
-                    @foreach (var item in Model.Classes)
+                    @foreach (var item in Model.Teacher.Classes)
                     {
                         <tr>
                             <td>
@@ -95,3 +121,47 @@
         </div>
     </div>
 </div>
+
+@section Scripts
+{
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/foolproof")
+    @Scripts.Render("~/bundles/jqueryUI")
+    <script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
+    @Scripts.Render("~/bundles/GeoComplete")
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+
+    <script type="text/javascript">
+        $('.stylesearch').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '../DanceStyle/Search',
+                    data: { searchString: request.term },
+                    dataType: 'json',
+                    type: 'GET',
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return {
+                                label: item.Name,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+            select: function (event, ui) {
+                $('.stylesearch').val(ui.item.label);
+                $('.stylesearchId').val(ui.item.value);
+                return false;
+            },
+            minLength: 1
+        });
+
+        function done(form) {
+        $('.stylesearch').prop('value', "");
+        $('.stylesearchid').prop('value', "");
+    }
+    </script>
+}

@@ -28,6 +28,8 @@ using DHTMLX.Scheduler.Controls;
 using DHTMLX.Scheduler.Data;
 using EDR.Enums;
 using Microsoft.AspNet.Identity.EntityFramework;
+using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace EDR.Controllers
 {
@@ -721,11 +723,35 @@ namespace EDR.Controllers
             return View(model);
         }
 
-        [HttpPost]
+        //[Authorize]
+        //public JsonResult AddStyle(DancerManageViewModel model)
+        //{
+        //    DataContext.Users.Single(u => u.Id == model.Dancer.Id).DanceStyles.Add(DataContext.DanceStyles.Single(s => s.Id == model.NewStyleId));
+        //    DataContext.SaveChanges();
+        //    var styles = DataContext.Users.Single(u => u.Id == model.Dancer.Id).DanceStyles.Select(s => new { Id = s.Id, Name = s.Name });
+        //    return Json(styles.ToList(), JsonRequestBehavior.AllowGet); 
+        //}
+
         [Authorize]
-        public ActionResult AddStyle(DancerViewViewModel model)
+        public PartialViewResult AddStyle(DancerManageViewModel model)
         {
-            return View(model);
+            var user = DataContext.Users.Include("DanceStyles").Single(u => u.Id == model.Dancer.Id);
+            if (!user.DanceStyles.Select(s => s.Id).Contains((int)model.NewStyleId))
+            {
+                user.DanceStyles.Add(DataContext.DanceStyles.Single(s => s.Id == model.NewStyleId));
+                DataContext.SaveChanges();
+            }
+            var styles = DataContext.Users.Single(u => u.Id == model.Dancer.Id).DanceStyles.ToList();
+            return PartialView("~/Views/Shared/_DancerStylesPartial.cshtml", new DancerStylesViewModel() { Id = model.Dancer.Id, Styles = styles, Controller = "Dancer" });
+        }
+
+        [Authorize]
+        public PartialViewResult DeleteStyle(string id, int styleId)
+        {
+            var user = DataContext.Users.Single(u => u.Id == id);
+            user.DanceStyles.Remove(DataContext.DanceStyles.Single(s => s.Id == styleId));
+            DataContext.SaveChanges();
+            return PartialView("~/Views/Shared/_DancerStylesPartial.cshtml", new DancerStylesViewModel() { Id = id, Styles = user.DanceStyles.ToList(), Controller = "Dancer" });
         }
 
         [Authorize]
@@ -781,6 +807,70 @@ namespace EDR.Controllers
             }
             return RedirectToAction("ChangePicture", "Dancer", new { message = message });
         }
+
+        [Authorize]
+        [HttpPost]
+        public JsonResult UploadImageAsync(string imageData)
+        {
+            var newFile = new UploadFile();
+            if (string.IsNullOrEmpty(imageData))
+                newFile.UploadStatus = "Failed";
+
+            Match imageMatch = Regex.Match(imageData, @"^data:(?<mimetype>[^;]+);base64,(?<data>.+)$");
+            if (!imageMatch.Success)
+                newFile.UploadStatus = "Failed";
+
+            string mimeType = imageMatch.Groups["mimetype"].Value;
+            Match imageType = Regex.Match(mimeType, @"^[^/]+/(?<type>.+?)$");
+            if (!imageType.Success)
+                newFile.UploadStatus = "Failed";
+
+            string fileExtension = imageType.Groups["type"].Value;
+            byte[] data2 = Convert.FromBase64String(imageMatch.Groups["data"].Value);
+
+            if (newFile.UploadStatus != "Failed")
+            {
+                newFile = ApplicationUtility.UploadFromPath(imageData);
+                if (newFile.UploadStatus == "Success")
+                {
+                    var userid = User.Identity.GetUserId();
+                    var user = DataContext.Users.Single(s => s.Id == userid);
+                    ApplicationUtility.DeletePicture(new Picture() { Filename = user.PhotoUrl });
+                    user.PhotoUrl = newFile.FilePath;
+                    DataContext.SaveChanges();
+                }
+            }
+            var objUpload = new { FilePath = Url.Content(newFile.FilePath), UploadStatus = newFile.UploadStatus };
+            return Json(objUpload, JsonRequestBehavior.AllowGet);
+        }
+
+        //[HttpPost]
+        //public async Task<ActionResult> UploadImageAsync(string imageData)
+        //{
+        //    if (string.IsNullOrEmpty(imageData))
+        //        return Redirect(Request.UrlReferrer.AbsolutePath);
+
+        //    Match imageMatch = Regex.Match(imageData, @"^data:(?<mimetype>[^;]+);base64,(?<data>.+)$");
+        //    if (!imageMatch.Success)
+        //        return Redirect(Request.UrlReferrer.AbsolutePath);
+
+        //    string mimeType = imageMatch.Groups["mimetype"].Value;
+        //    Match imageType = Regex.Match(mimeType, @"^[^/]+/(?<type>.+?)$");
+        //    if (!imageType.Success)
+        //        return Redirect(Request.UrlReferrer.AbsolutePath);
+
+        //    string fileExtension = imageType.Groups["type"].Value;
+        //    byte[] data2 = Convert.FromBase64String(imageMatch.Groups["data"].Value);
+
+        //    UploadFile newFile = ApplicationUtility.UploadFromPath(imageData);
+        //    if (newFile.UploadStatus == "Success")
+        //    {
+        //        var userid = User.Identity.GetUserId();
+        //        DataContext.Users.Single(s => s.Id == userid).PhotoUrl = newFile.FilePath;
+        //        DataContext.SaveChanges();
+        //    }
+        //    return Redirect(Request.UrlReferrer.AbsolutePath);
+        //}
 
         public ActionResult DeletePicture(int pictureId)
         {
