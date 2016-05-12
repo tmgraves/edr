@@ -157,6 +157,15 @@ namespace EDR.Controllers
             //}
             ////  Get Current Facebook Picture/Video
 
+            if (model.Event.FacebookId != null)
+            {
+                var feed = FacebookHelper.GetFeed(model.Event.FacebookId, model.Event.Creator.FacebookToken);
+                if (feed != null)
+                {
+                    model.Event.Feeds = feed.Select(ff => new Feed() { Link = ff.Link, Message = ff.Message, PhotoUrl = ff.Picture, UpdateTime = ff.Updated_Time, Type = (ff.Type == "video" ? MediaType.Video : (ff.Type == "picture" ? MediaType.Picture : MediaType.Comment)) }).ToList();
+                }
+            }
+
             model.LinkedFacebookObjects = DataContext.Events.Where(e => e.Id == id).Include("LinkedFacebookObjects").FirstOrDefault().LinkedFacebookObjects;
 
             if (model.Event == null)
@@ -826,6 +835,7 @@ namespace EDR.Controllers
             .Include("EventInstances.EventRegistrations.UserTicket.Ticket")
             .Include("Creator")
             .Include("Tickets")
+            .Include("Feeds")
             .FirstOrDefault();
 
             ////  Get Tickets
@@ -1719,6 +1729,13 @@ namespace EDR.Controllers
                     cls.PlaceId = place.Id;
                     //  TryUpdateModel(cls.EventInstances, "EventInstances");
 
+                    //  Add Linked Object
+                    if (cls.FacebookId != null)
+                    {
+                        cls.LinkedFacebookObjects = new List<LinkedFacebookObject>() { new LinkedFacebookObject() { FacebookId = cls.FacebookId, MediaSource = MediaSource.Facebook, Name = model.FacebookEventName, ObjectType = FacebookObjectType.Event, Url = cls.FacebookLink } };
+                    }
+                    //  Add Linked Object
+
                     //  Update Month Days
                     if (model.MonthDays.PostedItems != null)
                     {
@@ -1796,6 +1813,13 @@ namespace EDR.Controllers
                     soc.Place = null;
                     soc.PlaceId = place.Id;
                     //  TryUpdateModel(soc.EventInstances, "EventInstances");
+
+                    //  Add Linked Object
+                    if (soc.FacebookId != null)
+                    {
+                        soc.LinkedFacebookObjects = new List<LinkedFacebookObject>() { new LinkedFacebookObject() { FacebookId = soc.FacebookId, MediaSource = MediaSource.Facebook, Name = model.FacebookEventName, ObjectType = FacebookObjectType.Event, Url = model.FacebookLink } };
+                    }
+                    //  Add Linked Object
 
                     //  Update Month Days
                     if (model.MonthDays.PostedItems != null)

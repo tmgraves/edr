@@ -233,6 +233,11 @@ facebookvideoimage img
     max-width: 100%;
 }
 
+.helper h4 {
+    max-height: 100%;
+    max-width: 100%;
+}
+
 .item-title {
     font-weight: bold;
     white-space: nowrap;
@@ -250,4 +255,52 @@ facebookvideoimage img
     width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+#img_container {
+    position: relative;
+    display: inline-block;
+    text-align: center;
+}
+
+#profilepic {
+    width: 200px;
+}
+.eventpic {
+    width: 100%;
+}
+
+.nospace{
+    padding: 0px !important;
+    margin: 0px !important;
+}
+
+.large {
+  font-size: 16px;
+}
+
+.padlight
+{
+    padding: 5px 12px 5px 12px !important;
+    margin: 0px !important;
+}
+
+.row.vertical-divider {
+  overflow: hidden;
+}
+.row.vertical-divider > div[class^="col-"] {
+  padding-bottom: 100px;
+  margin-bottom: -100px;
+  border-left: 1px solid #F2F7F9;
+  border-right: 0px solid #F2F7F9;
+}
+.row.vertical-divider div[class^="col-"]:first-child {
+  border-left: none;
+}
+.row.vertical-divider div[class^="col-"]:last-child {
+  border-right: none;
+}
+
+.fitpicture{
+    max-height: 100%;
+    max-width: 100%;
 }

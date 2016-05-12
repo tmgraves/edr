@@ -49,6 +49,11 @@ namespace EDR.Controllers
                             .Include("EventRegistrations.Instance.Event")
                             .Single(s => s.Id == userid);
 
+            if (model.Dancer.FacebookToken != null)
+            {
+                model.FacebookPictures = FacebookHelper.GetPhotos(model.Dancer.FacebookToken);
+            }
+
             return View(model);
         }
 
@@ -63,7 +68,7 @@ namespace EDR.Controllers
                 TryUpdateModel(dancer, "Dancer");
                 DataContext.Entry(dancer).State = EntityState.Modified;
                 DataContext.SaveChanges();
-                return RedirectToAction("Manage", "Dancer", new { username = dancer.UserName });
+                return RedirectToAction("Manage", "Dancer");
             }
             return View(model);
         }
@@ -128,6 +133,19 @@ namespace EDR.Controllers
         {
             var users = DataContext.Users.Where(u => (u.FirstName + " " + u.LastName).Contains(searchString)).Select(s => new { Id = s.Id, Name = s.FirstName + " " + s.LastName }).ToList();
             return Json(users, JsonRequestBehavior.AllowGet);
+        }
+
+        [Authorize]
+        public JsonResult GetFacebookPictures()
+        {
+            var userid = User.Identity.GetUserId();
+            var user = DataContext.Users.Single(u => u.Id == userid);
+            var photos = new List<FacebookPhoto>();
+            if (user.FacebookToken != null)
+            {
+                photos = FacebookHelper.GetPhotos(user.FacebookToken);
+            }
+            return Json(photos.Select(p => new { Url = p.LargeSource, Thumbnail = p.Source }), JsonRequestBehavior.AllowGet);
         }
 
         //[Authorize]
@@ -902,16 +920,12 @@ namespace EDR.Controllers
             ViewBag.Message = message;
 
             var id = User.Identity.GetUserId();
-            model.Dancer = DataContext.Users.Where(x => x.Id == id).Include("UserPictures").FirstOrDefault();
+            var dancer = DataContext.Users.Where(x => x.Id == id).FirstOrDefault();
+            model.PhotoUrl = dancer.PhotoUrl;
 
-            if (model.Dancer == null)
+            if (dancer.FacebookToken != null)
             {
-                return HttpNotFound();
-            }
-
-            if (model.Dancer.FacebookToken != null)
-            {
-                model.FacebookPictures = FacebookHelper.GetPhotos(model.Dancer.FacebookToken);
+                model.FacebookPictures = FacebookHelper.GetPhotos(dancer.FacebookToken);
             }
 
             return View(model);

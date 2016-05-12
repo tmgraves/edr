@@ -229,6 +229,8 @@ namespace EDR.Models
         public DateTime UpdateTime { get; set; }
         public string Message { get; set; }
         public string Link { get; set; }
+        public MediaType Type { get; set; }
+        public string PhotoUrl { get; set; }
     }
 
     public class EventRegistration : Entity

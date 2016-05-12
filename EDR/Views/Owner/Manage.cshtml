@@ -1,20 +1,144 @@
 ﻿@model EDR.Models.Owner
 
 @{
-    ViewBag.Title = "Manage";
+    ViewBag.Title = "Manage Owner Profile";
 }
 
-<h2>Manage</h2>
-@Html.ActionLink("View Profile", "Home", new { id = User.Identity.Name })
+<h2 class="page-header">
+    Manage Owner Profile
+    @Html.ActionLink("View Public Page", "Home", new { id = User.Identity.Name }, new { @class = "small btn btn-link" })
+</h2>
 
 <div class="container-fluid">
     <div class="col-lg-6 col-md-6">
-        <div class="panel panel-info">
-            <h4 class="col-lg-6 col-md-6 col-sm-6 col-xs-6">My Schools</h4>
-            @Html.ActionLink("Add School", "Create", "School", new { role = EDR.Enums.RoleName.Owner }, new { @class = "btn btn-text" })
-            <div class="panel-body">
-                <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-body ">
+                <div id="viewdiv">
+                    <div class="text-right" style="padding-bottom: 10px;">
+                        <input id="btnEdit" type="button" class="btn btn-primary" value="Edit" />
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-6">
+                            <div id="img_container">
+                                <img id="profilepic" src="@Url.Content(Model.ApplicationUser.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="row">
+                                <dl>
+                                    <dt>
+                                        @Html.Label("Name", htmlAttributes: new { @class = "control-label" })
+                                    </dt>
+                                    <dd>
+                                        @Html.DisplayFor(model => model.ApplicationUser.FullName)
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <hr />
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.Label("Facebook Link", htmlAttributes: new { @class = "control-label col-md-2" })
+                            </dt>
+                            <dd>
+                                <a href="@Model.Facebook" title="Facebook Page" style="width: 150px;" target="_blank">
+                                    <div class="item-short">@Model.Facebook</div>
+                                </a>
+                            </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.LabelFor(model => model.Website, htmlAttributes: new { @class = "control-label col-md-2" })
+                            </dt>
+                            <dd>
+                                <a href="@Model.Website" title="Website" style="width: 150px;" target="_blank">
+                                    <div class="item-short">@Model.Website</div>
+                                </a>
+                            </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.LabelFor(model => model.ContactEmail, htmlAttributes: new { @class = "control-label col-md-2" })
+                            </dt>
+                            <dd>
+                                @Html.DisplayFor(model => model.ContactEmail)
+                            </dd>
+                        </dl>
+                    </div>
                 </div>
+                <div id="editdiv" style="display: none;">
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                    @using (Html.BeginForm("Manage", "Owner", FormMethod.Post, new { @id = "saveform", @class = "main" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(model => model.Id)
+                        @Html.HiddenFor(model => model.ApplicationUser.Id)
+                        <div class="text-right" style="padding-bottom: 10px;">
+                            <input type="submit" id="btnsave" value="Save" class="btn btn-success" />
+                            <input id="btncanceledit" type="button" class="btn btn-primary" value="Cancel" />
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="col-lg-6">
+                                <div id="img_container">
+                                    <img id="profilepic" src="@Url.Content(Model.ApplicationUser.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="row">
+                                    <dl>
+                                        <dt>
+                                            @Html.Label("Name", htmlAttributes: new { @class = "control-label" })
+                                        </dt>
+                                        <dd>
+                                            @Html.DisplayFor(model => model.ApplicationUser.FullName)
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <hr />
+                            <dl class="dl-horizontal">
+                                <dt>
+                                    @Html.Label("Facebook Link", htmlAttributes: new { @class = "control-label col-md-2" })
+                                </dt>
+                                <dd>
+                                    @Html.EditorFor(model => model.Facebook, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Facebook, "", new { @class = "text-danger" })
+                                </dd>
+                            </dl>
+                            <dl class="dl-horizontal">
+                                <dt>
+                                    @Html.LabelFor(model => model.Website, htmlAttributes: new { @class = "control-label col-md-2" })
+                                </dt>
+                                <dd>
+                                    @Html.EditorFor(model => model.Website, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Website, "", new { @class = "text-danger" })
+                                </dd>
+                            </dl>
+                            <dl class="dl-horizontal">
+                                <dt>
+                                    @Html.LabelFor(model => model.ContactEmail, htmlAttributes: new { @class = "control-label col-md-2" })
+                                </dt>
+                                <dd>
+                                    @Html.EditorFor(model => model.ContactEmail, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.ContactEmail, "", new { @class = "text-danger" })
+                                </dd>
+                            </dl>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-info">
+            <div class="panel-body">
+                <h3>My Schools</h3>
+                <hr />
+                @Html.ActionLink("Add School", "Create", "School", new { role = EDR.Enums.RoleName.Owner }, null)
+                <p>
+                </p>
                 @if (Model.Schools != null && Model.Schools.Count() > 0)
                 {
                     foreach (var sch in Model.Schools.OrderBy(s => s.Name))
@@ -38,7 +162,8 @@
         <div class="panel panel-default">
             <div class="panel-body ">
                 <h3>Socials</h3>
-                @Html.ActionLink("Create Social", "Create", "Event", new { eventType = EDR.Enums.EventType.Social, role = EDR.Enums.RoleName.Promoter }, null)
+                <hr />
+                @Html.ActionLink("Create Social", "Create", "Event", new { eventType = EDR.Enums.EventType.Social, role = EDR.Enums.RoleName.Owner }, null)
                 <table class="table">
                     <thead>
                         <tr>
@@ -60,5 +185,65 @@
                 </table>
             </div>
         </div>
+        <div class="panel panel-default">
+            <div class="panel-body ">
+                <h3>Classes/Workshops</h3>
+                <hr />
+                @Html.ActionLink("Create Class", "Create", "Event", new { eventType = EDR.Enums.EventType.Class, role = EDR.Enums.RoleName.Owner }, null)
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Class</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    @foreach (var item in Model.Classes)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(member => item.Name)
+                            </td>
+                            <td>
+                                @Html.ActionLink("View", "View", new { id = item.Id })
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
     </div>
 </div>
+
+@section Scripts
+{
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/foolproof")
+    @Scripts.Render("~/bundles/jqueryUI")
+    <script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
+    <script>
+    $(function () {
+        $('#saveform.main').valid();
+
+        $('#btnEdit').click(function () {
+            $('#viewdiv').hide();
+            $('#editdiv').show();
+            try {
+                var valid = $('#saveform.main').valid();
+            }
+            catch (err) {
+                document.getElementById("demo").innerHTML = err.message;
+            }
+        });
+        $('#btncanceledit').click(function () {
+            $('#viewdiv').show();
+            $('#editdiv').hide();
+        });
+
+        $('#saveform.main').submit(function () {
+            var valid = $('#saveform.main').valid();
+        });
+    });
+    </script>
+}

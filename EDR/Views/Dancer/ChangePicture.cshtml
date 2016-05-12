@@ -19,45 +19,142 @@
     @ViewBag.Message
     <div class="container">
         <div class="row">
-            <div class="col-md-2">
-                <img id="profilepic" class="img-thumbnail" src="@Url.Content(Model.Dancer.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
-                @*@if (Model.Dancer.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault() != null)
-                {
-                    <img class="img-thumbnail" src="@Url.Content(Model.Dancer.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault().ThumbnailFilename)" />
-                }
-                else
-                {
-                    <img class="img-thumbnail" src="~/Content/images/NoProfilePic.gif" />
-                }*@
-            </div>
-            <div class="col-md-10">
-                <h3>Upload a New Picture</h3>
-                <div class="container">
-                    <div class="row" style="padding: 5px;">
-                        <div class="col-sm-6">
-                            <label for="imgInp" class="btn btn-primary">
-                                Choose File
-                            </label>
-                            <input id="imgInp" type="file" accept="image/*" />
-                            <button id="btnupload" class="btn btn-danger" style="display: none;">Upload</button>
+            @*<div class="col-md-2">
+            </div>*@
+            @*@if (Model.Dancer.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault() != null)
+        {
+            <img class="img-thumbnail" src="@Url.Content(Model.Dancer.UserPictures.Where(x => x.ProfilePicture).FirstOrDefault().ThumbnailFilename)" />
+        }
+        else
+        {
+            <img class="img-thumbnail" src="~/Content/images/NoProfilePic.gif" />
+        }*@
+
+
+            <p>
+                <img id="profilepic" class="img-thumbnail" src="@Url.Content(Model.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
+            </p>
+            <!-- Modal Popup to add new picture -->
+            <button id="btnChangePicture" type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalPic">
+                Change Picture
+            </button>
+
+            <!-- Modal Upload -->
+            <div class="modal fade" id="modalPic" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h3 class="picheader">Upload a New Picture</h3>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div>
-                                <img class="img-responsive" id="image" alt="">
+                        <div class="modal-body">
+                            <div id="divPick" class="text-center">
+                                <p>
+                                    <button id="btnNewPicture" type="button" class="btn btn-primary">
+                                        Upload New Picture
+                                    </button>
+                                </p>
+                                <p>
+                                    <button id="btnPickFacebook" type="button" class="btn btn-warning">
+                                        Choose a Facebook Picture
+                                    </button>
+                                </p>
                             </div>
+                            <div id="divOptions" style="display: none;">
+                                <div class="row text-center" style="padding: 5px;">
+                                    <div id="divUploadPic" style="display: none;">
+                                        <label for="imgInp" class="btn btn-primary btn-lg">
+                                            Choose File
+                                        </label>
+                                        <input id="imgInp" type="file" accept="image/*" />
+                                    </div>
+                                    <div id="divFacebookPic" style="display: none;">
+                                        @if (Model.FacebookPictures != null && Model.FacebookPictures.Count() > 0)
+                                    {
+                                        foreach (var photo in Model.FacebookPictures.OrderByDescending(photo => photo.PhotoDate))
+                                        {
+                                                <div class="col-lg-3 thumbnail text-center" style="height: 150px;">
+                                                    <div style="height: 100px;">
+                                                        <img src="@photo.Source" style="max-height: 100px;" />
+                                                    </div>
+                                                    <div class="caption">
+                                                        <button class="pickfbpic btn btn-info" value="@photo.LargeSource">Pick</button>
+                                                    </div>
+                                                </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                            @:No Facebook pictures found.
+                                        }
+                                    </div>
+                                </div>
+                                <div class="row" id="croppic">
+                                    <div>
+                                        <img class="img-responsive" id="image" alt="">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            <button id="btnupload" class="btn btn-danger" data-dismiss="modal" style="display: none;">Upload</button>
                         </div>
                     </div>
                 </div>
-                @*@using (Html.BeginForm("UploadPicture",
-                                    "Dancer",
-                                    FormMethod.Post,
-                                    new { enctype = "multipart/form-data" }))
-                {
-                    @Html.Partial("~/Views/Shared/_FileUploadPartial.cshtml")
-                }*@
-                @*<div class="form-group form-inline">
+            </div>
+
+            <!-- Modal Facebook -->
+            @*<div class="modal fade" id="modalFacebook" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h3>Choose a Facebook Picture</h3>
+                        </div>
+                        <div class="modal-body">
+                            <div id="cropfacebookpic" style="display: none;">
+                                <img id="facebookpic" src="" style="max-height: 400px;" />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            <button id="btnuploadFacebook" class="btn btn-danger" data-dismiss="modal" style="display: none;">Upload</button>
+                        </div>
+                    </div>
+                </div>
+            </div>*@
+        </div>
+    </div>
+    @*<div id="availablefbpics">
+        </div>*@
+    @*<ul class="list-inline">
+            @foreach (var photo in Model.FacebookPictures.OrderByDescending(photo => photo.PhotoDate))
+            {
+                <li>
+                    <div class="thumbnail">
+                        <a href="@photo.Link" target="_blank">
+                            @if (photo.Source != null)
+                            {
+                                <img src="@photo.Source" />
+                            }
+                        </a>
+                        <div class="caption">
+                            <button class="pickfbpic btn btn-info" value="@photo.LargeSource">Pick</button>
+                        </div>
+                    </div>
+                </li>
+            }
+        </ul>*@
+    @*@Html.ActionLink("Add to Locker", "AddFacebookPicture", "Dancer", new { id = photo.Id, album = photo.Album, name = photo.Name, largeSource = photo.LargeSource, link = photo.Link, photodate = photo.PhotoDate, source = photo.Source }, htmlAttributes: new { @class = "btn btn-primary" })*@
+        @*@using (Html.BeginForm("UploadPicture",
+                            "Dancer",
+                            FormMethod.Post,
+                            new { enctype = "multipart/form-data" }))
+        {
+            @Html.Partial("~/Views/Shared/_FileUploadPartial.cshtml")
+        }*@
+        @*<div class="form-group form-inline">
             <input type="file" name="file" id="file" class="form-control" accept="image/*" />
             <input id="submit" type="submit" class="btn btn-default" value="Submit" />
         </div>
@@ -97,9 +194,8 @@
         </script>*@
 
 
-            </div>
-        </div>
-        <div class="row">
+
+        @*<div class="row">
             <div class="col-md-12 ">
                 <h4>Available Pictures</h4>
                 <ul class="list-inline">
@@ -121,8 +217,6 @@
                                         <i class="glyphicon glyphicon glyphicon-remove btn btn-danger"></i>
                                         <span class="sr-only">Delete</span>
                                     </a>
-                                    @*@Html.ActionLink("Profile Pic", "ProfilePicture", "Dancer", htmlAttributes: new { @class = "btn btn-primary" })*@
-
                                 }
                             </li>
                         }
@@ -133,40 +227,9 @@
                 }
                 </ul>
             </div>
-        </div>
-        <div class="row">
-            <h4>Facebook Pictures</h4>
-            <div class="col-md-12">
-                @if (Model.FacebookPictures != null && Model.FacebookPictures.Count() > 0)
-                {
-                    <ul class="list-inline">
-                        @foreach (var photo in Model.FacebookPictures.OrderByDescending(photo => photo.PhotoDate))
-                        {
-                            <li>
-                                <div class="thumbnail">
-                                    <a href="@photo.Link" target="_blank">
-                                        @if (photo.Source != null)
-                                        {
-                                            <img src="@photo.Source" />
-                                        }
-                                    </a>
-                                    <div class="caption">
-                                        @Html.ActionLink("Add to Locker", "AddFacebookPicture", "Dancer", new { id = photo.Id, album = photo.Album, name = photo.Name, largeSource = photo.LargeSource, link = photo.Link, photodate = photo.PhotoDate, source = photo.Source }, htmlAttributes: new { @class = "btn btn-primary" })
-                                    </div>
-                                </div>
-                            </li>
-                        }
-                    </ul>
-                }
-                else
-                {
-                    @:No Facebook pictures found.
-            }
-            </div>
-        </div>
-    </div>
+        </div>*@
 
-    @if (Model.Dancer.CurrentRole != null)
+    @*@if (Model.Dancer.CurrentRole != null)
     {
         if (Model.Dancer.CurrentRole.Name == "Owner")
         {
@@ -184,7 +247,7 @@
     else
     {
             <a class="btn btn-primary" href="@Url.Action("Home", "Dancer", new { username = Model.Dancer.UserName })">Back to Dancer Page</a>
-    }
+    }*@
 </div>
 
 @section Scripts
@@ -223,6 +286,7 @@
 
         $("#imgInp").change(function () {
             loadImage(this);
+            $("#croppic").show();
         });
 
         $(function () {
@@ -265,6 +329,102 @@
                     alert(err.message);
                 }
             });
+
+            $('#btnChangePicture').click(function () {
+                $('#divPick').show();
+                $('#divOptions').hide();
+            });
+
+            $('#btnNewPicture').click(function () {
+                $('#divPick').hide();
+                $('#divOptions').show();
+                $('#divUploadPic').show();
+                $('#divFacebookPic').hide();
+                $('#croppic').hide();
+                $('#image').attr('src', "");
+            });
+
+            $('#btnPickFacebook').click(function () {
+                $('#divPick').hide();
+                $('#divOptions').show();
+                $('#divUploadPic').hide();
+                $('#divFacebookPic').show();
+                $('#croppic').hide();
+                $('#image').attr('src', "");
+
+                @*$.ajax({
+                    url: '@Url.Action("GetFacebookPictures", "Dancer")',
+                    dataType: 'json',
+                    type: 'GET',
+                    success: function (data) {
+                        var row = ""
+                        $.each(data, function (index, item) {
+                            row += "<div class='col-lg-3 thumbnail text-center' style='height: 150px;'>" +
+                                "<div style='height: 100px;'>" +
+                                    "<img src='" + item.Thumbnail + "' style='max-height: 100px;' />" +
+                                "</div>" +
+                                "<div class='caption'>" +
+                                    "<button class='pickfbpic btn btn-info' value='" + item.Url + "'>Pick</button>" +
+                                "</div>" +
+                            "</div>"
+                        });
+                        $(row).find('.pickfbpic').click(function () {
+                            alert("here");
+                        }).end();
+                        $("#availablefbpics").html(row);
+                    }
+                })*@
+                });
+
+            $('.pickfbpic').click(function () {
+                var src = $(this).prop('value');
+                $('#image').attr('src', src);
+                $('#croppic').show();
+                $('#divFacebookPic').hide();
+                $('#image').cropper({
+                    aspectRatio: 10 / 10,
+                    zoomable: false,
+                });
+                $("#image").cropper('replace', src);
+                $("#btnupload").show();
+            });
+
+            //$('#btnuploadFacebook').click(function () {
+            //    try {
+            //        var imageData = $("#facebookpic").cropper("getCroppedCanvas").toDataURL('png', 1);
+            //        $.ajax({
+            //            url: "../../Dancer/UploadImageAsync",
+            //            type: 'POST',
+            //            data: { 'imageData': imageData },
+            //            dataType: 'json',
+            //            timeout: 300000,
+            //            success: function (result) {
+            //                var status;
+            //                var filePath;
+            //                $.each(result, function (key, value) {
+            //                    if (key == "UploadStatus") {
+            //                        status = value;
+            //                    }
+            //                    else {
+            //                        filePath = value;
+            //                    }
+            //                });
+            //                if (status == "Success") {
+            //                    $('#profilepic').attr('src', filePath);
+            //                    $("#facebookpic").cropper('destroy');
+            //                    $('#facebookpic').attr('src', "");
+            //                    $("#btnuploadFacebook").hide();
+            //                }
+            //                else {
+            //                    alert("Upload Failed");
+            //                }
+            //            }
+            //        });
+            //    }
+            //    catch (err) {
+            //        alert(err.message);
+            //    }
+            //});
         });
     </script>
 }

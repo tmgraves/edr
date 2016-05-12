@@ -19,6 +19,9 @@ namespace EDR.Models
         public string Website { get; set; }
         public bool? Approved { get; set; }
         public DateTime? ApproveDate { get; set; }
+        [StringLength(24)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:###-###-####}")]
+        public string Phone { get; set; }
 
         [Required]
         public virtual ApplicationUser ApplicationUser { get; set; }

@@ -6,107 +6,274 @@
 
 @{
     ViewBag.Title = Model.Event.Name;
-    Layout = "~/Views/Event/_EventLayout.cshtml";
     var userid = User.Identity.GetUserId();
 }
 
-<script type="text/javascript">
+<style>
+    .verticaljustify {
+        height: 250px;
+      position: relative;
+    }
+
+    .verticaljustify .attachbottom {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+    }
+
+.verticalcenter {
+    display: inline;
+    line-height: 100px;
+}
+
+.verticalcenter > * {
+    display: inline;
+    vertical-align: middle;
+}
+
+.verticalcenter > * > * {
+    display: inline;
+    vertical-align: middle;
+}
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12 verticaljustify nospace">
+            <div class="col-lg-4">
+                <img style="max-height: 250px; max-width: 100%;" src="@Url.Content(Model.Event.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
+            </div>
+            <div class="col-lg-8">
+                <h2 class="header item-short">@Model.Event.Name <span class="text-info small">(@Model.Class.ClassType)</span></h2>
+                <p>
+                    <strong><span class="col-lg-2 nospace">Where: </span></strong>@Html.ActionLink(Model.Event.Place.Name, "Details", "Place", new { id = Model.Event.Place.Id }, new {  })
+                </p>
+                <p>
+                    <strong><span class="col-lg-2 nospace">Styles: </span></strong>@Html.DisplayFor(m => Model.Event.DanceStyles, "DanceStyleLabels")
+                </p>
+                @if (Model.EventType == EventType.Class)
+                {
+                    <p>
+                        <strong><span class="col-lg-2 nospace">Teachers: </span></strong>@Html.DisplayFor(m => Model.Class.Teachers, "TeacherLinks")
+                    </p>
+                }
+            </div>
+            <div class="col-lg-8 attachbottom bg-success">
+                @{
+                    var instance = Model.Event.EventInstances.Where(e => e.DateTime >= DateTime.Today).OrderBy(c => c.DateTime).FirstOrDefault();
+                    if (instance == null)
+                    {
+                        instance = Model.Event.EventInstances.OrderByDescending(c => c.DateTime).FirstOrDefault();
+                    }
+                    <div style="width: 100%;">
+                        <div class="col-lg-8">
+                            <h3>Next Date: <span class="text-info">@instance.DateTime.ToString("ddd, MMM d, yyyy") at @instance.DateTime.ToShortTimeString()</span></h3>
+                            <p class="text-center" style="background-color: lemonchiffon;">
+                                <span class="text-success">You have (<strong>@Model.AvailableTickets</strong>) Available Tickets for this Event</span>
+                            </p>
+                        </div>
+                        <div class="col-lg-4 text-center verticalcenter">
+                            <div class="text-center">
+                                @if (instance.DateTime >= DateTime.Today)
+                                {
+                                    if (instance.EventRegistrations.Where(r => r.UserId == userid).Count() == 0)
+                                    {
+                                        @Html.ActionLink("Register", "Register", new { id = instance.Id }, new { @class = "btn btn-primary btn-lg", @style = "width: 100%;" })
+                                    }
+                                    else
+                                    {
+                                        var reg = instance.EventRegistrations.Where(r => r.UserId == userid).FirstOrDefault();
+                                        if (reg.UserTicket.Ticket.EventId == null)
+                                        {
+                                            @Html.ActionLink("Un-Register", "UnRegister", new { id = instance.Id }, new { @class = "btn btn-danger btn-lg" });
+                                        }
+                                        else
+                                        {
+                                            <span class="btn btn-default btn-lg">Registered</span>
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    <h4>Event has Ended</h4>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <hr />
+    <div class="row vertical-divider">
+        <div class="col-lg-4">
+            <a target="_blank" href="https://maps.google.com/?q=@Model.Event.Place.Latitude,@Model.Event.Place.Longitude">
+                <img style="border: 1px solid #ddd;" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Event.Place.Latitude,@Model.Event.Place.Longitude&zoom=10&size=350x250&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Event.Place.Latitude, @Model.Event.Place.Longitude" title="@Model.Event.Place.City, @Model.Event.Place.State">
+            </a>
+        </div>
+        <div class="col-lg-8 nospace">
+            <h4>Details</h4>
+            @Model.Event.Description
+        </div>
+    </div>
+    <hr />
+    <div class="row vertical-divider">
+        <div class="col-lg-4">
+            <div class="col-lg-12 nospace">
+                <h4>Latest Updates</h4>
+                <hr />
+                @if (Model.Event.Feeds != null)
+                {
+                    foreach (var f in Model.Event.Feeds.Where(f => f.Link != null || f.Message != null))
+                    {
+                        <p style="border-bottom: 1px dashed #bbb; padding-bottom: 15px;">
+                            <strong>@f.UpdateTime.ToShortDateString()</strong><br />
+                            @if (f.Link != null)
+                            {
+                                <a href="@(f.Link ?? "")" target="_blank">
+                                    @f.Message<br />
+                                    @if (f.PhotoUrl != null)
+                                    {
+                                        <img src="@f.PhotoUrl" class="fitpicture" />
+                                    }
+
+                                </a>
+                            }
+                            else
+                            {
+                                @f.Message
+                            }
+                        </p>
+                    }
+                }
+            </div>
+            <div class="col-lg-12 nospace">
+                <h4>Dancers</h4>
+                <div class="row">
+                    @{
+                        var dancers = Model.Event.EventInstances.SelectMany(i => i.EventRegistrations.Select(r => r.User)).Distinct();
+                    }
+                    @if (dancers.Count() != 0)
+                    {
+                        foreach (var r in Model.Event.EventInstances.SelectMany(i => i.EventRegistrations.Select(r => r.User)).Distinct())
+                        {
+                            <div class="col-lg-3">
+                                @Html.DisplayFor(m => r, "DancerThumblink")
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <h5>No Dancers Registered</h5>
+                    }
+                </div>
+                <hr />
+            </div>
+            <div class="col-lg-12 nospace">
+                <h4>Linked Events/Groups/Pages</h4>
+                @foreach (var ee in Model.LinkedFacebookObjects)
+                {
+                    <a class="item-short" target="_blank" href="@Url.Content(ee.Url)" title="@ee.Name" style="text-align: left;">
+                        <strong>@ee.Name</strong>
+                    </a>
+                }
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <h4>Reviews</h4>
+            <hr />
+            @if (Model.Event.Reviews.Count() != 0)
+            {
+                foreach (var rr in Model.Event.Reviews)
+                {
+                    <div style="border-bottom: 1px dashed #bbb; margin-bottom: 10px;">
+                        <div class="row">
+                            <div id="parentc" class="col-lg-2">
+                                <input id="rv" type="hidden" value="@(rr.Rating) : 0)" class="ratingval" />
+                                <div id="cont" class="rateYo"></div>
+                            </div>
+                            <div class="col-lg-10">
+                                <div class="item-short"><strong>@rr.ReviewText</strong></div>
+                            </div>
+                        </div>
+                        <div class="row" style="padding-top: 10px;">
+                            <div class="col-lg-12 small">
+                                from <span class="text-info">@rr.Author.FirstName</span> - @rr.ReviewDate.ToLongDateString()
+                            </div>
+                        </div>
+                        <div class="row" style="padding-top: 10px; padding-bottom: 10px;">
+                            <div class="col-lg-12">
+                                @rr.ReviewText
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <h5>No Reviews have been posted for this Event</h5>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jqueryUI")
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="~/Content/jquery.rateyo.css" />
+    <script src="~/Scripts/jquery.rateyo.js"></script>
+
+<script>
+    $(function () {
+
+        $(".rateYo").rateYo({
+            starWidth: "18px",
+            ratedFill: "#FFD700",
+            normalFill: "#ccc",
+            onInit: function (rating, rateYoInstance) {
+                var t = $(this);
+                $(this).rateYo("option", "rating", t.parent('div').find('.ratingval').prop('value'));
+                $(this).rateYo("option", "readOnly", true);
+            }
+        });
+    });
+</script>
+}
+
+@*<script type="text/javascript">
     $(document).ready(function (e) {
         //  locate each partial section
         //  if it has a URL set, load the contents into the area.
 
         $(".partialContents").each(function (index, item) {
-            var url = $(item).data("url");
-            if (url && url.length > 0) {
+                        var url = $(item).data("url");
+                        if (url && url.length > 0) {
                 $(item).load(url);
-            }
-        });
-    });
-</script>
-<div class="row">
+                        }
+                    });
+                });
+    </script>*@
+@*<div class="row">
     <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
         <div>
-            @*<h4>
-                Updates
-                <a class="btn btn-warning pull-right top-right" title="Add New Picture" href="@Url.Action("PostPicture", "Event", new { id = Model.Event.Id })">
-                    <span class="glyphicon glyphicon-camera" aria-hidden="true"></span>
-                </a>
-                <a class="btn btn-warning pull-right top-right" title="Add New Video" href="@Url.Action("PostVideo", "Event", new { id = Model.Event.Id })" style="margin-left: 5px; margin-right: 5px;">
-                    <span class="glyphicon glyphicon-facetime-video" aria-hidden="true"></span>
-                </a>
-            </h4>
-            <hr />*@
             <div class="partialContents" data-url="/Event/@Model.Event.Id/GetUpdates">
                 <img src="~/Content/images/indicator.white.gif" />Loading...
             </div>
         </div>
-        @*@Html.Partial("~/Views/Shared/Events/_EventUpdatesPartial.cshtml", Model.MediaUpdates)*@
-        @*<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-            <div style="max-height: 1000px; overflow-y: auto; overflow-x: hidden;">
-                @Html.Partial("~/Views/Shared/_PictureListPartial.cshtml", Model.Event.Pictures.OrderByDescending(p => p.PhotoDate))
-            </div>
-        </div>
-        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-            <h4>
-                Videos
-            </h4>
-            <hr />
-            <div style="max-height: 1000px; overflow-y: auto; overflow-x: hidden;">
-                @Html.Partial("~/Views/Shared/_VideoListPartial.cshtml", Model.Event.Videos.OrderByDescending(p => p.PublishDate))
-            </div>
-        </div>*@
     </div>
     <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-        @{
-            var next = Model.Event.EventInstances.Where(e => e.DateTime >= DateTime.Today).OrderBy(c => c.DateTime).FirstOrDefault();
-            if (next != null)
-            {
-                <div class="panel panel-default">
-                    <div class="panel-body text-center">
-                        <h2><span class="text-primary">Next Date: </span>@next.DateTime.ToShortDateString()</h2>
-                        <p>
-                            (Available Tickets: @Model.AvailableTickets)
-                        </p>
-                        <p>
-                            @if (next.EventRegistrations.Where(r => r.UserId == userid).Count() == 0)
-                            {
-                                @Html.ActionLink("Register", "Register", new { id = next.Id }, new { @class = "btn btn-primary btn-lg" })
-                            }
-                            else
-                            {
-                                var reg = next.EventRegistrations.Where(r => r.UserId == userid).FirstOrDefault();
-                                if (reg.UserTicket.Ticket.EventId == null)
-                                {
-                                    @Html.ActionLink("Un-Register", "UnRegister", new { id = next.Id }, new { @class = "btn btn-danger btn-lg" });
-                                }
-                                else
-                                {
-                                    <span class="btn btn-default btn-lg">Registered</span>
-                                }
-                            }
-                        </p>
-                    </div>
-                </div>
-            }
-        }
         <div class="partialContents" data-url="/Event/@Model.Event.Id/GetRelatedEvents?eventType=@Model.EventType">
             <img src="~/Content/images/indicator.white.gif" />Loading...
         </div>
         <div class="well" style="white-space: pre-line">
             @Html.Raw(EDR.Utilities.ApplicationUtility.WithActiveLinks(Model.Event.Description))
         </div>
-        @*<div class="panel panel-default">
-            <div class="panel-heading">
-                <h4>@(Model.EventType == EventType.Class ? "Students" : "Dancers")</h4>
-            </div>
-            <div class="panel-body">
-                @Html.Partial("~/Views/Shared/Events/_EventMembersPartial.cshtml", Model.Event.EventMembers)
-            </div>
-        </div>*@
         <div class="panel panel-primary">
             <div class="panel-heading">
                 <h4 style="width: 100%; vertical-align: bottom;">
-                    @*<img class="img-rounded" style="height: 20px;" src="@Url.Content("~/Content/images/facebookSmall.png")" />*@
                     Linked Events/Groups
                 </h4>
             </div>
@@ -135,42 +302,44 @@
                         </a>
                     }
                 }
-                @foreach (var ee in Model.LinkedFacebookObjects)
-                {
-                    <div class="row" style="margin-top: 5px;">
-                        <a class="btn btn-info col-lg-8 col-md-8 col-lg-offset-1 col-md-offset-1" target="_blank" href="@Url.Content(ee.Url)" title="@ee.Name" style="text-align: left;">
-                            <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                <img class="img-rounded" style="height: 20px;" src="@Url.Content("~/Content/images/facebookSmall.png")" />
-                                @ee.Name
-                            </div>
-                        </a>
-                        @if (ee.FacebookId != Model.Event.FacebookId)
-                        {
-                            if (User.Identity != null)
-                            {
-                                if (Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)
-                                {
-                                    <a class="btn btn-danger" href="@Url.Action("RemoveLinkedFacebookObject", "Event", new { id = ee.Id, returnUrl = Request.Url.AbsolutePath })">
-                                        <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
-                                    </a>
-                                }
-                                else if (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)
-                                {
-                                    <a class="btn btn-danger" href="@Url.Action("RemoveLinkedFacebookObject", "Event", new { id = ee.Id, returnUrl = Request.Url.AbsolutePath })">
-                                        <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
-                                    </a>
-                                }
-                                else if (Model.Event.Creator.UserName == User.Identity.Name)
-                                {
-                                    <a class="btn btn-danger" href="@Url.Action("RemoveLinkedFacebookObject", "Event", new { id = ee.Id, returnUrl = Request.Url.AbsolutePath })">
-                                        <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
-                                    </a>
-                                }
-                            }
-                        }
-                    </div>
-                }
             </div>
         </div>
     </div>
-</div>
+</div>*@
+
+@*@foreach (var ee in Model.LinkedFacebookObjects)
+    {
+        <div class="row" style="margin-top: 5px;">
+            <a class="btn btn-info col-lg-8 col-md-8 col-lg-offset-1 col-md-offset-1" target="_blank" href="@Url.Content(ee.Url)" title="@ee.Name" style="text-align: left;">
+                <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <img class="img-rounded" style="height: 20px;" src="@Url.Content("~/Content/images/facebookSmall.png")" />
+                    @ee.Name
+                </div>
+            </a>
+            @if (ee.FacebookId != Model.Event.FacebookId)
+            {
+                if (User.Identity != null)
+                {
+                    if (Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)
+                    {
+                        <a class="btn btn-danger" href="@Url.Action("RemoveLinkedFacebookObject", "Event", new { id = ee.Id, returnUrl = Request.Url.AbsolutePath })">
+                            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
+                        </a>
+                    }
+                    else if (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)
+                    {
+                        <a class="btn btn-danger" href="@Url.Action("RemoveLinkedFacebookObject", "Event", new { id = ee.Id, returnUrl = Request.Url.AbsolutePath })">
+                            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
+                        </a>
+                    }
+                    else if (Model.Event.Creator.UserName == User.Identity.Name)
+                    {
+                        <a class="btn btn-danger" href="@Url.Action("RemoveLinkedFacebookObject", "Event", new { id = ee.Id, returnUrl = Request.Url.AbsolutePath })">
+                            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
+                        </a>
+                    }
+                }
+            }
+        </div>
+    }*@
+

@@ -58,7 +58,7 @@ namespace EDR.Utilities
                 });
                 extendedToken = result.access_token;
             }
-            catch
+            catch (Exception ex)
             {
                 extendedToken = token;
             }
@@ -247,7 +247,7 @@ namespace EDR.Utilities
             var query = "/me/events?fields=id,cover,description,end_time,is_date_only,location,name,owner,privacy,start_time,ticket_uri,timezone,updated_time,venue,parent_group";
             if (startdate != null)
             {
-                query = query + "&since=" + Convert.ToDateTime(startdate).ToString("o");
+                query = query + "&since=" + Convert.ToDateTime(startdate).AddDays(-14).ToString("o");
             }
             dynamic myInfo = fb.Get(query);
             var eventList = new List<FacebookEvent>();

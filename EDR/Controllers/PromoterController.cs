@@ -25,6 +25,22 @@ namespace EDR.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Promoter")]
+        public ActionResult Manage(Promoter model)
+        {
+            if (ModelState.IsValid)
+            {
+                var promoter = DataContext.Promoters.Include("ApplicationUser").Single(d => d.Id == model.Id);
+                TryUpdateModel(promoter);
+                DataContext.Entry(promoter).State = EntityState.Modified;
+                DataContext.SaveChanges();
+                return RedirectToAction("Manage");
+            }
+            return View(model);
+        }
+
         public ActionResult List(PromoterListViewModel model)
         {
             model.Promoters = DataContext.Promoters

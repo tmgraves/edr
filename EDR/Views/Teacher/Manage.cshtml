@@ -1,25 +1,214 @@
 ﻿@model EDR.Models.ViewModels.TeacherManageViewModel
 
 @{
-    ViewBag.Title = "Manage";
+    ViewBag.Title = "Manage Teacher Profile";
 }
 
-<h2>Manage</h2>
-@Html.ActionLink("View Profile", "Home", new { id = User.Identity.Name })
+<h2 class="page-header">
+    Manage Teacher Profile
+    @Html.ActionLink("View Public Page", "Home", new { id = User.Identity.Name }, new { @class = "small btn btn-link" })
+</h2>
+
+<style>
+    img {
+        max-width: 100%; /* This rule is very important, please do not ignore this! */
+    }
+
+    input[type="file"] {
+        display: none;
+    }
+
+    #img_container {
+        position: relative;
+        display: inline-block;
+        text-align: center;
+    }
+
+    #profilepic {
+        width: 200px;
+    }
+</style>
 
 <div class="container-fluid">
     <div class="col-lg-6 col-md-6">
         <div class="panel panel-default">
             <div class="panel-body ">
-                <dl class="dl-horizontal">
-                    <dt>
-                        @Html.DisplayNameFor(model => model.Teacher.ApplicationUser.FullName)
-                    </dt>
-
-                    <dd>
-                        @Html.DisplayFor(model => model.Teacher.ApplicationUser.FullName)
-                    </dd>
-                </dl>
+                <div id="viewdiv">
+                    <div class="text-right" style="padding-bottom: 10px;">
+                        <input id="btnEdit" type="button" class="btn btn-primary" value="Edit" />
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-6">
+                            <div id="img_container">
+                                <img id="profilepic" src="@Url.Content(Model.Teacher.ApplicationUser.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="row">
+                                <dl>
+                                    <dt>
+                                        @Html.Label("Name", htmlAttributes: new { @class = "control-label" })
+                                    </dt>
+                                    <dd>
+                                        @Html.DisplayFor(model => model.Teacher.ApplicationUser.FullName)
+                                    </dd>
+                                </dl>
+                            </div>
+                            <div class="row">
+                                <dl>
+                                    <dt>
+                                        @Html.LabelFor(model => model.Teacher.Experience, htmlAttributes: new { @class = "control-label" })
+                                    </dt>
+                                    <dd>
+                                        @Html.DisplayFor(model => model.Teacher.Experience) Year(s)
+                                    </dd>
+                                </dl>
+                            </div>
+                            <div class="row">
+                                <dl>
+                                    <dt>
+                                        @Html.LabelFor(model => model.Teacher.Phone, htmlAttributes: new { @class = "control-label" })
+                                    </dt>
+                                    <dd>
+                                        @Html.DisplayFor(model => model.Teacher.Phone)
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <hr />
+                        <dl>
+                            <dt>
+                                @Html.Label("About You", htmlAttributes: new { @class = "control-label" })
+                            </dt>
+                            <dd>
+                                @Html.DisplayFor(model => model.Teacher.Resume)
+                            </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.Label("Facebook Link", htmlAttributes: new { @class = "control-label col-md-2" })
+                            </dt>
+                            <dd>
+                                <a href="@Model.Teacher.FacebookLink" title="Facebook Page" style="width: 150px;" target="_blank">
+                                    <div class="item-short">@Model.Teacher.FacebookLink</div>
+                                </a>
+                            </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.LabelFor(model => model.Teacher.Website, htmlAttributes: new { @class = "control-label col-md-2" })
+                            </dt>
+                            <dd>
+                                <a href="@Model.Teacher.Website" title="Website" style="width: 150px;" target="_blank">
+                                    <div class="item-short">@Model.Teacher.Website</div>
+                                </a>
+                            </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.LabelFor(model => model.Teacher.ContactEmail, htmlAttributes: new { @class = "control-label col-md-2" })
+                            </dt>
+                            <dd>
+                                @Html.DisplayFor(model => model.Teacher.ContactEmail)
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+                <div id="editdiv" style="display: none;">
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                    @using (Html.BeginForm("Manage", "Teacher", FormMethod.Post, new { @id = "saveform", @class = "main" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(model => model.Teacher.Id)
+                        @Html.HiddenFor(model => model.Teacher.ApplicationUser.Id)
+                        <div class="text-right" style="padding-bottom: 10px;">
+                            <input type="submit" id="btnsave" value="Save" class="btn btn-success" />
+                            <input id="btncanceledit" type="button" class="btn btn-primary" value="Cancel" />
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="col-lg-6">
+                                <div id="img_container">
+                                    <img id="profilepic" src="@Url.Content(Model.Teacher.ApplicationUser.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="row">
+                                    <dl>
+                                        <dt>
+                                            @Html.Label("Name", htmlAttributes: new { @class = "control-label" })
+                                        </dt>
+                                        <dd>
+                                            @Html.DisplayFor(model => model.Teacher.ApplicationUser.FullName)
+                                        </dd>
+                                    </dl>
+                                </div>
+                                <div class="row">
+                                    <dl>
+                                        <dt>
+                                            @Html.Label("When did you start Teaching?", htmlAttributes: new { @class = "control-label" })
+                                        </dt>
+                                        <dd>
+                                            @Html.TextBoxFor(m => m.Teacher.StartDate, "{0:yyyy-MM-dd}", htmlAttributes: new { @type = "date", @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.Teacher.StartDate, "", new { @class = "text-danger" })
+                                        </dd>
+                                    </dl>
+                                </div>
+                                <div class="row">
+                                    <dl>
+                                        <dt>
+                                            @Html.LabelFor(model => model.Teacher.Phone, htmlAttributes: new { @class = "control-label" })
+                                        </dt>
+                                        <dd>
+                                            @Html.EditorFor(model => model.Teacher.Phone, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.Teacher.Phone, "", new { @class = "text-danger" })
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <hr />
+                            <dl>
+                                <dt>
+                                    @Html.Label("About You", htmlAttributes: new { @class = "control-label" })
+                                </dt>
+                                <dd>
+                                    @Html.TextAreaFor(model => model.Teacher.Resume, htmlAttributes: new { @class = "form-control", @style = "width: 100%; max-width: 100%;", @rows = "10" })
+                                    @Html.ValidationMessageFor(model => model.Teacher.Resume, "", new { @class = "text-danger" })
+                                </dd>
+                            </dl>
+                            <dl class="dl-horizontal">
+                                <dt>
+                                    @Html.Label("Facebook Link", htmlAttributes: new { @class = "control-label col-md-2" })
+                                </dt>
+                                <dd>
+                                    @Html.EditorFor(model => model.Teacher.FacebookLink, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Teacher.FacebookLink, "", new { @class = "text-danger" })
+                                </dd>
+                            </dl>
+                            <dl class="dl-horizontal">
+                                <dt>
+                                    @Html.LabelFor(model => model.Teacher.Website, htmlAttributes: new { @class = "control-label col-md-2" })
+                                </dt>
+                                <dd>
+                                    @Html.EditorFor(model => model.Teacher.Website, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Teacher.Website, "", new { @class = "text-danger" })
+                                </dd>
+                            </dl>
+                            <dl class="dl-horizontal">
+                                <dt>
+                                    @Html.LabelFor(model => model.Teacher.ContactEmail, htmlAttributes: new { @class = "control-label col-md-2" })
+                                </dt>
+                                <dd>
+                                    @Html.EditorFor(model => model.Teacher.ContactEmail, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Teacher.ContactEmail, "", new { @class = "text-danger" })
+                                </dd>
+                            </dl>
+                        </div>
+                    }
+                </div>
             </div>
         </div>
         <div class="panel panel-info">
@@ -68,7 +257,7 @@
         </div>
         <div class="panel panel-default">
             <div class="panel-body ">
-                <h4>Dance Styles</h4>
+                <h4>What Styles do you Teach?</h4>
                 @using (Ajax.BeginForm("AddStyle", new AjaxOptions()
                     {
                         UpdateTargetId = "styles",
@@ -163,5 +352,29 @@
         $('.stylesearch').prop('value', "");
         $('.stylesearchid').prop('value', "");
     }
+    $(function () {
+        $('#saveform.main').valid();
+
+        $('#btnEdit').click(function () {
+            $('#viewdiv').hide();
+            $('#editdiv').show();
+            try
+            {
+                var valid = $('#saveform.main').valid();
+            }
+            catch(err)
+            {
+                document.getElementById("demo").innerHTML = err.message;
+            }
+        });
+        $('#btncanceledit').click(function () {
+            $('#viewdiv').show();
+            $('#editdiv').hide();
+        });
+
+        $('#saveform.main').submit(function () {
+            var valid = $('#saveform.main').valid();
+        });
+    });
     </script>
 }

@@ -21,6 +21,7 @@ using Facebook;
 using Newtonsoft.Json;
 using System.Text;
 using EDR.Enums;
+using System.Configuration;
 
 namespace EDR.Controllers
 {
@@ -786,7 +787,7 @@ namespace EDR.Controllers
 
             public override void ExecuteResult(ControllerContext context)
             {
-                var properties = new AuthenticationProperties() { RedirectUri = RedirectUri };
+                var properties = new AuthenticationProperties() { RedirectUri = RedirectUri, AllowRefresh = true };
                 if (UserId != null)
                 {
                     properties.Dictionary[XsrfKey] = UserId;

@@ -24,7 +24,7 @@
     $.validator.setDefaults({
         ignore: ""
     })
-    
+
     $(function () {
         $('.start').timepicker({
             'timeFormat': 'h:i A',
@@ -307,6 +307,10 @@
         $('#EventTypeDD').change(function () {
             var eventtype = $("#EventTypeDD option:selected").val();
             SetEventType(eventType);
+        });
+        $('#FacebookId').change(function () {
+            $('#FacebookEventName').prop('value', $("#FacebookId option:selected").text());
+            $('#Event_FacebookLink').prop('value', "https://www.facebook.com/events/" + $("#FacebookId option:selected").val());
         });
     });
     $(function () {
@@ -632,7 +636,9 @@
             </div>
             <div class="pickfacebook" style="display: none;">
             @using (Html.BeginForm())
-            { 
+            {
+                @Html.HiddenFor(x => x.Event.FacebookLink)
+                @Html.HiddenFor(x => x.FacebookEventName)
                 <h2>Pick a Facebook Event</h2>
                 <div class="row" style="margin-bottom: 5px;">
                     <div class="col-md-10 col-lg-9">
@@ -656,6 +662,7 @@
         @Html.HiddenFor(x => x.Event.PhotoUrl)
         @Html.HiddenFor(x => x.Event.FacebookLink)
         @Html.HiddenFor(x => x.Event.FacebookId)
+        @Html.HiddenFor(x => x.FacebookEventName)
         @Html.HiddenFor(x => x.Event.Interval)
         @Html.HiddenFor(x => x.Event.IsAvailable)
         @Html.HiddenFor(x => x.Event.UpdatedDate)

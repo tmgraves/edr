@@ -31,6 +31,22 @@ namespace EDR.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Teacher")]
+        public ActionResult Manage(TeacherManageViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var teacher = DataContext.Teachers.Include("ApplicationUser").Single(d => d.Id == model.Teacher.Id);
+                TryUpdateModel(teacher, "Teacher");
+                DataContext.Entry(teacher).State = EntityState.Modified;
+                DataContext.SaveChanges();
+                return RedirectToAction("Manage", "Teacher");
+            }
+            return View(model);
+        }
+
         public ActionResult List(TeacherListViewModel model)
         {
             model.Teachers = DataContext.Teachers

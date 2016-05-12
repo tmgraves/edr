@@ -44,9 +44,8 @@ namespace EDR.Models.ViewModels
 
     public class ChangePictureViewModel
     {
-        public ApplicationUser Dancer { get; set; }
+        public string PhotoUrl { get; set; }
         public IEnumerable<FacebookPhoto> FacebookPictures { get; set; }
-        public string ReturlUrl { get; set; }
     }
 
     public class ProfilePicture
@@ -66,6 +65,7 @@ namespace EDR.Models.ViewModels
         // TODO: FILL IN PROPERTIES NEEDED FOR VIEW
         public ApplicationUser Dancer { get; set; }
         public int? NewStyleId { get; set; }
+        public IEnumerable<FacebookPhoto> FacebookPictures { get; set; }
     }
 
     public class DancerStylesViewModel

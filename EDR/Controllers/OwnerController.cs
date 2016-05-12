@@ -25,6 +25,22 @@ namespace EDR.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Owner")]
+        public ActionResult Manage(Owner model)
+        {
+            if (ModelState.IsValid)
+            {
+                var owner = DataContext.Owners.Include("ApplicationUser").Single(d => d.Id == model.Id);
+                TryUpdateModel(owner);
+                DataContext.Entry(owner).State = EntityState.Modified;
+                DataContext.SaveChanges();
+                return RedirectToAction("Manage");
+            }
+            return View(model);
+        }
+
         public ActionResult List(OwnerListViewModel model)
         {
             model.Owners = DataContext.Owners.Include("ApplicationUser");

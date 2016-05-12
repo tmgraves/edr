@@ -1,29 +1,38 @@
 ﻿@model EDR.Models.ViewModels.DancerStylesViewModel
 
-<table class="table table-condensed">
-<thead>
-    <tr>
-        <th>
-            Style
-        </th>
-        <th class="col-lg-1">
-        </th>
-    </tr>
-</thead>
-@foreach(var s in Model.Styles.OrderBy(s => s.Name))
+@if (Model.Styles != null && Model.Styles.Count() > 0)
 {
-    <tr>
-        <td>
-            @s.Name
-        </td>
-        <td>
-            @Ajax.ActionLink("Delete", "DeleteStyle", Model.Controller, new { id = Model.Id, styleId = s.Id },
+    <table class="table table-condensed">
+        <thead>
+            <tr>
+                <th>
+                    Style
+                </th>
+                <th class="col-lg-1">
+                </th>
+            </tr>
+        </thead>
+        @foreach (var s in Model.Styles.OrderBy(s => s.Name))
+        {
+            <tr>
+                <td>
+                    @s.Name
+                </td>
+                <td class="col-lg-1">
+                    @Ajax.ActionLink("Delete", "DeleteStyle", Model.Controller, new { id = Model.Id, styleId = s.Id },
                 new AjaxOptions()
                 {
                     UpdateTargetId = "styles",
                     OnSuccess = "done(this)"
                 })
-        </td>
-    </tr>
+                </td>
+            </tr>
+        }
+    </table>
 }
-</table>
+else
+{
+    <h4 class="text-center">
+        <span class="text-warning">Please specify your Dance Styles</span>
+    </h4>
+}

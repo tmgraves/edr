@@ -59,6 +59,7 @@ namespace EDR.Models.ViewModels
         public MultiCheckBox StylesCheckboxList { get; set; }
         public IEnumerable<FacebookEvent> FacebookEvents { get; set; }
         public string FacebookId { get; set; }
+        public string FacebookEventName { get; set; }
         public string SelectedFacebookEventId { get; set; }
         [Display(Name = "Enter Facebook Url")]
         public string FacebookLink { get; set; }
