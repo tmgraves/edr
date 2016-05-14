@@ -266,6 +266,7 @@ namespace EDR.Models.ViewModels
         public int? SchoolId { get; set; }
         public Place NewPlace { get; set; }
         public int? NewStyleId { get; set; }
+        public string NewYoutubePlayList { get; set; }
 
         public EventManageViewModel()
         {

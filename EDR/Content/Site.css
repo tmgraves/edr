@@ -53,6 +53,35 @@ textarea {
     z-index: 10;
 }
 
+/*Overlay button over image*/
+.buttonoverlay_container {
+    padding: 5px;
+    margin: 2px;
+    width: 100%;
+    height: 100px;
+    position:relative;
+    display:inline-block;
+    text-align:center;
+    background-color: #808080;
+}
+
+.buttonoverlay_container img {
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.buttonoverlay_container a {
+    position:absolute;
+    top: 10px;
+    left: 10px;
+    display:none;
+}
+
+.buttonoverlay_container:hover a {
+    display: block;
+}
+/*Overlay button over image*/
+
 #videocontainer {
     width: 100%;
     height: 100%;
@@ -158,8 +187,10 @@ facebookvideoimage img
 
 .croppedpic
 {
+    margin: 5px;
     text-align: center;
     overflow: hidden;
+    background-color: #808080;
 }
 .croppedpic img
 {
@@ -278,10 +309,11 @@ facebookvideoimage img
   font-size: 16px;
 }
 
-.padlight
+.padlabel
 {
-    padding: 5px 12px 5px 12px !important;
-    margin: 0px !important;
+    line-height: 25px;
+    padding: 5px 5px 5px 5px !important;
+    margin-top: 0px !important;
 }
 
 .row.vertical-divider {
@@ -304,3 +336,34 @@ facebookvideoimage img
     max-height: 100%;
     max-width: 100%;
 }
+
+/*expand div*/
+    .exbutton {
+        position:absolute;
+        z-index:5;
+        display:none;
+        cursor:pointer;
+        font-weight: bold;
+    }
+    .exclose {
+        display:none;
+    }
+    .exopen {
+        display:none;
+    }
+    
+    .expand.container{
+        overflow:hidden;
+        position:relative;
+        margin:auto;
+        float:left;
+    }
+    
+    .expand.text_container{
+        height:105px;
+        overflow:hidden;
+        
+    }
+
+.expand.text {text-overflow: ellipsis;}
+/*expand div*/

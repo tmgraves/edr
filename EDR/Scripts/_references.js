@@ -3,6 +3,7 @@
 /// <reference path="../client scripts/mvcfoolproofjqueryvalidation.min.js" />
 /// <reference path="../client scripts/mvcfoolproofvalidation.min.js" />
 /// <reference path="bootstrap.js" />
+/// <reference path="cropper.js" />
 /// <reference path="daypilot/daypilot-all.min.js" />
 /// <reference path="dhtmlxscheduler/dhtmlxscheduler.js" />
 /// <reference path="dhtmlxscheduler/dhtmlxscheduler_custom_lightbox.js" />
@@ -99,6 +100,7 @@
 /// <reference path="jquery.validate.js" />
 /// <reference path="jquery.validate.unobtrusive.js" />
 /// <reference path="jquery-2.1.1.js" />
+/// <reference path="jquery-simple-pagination-plugin.js" />
 /// <reference path="jquery-ui.js" />
 /// <reference path="logger.js" />
 /// <reference path="modernizr-2.7.2.js" />

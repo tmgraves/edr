@@ -182,6 +182,10 @@ namespace EDR.Controllers
             var model = new EventManageViewModel(DataContext.Events
                     .Include("Tickets.UserTickets.EventRegistrations")
                     .Include("EventInstances.EventRegistrations.User")
+                    .Include("Pictures.PostedBy")
+                    .Include("Albums.PostedBy")
+                    .Include("Videos.Author")
+                    .Include("Playlists.Author")
                     .Include("DanceStyles")
                     .Include("Place")
                     .Single(e => e.Id == id));
@@ -227,6 +231,74 @@ namespace EDR.Controllers
             var events = DataContext.Events.Where(e => e.StartDate >= DateTime.Today && (e.Name + " " + e.Description).Contains(searchString)).Select(s => new { Id = s.Id, Name = s.Name + " - " + s.Place.Address + " " + s.Place.City + ", " + s.Place.State + " " + s.Place.Zip }).ToList();
             return Json(events, JsonRequestBehavior.AllowGet);
         }
+
+        private List<EventVideo> GetVideos(int id)
+        {
+            var evt = DataContext.Events
+                            .Include("Videos.Author")
+                            .Include("Playlists.Author")
+                            .Single(e => e.Id == id);
+            var videos = new List<EventVideo>();
+            videos = evt.Videos.ToList();
+
+            //  Extract YouTube Playlists
+            if (evt.Playlists != null)
+            {
+                foreach (var lst in evt.Playlists)
+                {
+                    var ytids = videos.Select(v => v.YoutubeId).ToArray();
+                    videos.AddRange(YouTubeHelper.GetPlaylistVideos(lst.YouTubeId).Where(v => !ytids.Contains(v.Id)).Select(v => new EventVideo() { Author = lst.Author, MediaSource = MediaSource.YouTube, YoutubeId = v.Id, PhotoUrl = v.Thumbnail.ToString(), PublishDate = v.PubDate, Title = v.Title, VideoUrl = v.VideoLink.ToString(), YouTubePlaylistTitle = lst.Title, YouTubePlaylistUrl = lst.YouTubeUrl, YoutubeThumbnail = v.Thumbnail.ToString(), YoutubeUrl = v.VideoLink.ToString() }));
+                    //  lstMedia.AddRange(videos.Select(v => new EventMedia() { Event = evt, SourceName = v.Title, SourceLink = v.VideoLink.ToString(), MediaDate = v.PubDate, MediaType = Enums.MediaType.Video, PhotoUrl = v.Thumbnail.ToString(), MediaUrl = v.VideoLink.ToString(), Title = v.Title, MediaSource = MediaSource.YouTube, Target = target, Playlist = lst, Author = lst.Author }).ToList());
+                }
+            }
+
+            return videos;
+        }
+
+        private List<EventPicture> GetPictures(int id)
+        {
+            var evt = DataContext.Events
+                            .Include("Pictures.PostedBy")
+                            .Include("Albums.PostedBy")
+                            .Single(e => e.Id == id);
+            var pictures = new List<EventPicture>();
+            pictures = evt.Pictures.ToList();
+
+            //  Extract Facebook Album Pictures
+            if (evt.Albums != null)
+            {
+                foreach (var album in evt.Albums)
+                {
+                    var fbids = pictures.Select(p => p.FacebookId).ToArray();
+                    if (album.PostedBy.FacebookToken != null)
+                    {
+                        pictures.AddRange(FacebookHelper.GetAlbumPhotos(album.PostedBy.FacebookToken, album.FacebookId).Where(p => !fbids.Contains(p.Id)).Select(p => new EventPicture() { Album = album, Title = p.Name, PhotoDate = p.PhotoDate, Filename = p.LargeSource, ThumbnailFilename = p.Source, MediaSource = MediaSource.Facebook }).ToList());
+                    }
+                }
+            }
+
+            return pictures;
+        }
+
+        //public JsonResult GetPicturesJSON(int id)
+        //{
+        //    //  Get Linked Objects Pictures
+        //    //  Get Facebook Group/Event/Page Feed Pictures
+
+        //    //  Get Instagram Post Pictures
+        //    var events = DataContext.Events.Where(e => e.StartDate >= DateTime.Today && (e.Name + " " + e.Description).Contains(searchString)).Select(s => new { Id = s.Id, Name = s.Name + " - " + s.Place.Address + " " + s.Place.City + ", " + s.Place.State + " " + s.Place.Zip }).ToList();
+        //    return Json(events, JsonRequestBehavior.AllowGet);
+        //}
+
+        //public JsonResult GetVideosJSON(int id)
+        //{
+        //    //  Get Linked Objects Videos
+        //    //  Get Facebook Group/Event/Page Feed Videos
+
+        //    //  Get YouTube Playlist Videos
+        //    var events = DataContext.Events.Where(e => e.StartDate >= DateTime.Today && (e.Name + " " + e.Description).Contains(searchString)).Select(s => new { Id = s.Id, Name = s.Name + " - " + s.Place.Address + " " + s.Place.City + ", " + s.Place.State + " " + s.Place.Zip }).ToList();
+        //    return Json(events, JsonRequestBehavior.AllowGet);
+        //}
 
         protected void UpdateFacebookEvent(Event rEvent)
         {
@@ -926,6 +998,11 @@ namespace EDR.Controllers
                     .FirstOrDefault();
             }
 
+            //  Add Videos
+            model.Event.Videos = GetVideos(model.Event.Id);
+
+            //  Add Pictures
+            model.Event.Pictures = GetPictures(model.Event.Id);
             return model;
         }
 
@@ -1372,7 +1449,7 @@ namespace EDR.Controllers
             var userid = User.Identity.GetUserId();
             var auth = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
             var ev = DataContext.Events.Where(e => e.Id == eventId).Include("Playlists").FirstOrDefault();
-            var ePlaylist = new EventPlaylist() { Title = ytPlaylist.Name, PublishDate = ytPlaylist.PubDate, YouTubeId = ytPlaylist.Id, Author = auth, YouTubeUrl = ytPlaylist.Url, CoverPhoto = ytPlaylist.ThumbnailUrl, MediaSource = MediaSource.YouTube };
+            var ePlaylist = new EventPlaylist() { Title = ytPlaylist.Name, PublishDate = ytPlaylist.PubDate, YouTubeId = ytPlaylist.Id, Author = auth, YouTubeUrl = ytPlaylist.Url.ToString(), CoverPhoto = ytPlaylist.ThumbnailUrl.ToString(), MediaSource = MediaSource.YouTube };
 
             ev.Playlists.Add(ePlaylist);
             DataContext.Entry(ev).State = EntityState.Modified;
@@ -1380,21 +1457,21 @@ namespace EDR.Controllers
             ViewBag.Message = "Playlist was imported";
             return Redirect(returnUrl);
         }
-        [Authorize]
-        public ActionResult ImportYouTubePlaylistLink(string playlistUrl, int eventId, string returnUrl)
-        {
-            var ytPlaylist = YouTubeHelper.GetPlaylist(playlistUrl);
-            var userid = User.Identity.GetUserId();
-            var auth = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
-            var ev = DataContext.Events.Where(e => e.Id == eventId).Include("Playlists").FirstOrDefault();
-            var ePlaylist = new EventPlaylist() { Title = ytPlaylist.Name, PublishDate = ytPlaylist.PubDate, YouTubeId = ytPlaylist.Id, Author = auth, YouTubeUrl = ytPlaylist.Url, CoverPhoto = ytPlaylist.ThumbnailUrl, MediaSource = MediaSource.YouTube };
+        //[Authorize]
+        //public ActionResult ImportYouTubePlaylistLink(string playlistUrl, int eventId, string returnUrl)
+        //{
+        //    var ytPlaylist = YouTubeHelper.GetPlaylist(playlistUrl);
+        //    var userid = User.Identity.GetUserId();
+        //    var auth = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+        //    var ev = DataContext.Events.Where(e => e.Id == eventId).Include("Playlists").FirstOrDefault();
+        //    var ePlaylist = new EventPlaylist() { Title = ytPlaylist.Name, PublishDate = ytPlaylist.PubDate, YouTubeId = ytPlaylist.Id, Author = auth, YouTubeUrl = ytPlaylist.Url, CoverPhoto = ytPlaylist.ThumbnailUrl, MediaSource = MediaSource.YouTube };
 
-            ev.Playlists.Add(ePlaylist);
-            DataContext.Entry(ev).State = EntityState.Modified;
-            DataContext.SaveChanges();
-            ViewBag.Message = "Playlist was imported";
-            return Redirect(returnUrl);
-        }
+        //    ev.Playlists.Add(ePlaylist);
+        //    DataContext.Entry(ev).State = EntityState.Modified;
+        //    DataContext.SaveChanges();
+        //    ViewBag.Message = "Playlist was imported";
+        //    return Redirect(returnUrl);
+        //}
         [Authorize]
         public ActionResult ImportPlayListVideoLink(string videoUrl, int eventId, string returnUrl)
         {
@@ -1419,14 +1496,14 @@ namespace EDR.Controllers
             ViewBag.Message = "Video was deleted";
             return Redirect(returnUrl);
         }
-        [Authorize]
-        public ActionResult DeletePlaylist(int listId, string returnUrl)
-        {
-            DataContext.Playlists.Remove(DataContext.Playlists.Where(l => l.Id == listId).FirstOrDefault());
-            DataContext.SaveChanges();
-            ViewBag.Message = "Playlist was removed";
-            return Redirect(returnUrl);
-        }
+        //[Authorize]
+        //public ActionResult DeletePlaylist(int listId, string returnUrl)
+        //{
+        //    DataContext.Playlists.Remove(DataContext.Playlists.Where(l => l.Id == listId).FirstOrDefault());
+        //    DataContext.SaveChanges();
+        //    ViewBag.Message = "Playlist was removed";
+        //    return Redirect(returnUrl);
+        //}
         #endregion
 
         [Authorize]
@@ -1757,6 +1834,10 @@ namespace EDR.Controllers
                     }
                     cls.Creator = user;
 
+                    //  Add Admin
+                    cls.EventMembers = new List<EventMember>() { new EventMember() { Admin = true, UserId = user.Id } };
+                    //  Add Admin
+
                     //if (cls.PlaceId == 0)
                     //{
                     //    cls.Place.Latitude = model.Event.Place.Latitude;
@@ -1841,6 +1922,11 @@ namespace EDR.Controllers
                         soc.Owners.Add(DataContext.Owners.Single(o => o.ApplicationUser.Id == userid));
                     }
                     soc.Creator = user;
+
+                    //  Add Admin
+                    soc.EventMembers = new List<EventMember>() { new EventMember() { Admin = true, UserId = user.Id } };
+                    //  Add Admin
+
                     //if (soc.PlaceId == 0)
                     //{
                     //    soc.Place.Latitude = model.Event.Place.Latitude;
@@ -1962,6 +2048,35 @@ namespace EDR.Controllers
                 DataContext.SaveChanges();
             }
             return PartialView("~/Views/Event/Partial/_DanceStylesPartial.cshtml", new EventDanceStylesPartialViewModel() { DanceStyles = evnt.DanceStyles, EventId = evnt.Id, EventType = evnt is Class ? EventType.Class : EventType.Social } );
+        }
+
+        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        public PartialViewResult AddYouTubePlaylist(EventManageViewModel model)
+        {
+            var ytPlaylist = YouTubeHelper.GetPlaylist(model.NewYoutubePlayList);
+            var userid = User.Identity.GetUserId();
+            var auth = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+            var ev = DataContext.Events.Where(e => e.Id == model.Event.Id).Include("Playlists").FirstOrDefault();
+            //  var ePlaylist = new EventPlaylist() { Title = ytPlaylist.Name, PublishDate = ytPlaylist.PubDate, YouTubeId = ytPlaylist.Id, Author = auth, YouTubeUrl = ytPlaylist.Url, CoverPhoto = ytPlaylist.ThumbnailUrl, MediaSource = MediaSource.YouTube };
+
+            if (ev.Playlists.Where(p => p.YouTubeId == ytPlaylist.Id).Count() == 0)
+            {
+                ev.Playlists.Add(new EventPlaylist() { Title = ytPlaylist.Name, PublishDate = ytPlaylist.PubDate, YouTubeId = ytPlaylist.Id, Author = auth, YouTubeUrl = ytPlaylist.Url.ToString(), CoverPhoto = ytPlaylist.ThumbnailUrl.ToString(), MediaSource = MediaSource.YouTube, UpdatedDate = ytPlaylist.PubDate });
+                DataContext.Entry(ev).State = EntityState.Modified;
+                DataContext.SaveChanges();
+                ViewBag.Message = "Playlist was imported";
+            }
+            return PartialView("~/Views/Shared/Events/_ManagePlaylistsPartial.cshtml", ev.Playlists);
+        }
+
+        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        public PartialViewResult DeletePlaylist(int id, int playListId)
+        {
+            var playlists = DataContext.Events.Include("Playlists").Single(e => e.Id == id).Playlists;
+            playlists.Remove(playlists.Single(l => l.Id == playListId));
+            DataContext.SaveChanges();
+            ViewBag.Message = "Playlist was removed";
+            return PartialView("~/Views/Shared/Events/_ManagePlaylistsPartial.cshtml", playlists);
         }
 
         [Authorize(Roles = "Owner,Promoter,Teacher")]

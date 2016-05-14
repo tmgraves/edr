@@ -80,7 +80,7 @@ namespace EDR.Utilities
                 {
                     foreach (var v in evt.Videos)
                     {
-                        lstMedia.Add(new EventMedia() { Event = evt, Id = v.Id, SourceName = v.Title, SourceLink = v.VideoUrl, Author = v.Author, MediaDate = v.PublishDate, MediaType = Enums.MediaType.Video, PhotoUrl = v.PhotoUrl, MediaUrl = v.VideoUrl, Title = v.Title, MediaSource = v.MediaSource, Target = target });
+                        lstMedia.Add(new EventMedia() { Event = evt, Id = v.Id, SourceName = v.Title, SourceLink = v.VideoUrl.ToString(), Author = v.Author, MediaDate = v.PublishDate, MediaType = Enums.MediaType.Video, PhotoUrl = v.PhotoUrl.ToString(), MediaUrl = v.VideoUrl.ToString(), Title = v.Title, MediaSource = v.MediaSource, Target = target });
                     }
 
                 }

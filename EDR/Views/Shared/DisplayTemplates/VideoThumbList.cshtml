@@ -1,0 +1,21 @@
+﻿@model IEnumerable<EDR.Models.Video>
+
+@foreach (var v in Model)
+{
+    <div class="buttonoverlay_container">
+        <img src="@Html.DisplayFor(s => v.PhotoUrl)" />
+        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modalPic">
+            <i class="glyphicon glyphicon-play"></i>
+        </button>
+    </div>
+}
+@*<a target="_blank" href="@v.VideoUrl" title="@v.Title">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="videocontainer" style="height: 100%;">
+            <div id="videoimage">
+            </div>
+            <div id="videoplaybutton">
+                <div id="playbutton">
+                </div>
+            </div>
+        </div>
+    </a>*@

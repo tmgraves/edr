@@ -58,7 +58,7 @@ $('.stylesearch').autocomplete({
     },
     select: function (event, ui) {
         $('.stylesearch').val(ui.item.label);
-        $('.stylesearchId').val(ui.item.value);
+        $('.stylesearchid').val(ui.item.value);
         return false;
     },
     minLength: 1

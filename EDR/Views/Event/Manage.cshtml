@@ -4,7 +4,24 @@
     ViewBag.Title = "Manage";
 }
 
+@{ 
+    var eventType = Model.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social;
+}
+
+<ol class="breadcrumb">
+    @if (eventType == EDR.Enums.EventType.Class)
+    {
+        <li>@Html.ActionLink("All Classes", "Learn", "Home")</li>
+    }
+    else
+    {
+        <li>@Html.ActionLink("All Socials", "Social", "Home")</li>
+    }
+    <li>@Html.ActionLink("View " + Model.EventType, "View", "Event", new { id = Model.Event.Id, eventType = eventType }, null)</li>
+    <li class="active">Manage @Model.EventType</li>
+</ol>
 <h2>Manage @Model.Event.Name</h2>
+
 <p>
     @Html.ActionLink("View Event", "View", new { id = Model.Event.Id, eventType = Model.EventType }, null)
 </p>
@@ -18,234 +35,6 @@
     </a>
 </p>
 
-
-@section Scripts
-{
-    @Scripts.Render("~/bundles/jqueryval")
-    @Scripts.Render("~/bundles/foolproof")
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
-    @Scripts.Render("~/bundles/jqueryUI")
-    @Scripts.Render("~/bundles/GeoComplete")
-<script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
-@Scripts.Render("~/bundles/TimePicker")
-@Styles.Render("~/Content/TimePickercss")
-
-<script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
-<script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
-
-<script type="text/javascript">
-    $.validator.setDefaults({
-        ignore: ""
-    })
-    $(function () {
-        $('.start').timepicker({
-            'timeFormat': 'h:i A',
-            'step': function (i) {
-                return 15;
-            }
-        });
-        $('.end').timepicker({
-            'timeFormat': 'h:i A',
-            'step': function (i) {
-                return 15;
-            }
-        });
-        $('.start').timepicker('setTime', new Date($('.timeelement.begintime').val()));
-        $('.end').timepicker('setTime', new Date($('.timeelement.endtime').val()));
-    });
-
-    $('.timepicker').change(function () {
-        var start = $('.timeelement.begintime');
-        var end = $('.timeelement.endtime');
-
-        var time = new Date();
-        var startdt = new Date(time.getMonth().toString() + "/" + time.getDate().toString() + "/" + time.getFullYear().toString() + " " + $('.timepicker.start').val());
-        var enddt = new Date(time.getMonth().toString() + "/" + time.getDate().toString() + "/" + time.getFullYear().toString() + " " + $('.timepicker.end').val());
-        start.prop('value', startdt.toLocaleDateString() + " " + startdt.toLocaleTimeString());
-        end.prop('value', enddt.toLocaleDateString() + " " + enddt.toLocaleTimeString());
-        var val = $('#saveform.main').valid();
-    });
-    $('#placesearch').autocomplete({
-        source: function (request, response) {
-            $.ajax({
-                url: '@Url.Action("Search", "Place")',
-                data: { searchString: request.term },
-                dataType: 'json',
-                type: 'GET',
-                success: function (data) {
-                    response($.map(data, function (item) {
-                        return {
-                            label: item.Name,
-                            value: item.Id
-                        }
-                    }));
-                }
-            })
-        },
-        select: function (event, ui) {
-            $('#placesearch').val(ui.item.label);
-            $('#Id').val(ui.item.value);
-            return false;
-        },
-        minLength: 1
-    });
-
-    $('#stylesearch').autocomplete({
-        source: function (request, response) {
-            $.ajax({
-                url: '@Url.Action("Search", "DanceStyle")',
-                data: { searchString: request.term },
-                dataType: 'json',
-                type: 'GET',
-                success: function (data) {
-                    response($.map(data, function (item) {
-                        return {
-                            label: item.Name,
-                            value: item.Id
-                        }
-                    }));
-                }
-            })
-        },
-        select: function (event, ui) {
-            $('#stylesearch').val(ui.item.label);
-            $('#NewStyleId').val(ui.item.value);
-            return false;
-        },
-        minLength: 1
-    });
-
-    $(function () {
-        //alert("here");
-        //var form = $('#saveform2.main');
-        //alert(form.prop('id'));
-        //try {
-        //    var valid = form.valid();
-        //    alert(valid);
-        //}
-        //catch (err) {
-        //    document.getElementById("demo").innerHTML = err.message;
-        //}
-        $('#saveform.main').valid();
-
-        $('#btnEdit').click(function () {
-            $('#viewdiv').hide();
-            $('#editdiv').show();
-            try
-            {
-                var valid = $('#saveform.main').valid();
-            }
-            catch(err)
-            {
-                document.getElementById("demo").innerHTML = err.message;
-            }
-        });
-        $('#btncanceledit').click(function () {
-            $('#viewdiv').show();
-            $('#editdiv').hide();
-        });
-        //  $('#saveform.main').validate;
-
-        @*$('.time').change(function () {
-            CheckDates();
-        });
-
-        function CheckDates() {
-            var shour = $('#StartHour option:selected').val();
-            var smin = $('#StartMinute option:selected').val();
-            var sampm = $('#StartAMPM option:selected').val();
-            var ehour = $('#EndHour option:selected').val();
-            var emin = $('#EndMinute option:selected').val();
-            var eampm = $('#EndAMPM option:selected').val();
-
-            var start = new Date("@Model.Event.StartDate.ToShortDateString() " + shour + ":" + smin + " " + sampm);
-            $('#StartTime').prop("value", start)
-            var end = new Date("@Model.Event.StartDate.ToShortDateString() " + ehour + ":" + emin + " " + eampm);
-
-            $('#Event_StartTime').prop("value", "@Model.Event.StartDate.ToShortDateString() " + shour + ":" + smin + " " + sampm);
-            $('#Event_EndTime').prop("value", "@Model.Event.StartDate.ToShortDateString() " + ehour + ":" + emin + " " + eampm);
-
-            if (start > end) {
-                $('#EndTimevalidationMessage').show();
-                return false;
-            }
-            else {
-                $('#EndTimevalidationMessage').hide();
-                return true;
-            }
-        }*@
-
-        $('#saveform.main').submit(function () {
-            var valid = $('#saveform.main').valid();
-
-            //if (valid)
-            //{
-            //    var ck = CheckDates();
-            //    if (ck)
-            //    {
-            //        return true;
-            //    }
-            //    else
-            //    {
-            //        return false;
-            //    }
-            //}
-            //else
-            //{
-            //    return false;
-            //}
-        });
-    });
-
-    $(function () {
-        $("#newplace").geocomplete({
-            details: "form",
-            types: ["geocode", "establishment"],
-        })
-        .bind("geocode:result", function (event, result) {
-            $('#NewPlace_Latitude').prop("value", result.geometry.location.lat());
-            $('#NewPlace_Longitude').prop("value", result.geometry.location.lng());
-
-            $('#NewPlace_Name').prop("value", result.name);
-            $('#NewPlace_GooglePlaceId').prop("value", result.place_id);
-            $('#NewPlace_GoogleUrl').prop("value", result.url);
-            $('#NewPlace_Website').prop("value", result.website);
-            $('#NewPlace_GoogleRating').prop("value", result.rating);
-            //$.each(result.reviews, function (i, review) {
-            //    alert(review.text);
-            //});
-            var street_num;
-            var street_name;
-            $.each(result.address_components, function (i, address_component) {
-
-                //alert(address_component.types[0]);
-                //alert(address_component.long_name);
-                if (address_component.types[0] == "street_number") {
-                    street_num = address_component.long_name;
-                }
-                else if (address_component.types[0] == "route") {
-                    street_name = address_component.long_name;
-                }
-                else if (address_component.types[0] == "locality") {
-                    $('#NewPlace_City').prop("value", address_component.long_name);
-                }
-                else if (address_component.types[0] == "administrative_area_level_1") {
-                    $('#NewPlace_StateName').prop("value", address_component.long_name);
-                }
-                else if (address_component.types[0] == "postal_code") {
-                    $('#NewPlace_Zip').prop("value", address_component.long_name);
-                }
-                else if (address_component.types[0] == "country") {
-                    $('#NewPlace_Country').prop("value", address_component.long_name);
-                }
-            });
-            //alert(street_num + " " + street_name);
-            $('#NewPlace_Address').prop("value", street_num + " " + street_name);
-            //  console.log(result);
-        });
-    });
-</script>
-}
 <p id="demo"></p>
 @*@using (Html.BeginForm("Create", "Event", FormMethod.Post, new { @id = "saveform2", @class = "main" }))
 {
@@ -255,6 +44,11 @@
     @Html.ValidationMessageFor(model => model.Event.StartDate, "", new { @class = "text-danger" })
     <input type="button" id="btnsave2" value="Save" class="btn btn-primary" />
 }*@
+<div class="row">
+    <div>
+
+    </div>    
+</div>
 <div class="container-fluid">
     <div class="col-lg-6 col-md-6">
         <div class="panel panel-default">
@@ -268,7 +62,7 @@
                             @Html.DisplayNameFor(model => model.Event.Name)
                         </dt>
                         <dd>
-                            @Html.DisplayFor(model => model.Event.Name)
+                            <div class="item-short">@Html.DisplayFor(model => model.Event.Name)</div>
                         </dd>
                     </dl>
                     <dl class="dl-horizontal">
@@ -658,7 +452,10 @@
                                     <strong>@i.DateTime.ToLongDateString()</strong><br />
                                 </td>
                                 <td>
-                                    @Html.ActionLink(i.Place.Name, "Details", "Place", new { id = i.Place.Id }, new { @style = "white-space: pre-line; display: block; width: 150px;" })
+                                    <a title="@i.Place.Name" href="@Url.Action("Details", "Place", new { id = i.PlaceId })">
+                                        <div class="item-short" style="width: 100px;">@i.Place.Name</div>
+                                    </a>
+                                    @*@Html.ActionLink(i.Place.Name, "Details", "Place", new { id = i.Place.Id }, new { @style = "white-space: pre-line; display: block; width: 150px;" })*@
                                 </td>
                                 <td class="text-center">
                                     @i.EventRegistrations.Count()
@@ -762,5 +559,278 @@
                 </div>
             </div>
         </div>
+        <div class="panel panel-default">
+            <div class="panel-body ">
+                <h3>Videos</h3>
+                <hr />
+                <h4>Playlists</h4>
+                @using (Ajax.BeginForm("AddYouTubePlaylist",
+                                    "Event",
+                                    new AjaxOptions()
+                                    {
+                                        UpdateTargetId = "playlistsdiv",
+                                        OnSuccess = "done(this)"
+                                    },
+                                    new { @id = "addytplaylistform" }
+                                    ))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(m => m.Event.Id)
+                    @Html.TextBoxFor(m => m.NewYoutubePlayList, new { placeholder = "Enter a YouTube Playlist url", @class = "form-control col-md-4" })
+                    <input class="btn" type="submit" value="Add Playlist" />
+                }
+                <div id="playlistsdiv">
+                    @Html.Partial("~/Views/Shared/Events/_ManagePlaylistsPartial.cshtml", Model.Event.Playlists)
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body ">
+                <h3>Pictures</h3>
+                <hr />
+                @foreach (var p in Model.Event.Pictures.OrderByDescending(v => v.PhotoDate))
+                {
+                    <div class="col-lg-3">
+                        @Html.DisplayFor(m => p, "PictureThumbnail")
+                    </div>
+                }
+                <h4>Albums</h4>
+                @foreach (var p in Model.Event.Albums.OrderByDescending(p => p.AlbumDate))
+                {
+                    @:p.Title<br />
+                }
+            </div>
+        </div>
     </div>
 </div>
+
+@section Scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/foolproof")
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    @Scripts.Render("~/bundles/jqueryUI")
+    @Scripts.Render("~/bundles/GeoComplete")
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+    @Scripts.Render("~/bundles/TimePicker")
+    @Styles.Render("~/Content/TimePickercss")
+
+    <script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
+
+    <script type="text/javascript">
+    $.validator.setDefaults({
+        ignore: ""
+    })
+    function done(form) {
+        $('#NewYoutubePlayList').prop('value', "");
+    }
+    $(function () {
+        $('.start').timepicker({
+            'timeFormat': 'h:i A',
+            'step': function (i) {
+                return 15;
+            }
+        });
+        $('.end').timepicker({
+            'timeFormat': 'h:i A',
+            'step': function (i) {
+                return 15;
+            }
+        });
+        $('.start').timepicker('setTime', new Date($('.timeelement.begintime').val()));
+        $('.end').timepicker('setTime', new Date($('.timeelement.endtime').val()));
+    });
+
+    $('.timepicker').change(function () {
+        var start = $('.timeelement.begintime');
+        var end = $('.timeelement.endtime');
+
+        var time = new Date();
+        var startdt = new Date(time.getMonth().toString() + "/" + time.getDate().toString() + "/" + time.getFullYear().toString() + " " + $('.timepicker.start').val());
+        var enddt = new Date(time.getMonth().toString() + "/" + time.getDate().toString() + "/" + time.getFullYear().toString() + " " + $('.timepicker.end').val());
+        start.prop('value', startdt.toLocaleDateString() + " " + startdt.toLocaleTimeString());
+        end.prop('value', enddt.toLocaleDateString() + " " + enddt.toLocaleTimeString());
+        var val = $('#saveform.main').valid();
+    });
+    $('#placesearch').autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: '@Url.Action("Search", "Place")',
+                data: { searchString: request.term },
+                dataType: 'json',
+                type: 'GET',
+                success: function (data) {
+                    response($.map(data, function (item) {
+                        return {
+                            label: item.Name,
+                            value: item.Id
+                        }
+                    }));
+                }
+            })
+        },
+        select: function (event, ui) {
+            $('#placesearch').val(ui.item.label);
+            $('#Id').val(ui.item.value);
+            return false;
+        },
+        minLength: 1
+    });
+
+    $('#stylesearch').autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: '@Url.Action("Search", "DanceStyle")',
+                data: { searchString: request.term },
+                dataType: 'json',
+                type: 'GET',
+                success: function (data) {
+                    response($.map(data, function (item) {
+                        return {
+                            label: item.Name,
+                            value: item.Id
+                        }
+                    }));
+                }
+            })
+        },
+        select: function (event, ui) {
+            $('#stylesearch').val(ui.item.label);
+            $('#NewStyleId').val(ui.item.value);
+            return false;
+        },
+        minLength: 1
+    });
+
+    $(function () {
+        //alert("here");
+        //var form = $('#saveform2.main');
+        //alert(form.prop('id'));
+        //try {
+        //    var valid = form.valid();
+        //    alert(valid);
+        //}
+        //catch (err) {
+        //    document.getElementById("demo").innerHTML = err.message;
+        //}
+        $('#saveform.main').valid();
+
+        $('#btnEdit').click(function () {
+            $('#viewdiv').hide();
+            $('#editdiv').show();
+            try
+            {
+                var valid = $('#saveform.main').valid();
+            }
+            catch(err)
+            {
+                document.getElementById("demo").innerHTML = err.message;
+            }
+        });
+        $('#btncanceledit').click(function () {
+            $('#viewdiv').show();
+            $('#editdiv').hide();
+        });
+        //  $('#saveform.main').validate;
+
+        @*$('.time').change(function () {
+            CheckDates();
+        });
+
+        function CheckDates() {
+            var shour = $('#StartHour option:selected').val();
+            var smin = $('#StartMinute option:selected').val();
+            var sampm = $('#StartAMPM option:selected').val();
+            var ehour = $('#EndHour option:selected').val();
+            var emin = $('#EndMinute option:selected').val();
+            var eampm = $('#EndAMPM option:selected').val();
+
+            var start = new Date("@Model.Event.StartDate.ToShortDateString() " + shour + ":" + smin + " " + sampm);
+            $('#StartTime').prop("value", start)
+            var end = new Date("@Model.Event.StartDate.ToShortDateString() " + ehour + ":" + emin + " " + eampm);
+
+            $('#Event_StartTime').prop("value", "@Model.Event.StartDate.ToShortDateString() " + shour + ":" + smin + " " + sampm);
+            $('#Event_EndTime').prop("value", "@Model.Event.StartDate.ToShortDateString() " + ehour + ":" + emin + " " + eampm);
+
+            if (start > end) {
+                $('#EndTimevalidationMessage').show();
+                return false;
+            }
+            else {
+                $('#EndTimevalidationMessage').hide();
+                return true;
+            }
+        }*@
+
+        $('#saveform.main').submit(function () {
+            var valid = $('#saveform.main').valid();
+
+            //if (valid)
+            //{
+            //    var ck = CheckDates();
+            //    if (ck)
+            //    {
+            //        return true;
+            //    }
+            //    else
+            //    {
+            //        return false;
+            //    }
+            //}
+            //else
+            //{
+            //    return false;
+            //}
+        });
+    });
+
+    $(function () {
+        $("#newplace").geocomplete({
+            details: "form",
+            types: ["geocode", "establishment"],
+        })
+        .bind("geocode:result", function (event, result) {
+            $('#NewPlace_Latitude').prop("value", result.geometry.location.lat());
+            $('#NewPlace_Longitude').prop("value", result.geometry.location.lng());
+
+            $('#NewPlace_Name').prop("value", result.name);
+            $('#NewPlace_GooglePlaceId').prop("value", result.place_id);
+            $('#NewPlace_GoogleUrl').prop("value", result.url);
+            $('#NewPlace_Website').prop("value", result.website);
+            $('#NewPlace_GoogleRating').prop("value", result.rating);
+            //$.each(result.reviews, function (i, review) {
+            //    alert(review.text);
+            //});
+            var street_num;
+            var street_name;
+            $.each(result.address_components, function (i, address_component) {
+
+                //alert(address_component.types[0]);
+                //alert(address_component.long_name);
+                if (address_component.types[0] == "street_number") {
+                    street_num = address_component.long_name;
+                }
+                else if (address_component.types[0] == "route") {
+                    street_name = address_component.long_name;
+                }
+                else if (address_component.types[0] == "locality") {
+                    $('#NewPlace_City').prop("value", address_component.long_name);
+                }
+                else if (address_component.types[0] == "administrative_area_level_1") {
+                    $('#NewPlace_StateName').prop("value", address_component.long_name);
+                }
+                else if (address_component.types[0] == "postal_code") {
+                    $('#NewPlace_Zip').prop("value", address_component.long_name);
+                }
+                else if (address_component.types[0] == "country") {
+                    $('#NewPlace_Country').prop("value", address_component.long_name);
+                }
+            });
+            //alert(street_num + " " + street_name);
+            $('#NewPlace_Address').prop("value", street_num + " " + street_name);
+            //  console.log(result);
+        });
+    });
+    </script>
+}

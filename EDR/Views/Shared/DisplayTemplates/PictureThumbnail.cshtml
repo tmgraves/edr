@@ -1,0 +1,8 @@
+﻿@model EDR.Models.Picture
+
+<a target="_blank" href="@Url.Content(Model.Filename)" style="text-align: left;" title="@Model.Title">
+    <div class="croppedpic" style="height: 100px;">
+        <img src="@Url.Content(Model.ThumbnailFilename)" alt="@Model.Title" />
+    </div>
+</a>
+

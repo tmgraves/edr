@@ -1,0 +1,18 @@
+﻿@model IEnumerable<EDR.Models.EventPlaylist>
+
+@foreach(var p in Model)
+{
+        <div class="col-lg-3">
+            <p>
+                @Ajax.ActionLink("X", "DeletePlaylist", "Event", new { id = p.Event.Id, playListId = p.Id },
+                new AjaxOptions()
+                {
+                    UpdateTargetId = "playlistsdiv",
+                    OnSuccess = "done(this)"
+                })
+            </p>
+            <div style="background-image: url(@Url.Content(p.CoverPhoto ?? "~/Content/images/NoProfilePic.gif")); background-repeat: no-repeat; background-size: 90px 60px; background-position: center 70%;">
+                <img style="max-width: 100px; max-height: 100px;" src="~/Content/images/album.png" title="@p.Title" />
+            </div>
+        </div>
+}

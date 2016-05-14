@@ -255,7 +255,7 @@ namespace EDR.Controllers
                                 .Take(20);
             foreach (var v in newVideos)
             {
-                lstMedia.Add(new EventMedia() { Event = v.Event, SourceName = v.Title, SourceLink = v.VideoUrl, Id = v.Id, Author = v.Author, MediaDate = v.PublishDate, MediaType = Enums.MediaType.Video, PhotoUrl = v.PhotoUrl, MediaUrl = v.VideoUrl, Title = v.Title });
+                lstMedia.Add(new EventMedia() { Event = v.Event, SourceName = v.Title, SourceLink = v.VideoUrl.ToString(), Id = v.Id, Author = v.Author, MediaDate = v.PublishDate, MediaType = Enums.MediaType.Video, PhotoUrl = v.PhotoUrl.ToString(), MediaUrl = v.VideoUrl.ToString(), Title = v.Title });
             }
 
             foreach (var cls in viewModel.Teacher.Classes)

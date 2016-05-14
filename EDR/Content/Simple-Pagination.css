@@ -1,0 +1,35 @@
+/*
+Styles related DIRECTLY with jQuery-simple-pagination
+*/
+.simple-pagination-page-numbers a
+{
+	display: block;
+	float: left;
+	width: 2rem;
+	text-align: center;
+}
+a
+{
+	color: #216ed9;
+	text-decoration: none;
+}
+a h1
+{
+	padding: 2rem;
+	color: #216ed9;
+	text-align: center;
+}
+a:hover
+{
+	text-decoration: underline;
+}
+a[class^="simple-pagination-navigation-"] + a[class^="simple-pagination-navigation-"]
+{
+	margin-right: 0;
+}
+a[class*="simple-pagination-navigation-disabled"]
+{
+	color: black;
+	cursor: default;
+}
+

@@ -2,5 +2,5 @@
 
 @foreach (var item in Model.OrderBy(s => s.Name))
 {
-    @Html.ActionLink(item.Name, "Details", "DanceStyle", new { styleName = item.Name }, new { @class = "label label-warning padlight", @style = "text-transform: uppercase !important;" })<text> </text>
+    @Html.ActionLink(item.Name, "Details", "DanceStyle", new { styleName = item.Name }, new { @class = "label label-warning padlabel", @style = "text-transform: uppercase !important;" })<text> </text>
 }

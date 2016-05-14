@@ -23,8 +23,8 @@ namespace EDR.Models
     {
         public string Id { get; set; }
         public string Name { get; set; }
-        public string Url { get; set; }
+        public Uri Url { get; set; }
         public DateTime PubDate { get; set; }
-        public string ThumbnailUrl { get; set; }
+        public Uri ThumbnailUrl { get; set; }
     }
 }

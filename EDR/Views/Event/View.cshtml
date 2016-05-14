@@ -11,7 +11,7 @@
 
 <style>
     .verticaljustify {
-        height: 250px;
+        height: 220px;
       position: relative;
     }
 
@@ -37,26 +37,52 @@
 }
 </style>
 
+@{
+    var eventType = Model.Event is Class ? "Class" : "Social";
+}
+
+<ol class="breadcrumb">
+    @if (Model.Event is Class)
+    {
+        <li>@Html.ActionLink("All Classes", "Learn", "Home")</li>
+    }
+    else
+    {
+        <li>@Html.ActionLink("All Socials", "Social", "Home")</li>
+    }
+    <li class="active">View @Model.EventType</li>
+</ol>
+
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-12 verticaljustify nospace">
-            <div class="col-lg-4">
-                <img style="max-height: 250px; max-width: 100%;" src="@Url.Content(Model.Event.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
+            <div class="col-lg-4 nospace" style="height: 100%;">
+                <img style="max-height: 100%; max-width: 100%;" src="@Url.Content(Model.Event.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
             </div>
             <div class="col-lg-8">
-                <h2 class="header item-short">@Model.Event.Name <span class="text-info small">(@Model.Class.ClassType)</span></h2>
+                <div class="row nospace">
+                    <div class="col-lg-8 nospace">
+                        <h2 class="item-short">@Model.Event.Name</h2>
+                    </div>
+                    <div class="col-lg-4 nospace">
+                        <h2 class="text-info">
+                            @if (Model.EventType == EventType.Class)
+                            {
+                                @:(@Model.Class.ClassType)
+                                if(Model.Event.EventMembers.Where(m => m.UserId == User.Identity.GetUserId() && m.Admin).Count() != 0)
+                                {
+                                    <a class="btn btn-default" title="Edit" href="@Url.Action("Manage", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">
+                                        <i class="glyphicon glyphicon-edit"></i>
+                                        <span class="sr-only">Edit</span>
+                                    </a>
+                                }
+                            }
+                        </h2>
+                    </div>
+                </div>
                 <p>
-                    <strong><span class="col-lg-2 nospace">Where: </span></strong>@Html.ActionLink(Model.Event.Place.Name, "Details", "Place", new { id = Model.Event.Place.Id }, new {  })
+                    <span class="large">@@ @Html.ActionLink(Model.Event.Place.Name, "Details", "Place", new { id = Model.Event.Place.Id }, new { })</span>
                 </p>
-                <p>
-                    <strong><span class="col-lg-2 nospace">Styles: </span></strong>@Html.DisplayFor(m => Model.Event.DanceStyles, "DanceStyleLabels")
-                </p>
-                @if (Model.EventType == EventType.Class)
-                {
-                    <p>
-                        <strong><span class="col-lg-2 nospace">Teachers: </span></strong>@Html.DisplayFor(m => Model.Class.Teachers, "TeacherLinks")
-                    </p>
-                }
             </div>
             <div class="col-lg-8 attachbottom bg-success">
                 @{
@@ -67,7 +93,7 @@
                     }
                     <div style="width: 100%;">
                         <div class="col-lg-8">
-                            <h3>Next Date: <span class="text-info">@instance.DateTime.ToString("ddd, MMM d, yyyy") at @instance.DateTime.ToShortTimeString()</span></h3>
+                            <h3>Next Date: <span class="text-info">@instance.DateTime.ToString("ddd, MMM d, yyyy") at @Convert.ToDateTime(instance.StartTime).ToShortTimeString()</span></h3>
                             <p class="text-center" style="background-color: lemonchiffon;">
                                 <span class="text-success">You have (<strong>@Model.AvailableTickets</strong>) Available Tickets for this Event</span>
                             </p>
@@ -107,48 +133,136 @@
     <hr />
     <div class="row vertical-divider">
         <div class="col-lg-4">
-            <a target="_blank" href="https://maps.google.com/?q=@Model.Event.Place.Latitude,@Model.Event.Place.Longitude">
-                <img style="border: 1px solid #ddd;" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Event.Place.Latitude,@Model.Event.Place.Longitude&zoom=10&size=350x250&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Event.Place.Latitude, @Model.Event.Place.Longitude" title="@Model.Event.Place.City, @Model.Event.Place.State">
-            </a>
+            <div style="border: 1px solid #ddd;" >
+                <a target="_blank" href="https://maps.google.com/?q=@Model.Event.Place.Latitude,@Model.Event.Place.Longitude">
+                    <img style="width: 100%;" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Event.Place.Latitude,@Model.Event.Place.Longitude&zoom=10&size=350x200&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Event.Place.Latitude, @Model.Event.Place.Longitude" title="@Model.Event.Place.City, @Model.Event.Place.State">
+                </a>
+            </div>
+            <div style="border: 1px solid #ccc;">
+                <div class="row" style="padding: 5px;">
+                    <div class="col-lg-12">
+                        <div class="col-lg-3">
+                            @Html.Label("Where:")
+                        </div>
+                        <div class="col-lg-9">
+                            @Model.Event.Place.Address <br /> @Model.Event.Place.City, @Model.Event.Place.State @Model.Event.Place.Zip
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="padding: 5px;">
+                    <div class="col-lg-12">
+                        <div class="col-lg-3">
+                            @Html.Label("Styles:")
+                        </div>
+                        <div class="col-lg-9">
+                            @Html.DisplayFor(m => Model.Event.DanceStyles, "DanceStyleLabels")
+                        </div>
+                    </div>
+                </div>
+                @if (Model.EventType == EventType.Class)
+                {
+                    <div class="row" style="padding: 5px;">
+                        <div class="col-lg-12">
+                            <div class="col-lg-3">
+                                @Html.Label("Teachers:")
+                            </div>
+                            <div class="col-lg-9">
+                                @Html.DisplayFor(m => Model.Class.Teachers, "TeacherLinks")
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
         </div>
-        <div class="col-lg-8 nospace">
-            <h4>Details</h4>
-            @Model.Event.Description
+        <div class="col-lg-8">
+            <h3>Details</h3>
+            <div>
+                <div class="expand container">
+                    <div class="expand text_container">
+                        <div class='expand text'>
+                            <div style="white-space: pre-line;">
+                                @Html.Raw(EDR.Utilities.ApplicationUtility.WithActiveLinks(Model.Event.Description))
+                            </div>
+                        </div>
+                    </div>
+                    <div class='exbutton exopen text-primary'>...Show More</div>
+                    <div class='exbutton exclose text-primary'>...Show Less</div>
+                </div>
+            </div>
         </div>
     </div>
     <hr />
     <div class="row vertical-divider">
         <div class="col-lg-4">
             <div class="col-lg-12 nospace">
-                <h4>Latest Updates</h4>
+                <h3>Reviews</h3>
                 <hr />
-                @if (Model.Event.Feeds != null)
+                @if (Model.Event.Reviews.Count() != 0)
+            {
+                    <div id="reviews-container">
+                        <table style="border-collapse: collapse; width: 100%;" cellpadding="0" cellspacing="0">
+                            @foreach (var rr in Model.Event.Reviews)
+                            {
+                                <tr>
+                                    <td>
+                                        <div style="border-bottom: 1px dashed #bbb; margin-bottom: 10px;">
+                                            <div id="parentc" class="col-lg-4 nospace">
+                                                <input id="rv" type="hidden" value="@(rr.Rating) : 0)" class="ratingval" />
+                                                <div id="cont" class="rateYo"></div>
+                                            </div>
+                                            <div class="item-short" style="width: 150px !important;"><strong>@rr.ReviewText</strong></div>
+                                            <div style="padding-top: 10px;">
+                                                <span class="small">
+                                                    from <span class="text-info">@rr.Author.FirstName</span> - @rr.ReviewDate.ToLongDateString()
+                                                </span>
+                                            </div>
+                                            <div class="row" style="padding-top: 10px; padding-bottom: 10px;">
+                                                <div class="col-lg-12">
+                                                    @rr.ReviewText
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @*<div style="border-bottom: 1px dashed #bbb; margin-bottom: 10px;">
+                                    <div class="row">
+                                        <div id="parentc" class="col-lg-4">
+                                            <input id="rv" type="hidden" value="@(rr.Rating) : 0)" class="ratingval" />
+                                            <div id="cont" class="rateYo"></div>
+                                        </div>
+                                        <div class="col-lg-8">
+                                            <div class="item-short"><strong>@rr.ReviewText</strong></div>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="padding-top: 10px;">
+                                        <div class="col-lg-12 small">
+                                            from <span class="text-info">@rr.Author.FirstName</span> - @rr.ReviewDate.ToLongDateString()
+                                        </div>
+                                    </div>
+                                    <div class="row" style="padding-top: 10px; padding-bottom: 10px;">
+                                        <div class="col-lg-12">
+                                            @rr.ReviewText
+                                        </div>
+                                    </div>
+                                </div>*@
+                            }
+                        </table>
+                        <ul class="my-navigation pagination">
+                            <li class="simple-pagination-first"></li>
+                            <li class="simple-pagination-previous"></li>
+                            @*<li class="simple-pagination-page-numbers"></li>*@
+                            <li class="simple-pagination-next"></li>
+                            <li class="simple-pagination-last"></li>
+                        </ul>
+                    </div>
+                }
+                else
                 {
-                    foreach (var f in Model.Event.Feeds.Where(f => f.Link != null || f.Message != null))
-                    {
-                        <p style="border-bottom: 1px dashed #bbb; padding-bottom: 15px;">
-                            <strong>@f.UpdateTime.ToShortDateString()</strong><br />
-                            @if (f.Link != null)
-                            {
-                                <a href="@(f.Link ?? "")" target="_blank">
-                                    @f.Message<br />
-                                    @if (f.PhotoUrl != null)
-                                    {
-                                        <img src="@f.PhotoUrl" class="fitpicture" />
-                                    }
-
-                                </a>
-                            }
-                            else
-                            {
-                                @f.Message
-                            }
-                        </p>
-                    }
+                    <h5>No Reviews have been posted for this Event</h5>
                 }
             </div>
             <div class="col-lg-12 nospace">
-                <h4>Dancers</h4>
+                <h3>Dancers</h3>
                 <div class="row">
                     @{
                         var dancers = Model.Event.EventInstances.SelectMany(i => i.EventRegistrations.Select(r => r.User)).Distinct();
@@ -170,7 +284,7 @@
                 <hr />
             </div>
             <div class="col-lg-12 nospace">
-                <h4>Linked Events/Groups/Pages</h4>
+                <h3>Links</h3>
                 @foreach (var ee in Model.LinkedFacebookObjects)
                 {
                     <a class="item-short" target="_blank" href="@Url.Content(ee.Url)" title="@ee.Name" style="text-align: left;">
@@ -180,39 +294,71 @@
             </div>
         </div>
         <div class="col-lg-8">
-            <h4>Reviews</h4>
-            <hr />
-            @if (Model.Event.Reviews.Count() != 0)
-            {
-                foreach (var rr in Model.Event.Reviews)
+            <div class="col-lg-12 nospace">
+                <h3>Latest Updates</h3>
+                <hr />
+                @if (Model.Event.Feeds != null)
                 {
-                    <div style="border-bottom: 1px dashed #bbb; margin-bottom: 10px;">
-                        <div class="row">
-                            <div id="parentc" class="col-lg-2">
-                                <input id="rv" type="hidden" value="@(rr.Rating) : 0)" class="ratingval" />
-                                <div id="cont" class="rateYo"></div>
-                            </div>
-                            <div class="col-lg-10">
-                                <div class="item-short"><strong>@rr.ReviewText</strong></div>
-                            </div>
-                        </div>
-                        <div class="row" style="padding-top: 10px;">
-                            <div class="col-lg-12 small">
-                                from <span class="text-info">@rr.Author.FirstName</span> - @rr.ReviewDate.ToLongDateString()
-                            </div>
-                        </div>
-                        <div class="row" style="padding-top: 10px; padding-bottom: 10px;">
-                            <div class="col-lg-12">
-                                @rr.ReviewText
-                            </div>
-                        </div>
+                    <div id="updates-container">
+                        <table style="border-collapse: collapse; width: 100%;" cellpadding="0" cellspacing="0">
+                            @foreach (var f in Model.Event.Feeds.Where(f => f.Link != null || f.Message != null))
+                            {
+                                <tr>
+                                    <td>
+                                        <p style="border-bottom: 1px dashed #bbb; padding-bottom: 15px;">
+                                            <strong>@f.UpdateTime.ToShortDateString()</strong><br />
+                                            @if (f.Link != null)
+                                            {
+                                                <a href="@(f.Link ?? "")" target="_blank">
+                                                    @f.Message<br />
+                                                    @if (f.PhotoUrl != null)
+                                                    {
+                                                        <img src="@f.PhotoUrl" class="fitpicture" />
+                                                    }
+
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                @f.Message
+                                            }
+                                        </p>
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                        <ul class="my-navigation pagination">
+                            @*<li class="simple-pagination-first"></li>*@
+                            <li class="simple-pagination-previous"></li>
+                            <li class="simple-pagination-page-numbers"></li>
+                            <li class="simple-pagination-next"></li>
+                            @*<li class="simple-pagination-last"></li>*@
+                        </ul>
                     </div>
                 }
-            }
-            else
-            {
-                <h5>No Reviews have been posted for this Event</h5>
-            }
+            </div>
+            <div class="col-lg-12 nospace">
+                <h3>Videos</h3>
+                <hr />
+                @foreach (var v in Model.Event.Videos.OrderByDescending(v => v.PublishDate))
+                {
+                    <div class="col-lg-3">
+                        @Html.DisplayFor(m => v, "VideoPlayer")
+                    </div>
+                }
+                @*new Video() { Author = v.Author, FacebookId = v.FacebookId, MediaSource = v.MediaSource, PhotoUrl = v.PhotoUrl, PlayList = v.PlayList, PublishDate = v.PublishDate, Title = v.Title, }))*@
+            </div>
+            <div class="col-lg-12 nospace">
+                <h3>Pictures</h3>
+                <hr />
+                @foreach (var p in Model.Event.Pictures.OrderByDescending(v => v.PhotoDate))
+                {
+                    <div class="col-lg-3">
+                        @Html.DisplayFor(m => p, "PictureThumbnail")
+                    </div>
+                }
+            </div>
+
         </div>
     </div>
 </div>
@@ -225,10 +371,23 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <link rel="stylesheet" href="~/Content/jquery.rateyo.css" />
     <script src="~/Scripts/jquery.rateyo.js"></script>
+    <script src="~/Scripts/jquery-simple-pagination-plugin.js"></script>
+    @*<link href="~/Content/Simple-Pagination.css" rel="stylesheet" />*@
 
 <script>
-    $(function () {
+    //Reviews List
+    $('#reviews-container').simplePagination({
+        items_per_page: 5,
+        number_of_visible_page_numbers: 3
+    });
 
+    //Updates List
+    $('#updates-container').simplePagination({
+        items_per_page: 5,
+        number_of_visible_page_numbers: 3
+    });
+
+    $(function () {
         $(".rateYo").rateYo({
             starWidth: "18px",
             ratedFill: "#FFD700",
@@ -239,6 +398,51 @@
                 $(this).rateYo("option", "readOnly", true);
             }
         });
+    });
+
+    ////Expandable Vertical Box
+    //Editable Values
+
+    var lines = 12; //Choose how many lines you would like to initially show
+    var buttonspacing = 7; //Choose Button Spacing
+    var buttonside = 'left'; //Choose the Side the Button will display on: 'right' or 'left'
+    var animationspeed = 10; //Choose Animation Speed (Milliseconds)
+
+
+    //Do not edit below
+    var lineheight = $('.expand.text').css("line-height").replace("px", "");
+    startheight = lineheight * lines;
+    $('.expand.text_container').css({ 'height': startheight });
+
+    var buttonheight = $('.exbutton').height();
+
+    $('div.expand.container').css({ 'padding-bottom': (buttonheight + buttonspacing) });
+
+    if (buttonside == 'right') {
+        $('.exbutton').css({ 'bottom': (buttonspacing / 2), 'right': buttonspacing });
+    } else {
+        $('.exbutton').css({ 'bottom': (buttonspacing / 2), 'left': buttonspacing });
+    }
+
+    $('.exopen').on('click', function () {
+        var newheight = $(this).parent('div.expand.container').find('div.expand.text').height();
+        $(this).parent('div.expand.container').find('div.expand.text_container').animate({ 'height': newheight }, animationspeed);
+        $(this).hide().siblings('.exclose').show();
+
+    });
+
+    $('.exclose').on('click', function () {
+        var h = $(this).parent('div.expand.container').find('div.expand.text').height();
+        $(this).parent('div.expand.container').find('div.expand.text_container').animate({ 'height': startheight }, animationspeed);
+        $(this).hide().siblings('.exopen').show();
+    });
+
+
+    $('div.expand.container').each(function () {
+        if ($(this).find('div.expand.text').height() >= $(this).find('div.expand.text_container').height()) {
+            $(this).find('.exbutton.exopen').show();
+
+        }
     });
 </script>
 }
@@ -342,4 +546,3 @@
             }
         </div>
     }*@
-

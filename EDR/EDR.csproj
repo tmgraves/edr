@@ -436,6 +436,7 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\cropper.css" />
+    <Content Include="Content\images\album.png" />
     <Content Include="Content\images\camera.png" />
     <Content Include="Content\images\class.jpg" />
     <Content Include="Content\images\comment.png" />
@@ -708,6 +709,7 @@
     <Content Include="Scripts\jquery-2.1.1.min.js" />
     <Content Include="Scripts\jquery-2.1.1.min.map" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery-simple-pagination-plugin.js" />
     <Content Include="Scripts\jquery-ui.js" />
     <Content Include="Scripts\jquery-ui.min.js" />
     <Content Include="Scripts\jquery.form.js" />
@@ -821,6 +823,10 @@
     <Content Include="Views\Shared\DisplayTemplates\DancerThumbLink.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\DanceStyleLabels.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\TeacherLinks.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\VideoPlayer.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\PictureThumbnail.cshtml" />
+    <Content Include="Views\Shared\Events\_ManagePlaylistsPartial.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Playlist.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>
@@ -915,7 +921,6 @@
     <Content Include="Views\Event\ChangeCover.cshtml" />
     <Content Include="Views\Event\View.cshtml" />
     <Content Include="Views\Event\PostPicture.cshtml" />
-    <Content Include="Views\Shared\_VideoPlayerPartial.cshtml" />
     <Content Include="Views\Dancer\Home.cshtml" />
     <Content Include="Views\Owner\Home.cshtml" />
     <Content Include="Views\Promoter\Home.cshtml" />

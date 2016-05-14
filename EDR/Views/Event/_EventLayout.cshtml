@@ -27,7 +27,7 @@
 <div class="row">
     <h1 class="page-header">
         @Model.Event.Name  <small>(@(Model.Event is Class ? ((Class)Model.Event).ClassType.ToString() : ((Social)Model.Event).SocialType.ToString()))</small>
-        @if (User.Identity != null)
+        @*@if (User.Identity != null)
         {
             if (Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)
             {
@@ -50,7 +50,7 @@
                     <span class="sr-only">Edit</span>
                 </a>
             }
-        }
+        }*@
         <br />
         <small>@@ 
             @if (Model.Event.Place.Public)
@@ -91,7 +91,7 @@
                         <img src="~/Content/images/MissingImage.jpg" style="width: 100%;" />
                     }
                 }*@
-                @if (Model.Event.FacebookId == null)
+                @*@if (Model.Event.FacebookId == null)
                 {
                     if (User.Identity != null && ((Model.Event is Class && Model.Class.Teachers.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1)) || (Model.Event is Social && Model.Social.Promoters.Where(x => x.ApplicationUser.UserName == User.Identity.Name).Count() == 1))
                     {
@@ -99,7 +99,7 @@
                             <a style="font-size: small;" href="@Url.Action("ChangeCover", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">Change Cover</a>
                         </p>
                     }
-                }
+                }*@
 
                 <div class="row">
                     <label class="control-label col-lg-3 col-md-3 col-sm-3 col-xs-3">

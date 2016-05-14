@@ -72,7 +72,7 @@ namespace EDR.Utilities
                     //}
                     var thumbnail = list.Descendants().Where(p => p.Name.LocalName == "group").FirstOrDefault().Descendants().Where(m => m.Name.LocalName == "thumbnail").FirstOrDefault().Attribute("url").Value;
                     //  var thumbUrl = list.Descendants().Where(p => p.Name.LocalName == "media:thumbnail").FirstOrDefault().Attribute("href").Value;
-                    plLists.Add(new YouTubePlaylist() { Id = listId, Name = list.Descendants().Where(p => p.Name.LocalName == "title").FirstOrDefault().Value, PubDate = Convert.ToDateTime(list.Descendants().Where(p => p.Name.LocalName == "published").FirstOrDefault().Value), Url = listPath, ThumbnailUrl = thumbnail });
+                    plLists.Add(new YouTubePlaylist() { Id = listId, Name = list.Descendants().Where(p => p.Name.LocalName == "title").FirstOrDefault().Value, PubDate = Convert.ToDateTime(list.Descendants().Where(p => p.Name.LocalName == "published").FirstOrDefault().Value), Url = new Uri(listPath), ThumbnailUrl = new Uri(thumbnail) });
                 }
 
                 return plLists;
@@ -137,9 +137,20 @@ namespace EDR.Utilities
             {
                 Uri listUri = new Uri(playlistUrl);
                 string listId = HttpUtility.ParseQueryString(listUri.Query).Get("list");
-                var plList = new YouTubePlaylist() { Id = listId, Name = "No Title", PubDate = DateTime.Now, Url = playlistUrl };
 
-                return plList;
+                var youtubeService = new YouTubeService(new BaseClientService.Initializer()
+                {
+                    ApiKey = "AIzaSyCQZYhgRAjXZdBM2qCEYbZ9vO0T9eyyfjc",
+                    ApplicationName = "EatDanceRepeat"
+                });
+
+                var list = youtubeService.Playlists.List("snippet");
+                list.Id = listId;
+
+                var response = list.Execute();
+                YouTubePlaylist ytList = response.Items.Select(i => new YouTubePlaylist() { Id = i.Id, PubDate = Convert.ToDateTime(i.Snippet.PublishedAt), Name = i.Snippet.Title, ThumbnailUrl = new Uri(i.Snippet.Thumbnails.Default.Url), Url = listUri }).FirstOrDefault();
+
+                return ytList;
             }
             catch (Exception ex)
             {

@@ -1,0 +1,8 @@
+﻿@model EDR.Models.Video
+
+<div class="buttonoverlay_container">
+    <img src="@Html.DisplayFor(s => Model.PhotoUrl)" />
+    <a class="btn btn-danger" target="_blank" href="@Model.VideoUrl" title="@Model.Title">
+        <i class="glyphicon glyphicon-play"></i>
+    </a>
+</div>

@@ -296,7 +296,7 @@
 
                     <div class="form-inline">
                         <div class="form-group">
-                            @Html.HiddenFor(s => s.NewStyleId, new { @class = "stylesearchId" })
+                            @Html.HiddenFor(s => s.NewStyleId, new { @class = "stylesearchid" })
                             <input type="text" placeholder="Dance Style" class="form-control stylesearch" />
                             <input class="btn btn-primary" type="submit" value="Add" />
                         </div>
@@ -571,7 +571,7 @@
         },
         select: function (event, ui) {
             $('.stylesearch').val(ui.item.label);
-            $('.stylesearchId').val(ui.item.value);
+            $('.stylesearchid').val(ui.item.value);
             return false;
         },
         minLength: 1
