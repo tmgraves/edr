@@ -7,6 +7,6 @@ namespace EDR.Models.ViewModels
 {
     public class HomeIndexViewModel
     {
-        public IEnumerable<Event> Events { get; set; }
+        public List<DanceStyle> DanceStyles { get; set; }
     }
 }

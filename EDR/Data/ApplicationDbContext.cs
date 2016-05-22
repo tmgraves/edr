@@ -64,9 +64,10 @@ namespace EDR.Data
             modelBuilder.Entity<Performance>().ToTable("Performances");
             modelBuilder.Entity<Audition>().ToTable("Auditions");
             modelBuilder.Entity<LinkedFacebookObject>().ToTable("LinkedFacebookObjects");
+            modelBuilder.Entity<LinkedMedia>().ToTable("LinkedMedia");
             modelBuilder.Entity<EventAttendee>().ToTable("EventAttendees");
             modelBuilder.Entity<Feed>()
-                        .ToTable("EventFeeds")
+                        .ToTable("Feeds")
                         .HasRequired(f => f.Event)
                         .WithMany(f => f.Feeds)
                         .WillCascadeOnDelete(true);
@@ -163,13 +164,14 @@ namespace EDR.Data
         public DbSet<Playlist> Playlists { get; set; }
         public DbSet<EventMember> EventMembers { get; set; }
         public DbSet<EventAttendee> EventAttendees { get; set; }
-        public DbSet<Feed> EventFeeds { get; set; }
+        public DbSet<Feed> Feeds { get; set; }
         //public DbSet<ObjectFeed> ObjectFeeds { get; set; }
 
         public DbSet<ClassTeacherInvitation> ClassTeacherInvitations { get; set; }
         public DbSet<SocialPromoterInvitation> SocialPromoterInvitations { get; set; }
         public DbSet<PlaceOwnerInvitation> PlaceOwnerInvitations { get; set; }
         public DbSet<LinkedFacebookObject> LinkedFacebookObjects { get; set; }
+        public DbSet<LinkedMedia> LinkedMedia { get; set; }
 
         //Store
         public DbSet<Cart> Carts { get; set; }

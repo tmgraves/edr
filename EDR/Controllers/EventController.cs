@@ -11,6 +11,7 @@ using System.Data.Entity.Validation;
 using EDR.Enums;
 using System.Data.Entity;
 using EDR.Utilities;
+using System.Globalization;
 using System.IO;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Data.SqlClient;
@@ -141,12 +142,14 @@ namespace EDR.Controllers
 
         public ActionResult View(int id, EventType eventType)
         {
+            var userid = User.Identity.GetUserId();
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             var model = LoadEvent(id, eventType);
+            model.Review = model.Event.Reviews.Where(r => r.Author.Id == userid).FirstOrDefault();
 
             model.EventType = eventType;
 
@@ -156,17 +159,6 @@ namespace EDR.Controllers
             //    UpdateFacebookEvent(model.Event);
             //}
             ////  Get Current Facebook Picture/Video
-
-            if (model.Event.FacebookId != null)
-            {
-                var feed = FacebookHelper.GetFeed(model.Event.FacebookId, model.Event.Creator.FacebookToken);
-                if (feed != null)
-                {
-                    model.Event.Feeds = feed.Select(ff => new Feed() { Link = ff.Link, Message = ff.Message, PhotoUrl = ff.Picture, UpdateTime = ff.Updated_Time, Type = (ff.Type == "video" ? MediaType.Video : (ff.Type == "picture" ? MediaType.Picture : MediaType.Comment)) }).ToList();
-                }
-            }
-
-            model.LinkedFacebookObjects = DataContext.Events.Where(e => e.Id == id).Include("LinkedFacebookObjects").FirstOrDefault().LinkedFacebookObjects;
 
             if (model.Event == null)
             {
@@ -179,6 +171,8 @@ namespace EDR.Controllers
         [Authorize(Roles = "Owner,Promoter,Teacher")]
         public ActionResult Manage(int id, EventType eventType)
         {
+            var userid = User.Identity.GetUserId();
+            var user = DataContext.Users.Single(u => u.Id == userid);
             var model = new EventManageViewModel(DataContext.Events
                     .Include("Tickets.UserTickets.EventRegistrations")
                     .Include("EventInstances.EventRegistrations.User")
@@ -188,9 +182,17 @@ namespace EDR.Controllers
                     .Include("Playlists.Author")
                     .Include("DanceStyles")
                     .Include("Place")
+                    .Include("LinkedMedia")
                     .Single(e => e.Id == id));
             model.NewPlace = new Place();
             model.NewPlace.PlaceType = PlaceType.OtherPlace;
+
+            //  Load Facebook Albums - Use for adding an album
+            if (user.FacebookToken != null)
+            {
+                Session["FacebookAlbums"] = FacebookHelper.GetAlbums(user.FacebookToken);
+            }
+            //  Load Facebook Albums
 
             if (model.Event is Class)
             {
@@ -280,25 +282,55 @@ namespace EDR.Controllers
             return pictures;
         }
 
-        //public JsonResult GetPicturesJSON(int id)
-        //{
-        //    //  Get Linked Objects Pictures
-        //    //  Get Facebook Group/Event/Page Feed Pictures
+        public JsonResult GetPicturesJSON(int id)
+        {
+            //  Get Linked Objects Pictures
+            //  Get Facebook Group/Event/Page Feed Pictures
 
-        //    //  Get Instagram Post Pictures
-        //    var events = DataContext.Events.Where(e => e.StartDate >= DateTime.Today && (e.Name + " " + e.Description).Contains(searchString)).Select(s => new { Id = s.Id, Name = s.Name + " - " + s.Place.Address + " " + s.Place.City + ", " + s.Place.State + " " + s.Place.Zip }).ToList();
-        //    return Json(events, JsonRequestBehavior.AllowGet);
-        //}
+            //  Get Instagram Post Pictures
+            var pictures = GetPictures(id);
+            return Json(pictures.Select(p => new { FileName = p.Filename, Title = p.Title, ThumbnailFilename = p.ThumbnailFilename }), JsonRequestBehavior.AllowGet);
+        }
 
-        //public JsonResult GetVideosJSON(int id)
-        //{
-        //    //  Get Linked Objects Videos
-        //    //  Get Facebook Group/Event/Page Feed Videos
+        public JsonResult GetVideosJSON(int id)
+        {
+            //  Get Linked Objects Videos
+            //  Get Facebook Group/Event/Page Feed Videos
 
-        //    //  Get YouTube Playlist Videos
-        //    var events = DataContext.Events.Where(e => e.StartDate >= DateTime.Today && (e.Name + " " + e.Description).Contains(searchString)).Select(s => new { Id = s.Id, Name = s.Name + " - " + s.Place.Address + " " + s.Place.City + ", " + s.Place.State + " " + s.Place.Zip }).ToList();
-        //    return Json(events, JsonRequestBehavior.AllowGet);
-        //}
+            //  Get YouTube Playlist Videos
+            //  Add Videos
+            var videos = GetVideos(id);
+            return Json(videos.Select(v => new { PhotoUrl = v.PhotoUrl, VideoUrl = v.VideoUrl, Title = v.Title }), JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetFeedJSON(int id)
+        {
+            var evt = DataContext.Events.Include("LinkedMedia").Single(e => e.Id == id);
+            var evtfeed = new List<Feed>();
+
+            foreach (var o in evt.LinkedMedia)
+            {
+                var feed = FacebookHelper.GetFeed(o.FacebookId, FacebookHelper.GetGlobalToken());
+                if (feed != null)
+                {
+                    evtfeed.AddRange(feed.Select(ff => new Feed() { Link = ff.Link, Message = ff.Message, PhotoUrl = ff.Picture, UpdateTime = ff.Updated_Time, Type = (ff.Type == "video" ? MediaType.Video : (ff.Type == "picture" ? MediaType.Picture : MediaType.Comment)) }).ToList());
+                }
+            }
+
+            //  model.LinkedFacebookObjects = DataContext.Events.Where(e => e.Id == id).Include("LinkedFacebookObjects").FirstOrDefault().LinkedFacebookObjects;
+
+            return Json(evtfeed.Where(f => f.Link != null || f.Message != null).OrderByDescending(d => d.UpdateTime).Select(f => new { UpdateTime = f.UpdateTime.ToShortDateString(), Link = f.Link, Message = f.Message, PhotoUrl = f.PhotoUrl, FeedType = f.Type }), JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetReviewsJSON(int id)
+        {
+            var evt = DataContext.Events.Include("Reviews").Single(e => e.Id == id);
+            var evtreviews = new List<Review>();
+
+            //  model.LinkedFacebookObjects = DataContext.Events.Where(e => e.Id == id).Include("LinkedFacebookObjects").FirstOrDefault().LinkedFacebookObjects;
+
+            return Json(evt.Reviews.OrderByDescending(r => r.ReviewDate).Select(r => new { ReviewDate = r.ReviewDate.ToShortDateString(), ReviewText = r.ReviewText, FirstName = r.Author.FirstName, Rating = r.Rating }), JsonRequestBehavior.AllowGet);
+        }
 
         protected void UpdateFacebookEvent(Event rEvent)
         {
@@ -904,10 +936,11 @@ namespace EDR.Controllers
             .Include("EventMembers.Member")
             .Include("EventInstances")
             .Include("EventInstances.EventRegistrations")
+            .Include("EventInstances.EventRegistrations.User")
             .Include("EventInstances.EventRegistrations.UserTicket.Ticket")
             .Include("Creator")
             .Include("Tickets")
-            .Include("Feeds")
+            .Include("LinkedMedia")
             .FirstOrDefault();
 
             ////  Get Tickets
@@ -998,11 +1031,11 @@ namespace EDR.Controllers
                     .FirstOrDefault();
             }
 
-            //  Add Videos
-            model.Event.Videos = GetVideos(model.Event.Id);
+            ////  Add Videos
+            //model.Event.Videos = GetVideos(model.Event.Id);
 
-            //  Add Pictures
-            model.Event.Pictures = GetPictures(model.Event.Id);
+            ////  Add Pictures
+            //model.Event.Pictures = GetPictures(model.Event.Id);
             return model;
         }
 
@@ -1095,15 +1128,15 @@ namespace EDR.Controllers
             return Redirect(returnUrl);
         }
 
-        [Authorize]
-        public ActionResult DeleteAlbum(int albumId, string returnUrl)
-        {
-            var album = DataContext.Albums.Find(albumId);
-            DataContext.Albums.Remove(album);
-            //  DataContext.Entry(album).State = EntityState.Deleted;
-            DataContext.SaveChanges();
-            return Redirect(returnUrl);
-        }
+        //[Authorize]
+        //public ActionResult DeleteAlbum(int albumId, string returnUrl)
+        //{
+        //    var album = DataContext.Albums.Find(albumId);
+        //    DataContext.Albums.Remove(album);
+        //    //  DataContext.Entry(album).State = EntityState.Deleted;
+        //    DataContext.SaveChanges();
+        //    return Redirect(returnUrl);
+        //}
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -1488,14 +1521,14 @@ namespace EDR.Controllers
             return Redirect(returnUrl);
         }
 
-        [Authorize]
-        public ActionResult DeleteVideo(int videoId, string returnUrl)
-        {
-            DataContext.Videos.Remove(DataContext.Videos.Where(v => v.Id == videoId).FirstOrDefault());
-            DataContext.SaveChanges();
-            ViewBag.Message = "Video was deleted";
-            return Redirect(returnUrl);
-        }
+        //[Authorize]
+        //public ActionResult DeleteVideo(int videoId, string returnUrl)
+        //{
+        //    DataContext.Videos.Remove(DataContext.Videos.Where(v => v.Id == videoId).FirstOrDefault());
+        //    DataContext.SaveChanges();
+        //    ViewBag.Message = "Video was deleted";
+        //    return Redirect(returnUrl);
+        //}
         //[Authorize]
         //public ActionResult DeletePlaylist(int listId, string returnUrl)
         //{
@@ -1809,7 +1842,7 @@ namespace EDR.Controllers
                     //  Add Linked Object
                     if (cls.FacebookId != null)
                     {
-                        cls.LinkedFacebookObjects = new List<LinkedFacebookObject>() { new LinkedFacebookObject() { FacebookId = cls.FacebookId, MediaSource = MediaSource.Facebook, Name = model.FacebookEventName, ObjectType = FacebookObjectType.Event, Url = cls.FacebookLink } };
+                        cls.LinkedMedia = new List<LinkedMedia>() { new LinkedMedia() { FacebookId = cls.FacebookId, MediaSource = MediaSource.Facebook, Name = model.FacebookEventName, ObjectType = "Event", Url = cls.FacebookLink, Default = true } };
                     }
                     //  Add Linked Object
 
@@ -1898,7 +1931,7 @@ namespace EDR.Controllers
                     //  Add Linked Object
                     if (soc.FacebookId != null)
                     {
-                        soc.LinkedFacebookObjects = new List<LinkedFacebookObject>() { new LinkedFacebookObject() { FacebookId = soc.FacebookId, MediaSource = MediaSource.Facebook, Name = model.FacebookEventName, ObjectType = FacebookObjectType.Event, Url = model.FacebookLink } };
+                        soc.LinkedMedia = new List<LinkedMedia>() { new LinkedMedia() { FacebookId = soc.FacebookId, MediaSource = MediaSource.Facebook, Name = model.FacebookEventName, ObjectType = "Event", Url = soc.FacebookLink, Default = true } };
                     }
                     //  Add Linked Object
 
@@ -2053,7 +2086,7 @@ namespace EDR.Controllers
         [Authorize(Roles = "Owner,Promoter,Teacher")]
         public PartialViewResult AddYouTubePlaylist(EventManageViewModel model)
         {
-            var ytPlaylist = YouTubeHelper.GetPlaylist(model.NewYoutubePlayList);
+            var ytPlaylist = YouTubeHelper.GetPlaylist(model.NewYoutubePlayList.ToString());
             var userid = User.Identity.GetUserId();
             var auth = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
             var ev = DataContext.Events.Where(e => e.Id == model.Event.Id).Include("Playlists").FirstOrDefault();
@@ -2061,7 +2094,7 @@ namespace EDR.Controllers
 
             if (ev.Playlists.Where(p => p.YouTubeId == ytPlaylist.Id).Count() == 0)
             {
-                ev.Playlists.Add(new EventPlaylist() { Title = ytPlaylist.Name, PublishDate = ytPlaylist.PubDate, YouTubeId = ytPlaylist.Id, Author = auth, YouTubeUrl = ytPlaylist.Url.ToString(), CoverPhoto = ytPlaylist.ThumbnailUrl.ToString(), MediaSource = MediaSource.YouTube, UpdatedDate = ytPlaylist.PubDate });
+                ev.Playlists.Add(new EventPlaylist() { Title = ytPlaylist.Name, PublishDate = ytPlaylist.PubDate, YouTubeId = ytPlaylist.Id, Author = auth, YouTubeUrl = ytPlaylist.Url.ToString(), CoverPhoto = ytPlaylist.ThumbnailUrl.ToString(), MediaSource = MediaSource.YouTube, UpdatedDate = ytPlaylist.PubDate, VideoCount = ytPlaylist.VideoCount });
                 DataContext.Entry(ev).State = EntityState.Modified;
                 DataContext.SaveChanges();
                 ViewBag.Message = "Playlist was imported";
@@ -2080,11 +2113,114 @@ namespace EDR.Controllers
         }
 
         [Authorize(Roles = "Owner,Promoter,Teacher")]
+        public PartialViewResult AddYouTubeVideo(EventManageViewModel model)
+        {
+            var ytVideo = YouTubeHelper.GetVideo(model.NewYouTubeVideo.ToString());
+            var userid = User.Identity.GetUserId();
+            var auth = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+            var ev = DataContext.Events.Where(e => e.Id == model.Event.Id).Include("Videos").FirstOrDefault();
+            //  var ePlaylist = new EventPlaylist() { Title = ytPlaylist.Name, PublishDate = ytPlaylist.PubDate, YouTubeId = ytPlaylist.Id, Author = auth, YouTubeUrl = ytPlaylist.Url, CoverPhoto = ytPlaylist.ThumbnailUrl, MediaSource = MediaSource.YouTube };
+
+            if (ev.Videos.Where(p => p.YoutubeId == ytVideo.Id).Count() == 0)
+            {
+                ev.Videos.Add(new EventVideo() { Title = ytVideo.Title, PublishDate = ytVideo.PubDate, YoutubeId = ytVideo.Id, Author = auth, YoutubeUrl = ytVideo.VideoLink.ToString(), PhotoUrl = ytVideo.Thumbnail.ToString(), MediaSource = MediaSource.YouTube });
+                DataContext.Entry(ev).State = EntityState.Modified;
+                DataContext.SaveChanges();
+                ViewBag.Message = "Video was imported";
+            }
+            return PartialView("~/Views/Shared/Events/_ManageVideosPartial.cshtml", ev.Videos);
+        }
+
+        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        public PartialViewResult DeleteVideo(int id, int videoId)
+        {
+            var videos = DataContext.Events.Include("Videos").Single(e => e.Id == id).Videos;
+            videos.Remove(videos.Single(l => l.Id == videoId));
+            DataContext.SaveChanges();
+            ViewBag.Message = "Video was removed";
+            return PartialView("~/Views/Shared/Events/_ManageVideosPartial.cshtml", videos);
+        }
+
+        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        public PartialViewResult AddFacebookAlbum(int id, string albumId)
+        {
+            var userid = User.Identity.GetUserId();
+            var auth = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+            var ev = DataContext.Events.Where(e => e.Id == id).Include("Albums").FirstOrDefault();
+            //  var ePlaylist = new EventPlaylist() { Title = ytPlaylist.Name, PublishDate = ytPlaylist.PubDate, YouTubeId = ytPlaylist.Id, Author = auth, YouTubeUrl = ytPlaylist.Url, CoverPhoto = ytPlaylist.ThumbnailUrl, MediaSource = MediaSource.YouTube };
+
+            if (ev.Albums.Where(a => a.FacebookId == albumId).Count() == 0)
+            {
+                var fbalbum = ((IEnumerable<EDR.Models.FacebookAlbum>)Session["FacebookAlbums"]).Single(a => a.Id == albumId);
+                ev.Albums.Add(new EventAlbum() { Name = fbalbum.Name, AlbumDate = fbalbum.Updated_Time, FacebookId = albumId, PostedBy = auth, CoverPhoto = fbalbum.Cover_Photo,  MediaSource = MediaSource.Facebook, Description = fbalbum.Description, SourceLink = fbalbum.Link, PhotoCount = Convert.ToInt32(fbalbum.Count), CoverThumbnail = fbalbum.Cover_Photo });
+                DataContext.Entry(ev).State = EntityState.Modified;
+                DataContext.SaveChanges();
+                ViewBag.Message = "Album was imported";
+            }
+            return PartialView("~/Views/Shared/Events/_ManageAlbumsPartial.cshtml", ev.Albums);
+        }
+
+        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        public PartialViewResult DeleteAlbum(int id, int albumId)
+        {
+            var albums = DataContext.Events.Include("Albums").Single(e => e.Id == id).Albums;
+            albums.Remove(albums.Single(l => l.Id == albumId));
+            DataContext.SaveChanges();
+            ViewBag.Message = "Album was removed";
+            return PartialView("~/Views/Shared/Events/_ManageAlbumsPartial.cshtml", albums);
+        }
+
+        [Authorize(Roles = "Owner,Promoter,Teacher")]
         public ActionResult DeleteStyle(int id, int styleId, EventType eventType)
         {
             DataContext.Events.Include("DanceStyles").Single(e => e.Id == id).DanceStyles.Remove(DataContext.DanceStyles.Single(s => s.Id == styleId));
             DataContext.SaveChanges();
             return RedirectToAction("Manage", new { id = id, eventType = eventType });
+        }
+
+        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        public PartialViewResult AddLinkedMedia(EventManageViewModel model)
+        {
+            var evt = DataContext.Events.Include("LinkedMedia").Single(e => e.Id == model.Event.Id);
+            var source = model.NewLinkedMedia.Host.Contains("facebook.com") ? MediaSource.Facebook : MediaSource.None;
+            if (source == MediaSource.Facebook)
+            {
+                var type = model.NewLinkedMedia.Segments[1].Replace("/", "");
+                var id = model.NewLinkedMedia.Segments[2].Replace("/", "");
+                long fbid;
+                dynamic obj;
+
+                if (long.TryParse(id, out fbid))
+                {
+                    var fb = new Facebook.FacebookClient(FacebookHelper.GetToken());
+                    obj = fb.Get(id);
+                }
+                else
+                {
+                    var fb = new Facebook.FacebookClient(FacebookHelper.GetGlobalToken());
+                    obj = fb.Get("/search?q=" + id + "&type=group");
+                    obj = obj.data[0];
+                }
+
+                if (evt.LinkedMedia.Where(m => m.FacebookId == obj.id).Count() == 0)
+                {
+                    evt.LinkedMedia.Add(new LinkedMedia() { MediaSource = source, FacebookId = obj.id, Default = false, Name = obj.name, Url = model.NewLinkedMedia.ToString(), ObjectType = model.NewLinkedMedia.Segments[1].Replace("/", "") });
+                    DataContext.SaveChanges();
+                }
+            }
+
+            ViewBag.Message = "Link was added";
+            return PartialView("~/Views/Shared/Events/_ManageLinkedMediaPartial.cshtml", evt.LinkedMedia);
+        }
+
+        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        public PartialViewResult DeleteLinkedMedia(int id, int linkId)
+        {
+            var media = DataContext.Events.Include("LinkedMedia").Single(e => e.Id == id).LinkedMedia;
+            media.Remove(media.Single(m => m.Id == linkId));
+            DataContext.SaveChanges();
+            ViewBag.Message = "Linked Media was removed";
+            return PartialView("~/Views/Shared/Events/_ManageLinkedMediaPartial.cshtml", media);
         }
 
         //[Authorize(Roles = "Owner,Promoter,Teacher")]
@@ -2736,7 +2872,7 @@ namespace EDR.Controllers
             evt.Playlists.Clear();
             DataContext.Reviews.RemoveRange(evt.Reviews);
             DataContext.LinkedFacebookObjects.RemoveRange(evt.LinkedFacebookObjects);
-            DataContext.EventFeeds.RemoveRange(evt.Feeds);
+            DataContext.Feeds.RemoveRange(evt.Feeds);
             DataContext.EventMembers.RemoveRange(evt.EventMembers);
             DataContext.Tickets.RemoveRange(evt.Tickets);
             DataContext.EventInstances.RemoveRange(evt.EventInstances);
@@ -3759,34 +3895,64 @@ namespace EDR.Controllers
         //    }
         //}
 
+        //[Authorize]
+        //public PartialViewResult PostReview(EventViewModel model)
+        //{
+        //    var userid = User.Identity.GetUserId();
+        //    if (model.Review.Id == 0)
+        //    {
+        //        var auth = DataContext.Users.Where(x => x.Id == userid).FirstOrDefault();
+        //        var ev = DataContext.Events.Where(e => e.Id == model.Event.Id).Include("Reviews").FirstOrDefault();
+        //        ev.Reviews.Add(new Review() { ReviewText = model.Reviews.NewReview.ReviewText, ReviewDate = DateTime.Now, Like = model.Reviews.NewReview.Like, Author = auth });
+        //        DataContext.SaveChanges();
+
+        //        var reviews = DataContext.Reviews.Where(x => x.Event.Id == model.Event.Id);
+        //        return PartialView("~/Views/Shared/Events/_ReviewsPartial.cshtml", reviews);
+        //    }
+        //    else
+        //    {
+        //        model.Review.ReviewDate = DateTime.Today;
+        //        DataContext.Entry(model.Review).State = EntityState.Modified;
+        //        DataContext.SaveChanges();
+        //        return PartialView();
+        //    }
+            
+        //    //if (ModelState.IsValid)
+        //    //{
+        //    //    return RedirectToAction("Class", "Event", new { id = model.Event.Id});
+        //    //}
+        //    //else
+        //    //{
+        //    //    var allErrors = ModelState.Values.SelectMany(v => v.Errors);
+        //    //}
+        //    //return View(model);
+        //}
+
         [Authorize]
-        public PartialViewResult PostReview(EventViewModel model)
+        [HttpPost]
+        public JsonResult PostReviewAsync(int id, int eventId, int rating, string review)
         {
             var userid = User.Identity.GetUserId();
-            if (DataContext.Reviews.Where(r => r.Event.Id == model.Event.Id && r.Author.Id == userid).Count() == 0)
+            var auth = DataContext.Users.Where(x => x.Id == userid).FirstOrDefault();
+            if (id == 0)
             {
-                var auth = DataContext.Users.Where(x => x.Id == userid).FirstOrDefault();
-                var ev = DataContext.Events.Where(e => e.Id == model.Event.Id).Include("Reviews").FirstOrDefault();
-                ev.Reviews.Add(new Review() { ReviewText = model.Reviews.NewReview.ReviewText, ReviewDate = DateTime.Now, Like = model.Reviews.NewReview.Like, Author = auth });
+                var ev = DataContext.Events.Where(e => e.Id == eventId).Include("Reviews").FirstOrDefault();
+                var rev = new Review() { ReviewText = review, ReviewDate = DateTime.Now, Author = auth, Rating = rating };
+                ev.Reviews.Add(rev);
                 DataContext.SaveChanges();
 
-                var reviews = DataContext.Reviews.Where(x => x.Event.Id == model.Event.Id);
-                return PartialView("~/Views/Shared/Events/_ReviewsPartial.cshtml", reviews);
+                //  var reviews = DataContext.Reviews.Where(x => x.Event.Id == eventId);
+                var objUpload = new { Id = rev.Id, ReviewDate = rev.ReviewDate, Rating = rev.Rating, Review = rev.ReviewText };
+                return Json(objUpload, JsonRequestBehavior.AllowGet);
             }
             else
             {
-                return PartialView();
+                var rev = new Review() { Id = id, ReviewText = review, ReviewDate = DateTime.Now, Author = auth, Rating = rating };
+                DataContext.Entry(rev).State = EntityState.Modified;
+                DataContext.SaveChanges();
+                var objUpload = new { Id = rev.Id, ReviewDate = rev.ReviewDate, Rating = rev.Rating, Review = rev.ReviewText };
+                return Json(objUpload, JsonRequestBehavior.AllowGet);
             }
-            
-            //if (ModelState.IsValid)
-            //{
-            //    return RedirectToAction("Class", "Event", new { id = model.Event.Id});
-            //}
-            //else
-            //{
-            //    var allErrors = ModelState.Values.SelectMany(v => v.Errors);
-            //}
-            //return View(model);
         }
 
         [Authorize]

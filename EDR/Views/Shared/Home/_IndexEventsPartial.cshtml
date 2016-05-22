@@ -1,0 +1,38 @@
+﻿@model IEnumerable<EDR.Models.Event>
+
+<div class="row" style="padding-top: 10px;">
+    <div class="col-lg-6">
+        @if (Model.OfType<EDR.Models.Social>().Count() != 0)
+        {
+            foreach (var e in Model.OfType<EDR.Models.Social>().OrderBy(e => e.EventInstances.Where(i => i.DateTime >= DateTime.Today).Min(i => i.DateTime)).Take(3))
+            {
+                @Html.DisplayFor(m => e, "Event")
+            }
+        }
+        else
+        {
+            <h3>No Socials Found in Your Area</h3>
+        }
+    </div>
+    <div class="col-lg-6">
+        @if (Model.OfType<EDR.Models.Class>().Count() != 0)
+        {
+            foreach (var e in Model.OfType<EDR.Models.Class>().OrderBy(e => e.EventInstances.Where(i => i.DateTime >= DateTime.Today).Min(i => i.DateTime)).Take(3))
+            {
+                @Html.DisplayFor(m => e, "Event")
+            }
+        }
+        else
+        {
+            <h3>No Classes Found in Your Area</h3>
+        }
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-6">
+        @Html.ActionLink("More Socials...", "Social", null, new { @class = "text-primary lead" })
+    </div>
+    <div class="col-lg-6">
+        @Html.ActionLink("More Classes...", "Learn", null, new { @class = "text-primary lead" })
+    </div>
+</div>

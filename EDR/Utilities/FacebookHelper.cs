@@ -16,6 +16,18 @@ namespace EDR.Utilities
 {
     public class FacebookHelper : BaseController
     {
+        public static string GetToken()
+        {
+            var fb = new FacebookClient();
+            dynamic result = fb.Get("oauth/access_token", new
+            {
+                client_id = ConfigurationManager.AppSettings["FacebookAppId"], // "app_id",
+                client_secret = ConfigurationManager.AppSettings["FacebookAppSecret"], // "app_secret",
+                grant_type = "client_credentials"
+            });
+            return (result.access_token);
+        }
+
         public static string GetGlobalToken()
         {
             ApplicationDbContext context = new ApplicationDbContext();
@@ -626,14 +638,15 @@ namespace EDR.Utilities
             try
             {
                 var fb = new FacebookClient(token);
-                dynamic feed = fb.Get(objectId + "/feed");
+                fb.Version = "v2.6";
+                dynamic feed = fb.Get(objectId + "/feed?fields=link,message,name,updated_time,full_picture,type,id,source,icon,object_id,created_time");
 
                 var posts = new List<FacebookPost>();
                 if (feed != null)
                 {
                     foreach (dynamic postdata in feed.data)
                     {
-                        posts.Add(new FacebookPost() { Id = postdata.id, Message = postdata.message, Picture = postdata.picture, Link = postdata.link, Source = postdata.source, Description = postdata.description, Icon = postdata.icon, Type = postdata.type, Object_Id = postdata.object_id, Created_Time = Convert.ToDateTime(postdata.created_time), Updated_Time = Convert.ToDateTime(postdata.updated_time) });
+                        posts.Add(new FacebookPost() { Id = postdata.id, Message = postdata.message, Picture = postdata.full_picture, Link = postdata.link, Source = postdata.source, Description = postdata.description, Icon = postdata.icon, Type = postdata.type, Object_Id = postdata.object_id, Created_Time = Convert.ToDateTime(postdata.created_time), Updated_Time = Convert.ToDateTime(postdata.updated_time) });
                     }
                 }
 
@@ -707,7 +720,7 @@ namespace EDR.Utilities
                     evnt.UpdatedDate = fevt.Updated;
 
                     //  Update Feeds
-                    context.EventFeeds.RemoveRange(evnt.Feeds);
+                    context.Feeds.RemoveRange(evnt.Feeds);
                     var feedList = fevt.Feeds.Select(f => new Feed() { Link = f.Link, Message = f.Message, UpdateTime = f.Updated_Time }).ToList();
                     ////  Add Linked Object Feeds
                     //feedList.AddRange(GetFeed(String.Join(",", evnt.LinkedFacebookObjects.Select(o => o.FacebookId)), evnt.Creator.FacebookToken).Select(f => new Feed() { Link = f.Link, Message = f.Message, UpdateTime = f.Updated_Time }));

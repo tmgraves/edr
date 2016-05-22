@@ -33,6 +33,7 @@ namespace EDR.Models
         public ICollection<OrganizationMember> Members { get; set; }
         public ICollection<DanceStyle> DanceStyles { get; set; }
         public ICollection<Review> Reviews { get; set; }
+        public virtual ICollection<Feed> Feeds { get; set; }
     }
 
     public class School : Organization

@@ -150,6 +150,7 @@ namespace EDR.Models
         public ApplicationUser Creator { get; set; }
         public ICollection<EventMember> EventMembers { get; set; }
         public ICollection<LinkedFacebookObject> LinkedFacebookObjects { get; set; }
+        public ICollection<LinkedMedia> LinkedMedia { get; set; }
 
         public ICollection<DanceStyle> DanceStyles { get; set; }
 
@@ -207,6 +208,24 @@ namespace EDR.Models
         //public ICollection<ObjectFeed> Feeds { get; set; }
     }
 
+    public class LinkedMedia : Entity
+    {
+        public MediaSource MediaSource { get; set; }
+        public string FacebookId { get; set; }
+        public string Url { get; set; }
+        public string Name { get; set; }
+        public Event Event { get; set; }
+        [Required]
+        public string ObjectType { get; set; }
+        //public ICollection<ObjectFeed> Feeds { get; set; }
+        private bool _default = false;
+        public bool Default
+        {
+            get { return _default; }
+            set { _default = value; }
+        }
+    }
+
     public enum FacebookObjectType
     {
         Group,
@@ -224,8 +243,11 @@ namespace EDR.Models
 
     public class Feed : Entity
     {
-        [Required]
-        public virtual Event Event { get; set; }
+        public Event Event { get; set; }
+        public School School { get; set; }
+        public Place Place { get; set; }
+        public Teacher Teacher { get; set; }
+        public Promoter Promoter { get; set; }
         public DateTime UpdateTime { get; set; }
         public string Message { get; set; }
         public string Link { get; set; }

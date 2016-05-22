@@ -138,17 +138,22 @@ namespace EDR.Utilities
                 Uri listUri = new Uri(playlistUrl);
                 string listId = HttpUtility.ParseQueryString(listUri.Query).Get("list");
 
+                if (listId == null)
+                {
+                    listId = listUri.Segments[1];
+                }
+
                 var youtubeService = new YouTubeService(new BaseClientService.Initializer()
                 {
                     ApiKey = "AIzaSyCQZYhgRAjXZdBM2qCEYbZ9vO0T9eyyfjc",
                     ApplicationName = "EatDanceRepeat"
                 });
 
-                var list = youtubeService.Playlists.List("snippet");
+                var list = youtubeService.Playlists.List("snippet, contentDetails");
                 list.Id = listId;
-
                 var response = list.Execute();
-                YouTubePlaylist ytList = response.Items.Select(i => new YouTubePlaylist() { Id = i.Id, PubDate = Convert.ToDateTime(i.Snippet.PublishedAt), Name = i.Snippet.Title, ThumbnailUrl = new Uri(i.Snippet.Thumbnails.Default.Url), Url = listUri }).FirstOrDefault();
+
+                YouTubePlaylist ytList = response.Items.Select(i => new YouTubePlaylist() { Id = i.Id, PubDate = Convert.ToDateTime(i.Snippet.PublishedAt), Name = i.Snippet.Title, ThumbnailUrl = new Uri(i.Snippet.Thumbnails.Medium.Url), Url = listUri, VideoCount = Convert.ToInt32(i.ContentDetails.ItemCount) }).FirstOrDefault();
 
                 return ytList;
             }
@@ -162,14 +167,26 @@ namespace EDR.Utilities
         {
             try
             {
-                Uri vidUri = new Uri(videoUrl);//  new Uri("http://www.example.com?param1=good&param2=bad");
-                string vidId = HttpUtility.ParseQueryString(vidUri.Query).Get("v");
+                Uri videoUri = new Uri(videoUrl);
+                string videoId = HttpUtility.ParseQueryString(videoUri.Query).Get("v");
 
-                string url = "https://gdata.youtube.com/feeds/api/videos/" + vidId + "?v=2";
-                XDocument movie = XDocument.Load(url);
-                YouTubeVideo video = new YouTubeVideo() { Id = vidId, Title = movie.Descendants().Where(p => p.Name.LocalName == "title").FirstOrDefault().Value, PubDate = Convert.ToDateTime(movie.Descendants().Where(p => p.Name.LocalName == "published").FirstOrDefault().Value), Thumbnail = new Uri("https://img.youtube.com/vi/" + vidId + "/mqdefault.jpg"), VideoLink = vidUri };
+                if (videoId == null)
+                {
+                    videoId = videoUri.Segments[1];
+                }
 
-                return video;
+                var youtubeService = new YouTubeService(new BaseClientService.Initializer()
+                {
+                    ApiKey = "AIzaSyCQZYhgRAjXZdBM2qCEYbZ9vO0T9eyyfjc",
+                    ApplicationName = "EatDanceRepeat"
+                });
+
+                var video = youtubeService.Videos.List("snippet, contentDetails");
+                video.Id = videoId;
+                var response = video.Execute();
+
+                YouTubeVideo ytVideo = response.Items.Select(i => new YouTubeVideo() { Id = i.Id, PubDate = Convert.ToDateTime(i.Snippet.PublishedAt), Title = i.Snippet.Title, Thumbnail = new Uri(i.Snippet.Thumbnails.Medium.Url), VideoLink = videoUri, YoutubeLink = videoUri }).FirstOrDefault();
+                return ytVideo;
             }
             catch (Exception ex)
             {

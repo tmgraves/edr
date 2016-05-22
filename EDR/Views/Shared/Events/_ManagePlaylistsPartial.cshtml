@@ -1,18 +1,64 @@
 ﻿@model IEnumerable<EDR.Models.EventPlaylist>
 
+@*<style>
+    .frame
+    {
+        /*background-image: url(../../Content/images/album.png); 
+        background-repeat: no-repeat; 
+        background-size: 100% 100%; 
+        background-position: center 70%;*/
+        background-color: #aaa;
+        height: 120px;
+        width: 100%;
+        position:relative;
+        display:inline-block;
+        text-align: left;
+    }
+    .frame img{
+        max-height: 100%;
+        max-width: 100%;
+    }
+    .frame .desc{
+        padding-top: 5px;
+        padding-left: 5px;
+        width: 90px;
+        height: 100%;
+        position:absolute;
+        background-color: #000000;
+        color: #eee;
+        top: 0px;
+        opacity: .9;
+        right: 0px
+    }
+    .frame .delete {
+        position:absolute;
+        top:5px;
+        left:5px;
+        display:none;
+    }
+
+    .frame:hover .delete {
+        display: block;
+    }
+</style>*@
+
 @foreach(var p in Model)
 {
-        <div class="col-lg-3">
-            <p>
-                @Ajax.ActionLink("X", "DeletePlaylist", "Event", new { id = p.Event.Id, playListId = p.Id },
+        <div class="col-lg-6">
+            <div class="frame">
+                <img src="@Url.Content(p.CoverPhoto ?? "~/Content/images/NoProfilePic.gif")" title="@p.Title" />
+                <div class="desc">
+                    @p.VideoCount Videos
+                </div>
+                @Ajax.ActionLink(" ", "DeletePlaylist", "Event", new { id = p.Event.Id, playListId = p.Id },
                 new AjaxOptions()
                 {
                     UpdateTargetId = "playlistsdiv",
                     OnSuccess = "done(this)"
-                })
-            </p>
-            <div style="background-image: url(@Url.Content(p.CoverPhoto ?? "~/Content/images/NoProfilePic.gif")); background-repeat: no-repeat; background-size: 90px 60px; background-position: center 70%;">
-                <img style="max-width: 100px; max-height: 100px;" src="~/Content/images/album.png" title="@p.Title" />
+                }, new { @class = "btn btn-danger glyphicon glyphicon-trash delete", @title = "Delete" })
             </div>
+            <p>
+                <div class="item-short" title="@p.Title"><strong>@p.Title</strong></div>
+            </p>
         </div>
 }

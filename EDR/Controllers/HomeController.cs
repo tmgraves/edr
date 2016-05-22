@@ -30,7 +30,9 @@ namespace EDR.Controllers
     {
         public ActionResult Index()
         {
-            return View();
+            var model = new HomeIndexViewModel();
+            model.DanceStyles = DataContext.DanceStyles.OrderByDescending(s => s.Events.Count()).Take(4).ToList();
+            return View(model);
         }
 
         public ActionResult Test()
@@ -412,6 +414,23 @@ namespace EDR.Controllers
         public ActionResult Test5()
         {
             return View();
+        }
+
+        [HttpGet]
+        public virtual ActionResult GetEventsPartial(double lat, double lng)
+        {
+            var start = DateTime.Today;
+            var end = start.AddDays(1);
+            var events = DataContext.Events
+                                .Include("DanceStyles")
+                                .Include("Place")
+                                .Include("EventInstances")
+                                .Include("Reviews")
+                                .Where(e => (e.Place.Longitude >= lng - .5 && e.Place.Longitude <= lng + .5) && (e.Place.Latitude >= lat - 5 && e.Place.Latitude <= lat + 5)
+                                        && e.EventInstances.Any(i => i.DateTime >= start)
+                                        );
+
+            return PartialView("~/Views/Shared/Home/_IndexEventsPartial.cshtml", events);
         }
     }
 }

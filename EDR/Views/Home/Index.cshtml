@@ -5,7 +5,7 @@
 }
 @section jumbotron
 {
-    <div class="jumbotron" style="background: url(/Content/images/dancebanner.jpg) no-repeat; background-size: cover; position: relative;">
+    <div class="jumbotron" style="background: url(/Content/images/dancebanner.jpg) no-repeat; background-size: cover; position: relative; padding: 0px !important;">
         <div style="max-height:100%;background:#fff;position:absolute;top:0;left:0;width:100%;height:100%;opacity:0.7;filter:alpha(opacity=50);z-index:1;"></div>
         <div class="container" style="z-index:2; position:relative;">
             <div class="row text-center">
@@ -14,7 +14,7 @@
                 </div>
                 @*<h1 style="font-family: 'Lucida Console', monospace">Eat. Dance. Repeat.</h1>*@
                 <h3>Your source for everything social dance related</h3>
-                <form id="bootstrapSelectForm" method="post" class="form-horizontal">
+                @*<form id="bootstrapSelectForm" method="post" class="form-horizontal">
                     <div class="btn-group" role="group">
                         <button type="button" class="btn btn-primary btn-lg dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                             Are You
@@ -28,14 +28,116 @@
                             <li role="presentation">@Html.ActionLink("a Studio/Club/Restaurant Owner?", "Home", "Owner", new { username = User.Identity.IsAuthenticated ? User.Identity.Name : "NotLoggedIn" }, null)</li>
                         </ul>
                     </div>
-                </form>
+                </form>*@
             </div>
         </div>
 </div>
 }
+<div class="row text-center">
+    <h2>Events in Your Area</h2>
+    <div class="form-inline">
+        <div class="form-group">
+            <input type="text" id="location" class="form-control" />
+            <button id="search" type="button" class="btn btn-primary">Search</button>
+        </div>
+    </div>
+</div>
+<input id="lat" hidden="hidden" />
+<input id="lng" hidden="hidden" />
+<div id="events">
+</div>
+
+<div class="row text-center" id="styles" style="background-color: #eee; margin-top: 40px;">
+    <div class="row">
+        <h2>Popular Dance Styles</h2>
+    </div>
+    <div class="row">
+        @foreach (var item in Model.DanceStyles)
+        {
+            <div class="col-lg-3">
+                @Html.DisplayFor(i => item, "DanceStyle")
+            </div>
+        }
+    </div>
+    <div style="padding: 10px;">
+        <h4>Looking for a specific style? @Html.ActionLink("Explore all Dance Styles", "Explore")</h4>
+    </div>
+</div>
+@section Scripts
+{
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+@Scripts.Render("~/bundles/jqueryval")
+@Scripts.Render("~/bundles/jqueryUI")
+@Scripts.Render("~/bundles/GeoComplete")
+<script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="../../Scripts/jquery.geocomplete.js"></script>
 
 <script>
+    $(function () {
+        $("#search").click(function () {
+            LoadEvents($("#lat").val(), $("#lng").val());
+        });
+    });
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(success);
+    }
+
+    function success(position) {
+        var loc = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+        //  LoadEvents(loc.lat(), loc.lng());
+        //  alert(JSON.stringify(loc));
+        //  buildLocation(loc);
+        buildLocation(position.coords.latitude.toString() + ", " + position.coords.longitude.toString());
+    }
+
+    function buildLocation(loc) {
+        //  alert("search");
+        var options = {
+            location: loc
+        };
+
+        $("#location").geocomplete(options)
+        .bind("geocode:result", function (event, result) {
+            var city;
+            var state;
+            var country;
+            $('#lat').prop("value", result.geometry.location.lat());
+            $('#lng').prop("value", result.geometry.location.lng());
+            $.each(result.address_components, function (i, address_component) {
+                if (address_component.types[0] == "locality") {
+                    city = address_component.long_name;
+                }
+                else if (address_component.types[0] == "administrative_area_level_1") {
+                    state = address_component.long_name;
+                }
+                else if (address_component.types[0] == "country") {
+                    country = address_component.short_name;
+                }
+            });
+
+            //  alert(city + ", " + state + ", " + country);
+            $('#location').prop('value', city + ", " + state + ", " + country);
+            LoadEvents(result.geometry.location.lat(), result.geometry.location.lng());
+        });
+    }
+
+    $(document).ready(function () {
+
+        LoadEvents(); //Loads partial view
+
+    });
+
+    function LoadEvents(lat, lng) {
+        $.get('@Url.Action("GetEventsPartial", "Home")', { 'lat': lat, 'lng': lng }, function (data) {
+            $("#events").empty();
+            $("#events").html(data);
+        });
+    }
+
     function doNavigate() {
         window.location.href = document.getElementById("UrlList").value;
     }
 </script>
+}

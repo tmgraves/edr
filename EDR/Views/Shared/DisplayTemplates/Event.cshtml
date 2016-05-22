@@ -1,0 +1,63 @@
+﻿@model EDR.Models.Event
+
+<style>
+    .vertical-container {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        display: block;
+    }
+    .vertical-container div {
+        text-align: center;
+        width: 100px;
+        text-align: center;
+        position: absolute;
+        top: 70px;
+        left: -32px;
+        transform: rotate(-90deg);
+    }
+</style>
+<div class="row" style="padding: 5px !important; height: 180px;">
+    <div class="box-default" style="padding: 5px; height: 100%;">
+        <div class="col-lg-4 nospace bg-success helper text-center" style="height: 100%;">
+            <div class="col-lg-2 nospace text-center" style="height: 100%;">
+                <div class="@(Model is EDR.Models.Class ? "bg-primary" : "bg-warning") text-center vertical-container">
+                    <div style="font-weight: bolder;">
+                        @(Model is EDR.Models.Class ? "CLASS" : "SOCIAL")
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-10 nospace text-left" style="height: 100%;">
+                <span style="line-height: 100%; vertical-align: middle;"></span><img style="max-width: 100%; max-height: 100%;" src='@Url.Content(Model.PhotoUrl ?? "~/Content/images/NoImage.png")' />
+            </div>
+        </div>
+        <div class="col-lg-5 text-left" style="height: 100%;">
+            <div id="parentc">
+                <input id="rv" type="hidden" value="@(Model.Reviews.Count() != 0 ? Model.Reviews.Average(r => r.Rating) : 0)" class="ratingval" />
+                <div id="cont" class="rateYo"></div>
+            </div>
+            <div class="item-title text-primary">
+                <a href="@Url.Action("View", "Event", new { id = Model.Id, eventType = EDR.Enums.EventType.Class })">
+                    @Model.Name
+                </a>
+            </div>
+            <div class="small" style="margin-top: 5px;">
+                @Html.DisplayFor(modelItem => Model.Place.Address)<br />
+                @Html.DisplayFor(modelItem => Model.Place.City), @Html.DisplayFor(modelItem => Model.Place.StateName) @Html.DisplayFor(modelItem => Model.Place.Zip)
+            </div>
+        </div>
+        <div class="col-lg-3 nospace">
+            <div class="bg-success text-right small" style="padding: 5px; height: 50%;">
+                <strong>@Model.EventInstances.Where(i => i.DateTime >= DateTime.Today).Min(i => i.DateTime).DayOfWeek</strong><br />
+                <strong>@Model.EventInstances.Where(i => i.DateTime >= DateTime.Today).Min(i => i.DateTime).ToString("MMMM dd, yyyy")</strong><br />
+                @Convert.ToDateTime(Model.StartTime).ToShortTimeString()<br />
+            </div>
+            <div class="text-right" style="padding: 0px !important; margin-top: 2px; white-space: normal; vertical-align: bottom; background-color: red;">
+                @foreach (var s in Model.DanceStyles)
+            {
+                    <span class="label label-default pull-right" style="margin: 1px;">@s.Name</span><text> </text>
+                }
+            </div>
+        </div>
+    </div>
+</div>

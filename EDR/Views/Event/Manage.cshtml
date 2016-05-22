@@ -23,14 +23,7 @@
 <h2>Manage @Model.Event.Name</h2>
 
 <p>
-    @Html.ActionLink("View Event", "View", new { id = Model.Event.Id, eventType = Model.EventType }, null)
-</p>
-@if (Model.EventType == EDR.Enums.EventType.Class)
-{
-    @Html.ActionLink("Back to School", "View", "School", new { id = Model.SchoolId }, null)
-}
-<p>
-    <a title="Delete" href="@Url.Action("Delete", "Event", new { id = Model.Event.Id, eventType = Model.EventType, returnUrl = Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this Event?')">
+    <a class="btn btn-danger" title="Delete" href="@Url.Action("Delete", "Event", new { id = Model.Event.Id, eventType = Model.EventType, returnUrl = Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this Event?')">
         Delete Event
     </a>
 </p>
@@ -44,11 +37,6 @@
     @Html.ValidationMessageFor(model => model.Event.StartDate, "", new { @class = "text-danger" })
     <input type="button" id="btnsave2" value="Save" class="btn btn-primary" />
 }*@
-<div class="row">
-    <div>
-
-    </div>    
-</div>
 <div class="container-fluid">
     <div class="col-lg-6 col-md-6">
         <div class="panel panel-default">
@@ -65,6 +53,17 @@
                             <div class="item-short">@Html.DisplayFor(model => model.Event.Name)</div>
                         </dd>
                     </dl>
+                    @if (Model.EventType == EDR.Enums.EventType.Class)
+                    {
+                        <dl class="dl-horizontal">
+                            <dt>
+                                School:
+                            </dt>
+                            <dd>
+                                @Html.ActionLink("Go to School Page", "View", "School", new { id = Model.SchoolId }, null)
+                            </dd>
+                        </dl>
+                    }
                     <dl class="dl-horizontal">
                         <dt>
                             @Html.DisplayNameFor(model => model.Event.StartDate)
@@ -422,6 +421,36 @@
                 }
             </div>
         </div>
+        <div class="panel panel-default">
+            <div class="panel-body ">
+                <h3>Connect</h3>
+                <p>
+                    @using (Ajax.BeginForm("AddLinkedMedia",
+                                "Event",
+                                new AjaxOptions()
+                                {
+                                    UpdateTargetId = "linksdiv",
+                                    OnSuccess = "done(this)"
+                                },
+                                new { @id = "addlinkedmediaform" }
+                                ))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(m => m.Event.Id)
+                        @Html.HiddenFor(m => m.EventType)
+                        @Html.TextBoxFor(m => m.NewLinkedMedia, "", new { placeholder = "Enter url for link", @class = "form-control col-md-4" })
+                        @Html.ValidationMessageFor(model => model.NewLinkedMedia, "", new { @class = "text-danger" })
+                        <input class="btn" type="submit" value="Add Linked Media" />
+                    }
+                </p>
+                <p>
+                    Add Twitter Link
+                </p>
+                <div id="linksdiv">
+                    @Html.Partial("~/Views/Shared/Events/_ManageLinkedMediaPartial.cshtml", Model.Event.LinkedMedia)
+                </div>
+            </div>
+        </div>
     </div>
     <div class="col-lg-6 col-md-6">
         @if (Model.Event.Recurring)
@@ -563,24 +592,49 @@
             <div class="panel-body ">
                 <h3>Videos</h3>
                 <hr />
-                <h4>Playlists</h4>
-                @using (Ajax.BeginForm("AddYouTubePlaylist",
-                                    "Event",
-                                    new AjaxOptions()
-                                    {
-                                        UpdateTargetId = "playlistsdiv",
-                                        OnSuccess = "done(this)"
-                                    },
-                                    new { @id = "addytplaylistform" }
-                                    ))
-                {
-                    @Html.AntiForgeryToken()
-                    @Html.HiddenFor(m => m.Event.Id)
-                    @Html.TextBoxFor(m => m.NewYoutubePlayList, new { placeholder = "Enter a YouTube Playlist url", @class = "form-control col-md-4" })
-                    <input class="btn" type="submit" value="Add Playlist" />
-                }
-                <div id="playlistsdiv">
+                <h3 class="text-info">Playlists</h3>
+                <div style="margin-bottom: 10px;">
+                    @using (Ajax.BeginForm("AddYouTubePlaylist",
+                            "Event",
+                            new AjaxOptions()
+                            {
+                                UpdateTargetId = "playlistsdiv",
+                                OnSuccess = "done(this)"
+                            },
+                            new { @id = "addytplaylistform" }
+                            ))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(m => m.Event.Id)
+                        @Html.TextBoxFor(m => m.NewYoutubePlayList, new { placeholder = "Enter a YouTube Playlist url", @class = "form-control col-md-4" })
+                        @Html.ValidationMessageFor(model => model.NewYoutubePlayList, "", new { @class = "text-danger" })
+                        <input class="btn" type="submit" value="Add Playlist" />
+                    }
+                </div>
+                <div class="row" id="playlistsdiv">
                     @Html.Partial("~/Views/Shared/Events/_ManagePlaylistsPartial.cshtml", Model.Event.Playlists)
+                </div>
+                <h3 class="text-info">Single Videos</h3>
+                <div style="margin-bottom: 10px;">
+                    @using (Ajax.BeginForm("AddYouTubeVideo",
+                    "Event",
+                    new AjaxOptions()
+                    {
+                        UpdateTargetId = "videosdiv",
+                        OnSuccess = "done(this)"
+                    },
+                    new { @id = "addytvideoform" }
+                    ))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(m => m.Event.Id)
+                        @Html.TextBoxFor(m => m.NewYouTubeVideo, new { placeholder = "Enter a YouTube Video url", @class = "form-control col-md-4" })
+                        @Html.ValidationMessageFor(model => model.NewYouTubeVideo, "", new { @class = "text-danger" })
+                        <input class="btn" type="submit" value="Add Video" />
+                    }
+                </div>
+                <div class="row" id="videosdiv">
+                    @Html.Partial("~/Views/Shared/Events/_ManageVideosPartial.cshtml", Model.Event.Videos)
                 </div>
             </div>
         </div>
@@ -588,21 +642,107 @@
             <div class="panel-body ">
                 <h3>Pictures</h3>
                 <hr />
-                @foreach (var p in Model.Event.Pictures.OrderByDescending(v => v.PhotoDate))
-                {
-                    <div class="col-lg-3">
-                        @Html.DisplayFor(m => p, "PictureThumbnail")
-                    </div>
-                }
-                <h4>Albums</h4>
-                @foreach (var p in Model.Event.Albums.OrderByDescending(p => p.AlbumDate))
-                {
-                    @:p.Title<br />
-                }
+                <h3 class="text-info">Albums</h3>
+                <button id="btnAddAlbum" type="button" class="btn btn-info" data-toggle="modal" data-target="#modalNewAlbum">
+                    Add Facebook Album
+                </button>
+                <div style="margin-bottom: 10px;">
+                    @using (Ajax.BeginForm("AddFacebookAlbum",
+                                            "Event",
+                                            new AjaxOptions()
+                                            {
+                                                UpdateTargetId = "albumsdiv",
+                                                OnSuccess = "done(this)"
+                                            },
+                                            new { @id = "addfbalbumform" }
+                                            ))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(m => m.Event.Id)
+                        @Html.TextBoxFor(m => m.NewFacebookAlbum, new { placeholder = "Enter a Facebook Album url", @class = "form-control col-md-4" })
+                        @Html.ValidationMessageFor(model => model.NewFacebookAlbum, "", new { @class = "text-danger" })
+                        <input class="btn" type="submit" value="Add Album" />
+                    }
+                </div>
+                <div class="row" id="albumsdiv">
+                    @Html.Partial("~/Views/Shared/Events/_ManageAlbumsPartial.cshtml", Model.Event.Albums)
+                </div>
+                <h3 class="text-info">Single Pictures</h3>
+                <div style="margin-bottom: 10px;">
+                    @using (Ajax.BeginForm("AddFacebookPicture",
+                                    "Event",
+                                    new AjaxOptions()
+                                    {
+                                        UpdateTargetId = "picturesdiv",
+                                        OnSuccess = "done(this)"
+                                    },
+                                    new { @id = "addfbpictureform" }
+                                    ))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(m => m.Event.Id)
+                        @Html.TextBoxFor(m => m.NewFacebookPicture, new { placeholder = "Enter a Facebook Picture url", @class = "form-control col-md-4" })
+                        @Html.ValidationMessageFor(model => model.NewFacebookPicture, "", new { @class = "text-danger" })
+                        <input class="btn" type="submit" value="Add Picture" />
+                    }
+                </div>
+                <div class="row" id="picturesdiv">
+                    @Html.Partial("~/Views/Shared/Events/_ManagePicturesPartial.cshtml", Model.Event.Pictures)
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal Album Upload -->
+<div class="modal fade" id="modalNewAlbum" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="picheader">Add a Facebook Album</h3>
+            </div>
+            <div class="modal-body">
+                <div class="row text-center">
+                    @if (Session["FacebookAlbums"] != null && ((IEnumerable<EDR.Models.FacebookAlbum>)Session["FacebookAlbums"]).Count() > 0)
+                    {
+                        foreach (var album in ((IEnumerable<EDR.Models.FacebookAlbum>)Session["FacebookAlbums"]).OrderByDescending(album => album.Updated_Time))
+                        {
+                            <div class="col-lg-3 thumbnail" style="padding: 5px;">
+                                <div class="frame">
+                                    <img src="@Url.Content(album.Cover_Photo ?? "~/Content/images/NoProfilePic.gif")" title="@album.Name" />
+                                    <div class="desc">
+                                        @album.Count
+                                    </div>
+                                </div>
+                                <p>
+                                    <div class="item-short" title="@album.Name"><strong>@album.Name</strong></div>
+                                </p>
+                                <div class="caption">
+                                    @Ajax.ActionLink("Add Album", "AddFacebookAlbum", "Event", new { id = Model.Event.Id, albumId = album.Id },
+                                        new AjaxOptions()
+                                        {
+                                            UpdateTargetId = "albumsdiv",
+                                                            OnSuccess = "done(this)"
+                                        }, new { @class = "btn btn-info addalbum", @title = "Add Album", @data_dismiss = "modal" })
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        @:No Facebook albums found.
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button id="btnupload" class="btn btn-danger" data-dismiss="modal" style="display: none;">Upload</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Picture Upload -->
 
 @section Scripts
 {
@@ -624,6 +764,8 @@
     })
     function done(form) {
         $('#NewYoutubePlayList').prop('value', "");
+        $('#NewYouTubeVideo').prop('value', "");
+        $('#NewLinkedMedia').prop('value', "");
     }
     $(function () {
         $('.start').timepicker({
@@ -834,3 +976,4 @@
     });
     </script>
 }
+

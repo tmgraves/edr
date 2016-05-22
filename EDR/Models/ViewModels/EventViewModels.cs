@@ -245,6 +245,7 @@ namespace EDR.Models.ViewModels
         public RoleName Role { get; set; }
         public int AvailableTickets { get; set; }
         public IEnumerable<Ticket> Tickets { get; set; }
+        public Review Review { get; set; }
 
         public EventViewModel()
         {
@@ -266,7 +267,15 @@ namespace EDR.Models.ViewModels
         public int? SchoolId { get; set; }
         public Place NewPlace { get; set; }
         public int? NewStyleId { get; set; }
-        public string NewYoutubePlayList { get; set; }
+        [RegularExpression("http[s]?://(www.youtube.com|youtu.?be)/.+$", ErrorMessage = "Please enter a valid YouTube link")]
+        public Uri NewYoutubePlayList { get; set; }
+        [RegularExpression("http[s]?://(www.youtube.com|youtu.?be)/.+$", ErrorMessage = "Please enter a valid YouTube link")]
+        public Uri NewYouTubeVideo { get; set; }
+        public FacebookAlbum NewFacebookAlbum { get; set; }
+        public FacebookPhoto NewFacebookPicture { get; set; }
+        [DataType(DataType.Url)]
+        [Url(ErrorMessage = "Please enter a valid Facebook, Twitter, or other url")]
+        public Uri NewLinkedMedia { get; set; }
 
         public EventManageViewModel()
         {

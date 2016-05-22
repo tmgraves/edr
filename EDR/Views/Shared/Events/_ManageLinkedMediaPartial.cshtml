@@ -1,0 +1,43 @@
+﻿@model IEnumerable<EDR.Models.LinkedMedia>
+
+@if (Model != null)
+{
+    <table class="table table table-condensed">
+        <thead>
+            <tr>
+                <th>
+                    Media
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        @foreach (var o in Model)
+        {
+            <tr>
+                <td>
+                    <a title="@o.Name (@o.MediaSource)" href="@o.Url" target="_blank">
+                        <div style="display: inline; width: 50%;">
+                            <div class="item-short" style="width: 100px;">@o.Name</div>
+                        </div>
+                        <div style="display: inline; width: 50%;">
+                            (@o.MediaSource)
+                        </div>
+                    </a>
+                </td>
+                <td>
+                    @if (!o.Default)
+                    {
+                        @Ajax.ActionLink(" ", "DeleteLinkedMedia", "Event", new { id = o.Event.Id, linkId = o.Id },
+                                    new AjaxOptions()
+                                    {
+                                        UpdateTargetId = "linksdiv",
+                                        OnSuccess = "done(this)"
+                                    }, new { @class = "btn btn-danger glyphicon glyphicon-trash delete", @title = "Delete" })
+                    }
+                </td>
+            </tr>
+        }
+    </table>
+}
+
+

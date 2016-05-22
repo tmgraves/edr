@@ -1,0 +1,22 @@
+﻿@model IEnumerable<EDR.Models.EventAlbum>
+
+@foreach (var a in Model)
+{
+    <div class="col-lg-6 thumbnail" style="padding: 5px;">
+        <div class="frame">
+            <img src="@Url.Content(a.CoverPhoto ?? "~/Content/images/NoProfilePic.gif")" title="@a.Name" />
+            <div class="desc">
+                @a.PhotoCount Pictures
+            </div>
+            @Ajax.ActionLink(" ", "DeleteAlbum", "Event", new { id = a.Event.Id, albumId = a.Id },
+                new AjaxOptions()
+                {
+                    UpdateTargetId = "albumsdiv",
+                    OnSuccess = "done(this)"
+                }, new { @class = "btn btn-danger glyphicon glyphicon-trash delete", @title = "Delete" })
+        </div>
+        <p>
+            <div class="item-short" title="@a.Name"><strong>@a.Name</strong></div>
+        </p>
+    </div>
+}

@@ -49,5 +49,6 @@ namespace EDR.Models
         public ICollection<ClassTeacherInvitation> ClassTeacherInvitations { get; set; }
         public ICollection<School> Schools { get; set; }
         public ICollection<Team> Teams { get; set; }
+        public virtual ICollection<Feed> Feeds { get; set; }
     }
 }

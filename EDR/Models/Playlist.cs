@@ -17,5 +17,6 @@ namespace EDR.Models
         public MediaSource MediaSource { get; set; }
         public virtual ICollection<Video> Videos { get; set; }
         public DateTime UpdatedDate { get; set; }
+        public int VideoCount { get; set; }
     }
 }

@@ -26,5 +26,6 @@ namespace EDR.Models
         public Uri Url { get; set; }
         public DateTime PubDate { get; set; }
         public Uri ThumbnailUrl { get; set; }
+        public int VideoCount { get; set; }
     }
 }

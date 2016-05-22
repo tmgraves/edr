@@ -37,6 +37,7 @@ namespace EDR.Models
         public ICollection<PlaceOwnerInvitation> PlaceOwnerInvitations { get; set; }
         public virtual ICollection<ApplicationUser> Users { get; set; }
         public virtual ICollection<EventInstance> EventInstances { get; set; }
+        public virtual ICollection<Feed> Feeds { get; set; }
 
         public Place()
         {

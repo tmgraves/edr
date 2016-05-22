@@ -30,5 +30,6 @@ namespace EDR.Models
         public virtual ICollection<Place> Places { get; set; }
         public ICollection<SocialPromoterInvitation> SocialPromoterInvitations { get; set; }
         public virtual ICollection<DanceStyle> DanceStyles { get; set; }
+        public virtual ICollection<Feed> Feeds { get; set; }
     }
 }
