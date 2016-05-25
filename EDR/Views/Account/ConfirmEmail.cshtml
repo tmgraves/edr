@@ -2,9 +2,18 @@
     ViewBag.Title = "ConfirmAccount";
 }
 
-<h2>@ViewBag.Title.</h2>
-<div>
-    <p>
-        Thank you for confirming your account. Please @Html.ActionLink("click here to log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })
-    </p>
+<div class="container">
+    <div class="center-block col-md-6 text-center" style="float: none;">
+        <h1>Account Confirmed!</h1>
+        <div class="panel panel-default">
+            <div class="panel-body bg-info">
+                <p>
+                    <h4>Thank you for confirming your account.</h4>
+                </p>
+                <p>
+                    @Html.ActionLink("Login Now", "Login", "Account", null, new { id = "loginLink", @class = "btn btn-primary" })
+                </p>
+            </div>
+        </div>
+    </div>
 </div>
