@@ -49,12 +49,20 @@ namespace EDR.Controllers
         // GET: Team/Details/5
         public ActionResult View(int? id)
         {
+            var userid = User.Identity.GetUserId();
+
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             var model = new TeamViewViewModel();
-            model.Team = DataContext.Teams.Include("School").Single(t => t.Id == id);
+            model.Team = DataContext.Teams
+                                .Include("School")
+                                .Include("Members.User")
+                                .Include("DanceStyles")
+                                .Include("Teachers.ApplicationUser")
+                                .Single(t => t.Id == id);
+            model.Member = model.Team.Members.Where(m => m.User.Id == userid).FirstOrDefault();
             if (model.Team == null)
             {
                 return HttpNotFound();
@@ -80,6 +88,18 @@ namespace EDR.Controllers
                 return HttpNotFound();
             }
             return View(model);
+        }
+
+        [Authorize(Roles = "Teacher,Owner")]
+        [HttpPost]
+        public ActionResult AddMember(TeamManageViewModel model)
+        {
+            if (DataContext.OrganizationMembers.Where(m => m.OrganizationId == model.Team.Id && m.UserId == model.NewMemberId).Count() == 0)
+            {
+                DataContext.OrganizationMembers.Add(new OrganizationMember() { OrganizationId = model.Team.Id, UserId = model.NewMemberId, Admin = false });
+                DataContext.SaveChanges();
+            }
+            return RedirectToAction("Manage", new { id = model.Team.Id });
         }
 
         [Authorize(Roles = "Teacher")]
@@ -119,6 +139,8 @@ namespace EDR.Controllers
                 var userid = User.Identity.GetUserId();
                 model.Team.Teachers = new List<Teacher>();
                 model.Team.Teachers.Add(DataContext.Teachers.Single(t => t.ApplicationUser.Id == userid));
+                model.Team.Members = new List<OrganizationMember>();
+                model.Team.Members.Add(new OrganizationMember() { UserId = userid, Admin = true, OrganizationId = model.Team.Id });
                 DataContext.Teams.Add(model.Team);
                 DataContext.SaveChanges();
                 return RedirectToAction("Index");
@@ -323,6 +345,40 @@ namespace EDR.Controllers
             DataContext.Teams.Include("DanceStyles").Single(e => e.Id == id).DanceStyles.Remove(DataContext.DanceStyles.Single(s => s.Id == styleId));
             DataContext.SaveChanges();
             return RedirectToAction("Manage", new { id = id });
+        }
+
+        [HttpGet]
+        public virtual ActionResult GetAuditionsPartial(int id)
+        {
+            var start = DateTime.Today;
+            var auditions = DataContext.Auditions
+                                .Include("Place")
+                                .Where(a => a.StartDate >= start && a.TeamId == id);
+            return PartialView("~/Views/Shared/DisplayTemplates/Auditions.cshtml", auditions);
+        }
+
+        [HttpGet]
+        public virtual ActionResult GetPerformancesPartial(int id)
+        {
+            var start = DateTime.Today;
+            var performances = DataContext.Performances
+                                .Include("Place")
+                                .Where(p => p.TeamId == id);
+            return PartialView("~/Views/Shared/DisplayTemplates/Performances.cshtml", performances);
+        }
+
+        // POST: Team
+        [HttpPost]
+        [Authorize]
+        public ActionResult UpdateMembers(TeamManageViewModel model)
+        {
+            foreach (var m in model.Team.Members)
+            {
+                var mem = DataContext.OrganizationMembers.Where(om => om.Id == m.Id).FirstOrDefault();
+                mem.Admin = m.Admin;
+            }
+            DataContext.SaveChanges();
+            return RedirectToAction("Manage", new { id = model.Team.Id });
         }
     }
 }

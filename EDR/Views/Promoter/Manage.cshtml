@@ -4,9 +4,14 @@
     ViewBag.Title = "Manage Promoter Profile";
 }
 
+<ol class="breadcrumb">
+    <li>@Html.ActionLink("All Promoters", "List", "Promoter")</li>
+    <li>@Html.ActionLink("Promoter Profile", "Home", "Promoter", new { username = Model.ApplicationUser.UserName }, null)</li>
+    <li class="active">Manage Profile</li>
+</ol>
+
 <h2 class="page-header">
     Manage Promoter Profile
-    @Html.ActionLink("View Public Page", "Home", new { id = User.Identity.Name }, new { @class = "small btn btn-link" })
 </h2>
 
 <div class="container-fluid">

@@ -1,7 +1,13 @@
 ﻿@model EDR.Models.ViewModels.TeamManageViewModel
 
+<ol class="breadcrumb">
+    <li>@Html.ActionLink("All Teams", "Index", "Team")</li>
+    <li>@Html.ActionLink("Team Page", "View", "Team", new { id = Model.Team.Id }, null)</li>
+    <li class="active">Manage Team</li>
+</ol>
+
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "Manage " + Model.Team.Name;
 }
 
 @section Scripts
@@ -275,16 +281,34 @@
         },
         minLength: 1
     });
+    $('#newmember').autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: '@Url.Action("Search", "Dancer")',
+                data: { searchString: request.term },
+                dataType: 'json',
+                type: 'GET',
+                success: function (data) {
+                    response($.map(data, function (item) {
+                        return {
+                            label: item.Name,
+                            value: item.Id
+                        }
+                    }));
+                }
+            })
+        },
+        select: function (event, ui) {
+            $('#newmember').val(ui.item.label);
+            $('#NewMemberId').val(ui.item.value);
+            return false;
+        },
+        minLength: 1
+    });
 </script>
 }
 
-<h2>Details</h2>
-<p>
-    @Html.ActionLink("View Profile Page", "View", new { id = Model.Team.Id })
-</p>
-<p>
-    @Html.ActionLink("View all Teams", "Index")
-</p>
+<h2>Manage: <span class="text-info">@Model.Team.Name</span></h2>
 <hr />
 
 <div class="container-fluid">
@@ -559,6 +583,37 @@
         </div>
     </div>
     <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div class="panel panel-default">
+            <div class="panel-body ">
+                <h3>Members</h3>
+                @using (Html.BeginForm("AddMember", "Team", FormMethod.Post))
+                {
+                    @Html.HiddenFor(model => model.Team.Id)
+                    @Html.HiddenFor(m => m.NewMemberId)
+                    <input type="text" id="newmember" placeholder="Search for a User" required class="form-control" />
+                    <input type="submit" value="Add Member" />
+                }
+                <div id="membersdiv">
+                    @using (Html.BeginForm("UpdateMembers", "Team", FormMethod.Post))
+                    {
+                        @Html.HiddenFor(model => model.Team.Id)
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Admin</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            @Html.EditorFor(model => model.Team.Members)
+                        </table>
+                        <div>
+                            <input type="submit" value="Update Members" />
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
         <div class="panel panel-default">
             <div class="panel-body ">
                 <h3>Rehearsal Schedule</h3>

@@ -1,0 +1,47 @@
+﻿@model EDR.Models.DanceStyle
+
+<div class="col-lg-12 nospace box-default" style="height: 100%;">
+    <div class="col-lg-5" style="height: 100%; padding: 20px;">
+        <div style="width: 100%; height: 100%; background-color: #eee;">
+            <img style="max-width: 100%; max-height: 100%;" src='@Url.Content(Model.PhotoUrl ?? "~/Content/images/NoImage.png")' />
+        </div>
+    </div>
+    <div class="col-lg-7" style="height: 100%; padding-right: 20px;">
+        <a href="@Url.Action("Details", "DanceStyle", new { styleName = Model.Name })">
+            <h3 class="text-primary">@Model.Name</h3>
+        </a>
+        <div class="item-short">@Model.Description</div>
+        <div>
+            <div class="col-lg-3 nospace text-info">
+                Teachers:
+            </div>
+            <div class="col-lg-9 nospace">
+                @Model.Teachers.Count()
+            </div>
+        </div>
+        <div>
+            <div class="col-lg-3 nospace text-info">
+                Dancers:
+            </div>
+            <div class="col-lg-9 nospace">
+                @Model.Dancers.Count()
+            </div>
+        </div>
+        <div>
+            <div class="col-lg-3 nospace text-info">
+                Classes:
+            </div>
+            <div class="col-lg-9 nospace">
+                @(Model.Events.OfType<EDR.Models.Class>().Count())
+            </div>
+        </div>
+        <div>
+            <div class="col-lg-3 nospace text-info">
+                Socials:
+            </div>
+            <div class="col-lg-9 nospace">
+                @(Model.Events.OfType<EDR.Models.Social>().Count())
+            </div>
+        </div>
+    </div>
+</div>

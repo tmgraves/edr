@@ -4,6 +4,9 @@
     ViewBag.Title = "List";
 }
 
+<ol class="breadcrumb">
+    <li class="active">All Teachers</li>
+</ol>
 <h2 class="text-center">Teachers</h2>
 
 @using (Html.BeginForm("List", "Teacher", FormMethod.Post, new { @class = "formmain" }))

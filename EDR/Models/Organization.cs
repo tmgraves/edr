@@ -114,7 +114,7 @@ namespace EDR.Models
     {
         [Required]
         [DataType(DataType.Date)]
-        [Display(Name = "Audition Date")]
+        [Display(Name = "Performance Date")]
         [DisplayFormat(DataFormatString = "{0:MM-dd-yyyy}")]
         public DateTime StartDate { get; set; }
         [Required]

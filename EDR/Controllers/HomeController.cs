@@ -140,7 +140,11 @@ namespace EDR.Controllers
         public ActionResult Explore()
         {
             var viewModel = new HomeExploreViewModel();
-            viewModel.DanceStyles = DataContext.DanceStyles.Include("Dancers").ToList();
+            viewModel.DanceStyles = DataContext.DanceStyles
+                                        .Include("Dancers")
+                                        .Include("Teachers")
+                                        .Include("Events")
+                                        .ToList();
             return View(viewModel);
         }
 

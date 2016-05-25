@@ -1,5 +1,10 @@
 ﻿@model EDR.Models.Event
 
+@{
+    var cls = Model is EDR.Models.Class ? (EDR.Models.Class)Model : null;
+    var soc = Model is EDR.Models.Social ? (EDR.Models.Social)Model : null;
+}
+
 <style>
     .vertical-container {
         width: 100%;
@@ -13,7 +18,7 @@
         text-align: center;
         position: absolute;
         top: 70px;
-        left: -32px;
+        left: -35px;
         transform: rotate(-90deg);
     }
 </style>
@@ -23,7 +28,7 @@
             <div class="col-lg-2 nospace text-center" style="height: 100%;">
                 <div class="@(Model is EDR.Models.Class ? "bg-primary" : "bg-warning") text-center vertical-container">
                     <div style="font-weight: bolder;">
-                        @(Model is EDR.Models.Class ? "CLASS" : "SOCIAL")
+                        @(cls != null ? cls.ClassType.ToString().ToUpper() : soc.SocialType.ToString().ToUpper())
                     </div>
                 </div>
             </div>
@@ -45,12 +50,52 @@
                 @Html.DisplayFor(modelItem => Model.Place.Address)<br />
                 @Html.DisplayFor(modelItem => Model.Place.City), @Html.DisplayFor(modelItem => Model.Place.StateName) @Html.DisplayFor(modelItem => Model.Place.Zip)
             </div>
+            @if (cls != null)
+            {
+                <div style="padding-top: 10px; padding-bottom: 10px;">
+                    Teacher(s): @Html.DisplayFor(m => cls.Teachers, "TeacherLinks")
+                </div>
+                <div>
+                    <span class="label label-success">
+                        @{
+                            switch (cls.SkillLevel)
+                            {
+                                case 1:
+                                    <text>Beginner</text>;
+                                    break;
+                                case 2:
+                                    <text>Beginner/Intermediate</text>;
+                                    break;
+                                case 3:
+                                    <text>Intermediate</text>;
+                                    break;
+                                case 4:
+                                    <text>Intermediate/Advanced</text>;
+                                    break;
+                                case 5:
+                                    <text>Advanced</text>;
+                                    break;
+                            }
+                        }
+                    </span>
+                </div>
+            }
         </div>
         <div class="col-lg-3 nospace">
             <div class="bg-success text-right small" style="padding: 5px; height: 50%;">
-                <strong>@Model.EventInstances.Where(i => i.DateTime >= DateTime.Today).Min(i => i.DateTime).DayOfWeek</strong><br />
-                <strong>@Model.EventInstances.Where(i => i.DateTime >= DateTime.Today).Min(i => i.DateTime).ToString("MMMM dd, yyyy")</strong><br />
-                @Convert.ToDateTime(Model.StartTime).ToShortTimeString()<br />
+                @{
+                    var instances = Model.EventInstances.Where(i => i.DateTime >= DateTime.Today);
+                }
+                @if (instances.Count() != 0)
+                {
+                    <strong>@Model.EventInstances.Where(i => i.DateTime >= DateTime.Today).Min(i => i.DateTime).DayOfWeek</strong><br />
+                    <strong>@Model.EventInstances.Where(i => i.DateTime >= DateTime.Today).Min(i => i.DateTime).ToString("MMMM dd, yyyy")</strong><br />
+                    @Convert.ToDateTime(Model.StartTime).ToShortTimeString()
+                }
+                else
+                {
+                    <text>Past Event</text>
+                }
             </div>
             <div class="text-right" style="padding: 0px !important; margin-top: 2px; white-space: normal; vertical-align: bottom; background-color: red;">
                 @foreach (var s in Model.DanceStyles)

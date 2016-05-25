@@ -1,125 +1,159 @@
 ﻿@model EDR.Models.ViewModels.TeamViewViewModel
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = Model.Team.Name + " Details";
 }
 
-<h2>Details</h2>
-<p>
-    @Html.ActionLink("View all Teams", "Index") |
-    @Html.ActionLink("Manage", "Manage", new { id = Model.Team.Id }, null)
-</p>
-<div>
-    <h4>Team</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.Name)
-        </dt>
+<ol class="breadcrumb">
+    <li>@Html.ActionLink("All Teams", "Index", "Team")</li>
+    <li class="active">Team Page</li>
+</ol>
 
-        <dd>
-            @Html.DisplayFor(model => model.Team.Name)
-        </dd>
-    </dl>
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.Label("School")
-        </dt>
-        <dd>
-            @if (Model.Team.School != null)
-            {
-                @Html.ActionLink(Model.Team.School.Name, "View", "School", new { id = Model.Team.School.Id }, null)
-            }
-        </dd>
-    </dl>
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.Description)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Team.Description)
-        </dd>
-    </dl>
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.FacebookLink)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Team.FacebookLink)
-        </dd>
-    </dl>
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.Public)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Team.Public)
-        </dd>
-    </dl>
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.DateStarted)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Team.DateStarted)
-        </dd>
-    </dl>
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.Address)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Team.Address)
-        </dd>
-    </dl>
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.Address2)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Team.Address2)
-        </dd>
-    </dl>
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.City)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Team.City)
-        </dd>
-    </dl>
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.State)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Team.State)
-        </dd>
-    </dl>
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.Zip)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Team.Zip)
-        </dd>
-    </dl>
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Team.Country)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Team.Country)
-        </dd>
-    </dl>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="col-lg-12 buttoncontainer" style="background-color: #ddd; padding: 20px; border: 1px solid #aaa;">
+                @if (Model.Member != null && Model.Member.Admin)
+                {
+                    @Html.ActionLink("Manage", "Manage", "Team", new { id = Model.Team.Id }, new { @class = "btn btn-warning actionbutton" })
+                }
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div id="img_container">
+                            <img id="profilepic" style="max-width: 100%; max-height: 100%;" src="@Url.Content(Model.Team.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
+                        </div>
+                    </div>
+                    <div class="col-lg-8 nospace">
+                        <h2>@Model.Team.Name</h2>
+                        <p>
+                            @Model.Team.City, @Model.Team.State
+                        </p>
+                        <p>
+                            @@ @Html.ActionLink(Model.Team.School.Name, "View", "School", new { id = Model.Team.SchoolId }, new { @class = "lead" })
+                        </p>
+                        <p>
+                            <span class="label label-success">
+                                @{
+                                    switch (Model.Team.SkillLevel)
+                                    {
+                                        case 1:
+                                            <text>Beginner</text>;
+                                            break;
+                                        case 2:
+                                            <text>Beginner/Intermediate</text>;
+                                            break;
+                                        case 3:
+                                            <text>Intermediate</text>;
+                                            break;
+                                        case 4:
+                                            <text>Intermediate/Advanced</text>;
+                                            break;
+                                        case 5:
+                                            <text>Advanced</text>;
+                                            break;
+                                    }
+                                }
+                            </span>
+                        </p>
+                        <div>
+                            @if (Model.Team.FacebookLink != null)
+                            {
+                                <a class="img-thumbnail" href='@Model.Team.FacebookLink' target="_blank" title="Visit Me On Facebook"><img src="@Url.Content("~/Content/images/facebookSmall.png")" /></a>
+                            }
+                            @*@if (Model.School.Website != null)
+                                {
+                                    <a class="img-thumbnail" href='@Model.School.Website' target="_blank" title="Visit Me On the Web"><img src="@Url.Content("~/Content/images/web.png")" /></a>
+                                }*@
+                            @*@if (Model.School.ContactEmail != null)
+                                {
+                                    <a class="img-thumbnail" href='mailto:@Model.Teacher.ContactEmail' title="Email Me"><img src="@Url.Content("~/Content/images/email.png")" /></a>
+                                }*@
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12" style="background-color: #fff; margin-top: 20px; padding-top: 20px;">
+                    <p>
+                        @Html.Label("Dance Styles:", new { @class = "form-label col-md-4" })
+                        @Html.DisplayFor(m => Model.Team.DanceStyles, "DanceStyleLabels")
+                    </p>
+                    <div class="col-lg-12" style="padding-bottom: 20px;">
+                        @Html.DisplayFor(m => m.Team.Description)
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12" style="margin-top: 20px; padding-bottom: 20px; border: 1px solid #aaa;">
+                <h3>Teachers</h3>
+                @foreach (var item in Model.Team.Teachers)
+                {
+                    <div class="col-lg-2">
+                        @Html.DisplayFor(m => item, "Teacher")
+                    </div>
+                }
+            </div>
+            <div class="col-lg-12" style="margin-top: 20px; padding-bottom: 20px; border: 1px solid #aaa;">
+                <h3>Dancers</h3>
+                @foreach (var item in Model.Team.Members)
+                {
+                    <div class="col-lg-2">
+                        @Html.DisplayFor(m => item.User, "DancerThumbLink")
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-6">
+            <div class="col-lg-12" style="border: 1px solid #aaa; margin-bottom: 20px;">
+                <h3>Performances</h3>
+                <div id="performances">
+                </div>
+            </div>
+            <div class="col-lg-12" style="border: 1px solid #aaa; margin-bottom: 20px;">
+                <h3>Auditions</h3>
+                <div id="auditions">
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+@section Scripts
+{
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jqueryUI")
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="~/Content/jquery.rateyo.css" />
+    <script src="~/Scripts/jquery.rateyo.js"></script>
+    <script src="~/Scripts/jquery-simple-pagination-plugin.js"></script>
+    @*<link href="~/Content/Simple-Pagination.css" rel="stylesheet" />*@
+
+<script>
+    $(document).ready(function () {
+        LoadPerformances(); //Loads events partial view
+        LoadAuditions(); //Loads events partial view
+    });
+    function BuildRatingStars() {
+        $(".rateYo").rateYo({
+            starWidth: "18px",
+            ratedFill: "#FFD700",
+            normalFill: "#ccc",
+            onInit: function (rating, rateYoInstance) {
+                var t = $(this);
+                $(this).rateYo("option", "rating", t.parent('div').find('.ratingval').prop('value'));
+                $(this).rateYo("option", "readOnly", true);
+            }
+        });
+    }
+
+    function LoadPerformances() {
+        $.get('@Url.Action("GetPerformancesPartial", "Team")', { 'id': '@Model.Team.Id' }, function (data) {
+            $("#performances").empty();
+            $("#performances").html(data);
+        });
+    }
+    function LoadAuditions() {
+        $.get('@Url.Action("GetAuditionsPartial", "Team")', { 'id': '@Model.Team.Id' }, function (data) {
+            $("#auditions").empty();
+            $("#auditions").html(data);
+        });
+    }
+</script>
+}

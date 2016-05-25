@@ -18,7 +18,7 @@
                             <div id="cont" class="rateYo"></div>
                         </div>
                         <div class="item-title text-primary">
-                            <a href="@Url.Action("View", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Social })">
+                            <a href="@Url.Action("View", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Social })" onmouseover="openEvent(@rowNo, @item.Place.Latitude, @item.Place.Longitude); return false;">
                                 @(rowNo + 1). @item.Name
                             </a>
                         </div>
@@ -26,7 +26,6 @@
                             @Html.DisplayFor(modelItem => item.Place.Address)<br />
                             @Html.DisplayFor(modelItem => item.Place.City), @Html.DisplayFor(modelItem => item.Place.StateName) @Html.DisplayFor(modelItem => item.Place.Zip)
                         </div>
-                        <a href="#" class="small" onclick="openEvent(@rowNo, @item.Place.Latitude, @item.Place.Longitude); return false;">View on Map</a>
                     </div>
                     <div class="col-lg-3 bg-success text-right small" style="padding: 5px;">
                         <strong>@item.NextDate.DayOfWeek</strong><br />

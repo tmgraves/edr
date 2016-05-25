@@ -125,6 +125,20 @@ namespace EDR.Controllers
             return viewModel;
         }
 
+        [HttpGet]
+        public virtual ActionResult GetSocialsPartial(int id)
+        {
+            var start = DateTime.Today;
+            var socials = DataContext.Socials
+                                .Include("DanceStyles")
+                                .Include("Place")
+                                .Include("EventInstances.EventRegistrations")
+                                .Include("Reviews")
+                                .Where(c => c.EventInstances.Any(i => i.DateTime >= start)
+                                        && c.Promoters.Any(p => p.Id == id));
+            return PartialView("~/Views/Shared/_EventsPartial.cshtml", socials);
+        }
+
         [Authorize]
         public ActionResult View(string username)
         {

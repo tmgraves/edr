@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using EDR.Enums;
+using System.Text.RegularExpressions;
 
 namespace EDR.Controllers
 {
@@ -98,18 +99,20 @@ namespace EDR.Controllers
             var model = new ViewSchoolViewModel(
                         DataContext.Schools
                         .Where(s => s.Id == id)
-                        .Include("Members")
                         .Include("Members.User")
-                        .Include("Classes")
-                        .Include("Tickets")
+                        .Include("DanceStyles")
                         .Include("Tickets.Event")
-                        .Include("Owners")
                         .Include("Owners.ApplicationUser")
-                        .Include("Teachers")
                         .Include("Teachers.ApplicationUser")
-                        .Include("Teams")
+                        .Include("Teams.DanceStyles")
                         .FirstOrDefault());
-            model.Member = DataContext.OrganizationMembers.Where(m => m.OrganizationId == id && m.UserId == userid && m.Admin).FirstOrDefault();
+            model.Member = DataContext.OrganizationMembers
+                                        .Where(m => m.OrganizationId == id && m.UserId == userid && m.Admin).FirstOrDefault();
+            model.UserTickets = DataContext.UserTickets
+                                        .Include("Ticket")
+                                        .Include("EventRegistrations")
+                                        .Where(t => t.Ticket.SchoolId == id && t.UserId == userid).ToList();
+            model.School.DanceStyles = DataContext.DanceStyles.Where(s => s.Events.OfType<Class>().Any(c => c.SchoolId == id)).ToList();
             return View(model);
         }
 
@@ -247,6 +250,70 @@ namespace EDR.Controllers
                 DataContext.SaveChanges();
             }
             return RedirectToAction("Manage", new { id = model.School.Id });
+        }
+
+        [Authorize]
+        [HttpGet]
+        public virtual ActionResult GetFacebookPicturesPartial()
+        {
+            var userid = User.Identity.GetUserId();
+            var user = DataContext.Users.Single(u => u.Id == userid);
+            var photos = new List<FacebookPhoto>();
+            if (user.FacebookToken != null)
+            {
+                photos = EDR.Utilities.FacebookHelper.GetPhotos(user.FacebookToken);
+            }
+            return PartialView("~/Views/Shared/Teacher/_PickFacebookPicturePartial.cshtml", photos);
+        }
+
+        [Authorize]
+        [HttpPost]
+        public JsonResult UploadImageAsync(string imageData, int id)
+        {
+            var newFile = new UploadFile();
+            if (string.IsNullOrEmpty(imageData))
+                newFile.UploadStatus = "Failed";
+
+            Match imageMatch = Regex.Match(imageData, @"^data:(?<mimetype>[^;]+);base64,(?<data>.+)$");
+            if (!imageMatch.Success)
+                newFile.UploadStatus = "Failed";
+
+            string mimeType = imageMatch.Groups["mimetype"].Value;
+            Match imageType = Regex.Match(mimeType, @"^[^/]+/(?<type>.+?)$");
+            if (!imageType.Success)
+                newFile.UploadStatus = "Failed";
+
+            string fileExtension = imageType.Groups["type"].Value;
+            byte[] data2 = Convert.FromBase64String(imageMatch.Groups["data"].Value);
+
+            if (newFile.UploadStatus != "Failed")
+            {
+                newFile = EDR.Utilities.ApplicationUtility.UploadFromPath(imageData);
+                if (newFile.UploadStatus == "Success")
+                {
+                    var school = DataContext.Schools.Single(s => s.Id == id);
+                    EDR.Utilities.ApplicationUtility.DeletePicture(new Picture() { Filename = school.PhotoUrl });
+                    school.PhotoUrl = newFile.FilePath;
+                    DataContext.SaveChanges();
+                }
+            }
+            var objUpload = new { FilePath = Url.Content(newFile.FilePath), UploadStatus = newFile.UploadStatus };
+            return Json(objUpload, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public virtual ActionResult GetClassesPartial(int id)
+        {
+            var start = DateTime.Today;
+            var classes = DataContext.Classes
+                                .Include("DanceStyles")
+                                .Include("Place")
+                                .Include("EventInstances.EventRegistrations")
+                                .Include("Reviews")
+                                .Include("Teachers.ApplicationUser")
+                                .Where(c => c.EventInstances.Any(i => i.DateTime >= start)
+                                        && c.SchoolId == id);
+            return PartialView("~/Views/Shared/_EventsPartial.cshtml", classes);
         }
 
         //// GET: School

@@ -4,9 +4,14 @@
     ViewBag.Title = "Manage Owner Profile";
 }
 
+<ol class="breadcrumb">
+    <li>@Html.ActionLink("All Owners", "List", "Owner")</li>
+    <li>@Html.ActionLink("Owner Profile", "Home", "Owner", new { username = Model.ApplicationUser.UserName }, new { })</li>
+    <li class="active">Manage Owner Profile</li>
+</ol>
+
 <h2 class="page-header">
     Manage Owner Profile
-    @Html.ActionLink("View Public Page", "Home", new { id = User.Identity.Name }, new { @class = "small btn btn-link" })
 </h2>
 
 <div class="container-fluid">

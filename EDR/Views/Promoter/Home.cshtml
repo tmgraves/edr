@@ -3,25 +3,119 @@
 @using EDR.Utilities
 
 @{
-    ViewBag.Title = "Home";
-    Layout = "~/Views/Promoter/_PromoterLayout.cshtml";
+    ViewBag.Title = Model.Promoter.ApplicationUser.FullName + " - Promoter";
 }
 
-<script type="text/javascript">
-    $(document).ready(function (e) {
-        //  locate each partial section
-        //  if it has a URL set, load the contents into the area.
+<ol class="breadcrumb">
+    <li>@Html.ActionLink("All Promoters", "List", "Promoter")</li>
+    <li class="active">Promoter Profile</li>
+</ol>
 
-        $(".partialContents").each(function (index, item) {
-            var url = $(item).data("url");
-            if (url && url.length > 0) {
-                $(item).load(url);
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="col-lg-12 buttoncontainer" style="background-color: #ddd; padding: 20px; border: 1px solid #aaa;">
+                @if (User.Identity.Name == Model.Promoter.ApplicationUser.UserName)
+                {
+                    @Html.ActionLink("Edit", "Manage", "Promoter", null, new { @class = "btn btn-warning actionbutton" })
+                }
+                <div class="col-lg-4 nospace">
+                    <div id="img_container">
+                        <img id="profilepic" style="max-width: 100%; max-height: 100%;" src="@Url.Content(Model.Promoter.ApplicationUser.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <h2>@Model.Promoter.ApplicationUser.FullName</h2>
+                    <p>
+                        @Model.Promoter.ApplicationUser.Location
+                    </p>
+                    <div>
+                        @if (Model.Promoter.Facebook != null)
+                        {
+                            <a class="img-thumbnail" href='@Model.Promoter.Facebook' target="_blank" title="Visit Me On Facebook"><img src="@Url.Content("~/Content/images/facebookSmall.png")" /></a>
+                        }
+                        @if (Model.Promoter.Website != null)
+                        {
+                            <a class="img-thumbnail" href='@Model.Promoter.Website' target="_blank" title="Visit Me On the Web"><img src="@Url.Content("~/Content/images/web.png")" /></a>
+                        }
+                        @if (Model.Promoter.ContactEmail != null)
+                        {
+                            <a class="img-thumbnail" href='mailto:@Model.Promoter.ContactEmail' title="Email Me"><img src="@Url.Content("~/Content/images/email.png")" /></a>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12" style="border: 1px solid #aaa; margin-top: 20px;">
+                <h3>My Places</h3>
+                @if (Model.Promoter.Places != null && Model.Promoter.Places.Count() > 0)
+                {
+                    foreach (var pl in Model.Promoter.Places.OrderBy(s => s.Name))
+                    {
+                        @Html.DisplayFor(m => pl, "Place")
+                        <hr />
+                    }
+                }
+                else
+                {
+                    @: No Places
+                }
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="col-lg-12 nospace">
+                @if (Model.Promoter.ApplicationUser.SpotifyUri != null)
+                {
+                    <iframe src="https://embed.spotify.com/?uri=@Model.Promoter.ApplicationUser.SpotifyUri" width="500" height="280" frameborder="0" allowtransparency="true"></iframe>
+                }
+            </div>
+            <div class="col-lg-12" style="border: 1px solid #aaa; margin-top: 20px;">
+                <h3>Socials</h3>
+                <div id="socials">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+{
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jqueryUI")
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="~/Content/jquery.rateyo.css" />
+    <script src="~/Scripts/jquery.rateyo.js"></script>
+    <script src="~/Scripts/jquery-simple-pagination-plugin.js"></script>
+    @*<link href="~/Content/Simple-Pagination.css" rel="stylesheet" />*@
+
+    <script>
+    $(document).ready(function () {
+        LoadSocials(); //Loads events partial view
+        BuildRatingStars();
+    });
+
+    function LoadSocials() {
+        $.get('@Url.Action("GetSocialsPartial", "Promoter")', { 'id': '@Model.Promoter.Id' }, function (data) {
+            $("#socials").empty();
+            $("#socials").html(data);
+        });
+    }
+
+    function BuildRatingStars() {
+        $(".rateYo").rateYo({
+            starWidth: "18px",
+            ratedFill: "#FFD700",
+            normalFill: "#ccc",
+            onInit: function (rating, rateYoInstance) {
+                var t = $(this);
+                $(this).rateYo("option", "rating", t.parent('div').find('.ratingval').prop('value'));
+                $(this).rateYo("option", "readOnly", true);
             }
         });
-    });
-</script>
+    }
+    </script>
+}
 
-<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+@*<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
     <h4>Recent Activity</h4>
     <div class="partialContents" data-url="/Promoter/@Model.Promoter.ApplicationUser.UserName/GetUpdates">
         <img src="~/Content/images/indicator.white.gif" />Loading...
@@ -73,9 +167,6 @@
             {
                 @: No Facebook Events to Import
             }
-            @*<a class="btn btn-primary" href="@Url.Action("ImportClassFromFacebook", "Event")">
-                    <h4>More Events...</h4>
-                </a>*@
         </div>
     </div>
     <div class="panel panel-warning">
@@ -86,4 +177,4 @@
             @Html.Partial("~/Views/Shared/Events/_UserListPartial.cshtml", Model.NewDancers)
         </div>
     </div>
-</div>
+</div>*@

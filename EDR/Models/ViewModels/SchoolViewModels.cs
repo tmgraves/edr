@@ -47,6 +47,7 @@ namespace EDR.Models.ViewModels
     {
         public School School { get; set; }
         public OrganizationMember Member { get; set; }
+        public List<UserTicket> UserTickets { get; set; }
 
         public ViewSchoolViewModel(School school)
         {

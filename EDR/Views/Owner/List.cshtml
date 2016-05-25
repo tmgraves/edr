@@ -4,6 +4,9 @@
     ViewBag.Title = "List of Owners";
 }
 
+<ol class="breadcrumb">
+    <li class="active">All Owners</li>
+</ol>
 <h2 class="text-center">Owners</h2>
 
 @using (Html.BeginForm("List", "Owner", FormMethod.Post, new { @class = "formmain" }))

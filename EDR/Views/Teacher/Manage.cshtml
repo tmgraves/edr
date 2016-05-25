@@ -4,9 +4,14 @@
     ViewBag.Title = "Manage Teacher Profile";
 }
 
+<ol class="breadcrumb">
+    <li>@Html.ActionLink("All Teachers", "List", "Teacher")</li>
+    <li>@Html.ActionLink("Teacher Profile", "Home", "Teacher", new { username = Model.Teacher.ApplicationUser.UserName }, new { })</li>
+    <li class="active">Manage Profile</li>
+</ol>
+
 <h2 class="page-header">
     Manage Teacher Profile
-    @Html.ActionLink("View Public Page", "Home", new { id = User.Identity.Name }, new { @class = "small btn btn-link" })
 </h2>
 
 <style>

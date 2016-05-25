@@ -1,0 +1,15 @@
+﻿@model EDR.Models.Place
+
+<div class="col-lg-12" style="padding-left: 0px !important; margin-bottom: 10px;">
+    <div class="col-lg-3 nospace" style="background-color: #eee;">
+        <img style="max-height: 100%; max-width: 100%;" src="@Url.Content(Model.Filename ?? "~/Content/images/NoProfilePic.gif")" title="@Model.Name" />
+    </div>
+    <div class="col-lg-9">
+        <div class="col-lg-12 nospace">
+            @Html.ActionLink(Model.Name, "View", "Place", new { id = Model.Id }, new { @class = "lead text-warning" })
+        </div>
+        <div class="col-lg-12 nospace">
+            @Model.PlaceType
+        </div>
+    </div>
+</div>

@@ -14,15 +14,13 @@
                     </div>
                     <div class="col-lg-6 text-left">
                         <div class="item-title text-primary">
-                            <a href="@Url.Action("Home", "Owner", new { id = item.ApplicationUser.UserName })">
+                            <a href="@Url.Action("Home", "Owner", new { id = item.ApplicationUser.UserName })" onmouseover="openEvent(@rowNo, @item.ApplicationUser.Latitude, @item.ApplicationUser.Longitude); return false;">
                                 @(rowNo + 1). @item.ApplicationUser.FullName
                             </a>
                         </div>
                         <div class="small" style="margin-top: 5px;">
-                            @Html.DisplayFor(modelItem => item.ApplicationUser.Address)<br />
-                            @Html.DisplayFor(modelItem => item.ApplicationUser.City), @Html.DisplayFor(modelItem => item.ApplicationUser.State) @Html.DisplayFor(modelItem => item.ApplicationUser.ZipCode)
+                            @Html.DisplayFor(modelItem => item.ApplicationUser.City), @Html.DisplayFor(modelItem => item.ApplicationUser.State)
                         </div>
-                        <a href="#" class="small" onclick="openEvent(@rowNo, @item.ApplicationUser.Latitude, @item.ApplicationUser.Longitude); return false;">View on Map</a>
                     </div>
                 </div>
             </div>

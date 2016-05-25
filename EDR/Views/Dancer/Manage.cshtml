@@ -29,8 +29,13 @@
     }
 </style>
 
+<ol class="breadcrumb">
+    <li>@Html.ActionLink("All Dancers", "List", "Dancer")</li>
+    <li>@Html.ActionLink("Dancer Profile", "Home", "Dancer", new { username = Model.Dancer.UserName }, new { })</li>
+    <li class="active">Manage Profile</li>
+</ol>
+
 <h2 class="page-header">Manage My Profile
-    @Html.ActionLink("View Public Page", "Home", new { id = User.Identity.Name }, new { @class = "small btn btn-link" })
 </h2>
 
 <div class="container-fluid">

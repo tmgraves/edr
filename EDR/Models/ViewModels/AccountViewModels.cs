@@ -74,14 +74,22 @@ namespace EDR.Models.ViewModels
         public string LastName { get; set; }
 
         [Required]
-        [DataType(DataType.PostalCode)]
-        [Display(Name = "Zip Code")]
-        public string ZipCode { get; set; }
+        [Display(Name = "Location")]
+        public string Location { get; set; }
+
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
 
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; }
+
+        [Required]
+        [EmailAddress]
+        [Display(Name = "Confirm Email")]
+        [Compare("Email", ErrorMessage = "The Email and Confirm Email do not match.")]
+        public string ConfirmEmail { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
@@ -91,7 +99,7 @@ namespace EDR.Models.ViewModels
 
         [DataType(DataType.Password)]
         [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [Compare("Password", ErrorMessage = "The Password and Confirm Password do not match.")]
         public string ConfirmPassword { get; set; }
     }
 

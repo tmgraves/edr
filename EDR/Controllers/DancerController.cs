@@ -93,7 +93,10 @@ namespace EDR.Controllers
                 }
             }
 
-            var dancer = DataContext.Users.Where(x => x.UserName == username).Include("DanceStyles").Include("UserPictures").FirstOrDefault();
+            var dancer = DataContext.Users.Where(x => x.UserName == username)
+                                .Include("DanceStyles")
+                                .Include("UserPictures")
+                                .FirstOrDefault();
 
             if (dancer != null)
             {
@@ -146,6 +149,35 @@ namespace EDR.Controllers
                 photos = FacebookHelper.GetPhotos(user.FacebookToken);
             }
             return Json(photos.Select(p => new { Url = p.LargeSource, Thumbnail = p.Source }), JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public virtual ActionResult GetClassesPartial(string id)
+        {
+            var start = DateTime.Today;
+            var classes = DataContext.Classes
+                                .Include("DanceStyles")
+                                .Include("Place")
+                                .Include("EventInstances.EventRegistrations")
+                                .Include("Reviews")
+                                .Include("Teachers.ApplicationUser")
+                                .Where(c => c.EventInstances.Any(i => i.DateTime >= start)
+                                        && c.EventInstances.Any(i => i.EventRegistrations.Any(r => r.User.Id == id)));
+            return PartialView("~/Views/Shared/_EventsPartial.cshtml", classes);
+        }
+
+        [HttpGet]
+        public virtual ActionResult GetSocialsPartial(string id)
+        {
+            var start = DateTime.Today;
+            var socials = DataContext.Socials
+                                .Include("DanceStyles")
+                                .Include("Place")
+                                .Include("EventInstances.EventRegistrations")
+                                .Include("Reviews")
+                                .Where(c => c.EventInstances.Any(i => i.DateTime >= start)
+                                        && c.EventInstances.Any(i => i.EventRegistrations.Any(r => r.User.Id == id)));
+            return PartialView("~/Views/Shared/_EventsPartial.cshtml", socials);
         }
 
         //[Authorize]

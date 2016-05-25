@@ -1,0 +1,20 @@
+﻿@model List<EDR.Models.FacebookPhoto>
+
+@if (Model != null && Model.Count() > 0)
+{
+    foreach (var photo in Model.OrderByDescending(photo => photo.PhotoDate))
+    {
+        <div class="col-lg-3 thumbnail text-center" style="height: 150px;">
+            <div style="height: 100px;">
+                <img src="@photo.Source" style="max-height: 100px;" />
+            </div>
+            <div class="caption">
+                <button class="pickfbpic btn btn-info" value="@photo.LargeSource">Pick</button>
+            </div>
+        </div>
+    }
+}
+else
+{
+    @:No Facebook pictures found.
+}

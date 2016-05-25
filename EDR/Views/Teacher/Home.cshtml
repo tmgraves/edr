@@ -4,128 +4,164 @@
 @using EDR.Enums
 
 @{
-    ViewBag.Title = "Home";
-    Layout = "~/Views/Teacher/_TeacherLayout.cshtml";
+    ViewBag.Title = Model.Teacher.ApplicationUser.FullName + " - Teacher";
 }
 
-<script type="text/javascript">
-    $(document).ready(function (e) {
-        //  locate each partial section
-        //  if it has a URL set, load the contents into the area.
+<style>
+    .profilecontainer {
+        position: relative;
+    }
 
-        $(".partialContents").each(function (index, item) {
-            var url = $(item).data("url");
-            if (url && url.length > 0) {
-                $(item).load(url);
+    .profilecontainer:hover .button {
+        display: block;
+    }
+
+    .button {
+        z-index: 10;
+        display: none;
+        position: absolute;
+        right: 5px;
+        top: 5px;
+    }
+</style>
+
+<ol class="breadcrumb">
+    <li>@Html.ActionLink("All Teachers", "List", "Teacher")</li>
+    <li class="active">Teacher Profile</li>
+</ol>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="col-lg-12 profilecontainer" style="background-color: #ddd; padding: 20px; border: 1px solid #aaa;">
+                @if (User.Identity.Name == Model.Teacher.ApplicationUser.UserName)
+            {
+                    @Html.ActionLink("Edit", "Manage", "Teacher", null, new { @class = "btn btn-warning button" })
+                }
+                <div class="col-lg-4 nospace">
+                    <div id="img_container">
+                        <img id="profilepic" style="max-width: 100%; max-height: 100%;" src="@Url.Content(Model.Teacher.ApplicationUser.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <h2>@Model.Teacher.ApplicationUser.FullName</h2>
+                    <p>
+                        @Model.Teacher.ApplicationUser.Location
+                    </p>
+                    <div>
+                        @if (Model.Teacher.FacebookLink != null)
+                        {
+                            <a class="img-thumbnail" href='@Model.Teacher.FacebookLink' target="_blank" title="Visit Me On Facebook"><img src="@Url.Content("~/Content/images/facebookSmall.png")" /></a>
+                        }
+                        @if (Model.Teacher.Website != null)
+                        {
+                            <a class="img-thumbnail" href='@Model.Teacher.Website' target="_blank" title="Visit Me On the Web"><img src="@Url.Content("~/Content/images/web.png")" /></a>
+                        }
+                        @if (Model.Teacher.ContactEmail != null)
+                        {
+                            <a class="img-thumbnail" href='mailto:@Model.Teacher.ContactEmail' title="Email Me"><img src="@Url.Content("~/Content/images/email.png")" /></a>
+                        }
+                    </div>
+                </div>
+                <div class="col-lg-12" style="background-color: #fff; margin-top: 20px; padding-top: 20px;">
+                    <div class="col-lg-12 nospace">
+                        @Html.Label("About Me:", new { @class = "form-label col-lg-12" })
+                    </div>
+                    <div class="col-lg-12" style="padding-bottom: 20px;">
+                        @Html.DisplayFor(m => m.Teacher.Resume)
+                    </div>
+                    <p style="margin-top: 20px;">
+                        @Html.Label("Experience:", new { @class = "form-label col-md-4" })
+                        2 years
+                    </p>
+                    <p>
+                        @Html.Label("Dance Styles:", new { @class = "form-label col-md-4" })
+                        @Html.DisplayFor(m => Model.Teacher.ApplicationUser.DanceStyles, "DanceStyleLabels")
+                    </p>
+                </div>
+            </div>
+            <div class="col-lg-12 profilecontainer" style="border: 1px solid #aaa; margin-top: 20px;">
+                <h3>My Schools</h3>
+                @if (Model.Teacher.ApplicationUser.UserName == User.Identity.Name)
+                {
+                    @Html.ActionLink("Add School", "Create", "School", null, new { @class = "btn btn-warning button" })
+                }
+                @if (Model.Teacher.Schools != null && Model.Teacher.Schools.Count() > 0)
+                {
+                    foreach (var sch in Model.Teacher.Schools.OrderBy(s => s.Name))
+                    {
+                        @Html.DisplayFor(m => sch, "School")
+                        <hr />
+                    }
+                }
+                else
+                {
+                    @: No Schools
+                }
+            </div>
+            <div class="col-lg-12" style="border: 1px solid #aaa; margin-top: 20px; padding-bottom: 20px;">
+                <h3>Students</h3>
+                <div id="students">
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="col-lg-12 nospace">
+                @if (Model.Teacher.ApplicationUser.SpotifyUri != null)
+                {
+                    <iframe src="https://embed.spotify.com/?uri=@Model.Teacher.ApplicationUser.SpotifyUri" width="500" height="280" frameborder="0" allowtransparency="true"></iframe>
+                }
+            </div>
+            <div class="col-lg-12" style="border: 1px solid #aaa; margin-top: 20px;">
+                <h3>Classes/Workshops</h3>
+                <div id="classes">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+{
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jqueryUI")
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="~/Content/jquery.rateyo.css" />
+    <script src="~/Scripts/jquery.rateyo.js"></script>
+    <script src="~/Scripts/jquery-simple-pagination-plugin.js"></script>
+    @*<link href="~/Content/Simple-Pagination.css" rel="stylesheet" />*@
+
+    <script>
+    $(document).ready(function () {
+        LoadClasses(); //Loads events partial view
+        LoadStudents(); //Loads events partial view
+    });
+
+    function LoadClasses() {
+        $.get('@Url.Action("GetClassesPartial", "Dancer")', { 'id': '@Model.Teacher.ApplicationUser.Id' }, function (data) {
+            $("#classes").empty();
+            $("#classes").html(data);
+            BuildRatingStars();
+        });
+    }
+
+    function BuildRatingStars() {
+        $(".rateYo").rateYo({
+            starWidth: "18px",
+            ratedFill: "#FFD700",
+            normalFill: "#ccc",
+            onInit: function (rating, rateYoInstance) {
+                var t = $(this);
+                $(this).rateYo("option", "rating", t.parent('div').find('.ratingval').prop('value'));
+                $(this).rateYo("option", "readOnly", true);
             }
         });
-    });
-</script>
-
-<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-    <h4>Recent Activity</h4>
-    @*<div class="partialContents" data-url="/Teacher/@Model.Teacher.ApplicationUser.UserName/GetUpdates">
-        <img src="~/Content/images/indicator.white.gif" />Loading...
-    </div>*@
-</div>
-<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-    <div class="panel panel-info">
-        <h4 class="col-lg-6 col-md-6 col-sm-6 col-xs-6">My Schools</h4>
-        @if (Model.Teacher.ApplicationUser.UserName == User.Identity.Name)
-        {
-            @Html.ActionLink("Add School", "Create", "School", null, new { @class = "btn btn-text" })
-        }
-        <div class="panel-body">
-            <div class="row">
-            </div>
-            @if (Model.Teacher.Schools != null && Model.Teacher.Schools.Count() > 0)
-            {
-                foreach (var sch in Model.Teacher.Schools.OrderBy(s => s.Name))
-                {
-                    <div class="row" style="padding: 2px;">
-                        @Html.ActionLink(sch.Name, "View", "School", new { id = sch.Id }, new { @class = "btn btn-link" })
-                    </div>
-                }
-            }
-            else
-            {
-                @: No Facebook Events to Import
-            }
-            @*<a class="btn btn-primary" href="@Url.Action("ImportClassFromFacebook", "Event")">
-                    <h4>More Events...</h4>
-                </a>*@
-        </div>
-    </div>
-    <div class="panel panel-success">
-        <h4 class="col-lg-12 col-md-12 col-sm-12 col-xs-12">My Latest Classes/Workshops...</h4>
-        <div class="panel-body">
-            @if (Model.NewClasses.Events.Count() > 0)
-            {
-                @Html.Partial("~/Views/Shared/_EventsPartial.cshtml", Model.NewClasses.Events)
-            }
-            else
-            {
-                @: No New Classes/Workshops
-            }
-            <a class="btn btn-link pull-right" href="@Url.Action("MyTeach", "Teacher", new { username = User.Identity.Name })" title="Find More Classes/Workshops">
-                <h4>More...</h4>
-            </a>
-        </div>
-    </div>
-    <div class="panel panel-success">
-        <h4 class="col-lg-12 col-md-12 col-sm-12 col-xs-12"><img class="img-rounded" style="width: 20px;" src="@Url.Content("~/Content/images/facebookSmall.png")" /> Import Facebook Events</h4>
-        <div class="panel-body">
-            @if (Model.FacebookEvents != null && Model.FacebookEvents.Count() > 0)
-            {
-                foreach (var evt in Model.FacebookEvents.OrderBy(e => e.StartTime))
-                {
-                    <div class="row" style="padding: 2px;">
-                        <div class="label label-warning col-lg-3 col-md-3 col-sm-3 col-xs-3" style="padding-right: 2px; font-size: 12pt;">
-                            <span>@evt.StartTime.ToString("ddd, M/d")</span>
-                        </div>
-                        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            <span class="text-primary">
-                                <a href="@Url.Content(evt.EventLink)" title="@evt.Name" style="text-align: left;" target="_blank">
-                                    @evt.Name
-                                </a>
-                            </span>
-                        </div>
-                        <a class="col-lg-2 col-md-2 col-sm-2 col-xs-2 btn btn-sm btn-primary" href="@Url.Action("ConfirmFacebookEvent", "Event", new { id = evt.Id, eventType = EDR.Enums.EventType.Class })" title="@evt.Name">
-                            Import
-                        </a>
-                    </div>
-                }
-            }
-            else
-            {
-                @: No Facebook Events to Import
-            }
-            @*<a class="btn btn-primary" href="@Url.Action("ImportClassFromFacebook", "Event")">
-                <h4>More Events...</h4>
-            </a>*@
-        </div>
-    </div>
-    <div class="panel panel-warning">
-        <div class="panel-heading">
-            New Students
-        </div>
-        <div class="panel-body">
-            @Html.Partial("~/Views/Shared/Events/_UserListPartial.cshtml", Model.NewStudents)
-        </div>
-    </div>
-    <div class="panel panel-success">
-        <div class="panel-heading">
-            My Music
-        </div>
-        <div class="panel-body text-center">
-            @if (Model.Teacher.ApplicationUser.SpotifyUri != null)
-            {
-                <iframe src="https://embed.spotify.com/?uri=@Model.Teacher.ApplicationUser.SpotifyUri" width="300" height="380" frameborder="0" allowtransparency="true"></iframe>
-            }
-            else
-            {
-                @: No Playlist Specified
-            }
-        </div>
-    </div>
-</div>
+    }
+    function LoadStudents() {
+        $.get('@Url.Action("GetStudentsPartial", "Teacher")', { 'id': '@Model.Teacher.ApplicationUser.Id' }, function (data) {
+            $("#students").empty();
+            $("#students").html(data);
+        });
+    }
+    </script>
+}

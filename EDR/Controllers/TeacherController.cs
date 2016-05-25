@@ -166,6 +166,14 @@ namespace EDR.Controllers
             return Json(teachers, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpGet]
+        public virtual ActionResult GetStudentsPartial(string id)
+        {
+            var start = DateTime.Today;
+            var students = DataContext.Classes.Where(c => c.Teachers.Any(t => t.ApplicationUser.Id == id)).SelectMany(c => c.EventInstances.SelectMany(i => i.EventRegistrations).Select(r => r.User)).Distinct();
+            return PartialView("~/Views/Shared/DisplayTemplates/Dancers.cshtml", students);
+        }
+
         //[Authorize]
         //public ActionResult View(string username)
         //{
@@ -234,44 +242,44 @@ namespace EDR.Controllers
 
             var viewModel = LoadTeacher(username);
 
-            //  Media Updates
-            var lstMedia = new List<EventMedia>();
-            var events = DataContext.Events.OfType<Class>().Where(e => e.Teachers.Any(t => t.Id == viewModel.Teacher.Id));
-            var newPictures = DataContext.Pictures.OfType<EventPicture>()
-                                .Include("Event")
-                                .Include("PostedBy")
-                                .Where(p => events.Any(e => e.Id == p.Event.Id))
-                                .OrderByDescending(p => p.PhotoDate)
-                                .Take(20);
-            foreach (var p in newPictures)
-            {
-                lstMedia.Add(new EventMedia() { Event = p.Event, SourceName = p.Title, SourceLink = p.SourceLink, Id = p.Id, Author = p.PostedBy, MediaDate = p.PhotoDate, MediaType = Enums.MediaType.Picture, PhotoUrl = p.Filename, Title = p.Title });
-            }
-            var newVideos = DataContext.Videos.OfType<EventVideo>()
-                                .Include("Event")
-                                .Include("Author")
-                                .Where(v => events.Any(e => e.Id == v.Event.Id))
-                                .OrderByDescending(v => v.PublishDate)
-                                .Take(20);
-            foreach (var v in newVideos)
-            {
-                lstMedia.Add(new EventMedia() { Event = v.Event, SourceName = v.Title, SourceLink = v.VideoUrl.ToString(), Id = v.Id, Author = v.Author, MediaDate = v.PublishDate, MediaType = Enums.MediaType.Video, PhotoUrl = v.PhotoUrl.ToString(), MediaUrl = v.VideoUrl.ToString(), Title = v.Title });
-            }
+            ////  Media Updates
+            //var lstMedia = new List<EventMedia>();
+            //var events = DataContext.Events.OfType<Class>().Where(e => e.Teachers.Any(t => t.Id == viewModel.Teacher.Id));
+            //var newPictures = DataContext.Pictures.OfType<EventPicture>()
+            //                    .Include("Event")
+            //                    .Include("PostedBy")
+            //                    .Where(p => events.Any(e => e.Id == p.Event.Id))
+            //                    .OrderByDescending(p => p.PhotoDate)
+            //                    .Take(20);
+            //foreach (var p in newPictures)
+            //{
+            //    lstMedia.Add(new EventMedia() { Event = p.Event, SourceName = p.Title, SourceLink = p.SourceLink, Id = p.Id, Author = p.PostedBy, MediaDate = p.PhotoDate, MediaType = Enums.MediaType.Picture, PhotoUrl = p.Filename, Title = p.Title });
+            //}
+            //var newVideos = DataContext.Videos.OfType<EventVideo>()
+            //                    .Include("Event")
+            //                    .Include("Author")
+            //                    .Where(v => events.Any(e => e.Id == v.Event.Id))
+            //                    .OrderByDescending(v => v.PublishDate)
+            //                    .Take(20);
+            //foreach (var v in newVideos)
+            //{
+            //    lstMedia.Add(new EventMedia() { Event = v.Event, SourceName = v.Title, SourceLink = v.VideoUrl.ToString(), Id = v.Id, Author = v.Author, MediaDate = v.PublishDate, MediaType = Enums.MediaType.Video, PhotoUrl = v.PhotoUrl.ToString(), MediaUrl = v.VideoUrl.ToString(), Title = v.Title });
+            //}
 
-            foreach (var cls in viewModel.Teacher.Classes)
-            {
-                foreach (var list in cls.Playlists)
-                {
-                    var videos = YouTubeHelper.GetPlaylistVideos(list.YouTubeId);
+            //foreach (var cls in viewModel.Teacher.Classes)
+            //{
+            //    foreach (var list in cls.Playlists)
+            //    {
+            //        var videos = YouTubeHelper.GetPlaylistVideos(list.YouTubeId);
 
-                    foreach (var movie in videos)
-                    {
-                        lstMedia.Add(new EventMedia() { Event = cls, SourceName = movie.Title, SourceLink = movie.VideoLink.ToString(), Author = list.Author, MediaDate = movie.PubDate, MediaType = Enums.MediaType.Video, PhotoUrl = movie.Thumbnail.ToString(), MediaUrl = movie.VideoLink.ToString(), Title = movie.Title });
-                    }
-                }
-            }
-            viewModel.MediaUpdates = lstMedia;
-            //  Media Updates
+            //        foreach (var movie in videos)
+            //        {
+            //            lstMedia.Add(new EventMedia() { Event = cls, SourceName = movie.Title, SourceLink = movie.VideoLink.ToString(), Author = list.Author, MediaDate = movie.PubDate, MediaType = Enums.MediaType.Video, PhotoUrl = movie.Thumbnail.ToString(), MediaUrl = movie.VideoLink.ToString(), Title = movie.Title });
+            //        }
+            //    }
+            //}
+            //viewModel.MediaUpdates = lstMedia;
+            ////  Media Updates
 
             viewModel.NewClasses = new EventListViewModel();
             viewModel.NewClasses.EventType = Enums.EventType.Class;

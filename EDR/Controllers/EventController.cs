@@ -149,7 +149,14 @@ namespace EDR.Controllers
             }
 
             var model = LoadEvent(id, eventType);
-            model.Review = model.Event.Reviews.Where(r => r.Author.Id == userid).FirstOrDefault();
+            if (User.Identity.IsAuthenticated)
+            {
+                model.Review = model.Event.Reviews.Where(r => r.Author.Id == userid).FirstOrDefault();
+            }
+            else
+            {
+                model.Review = new Review();
+            }
 
             model.EventType = eventType;
 

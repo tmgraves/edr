@@ -5,104 +5,236 @@
 
 @{
     ViewBag.Title = "Home";
-    Layout = "~/Views/Dancer/_DancerLayout.cshtml";
 }
 
-<script type="text/javascript">
-    $(document).ready(function (e) {
-        //  locate each partial section
-        //  if it has a URL set, load the contents into the area.
+<style>
+    .dancercontainer{
+        position: relative;
+    }
+    .dancercontainer:hover .editbutton
+    {
+        display: block;
+    }
+    .editbutton {
+        z-index: 10;
+        display: none;
+        position: absolute;
+        right: 5px;
+        top: 5px;
+    }
+</style>
 
-        $(".partialContents").each(function (index, item) {
-            var url = $(item).data("url");
-            if (url && url.length > 0) {
-                $(item).load(url);
+<ol class="breadcrumb">
+    <li>@Html.ActionLink("All Dancers", "List", "Dancer")</li>
+    <li class="active">Dancer Profile</li>
+</ol>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="col-lg-12 dancercontainer" style="background-color: #ddd; padding: 20px; border: 1px solid #aaa;">
+                @if (User.Identity.Name == Model.Dancer.UserName)
+            {
+                    @Html.ActionLink("Edit", "Manage", "Dancer", null, new { @class = "btn btn-warning editbutton" })
+                }
+                <div class="col-lg-4 nospace">
+                    <div id="img_container">
+                        <img id="profilepic" style="max-width: 100%; max-height: 100%;" src="@Url.Content(Model.Dancer.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <h2>@Model.Dancer.FirstName</h2>
+                    <p>
+                        @Model.Dancer.Location
+                    </p>
+                    <div>
+                        @if (Model.Dancer.FacebookUsername != null)
+            {
+                            <a class="img-thumbnail" href='https://www.facebook.com/@Model.Dancer.FacebookUsername' target="_blank" title="Visit Me On Facebook">
+                                <img class="img-rounded" src="@Url.Content("~/Content/images/facebookSmall.png")" style="height: 30px;" />
+                            </a>
+                        }
+                        @if (Model.Dancer.InstagramUsername != null)
+            {
+                            <a class="img-thumbnail" href='https://www.instagram.com/@Model.Dancer.InstagramUsername' target="_blank" title="Link to your Instagram">
+                                <img class="img-rounded" style="height: 30px;" src="@Url.Content("~/Content/images/instagram.png")" />
+                            </a>
+                        }
+                    </div>
+                </div>
+                <div class="col-lg-12" style="background-color: #fff; margin-top: 20px;">
+                    <p style="margin-top: 20px;">
+                        @Html.Label("Experience:", new { @class = "form-label col-md-4" })
+                        @Model.Dancer.Experience year(s)
+                    </p>
+                    <p>
+                        @Html.Label("Dance Styles:", new { @class = "form-label col-md-4" })
+                        @Html.DisplayFor(m => Model.Dancer.DanceStyles, "DanceStyleLabels")
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            @if (Model.Dancer.SpotifyUri != null)
+            {
+                <iframe src="https://embed.spotify.com/?uri=@Model.Dancer.SpotifyUri" width="500" height="320" frameborder="0" allowtransparency="true"></iframe>
+                @*<p>
+                        <a class="btn-link" href=@Url.Action("ChangeSpotifyPlaylist", "Dancer", new { username = Model.Dancer.UserName }) title="Add Your Playlist">
+                            Change Your Playlist
+                        </a>
+                    </p>*@
+            }
+        </div>
+    </div>
+    <div class="row" style="margin-top: 20px;">
+        <div class="col-lg-6">
+            <div class="col-lg-12" style="padding-bottom: 20px; border: 1px solid #aaa;">
+                <h3>Teachers</h3>
+                @foreach (var t in Model.Dancer.Teachers)
+                {
+                    <div class="col-lg-1 nospace" style="padding: 2px;">
+                        @Html.DisplayFor(m => t, "Teacher")
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="col-lg-12" style="padding-bottom: 20px; border: 1px solid #aaa;">
+                <h3>Friends</h3>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="margin-top: 20px;">
+        <div class="col-lg-6">
+            <div class="col-lg-12" style="border: 1px solid #aaa;">
+                <h3>Classes/Workshops</h3>
+                <div id="classes">
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="col-lg-12" style="border: 1px solid #aaa;">
+                <h3>Socials</h3>
+                <div id="socials">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+{
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jqueryUI")
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="~/Content/jquery.rateyo.css" />
+    <script src="~/Scripts/jquery.rateyo.js"></script>
+    <script src="~/Scripts/jquery-simple-pagination-plugin.js"></script>
+    @*<link href="~/Content/Simple-Pagination.css" rel="stylesheet" />*@
+
+<script>
+    $(document).ready(function () {
+        LoadClasses(); //Loads events partial view
+        LoadSocials(); //Loads events partial view
+    });
+
+    function LoadClasses() {
+        $.get('@Url.Action("GetClassesPartial", "Dancer")', { 'id': '@Model.Dancer.Id' }, function (data) {
+            $("#classes").empty();
+            $("#classes").html(data);
+            BuildRatingStars();
+        });
+    }
+
+    function LoadSocials() {
+        $.get('@Url.Action("GetSocialsPartial", "Dancer")', { 'id': '@Model.Dancer.Id' }, function (data) {
+            $("#socials").empty();
+            $("#socials").html(data);
+            BuildRatingStars();
+        });
+    }
+
+    function BuildRatingStars() {
+        $(".rateYo").rateYo({
+            starWidth: "18px",
+            ratedFill: "#FFD700",
+            normalFill: "#ccc",
+            onInit: function (rating, rateYoInstance) {
+                var t = $(this);
+                $(this).rateYo("option", "rating", t.parent('div').find('.ratingval').prop('value'));
+                $(this).rateYo("option", "readOnly", true);
             }
         });
-    });
+    }
 </script>
+}
 
-<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-    <h4>Recent Activity</h4>
-    @*<div class="partialContents" data-url="/@Model.Dancer.UserName/GetUpdates">
-        <img src="~/Content/images/indicator.white.gif" />Loading...
-    </div>*@
-</div>
-<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-    <div class="row" style="margin-bottom: 5px;">
-        @*<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-            <a class="btn btn-primary" href="@Url.Action("ImportFacebookEvent", "Event")" style="width: 100%;"><img class="img-rounded" style="width: 30px;" src="@Url.Content("~/Content/images/facebookSmall.png")" /> Import Event</a>
-        </div>*@
-        <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-            @if (Model.Dancer.SpotifyId != null)
-            {
-                <a class="btn btn-primary" href=@Url.Action("ChangeSpotifyPlaylist", "Dancer", new { username = Model.Dancer.UserName }) title="Add Your Playlist" style="width: 100%;">
-                    <img class="img-rounded" style="height: 30px;" src="@Url.Content("~/Content/images/spotify.png")" />
-                    Add Playlist
-                </a>
-            }
-            else
-            {
-                <a class="btn btn-primary" href=@Url.Action("SocialMedia", "Dancer", new { username = Model.Dancer.UserName }) title="Link Your Spotify Account" style="width: 100%;">
-                    <img class="img-rounded" style="height: 30px;" src="@Url.Content("~/Content/images/spotify.png")" />
-                    Link Spotify
-                </a>
-            }
-        </div>
+@*<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <h4>Recent Activity</h4>
+        <div class="partialContents" data-url="/@Model.Dancer.UserName/GetUpdates">
+                <img src="~/Content/images/indicator.white.gif" />Loading...
+            </div>
     </div>
-    @if (Model.Dancer.SpotifyUri != null)
-    {
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div class="row" style="margin-bottom: 5px;">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                    <a class="btn btn-primary" href="@Url.Action("ImportFacebookEvent", "Event")" style="width: 100%;"><img class="img-rounded" style="width: 30px;" src="@Url.Content("~/Content/images/facebookSmall.png")" /> Import Event</a>
+                </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                @if (Model.Dancer.SpotifyId != null)
+                {
+                    <a class="btn btn-primary" href=@Url.Action("ChangeSpotifyPlaylist", "Dancer", new { username = Model.Dancer.UserName }) title="Add Your Playlist" style="width: 100%;">
+                        <img class="img-rounded" style="height: 30px;" src="@Url.Content("~/Content/images/spotify.png")" />
+                        Add Playlist
+                    </a>
+                }
+                else
+                {
+                    <a class="btn btn-primary" href=@Url.Action("SocialMedia", "Dancer", new { username = Model.Dancer.UserName }) title="Link Your Spotify Account" style="width: 100%;">
+                        <img class="img-rounded" style="height: 30px;" src="@Url.Content("~/Content/images/spotify.png")" />
+                        Link Spotify
+                    </a>
+                }
+            </div>
+        </div>
+        <div class="partialContents" data-url="/@Model.Dancer.UserName/GetFacebookEvents">
+                <img src="~/Content/images/indicator.white.gif" />Loading...
+            </div>
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                Suggested Classes/Workshops for you
+            </div>
+            <div class="panel-body">
+                @if (Model.SuggestedClasses.Count() > 0)
+                {
+                    @Html.Partial("~/Views/Shared/_EventsPartial.cshtml", Model.SuggestedClasses)
+                }
+                else
+                {
+                    @: No New Classes/Workshops
+                }
+                <a class="btn btn-link pull-right" href="@Url.Action("Learn", "Home")" title="Find More Classes/Workshops">
+                    <h4>More...</h4>
+                </a>
+            </div>
+        </div>
         <div class="panel panel-warning">
             <div class="panel-heading">
-                Your Music
+                Socials in your area...
             </div>
-            <div class="panel-body text-center">
-                <iframe src="https://embed.spotify.com/?uri=@Model.Dancer.SpotifyUri" width="250" height="380" frameborder="0" allowtransparency="true"></iframe>
-                <p>
-                    <a class="btn-link" href=@Url.Action("ChangeSpotifyPlaylist", "Dancer", new { username = Model.Dancer.UserName }) title="Add Your Playlist">
-                        Change Your Playlist
-                    </a>
-                </p>
+            <div class="panel-body">
+                @if (Model.SuggestedSocials.Count() > 0)
+                {
+                    @Html.Partial("~/Views/Shared/_EventsPartial.cshtml", Model.SuggestedSocials)
+                }
+                else
+                {
+                    @: No New Socials
+                }
+                <a class="btn btn-link pull-right" href="@Url.Action("Social", "Home")" title="Find More Socials">
+                    <h4>More...</h4>
+                </a>
             </div>
         </div>
-    }
-    @*<div class="partialContents" data-url="/@Model.Dancer.UserName/GetFacebookEvents">
-        <img src="~/Content/images/indicator.white.gif" />Loading...
     </div>*@
-    <div class="panel panel-info">
-        <div class="panel-heading">
-            Suggested Classes/Workshops for you
-        </div>
-        <div class="panel-body">
-            @if (Model.SuggestedClasses.Count() > 0)
-            {
-                @Html.Partial("~/Views/Shared/_EventsPartial.cshtml", Model.SuggestedClasses)
-            }
-            else
-            {
-                @: No New Classes/Workshops
-            }
-            <a class="btn btn-link pull-right" href="@Url.Action("Learn", "Home")" title="Find More Classes/Workshops">
-                <h4>More...</h4>
-            </a>
-        </div>
-    </div>
-    <div class="panel panel-warning">
-        <div class="panel-heading">
-            Socials in your area...
-        </div>
-        <div class="panel-body">
-            @if (Model.SuggestedSocials.Count() > 0)
-            {
-                @Html.Partial("~/Views/Shared/_EventsPartial.cshtml", Model.SuggestedSocials)
-            }
-            else
-            {
-                @: No New Socials
-            }
-            <a class="btn btn-link pull-right" href="@Url.Action("Social", "Home")" title="Find More Socials">
-                <h4>More...</h4>
-            </a>
-        </div>
-    </div>
-</div>

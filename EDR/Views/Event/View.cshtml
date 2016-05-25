@@ -80,7 +80,7 @@
                                 @:(@Model.Class.ClassType)
                                 if(Model.Event.EventMembers.Where(m => m.UserId == User.Identity.GetUserId() && m.Admin).Count() != 0)
                                 {
-                                    <a class="btn btn-default" title="Edit" href="@Url.Action("Manage", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">
+                                    <a class="btn btn-warning" title="Edit" href="@Url.Action("Manage", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">
                                         <i class="glyphicon glyphicon-edit"></i>
                                         <span class="sr-only">Edit</span>
                                     </a>

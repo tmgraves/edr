@@ -1,0 +1,8 @@
+﻿@model IEnumerable<EDR.Models.ApplicationUser>
+
+@foreach (var u in Model)
+{
+    <div class="col-lg-2">
+        @Html.DisplayFor(m => u, "DancerThumblink")
+    </div>
+}

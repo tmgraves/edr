@@ -1,268 +1,181 @@
 ﻿@model EDR.Models.ViewModels.ViewSchoolViewModel
 
 @{
-    ViewBag.Title = "View";
+    ViewBag.Title = Model.School.Name;
 }
-
-<h2>View</h2>
-
-<div class="container-fluid">
-    <h4>School</h4>
-    @if (Model.Member != null && Model.Member.Admin)
-    {
-        <p>
-            @Html.ActionLink("Manage", "Manage", "School", new { id = Model.School.Id }, null)
-        </p>
+<style>
+    .profilecontainer {
+        position: relative;
     }
-    @if (Model.Member == null)
-    {
-        <p>
-            @Html.ActionLink("Join", "Join", "School", new { id = Model.School.Id }, null)
-        </p>
+
+        .profilecontainer:hover .button {
+            display: block;
+        }
+
+    .button {
+        z-index: 10;
+        display: none;
+        position: absolute;
+        right: 5px;
+        top: 5px;
     }
-    else
-    {
-        <p>
-            Member
-        </p>
-    }
-    <hr />
-    <div class="col-lg-6 col-md-6">
-        <div class="panel panel-default">
-            <div class="panel-body ">
-                <dl class="dl-horizontal">
-                    <dt>
-                        @Html.DisplayNameFor(model => model.School.Name)
-                    </dt>
+</style>
 
-                    <dd>
-                        @Html.DisplayFor(model => model.School.Name)
-                    </dd>
+<ol class="breadcrumb">
+    <li>@Html.ActionLink("All Schools", "List", "School")</li>
+    <li class="active">School Profile</li>
+</ol>
 
-            <dt>
-                @Html.DisplayNameFor(model => model.School.Description)
-            </dt>
-
-            <dd>
-                @Html.DisplayFor(model => model.School.Description)
-            </dd>
-
-            <dt>
-                @Html.DisplayNameFor(model => model.School.FacebookLink)
-            </dt>
-
-            <dd>
-                @Html.DisplayFor(model => model.School.FacebookLink)
-            </dd>
-
-            @*<dt>
-        @Html.DisplayNameFor(model => model.School.Public)
-    </dt>
-
-    <dd>
-        @Html.DisplayFor(model => model.School.Public)
-    </dd>
-
-    <dt>
-        @Html.DisplayNameFor(model => model.School.DateStarted)
-    </dt>
-
-    <dd>
-        @Html.DisplayFor(model => model.School.DateStarted)
-    </dd>
-
-    <dt>
-        @Html.DisplayNameFor(model => model.School.Address)
-    </dt>
-
-    <dd>
-        @Html.DisplayFor(model => model.School.Address)
-    </dd>
-
-    <dt>
-        @Html.DisplayNameFor(model => model.School.Address2)
-    </dt>
-
-    <dd>
-        @Html.DisplayFor(model => model.School.Address2)
-    </dd>
-
-    <dt>
-        @Html.DisplayNameFor(model => model.School.City)
-    </dt>
-
-    <dd>
-        @Html.DisplayFor(model => model.School.City)
-    </dd>
-
-    <dt>
-        @Html.DisplayNameFor(model => model.School.State)
-    </dt>
-
-    <dd>
-        @Html.DisplayFor(model => model.School.State)
-    </dd>
-
-    <dt>
-        @Html.DisplayNameFor(model => model.School.Zip)
-    </dt>
-
-    <dd>
-        @Html.DisplayFor(model => model.School.Zip)
-    </dd>
-
-    <dt>
-        @Html.DisplayNameFor(model => model.School.Country)
-    </dt>
-
-    <dd>
-        @Html.DisplayFor(model => model.School.Country)
-    </dd>*@
-                </dl>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="col-lg-12 profilecontainer" style="background-color: #ddd; padding: 20px; border: 1px solid #aaa;">
+                @if (Model.Member != null && Model.Member.Admin)
+                {
+                    @Html.ActionLink("Manage", "Manage", "School", new { id = Model.School.Id }, new { @class = "btn btn-warning button" })
+                }
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div id="img_container">
+                            <img id="profilepic" style="max-width: 100%; max-height: 100%;" src="@Url.Content(Model.School.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
+                        </div>
+                    </div>
+                    <div class="col-lg-8 nospace">
+                        <h2>@Model.School.Name</h2>
+                        <p>
+                            @Model.School.City, @Model.School.State
+                        </p>
+                        <div>
+                            @if (Model.School.FacebookLink != null)
+                            {
+                                <a class="img-thumbnail" href='@Model.School.FacebookLink' target="_blank" title="Visit Me On Facebook"><img src="@Url.Content("~/Content/images/facebookSmall.png")" /></a>
+                            }
+                            @*@if (Model.School.Website != null)
+                            {
+                                <a class="img-thumbnail" href='@Model.School.Website' target="_blank" title="Visit Me On the Web"><img src="@Url.Content("~/Content/images/web.png")" /></a>
+                            }*@
+                            @*@if (Model.School.ContactEmail != null)
+                            {
+                                <a class="img-thumbnail" href='mailto:@Model.Teacher.ContactEmail' title="Email Me"><img src="@Url.Content("~/Content/images/email.png")" /></a>
+                            }*@
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12" style="background-color: #fff; margin-top: 20px; padding-top: 20px;">
+                    <p>
+                        @Html.Label("Dance Styles:", new { @class = "form-label col-md-4" })
+                        @Html.DisplayFor(m => Model.School.DanceStyles, "DanceStyleLabels")
+                    </p>
+                    <div class="col-lg-12" style="padding-bottom: 20px;">
+                        @Html.DisplayFor(m => m.School.Description)
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-
-    <div class="col-lg-6 col-md-6">
-    </div>
-    <div class="col-lg-6 col-md-6">
-        <div class="panel panel-default">
-            <div class="panel-body ">
-                <h3>Tickets</h3>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Quantity</th>
-                            <th class="text-center">Price</th>
-                            <th class="text-center">Related Event</th>
-                        </tr>
-                    </thead>
-                    @foreach (var item in Model.School.Tickets.OrderBy(t => t.Quantity))
-                    {
-                        <tr>
-                            <td class="text-center">
-                                @Html.DisplayFor(member => item.Quantity)
-                            </td>
-                            <td class="text-right">
-                                @Html.DisplayFor(member => item.Price)
-                            </td>
-                            <td>
-                                @if (item.Event != null)
-                                {
-                                    @item.Event.Name
-                                }
-                            </td>
-                        </tr>
-                    }
-                </table>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-6 col-md-6">
-        <div class="panel panel-default">
-            <div class="panel-body ">
-                <h3>Classes</h3>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Class</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    @foreach (var item in Model.School.Classes)
-                    {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(member => item.Name)
-                            </td>
-                            <td>
-                                @Html.ActionLink("View", "View", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Class }, null)
-                            </td>
-                        </tr>
-                    }
-                </table>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-6 col-md-6">
-        <div class="panel panel-default">
-            <div class="panel-body ">
-                <h3>Owners</h3>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    @foreach (var item in Model.School.Owners)
-                    {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(member => item.ApplicationUser.FullName)
-                            </td>
-                            <td>
-                                @Html.ActionLink("View", "Home", "Owner", new { id = item.Id }, null)
-                            </td>
-                        </tr>
-                    }
-                </table>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-6 col-md-6">
-        <div class="panel panel-default">
-            <div class="panel-body ">
+            <div class="col-lg-12" style="margin-top: 20px; padding-bottom: 20px; border: 1px solid #aaa;">
                 <h3>Teachers</h3>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    @foreach (var item in Model.School.Teachers)
-                    {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(member => item.ApplicationUser.FullName)
-                            </td>
-                            <td>
-                                @Html.ActionLink("View", "Home", "Teacher", new { id = item.Id }, null)
-                            </td>
-                        </tr>
-                    }
-                </table>
+                @foreach (var item in Model.School.Teachers)
+                {
+                    <div class="col-lg-2">
+                        @Html.DisplayFor(m => item, "Teacher")
+                    </div>
+                }
+            </div>
+            <div class="col-lg-12" style="margin-top: 20px; border: 1px solid #aaa;">
+                <h3>Performance Teams</h3>
+                @foreach (var team in Model.School.Teams)
+                {
+                    <div class="row">
+                        <div class="col-lg-12">
+                            @Html.DisplayFor(m => team)
+                        </div>
+                    </div>
+                    <hr />
+                }
+            </div>
+            <div class="col-lg-12" style="margin-top: 20px; border: 1px solid #aaa;">
+                <h3>Owners</h3>
+                @foreach (var item in Model.School.Owners)
+                {
+                    <div class="col-lg-2">
+                        @Html.DisplayFor(m => item, "Owner")
+                    </div>
+                }
             </div>
         </div>
-        <div class="panel panel-default">
-            <div class="panel-body ">
-                <h3>Performance Teams</h3>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Team</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    @foreach (var item in Model.School.Teams)
-                    {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(member => item.Name)
-                            </td>
-                            <td>
-                                @Html.ActionLink("View", "View", "Team", new { id = item.Id }, null)
-                            </td>
-                        </tr>
-                    }
-                </table>
+        <div class="col-lg-6 col-md-6">
+            <div class="col-lg-12" style="background-color: #eee; padding: 20px; border: 1px solid #aaa;">
+                <div class="bg-warning text-center" style="padding: 5px; border: 1px solid #aaa;">
+                    <h4>You have <b>(@Convert.ToInt32(Model.UserTickets != null ? Model.UserTickets.Sum(t => t.Quantity * t.Ticket.Quantity) - Model.UserTickets.Sum(t => t.EventRegistrations.Count()) : 0))</b> Tickets Available to Use at this School</h4>
+                </div>
+                <h3>Avaiable Tickets for Purchase</h3>
+                @foreach (var item in Model.School.Tickets.Where(t => t.EventId == null).OrderBy(t => t.Quantity))
+                {
+                    <div class="row" style="padding: 5px;">
+                        <div class="col-lg-8">
+                            @Html.DisplayFor(member => item.Quantity) Class(es) for
+                            @Html.DisplayFor(member => item.Price)
+                        </div>
+                        <div class="col-lg-4">
+                            @Html.ActionLink("Purchase Ticket", "BuyTicket", "School", new { id = item.Id }, new { @class = "btn btn-primary" })
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="col-lg-12" style="border: 1px solid #aaa; margin-top: 20px;">
+                <h3>Classes/Workshops</h3>
+                <div id="classes">
+                </div>
             </div>
         </div>
     </div>
 </div>
+@section Scripts
+{
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jqueryUI")
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="~/Content/jquery.rateyo.css" />
+    <script src="~/Scripts/jquery.rateyo.js"></script>
+    <script src="~/Scripts/jquery-simple-pagination-plugin.js"></script>
+    @*<link href="~/Content/Simple-Pagination.css" rel="stylesheet" />*@
 
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.School.Id }) |
-    @Html.ActionLink("Back to List", "List")
-</p>
+<script>
+$(document).ready(function () {
+    LoadClasses(); //Loads events partial view
+});
+function BuildRatingStars() {
+    $(".rateYo").rateYo({
+        starWidth: "18px",
+        ratedFill: "#FFD700",
+        normalFill: "#ccc",
+        onInit: function (rating, rateYoInstance) {
+            var t = $(this);
+            $(this).rateYo("option", "rating", t.parent('div').find('.ratingval').prop('value'));
+            $(this).rateYo("option", "readOnly", true);
+        }
+    });
+}
+
+function LoadClasses() {
+    $.get('@Url.Action("GetClassesPartial", "School")', { 'id': '@Model.School.Id' }, function (data) {
+        $("#classes").empty();
+        $("#classes").html(data);
+        BuildRatingStars();
+    });
+}
+</script>
+}
+
+@if (Model.Member == null)
+{
+    <p>
+        @Html.ActionLink("Join", "Join", "School", new { id = Model.School.Id }, new { @class = "btn btn-warning button" })
+    </p>
+}
+else
+{
+    <p>
+        Member
+    </p>
+}

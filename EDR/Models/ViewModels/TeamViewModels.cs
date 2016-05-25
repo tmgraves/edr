@@ -14,7 +14,7 @@ namespace EDR.Models.ViewModels
 
     public class TeamViewViewModel : TeamBaseViewModel
     {
-
+        public OrganizationMember Member { get; set; }
     }
 
     public class TeamIndexViewModel
@@ -50,6 +50,7 @@ namespace EDR.Models.ViewModels
         public Audition NewAudition { get; set; }
         public Performance NewPerformance { get; set; }
         public int NewStyleId { get; set; }
+        public string NewMemberId { get; set; }
     }
 
     public class TeamCreateViewModel : TeamBaseViewModel
