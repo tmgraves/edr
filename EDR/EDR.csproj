@@ -327,6 +327,7 @@
     <Compile Include="Models\EventPlaylist.cs" />
     <Compile Include="Models\Facebook.cs" />
     <Compile Include="Models\Friend.cs" />
+    <Compile Include="Models\GlobalVariables.cs" />
     <Compile Include="Models\Instagram.cs" />
     <Compile Include="Models\Organization.cs">
       <SubType>Code</SubType>
@@ -841,7 +842,7 @@
     <Content Include="Views\Shared\_EventsPartial.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Dancers.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\School.cshtml" />
-    <Content Include="Views\Shared\Teacher\_PickFacebookPicturePartial.cshtml" />
+    <Content Include="Views\Shared\_PickFacebookPicturePartial.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Team.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\OwnerThumbLink.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Place.cshtml" />
@@ -977,6 +978,7 @@
     <Folder Include="Views\Instagram\" />
     <Folder Include="Views\Series\" />
     <Folder Include="Views\Shared\Dancer\" />
+    <Folder Include="Views\Shared\Teacher\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

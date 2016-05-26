@@ -273,16 +273,52 @@ namespace EDR.Controllers
             var viewModel = new OwnerApplyViewModel();
             viewModel.Owner = DataContext.Owners.Where(x => x.ApplicationUser.Id == user.Id).FirstOrDefault();
 
+            if (viewModel.Owner == null)
+            {
+                viewModel.Owner = new Owner() { ApplicationUser = user };
+            }
+
             return View(viewModel);
         }
 
         // POST: Owner Apply
         [HttpPost]
-        public ActionResult Apply(Owner owner)
+        public ActionResult Apply(OwnerApplyViewModel model)
         {
-            DataContext.Owners.Add(new Owner { ApplicationUser = DataContext.Users.Find(User.Identity.GetUserId()) });
-            DataContext.SaveChanges();
-            return RedirectToAction("Home", "Dancer", new { username = User.Identity.Name });
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    if (model.Owner.Id == 0)
+                    {
+                        model.Owner.ApplicationUser = DataContext.Users.Find(User.Identity.GetUserId());
+                        DataContext.Owners.Add(model.Owner);
+                    }
+                    else
+                    {
+                        DataContext.Entry(model.Owner).State = EntityState.Modified;
+                    }
+                    DataContext.SaveChanges();
+                    return RedirectToAction("Home", "Dancer", new { username = User.Identity.Name });
+                }
+                catch (System.Data.Entity.Validation.DbEntityValidationException e)
+                {
+                    var msg = "";
+                    foreach (var eve in e.EntityValidationErrors)
+                    {
+                        msg = eve.Entry.Entity.GetType().Name + " " + eve.Entry.State;
+                        foreach (var ve in eve.ValidationErrors)
+                        {
+                            msg = ve.PropertyName + " " + ve.ErrorMessage;
+                        }
+                    }
+                    return View(model);
+                }
+            }
+            else
+            {
+                return View(model);
+            }
         }
 
         public ActionResult GetUpdates(string username)

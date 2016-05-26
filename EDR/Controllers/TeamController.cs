@@ -11,6 +11,7 @@ using EDR.Models;
 using EDR.Models.ViewModels;
 using System.Data.Entity.Validation;
 using Microsoft.AspNet.Identity;
+using System.Text.RegularExpressions;
 
 namespace EDR.Controllers
 {
@@ -109,7 +110,9 @@ namespace EDR.Controllers
             var t = ModelState.IsValidField("Team");
             if (ModelState.IsValidField("Team"))
             {
-                DataContext.Entry(model.Team).State = EntityState.Modified;
+                var team = DataContext.Teams.Single(m => m.Id == model.Team.Id);
+                TryUpdateModel(team, "Team");
+                DataContext.Entry(team).State = EntityState.Modified;
                 DataContext.SaveChanges();
                 return RedirectToAction("Manage", new { id = model.Team.Id });
             }
@@ -379,6 +382,41 @@ namespace EDR.Controllers
             }
             DataContext.SaveChanges();
             return RedirectToAction("Manage", new { id = model.Team.Id });
+        }
+
+        [Authorize]
+        [HttpPost]
+        public JsonResult UploadImageAsync(string imageData, int id)
+        {
+            var newFile = new UploadFile();
+            if (string.IsNullOrEmpty(imageData))
+                newFile.UploadStatus = "Failed";
+
+            Match imageMatch = Regex.Match(imageData, @"^data:(?<mimetype>[^;]+);base64,(?<data>.+)$");
+            if (!imageMatch.Success)
+                newFile.UploadStatus = "Failed";
+
+            string mimeType = imageMatch.Groups["mimetype"].Value;
+            Match imageType = Regex.Match(mimeType, @"^[^/]+/(?<type>.+?)$");
+            if (!imageType.Success)
+                newFile.UploadStatus = "Failed";
+
+            string fileExtension = imageType.Groups["type"].Value;
+            byte[] data2 = Convert.FromBase64String(imageMatch.Groups["data"].Value);
+
+            if (newFile.UploadStatus != "Failed")
+            {
+                newFile = EDR.Utilities.ApplicationUtility.UploadFromPath(imageData);
+                if (newFile.UploadStatus == "Success")
+                {
+                    var team = DataContext.Teams.Single(s => s.Id == id);
+                    EDR.Utilities.ApplicationUtility.DeletePicture(new Picture() { Filename = team.PhotoUrl });
+                    team.PhotoUrl = newFile.FilePath;
+                    DataContext.SaveChanges();
+                }
+            }
+            var objUpload = new { FilePath = Url.Content(newFile.FilePath), UploadStatus = newFile.UploadStatus };
+            return Json(objUpload, JsonRequestBehavior.AllowGet);
         }
     }
 }

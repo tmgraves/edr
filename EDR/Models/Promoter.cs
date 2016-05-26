@@ -8,9 +8,14 @@ namespace EDR.Models
 {
     public class Promoter : Entity
     {
+        public string Resume { get; set; }
+        [Required(ErrorMessage = "Contact Email is required")]
         [Display(Name = "Contact Email")]
         [EmailAddress(ErrorMessage = "Invalid Email Address")]
         public string ContactEmail { get; set; }
+        [StringLength(24)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:###-###-####}")]
+        public string Phone { get; set; }
         [Display(Name = "Facebook Page")]
         [RegularExpression("http[s]?://(www.facebook.com)/?[a-zA-Z0-9/\\-\\.]*", ErrorMessage = "Please enter a valid facebook page.")]
         public string Facebook { get; set; }
@@ -19,9 +24,6 @@ namespace EDR.Models
         public string Website { get; set; }
         public bool? Approved { get; set; }
         public DateTime? ApproveDate { get; set; }
-        [StringLength(24)]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:###-###-####}")]
-        public string Phone { get; set; }
 
         [Required]
         public virtual ApplicationUser ApplicationUser { get; set; }

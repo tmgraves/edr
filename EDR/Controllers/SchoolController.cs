@@ -151,7 +151,9 @@ namespace EDR.Controllers
         // POST: School
         public ActionResult Save(ManageSchoolViewModel model)
         {
-            DataContext.Entry(model.School).State = EntityState.Modified;
+            var sch = DataContext.Schools.Single(m => m.Id == model.School.Id);
+            TryUpdateModel(sch, "School");
+            DataContext.Entry(sch).State = EntityState.Modified;
             DataContext.SaveChanges();
             return RedirectToAction("Manage", new { id = model.School.Id });
         }
@@ -250,20 +252,6 @@ namespace EDR.Controllers
                 DataContext.SaveChanges();
             }
             return RedirectToAction("Manage", new { id = model.School.Id });
-        }
-
-        [Authorize]
-        [HttpGet]
-        public virtual ActionResult GetFacebookPicturesPartial()
-        {
-            var userid = User.Identity.GetUserId();
-            var user = DataContext.Users.Single(u => u.Id == userid);
-            var photos = new List<FacebookPhoto>();
-            if (user.FacebookToken != null)
-            {
-                photos = EDR.Utilities.FacebookHelper.GetPhotos(user.FacebookToken);
-            }
-            return PartialView("~/Views/Shared/Teacher/_PickFacebookPicturePartial.cshtml", photos);
         }
 
         [Authorize]

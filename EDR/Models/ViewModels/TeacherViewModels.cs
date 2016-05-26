@@ -54,6 +54,9 @@ namespace EDR.Models.ViewModels
     public class TeacherApplyViewModel
     {
         public Teacher Teacher { get; set; }
+        [Display(Name = "Click here to agree to the Site Terms.")]
+        [RegularExpression("True|true", ErrorMessage = "***You must agree to the site terms")]
+        public bool TermsAndConditions { get; set; }
     }
 
 }

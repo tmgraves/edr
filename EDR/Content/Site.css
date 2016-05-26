@@ -434,6 +434,16 @@ facebookvideoimage img
     max-width: 100% !important;
 }
 
+.centerform select{
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+.centerform a{
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
 .centerform > div > div{
     float: none;
 }

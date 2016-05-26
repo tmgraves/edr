@@ -153,6 +153,20 @@ namespace EDR.Controllers
             return Json(photos.Select(p => new { Url = p.LargeSource, Thumbnail = p.Source }), JsonRequestBehavior.AllowGet);
         }
 
+        [Authorize]
+        [HttpGet]
+        public virtual ActionResult GetFacebookPicturesPartial()
+        {
+            var userid = User.Identity.GetUserId();
+            var user = DataContext.Users.Single(u => u.Id == userid);
+            var photos = new List<FacebookPhoto>();
+            if (user.FacebookToken != null)
+            {
+                photos = EDR.Utilities.FacebookHelper.GetPhotos(user.FacebookToken);
+            }
+            return PartialView("~/Views/Shared/_PickFacebookPicturePartial.cshtml", photos);
+        }
+
         [HttpGet]
         public virtual ActionResult GetClassesPartial(string id)
         {

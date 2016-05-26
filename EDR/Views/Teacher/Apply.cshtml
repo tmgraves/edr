@@ -9,7 +9,7 @@
         <h1>Apply to be a Teacher</h1>
         @if (Model.Teacher.Id != 0)
         {
-            <h2 class="text-warning">You've already applied to be a Teacher</h2>
+            <h2 class="text-warning">Your application to be a Teacher is pending</h2>
         }
         <h3 class="text-danger">@ViewBag.Message</h3>
         <div class="panel panel-default">
@@ -55,6 +55,19 @@
                         <div class="col-lg-8 center-block">
                             @Html.EditorFor(model => model.Teacher.ContactEmail, new { htmlAttributes = new { @class = "form-control", @placeholder = "Your Email Address" } })
                             @Html.ValidationMessageFor(model => model.Teacher.ContactEmail, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-lg-8 center-block text-left">
+                            By clicking the box below, you agree to sell tickets for your events on <i>Eat.Dance.Repeat</i>.<br />
+                            You also agree that <i>Eat.Dance.Repeat.</i> will collect a <b><span class="text-danger">@GlobalVariables.TicketRate.ToString("P")</span></b> servicing fee on each sale (ex - $10 * @GlobalVariables.TicketRate.ToString("P") = @((GlobalVariables.TicketRate * 10).ToString("C"))). <br />
+                            Payments will be taken through <i>Eat.Dance.Repeat.'s</i> store and distributions will be made to you once a month for all
+                            total sales for the month.
+                            <p style="margin-top: 20px;">
+                                @Html.CheckBoxFor(model => model.TermsAndConditions, new { @style = "text-align: left !important; width: 20px !important; max-width: 20px !important;" })
+                                @Html.LabelFor(model => model.TermsAndConditions, new { @class = "control-label" })
+                            </p>
+                            @Html.ValidationMessageFor(model => model.TermsAndConditions, "", new { @class = "text-danger" })
                         </div>
                     </div>
 

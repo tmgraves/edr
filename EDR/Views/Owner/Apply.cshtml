@@ -1,35 +1,76 @@
 ﻿@model EDR.Models.ViewModels.OwnerApplyViewModel
 
 @{
-    ViewBag.Title = "Owner Application";
+    ViewBag.Title = "Apply to be an Owner Eat. Dance. Repeat.";
 }
 
-<h2 class="page-header">Owner Application</h2>
-@if (Model.Owner != null)
-{
-    <h5>You've already applied to be an Owner.  Your application is under review.</h5>
-    @Html.ActionLink("Back to Dancer Page", "Home", "Dancer", new { username = User.Identity.Name }, new { @class = "btn btn-info" })
-}
-else
-{
-    using (Html.BeginForm())
-    {
-        <div class="form-group">
-            @Html.LabelFor(model => model.Owner.Website, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Owner.Website, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Owner.Website, "", new { @class = "text-danger" })
+<div class="container">
+    <div class="center-block col-md-6 text-center" style="float: none;">
+        <h1>Apply to be an Owner</h1>
+        @if (Model.Owner.Id != 0)
+        {
+            <h2 class="text-warning">Your application to be an Owner is pending</h2>
+        }
+        <h3 class="text-danger">@ViewBag.Message</h3>
+        <div class="panel panel-default">
+            <div class="panel-body bg-info">
+                @using (Html.BeginForm("Apply", "Owner", null, FormMethod.Post, new { }))
+            {
+                    @Html.HiddenFor(m => m.Owner.ApplicationUser.Id)
+                    @Html.HiddenFor(m => m.Owner.Id)
+                    @Html.AntiForgeryToken()
+                    <div class="form-horizontal centerform">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div class="form-group">
+                            <div class="col-lg-8 center-block">
+                                @Html.TextAreaFor(model => model.Owner.Resume, new { @class = "form-control", @placeholder = "Tell us about yourself...", @rows = "8" })
+                                @Html.ValidationMessageFor(model => model.Owner.Resume, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-8 center-block">
+                                @Html.EditorFor(model => model.Owner.Phone, new { htmlAttributes = new { @class = "form-control", @placeholder = "Your Phone Number" } })
+                                @Html.ValidationMessageFor(model => model.Owner.Phone, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-8 center-block">
+                                @Html.EditorFor(model => model.Owner.Website, new { htmlAttributes = new { @class = "form-control", @placeholder = "Your Website Address" } })
+                                @Html.ValidationMessageFor(model => model.Owner.Website, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-8 center-block">
+                                @Html.EditorFor(model => model.Owner.ContactEmail, new { htmlAttributes = new { @class = "form-control", @placeholder = "Your Email Address" } })
+                                @Html.ValidationMessageFor(model => model.Owner.ContactEmail, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-8 center-block text-left">
+                                By clicking the box below, you agree to sell tickets for your events on <i>Eat.Dance.Repeat</i>.<br />
+                                You also agree that <i>Eat.Dance.Repeat.</i> will collect a <b><span class="text-danger">@GlobalVariables.TicketRate.ToString("P")</span></b> servicing fee on each sale (ex - $10 * @GlobalVariables.TicketRate.ToString("P") = @((GlobalVariables.TicketRate * 10).ToString("C"))). <br />
+                                Payments will be taken through <i>Eat.Dance.Repeat.'s</i> store and distributions will be made to you once a month for all
+                                total sales for the month.
+                                <p style="margin-top: 20px;">
+                                    @Html.CheckBoxFor(model => model.TermsAndConditions, new { @style = "text-align: left !important; width: 20px !important; max-width: 20px !important;" })
+                                    @Html.LabelFor(model => model.TermsAndConditions, new { @class = "control-label" })
+                                </p>
+                                @Html.ValidationMessageFor(model => model.TermsAndConditions, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-lg-8 center-block">
+                                <input type="submit" value="Submit Application" class="btn btn-primary" />
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
+    </div>
+</div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Owner.ContactEmail, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Owner.ContactEmail, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Owner.ContactEmail, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <input type="submit" value="Apply to be an Owner" class="btn btn-default" />
-    }
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
 }

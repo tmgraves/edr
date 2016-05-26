@@ -8,9 +8,14 @@ namespace EDR.Models
 {
     public class Owner : Entity
     {
+        [Required(ErrorMessage = "Contact Email is required")]
         [Display(Name = "Contact Email")]
         [EmailAddress(ErrorMessage = "Invalid Email Address")]
         public string ContactEmail { get; set; }
+        public string Resume { get; set; }
+        [StringLength(24)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:###-###-####}")]
+        public string Phone { get; set; }
         [Display(Name = "Owner Website")]
         [Url(ErrorMessage = "Please enter a valid webiste address")]
         public string Website { get; set; }

@@ -13,6 +13,11 @@
 <h2>Manage: <span class="text-info">@Model.School.Name</span></h2>
 <hr />
 
+<style>
+    .dl-horizontal dt{
+        text-align: left !important;
+    }
+</style>
 
 <div class="container">
     <div class="col-lg-6 col-md-6">
@@ -34,73 +39,40 @@
                         <dt>
                             @Html.DisplayNameFor(model => model.School.Name)
                         </dt>
-
                         <dd>
                             @Html.DisplayFor(model => model.School.Name)
                         </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.School.Address)
+                        </dt>
+                        <dd>
+                            @Model.School.Address<br />
+                            @if (Model.School.Address2 != null)
+                            {
+                                @Model.School.Address2<br />
+                            }
+                            @Model.School.City, @Model.School.State @Model.School.Zip<br />
+                            @Model.School.Country
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.School.FacebookLink)
+                        </dt>
 
+                        <dd>
+                            <a href="@Model.School.FacebookLink" target="_blank" title="@Model.School.FacebookLink"><div class="item-short">@Model.School.FacebookLink</div></a>
+                        </dd>
+                    </dl>
+                    <dl class="dl-horizontal">
                         <dt>
                             @Html.DisplayNameFor(model => model.School.Description)
                         </dt>
 
                         <dd>
                             @Html.DisplayFor(model => model.School.Description)
-                        </dd>
-
-                        <dt>
-                            @Html.DisplayNameFor(model => model.School.FacebookLink)
-                        </dt>
-
-                        <dd>
-                            @Html.DisplayFor(model => model.School.FacebookLink)
-                        </dd>
-
-                        <dt>
-                            @Html.DisplayNameFor(model => model.School.Address)
-                        </dt>
-
-                        <dd>
-                            @Html.DisplayFor(model => model.School.Address)
-                        </dd>
-
-                        <dt>
-                            @Html.DisplayNameFor(model => model.School.Address2)
-                        </dt>
-
-                        <dd>
-                            @Html.DisplayFor(model => model.School.Address2)
-                        </dd>
-
-                        <dt>
-                            @Html.DisplayNameFor(model => model.School.City)
-                        </dt>
-
-                        <dd>
-                            @Html.DisplayFor(model => model.School.City)
-                        </dd>
-
-                        <dt>
-                            @Html.DisplayNameFor(model => model.School.State)
-                        </dt>
-
-                        <dd>
-                            @Html.DisplayFor(model => model.School.State)
-                        </dd>
-
-                        <dt>
-                            @Html.DisplayNameFor(model => model.School.Zip)
-                        </dt>
-
-                        <dd>
-                            @Html.DisplayFor(model => model.School.Zip)
-                        </dd>
-
-                        <dt>
-                            @Html.DisplayNameFor(model => model.School.Country)
-                        </dt>
-
-                        <dd>
-                            @Html.DisplayFor(model => model.School.Country)
                         </dd>
                     </dl>
                 </div>
@@ -354,28 +326,24 @@
     </div>
     <div class="col-lg-6 col-md-6">
         <div class="panel panel-default">
-            <div class="panel-body ">
+            <div class="panel-body buttoncontainer">
                 <h3>Classes</h3>
-                @Html.ActionLink("Add a Class", "Create", "Event", new { eventType = EDR.Enums.EventType.Class, schoolId = Model.School.Id, role = EDR.Enums.RoleName.Teacher }, null)
+                @Html.ActionLink("Add a Class", "Create", "Event", new { eventType = EDR.Enums.EventType.Class, schoolId = Model.School.Id, role = EDR.Enums.RoleName.Teacher }, new { @class = "btn btn-warning actionbutton" } )
                 <table class="table">
                     <thead>
                         <tr>
                             <th>Class</th>
                             <th>Registrations</th>
-                            <th></th>
                         </tr>
                     </thead>
                     @foreach (var item in Model.School.Classes)
                     {
                         <tr>
                             <td>
-                                @Html.DisplayFor(member => item.Name)
+                                @Html.ActionLink(item.Name, "Manage", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Class }, new { @class = "btn btn-success text-left", @style = "text-align: left !important; width: 100% !important; max-width: 100% !important;" })
                             </td>
-                            <td>
+                            <td class="text-right">
                                 @item.EventInstances.Sum(i => i.EventRegistrations.Count())
-                            </td>
-                            <td>
-                                @Html.ActionLink("Manage", "Manage", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Class }, null)
                             </td>
                         </tr>
                     }
@@ -383,24 +351,15 @@
             </div>
         </div>
         <div class="panel panel-default">
-            <div class="panel-body ">
+            <div class="panel-body buttoncontainer">
                 <h3>Performance Teams</h3>
-                @Html.ActionLink("Add a Team", "Create", "Team", new { schoolId = Model.School.Id }, null)
+                @Html.ActionLink("Add a Team", "Create", "Team", new { schoolId = Model.School.Id }, new { @class = "btn btn-warning actionbutton"} )
                 <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Team</th>
-                            <th></th>
-                        </tr>
-                    </thead>
                     @foreach (var item in Model.School.Teams)
                     {
                         <tr>
                             <td>
-                                @Html.DisplayFor(member => item.Name)
-                            </td>
-                            <td>
-                                @Html.ActionLink("Manage", "Manage", "Team", new { id = item.Id }, null)
+                                @Html.ActionLink(item.Name, "Manage", "Team", new { id = item.Id, eventType = EDR.Enums.EventType.Class }, new { @class = "btn btn-info text-left", @style = "text-align: left !important; width: 100% !important; max-width: 100% !important;" })
                             </td>
                         </tr>
                     }
@@ -529,6 +488,7 @@
                             if (status == "Success")
                             {
                                 $('#profilepic').attr('src', filePath);
+                                //  Set Hidden Value for the Photo
                                 $("#image").cropper('destroy');
                                 $('#image').attr('src', "");
                                 $("#btnupload").hide();
@@ -586,7 +546,7 @@
 <script type="text/javascript">
     LoadFacebookPhotos();
     function LoadFacebookPhotos() {
-        $.get('@Url.Action("GetFacebookPicturesPartial", "School")', { }, function (data) {
+        $.get('@Url.Action("GetFacebookPicturesPartial", "Dancer")', { }, function (data) {
             $("#facebookpics").empty();
             $("#facebookpics").html(data);
         });
@@ -689,10 +649,3 @@
     });
     </script>
 }
-
-<p>
-    @Html.ActionLink("Back to School", "View", new { id = Model.School.Id })
-</p>
-<p>
-    @Html.ActionLink("Back to List", "List")
-</p>
