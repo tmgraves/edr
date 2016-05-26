@@ -423,3 +423,17 @@ facebookvideoimage img
     right: 5px;
     top: 5px;
 }
+
+.centerform input{
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+.centerform textarea{
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+.centerform > div > div{
+    float: none;
+}

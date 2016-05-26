@@ -50,4 +50,10 @@ namespace EDR.Models.ViewModels
         public Teacher Teacher { get; set; }
         public int? NewStyleId { get; set; }
     }
+
+    public class TeacherApplyViewModel
+    {
+        public Teacher Teacher { get; set; }
+    }
+
 }

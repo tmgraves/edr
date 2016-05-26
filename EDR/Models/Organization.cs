@@ -11,6 +11,7 @@ namespace EDR.Models
 {
     public abstract class Organization : Entity
     {
+        [Required(ErrorMessage ="Please enter a Name")]
         public string Name { get; set; }
         public string Description { get; set; }
         public string FacebookLink { get; set; }

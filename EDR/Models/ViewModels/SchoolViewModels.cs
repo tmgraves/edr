@@ -31,6 +31,8 @@ namespace EDR.Models.ViewModels
     {
         public School School { get; set; }
         public RoleName? Role { get; set; }
+        [Required(ErrorMessage ="Please enter the School's Location")]
+        public string Location { get; set; }
 
         public CreateSchoolViewModel()
         {

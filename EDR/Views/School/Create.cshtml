@@ -1,122 +1,130 @@
 ﻿@model EDR.Models.ViewModels.CreateSchoolViewModel
 
 @{
-    ViewBag.Title = "Create";
+    ViewBag.Title = "Create a School";
 }
 
-@section Scripts
-{
-    @Scripts.Render("~/bundles/jqueryval")
-}
+<div class="container">
+    <div class="center-block col-md-6 text-center" style="float: none;">
+        <h1>Create a School</h1>
+        <div class="panel panel-default">
+            <div class="panel-body bg-info">
+                @Html.ValidationSummary("", new { @class = "text-danger" })
+            @using (Html.BeginForm("Create", "School", FormMethod.Post, new { @id = "createform", @class = "main" }))
+            {
+                @Html.HiddenFor(m => m.School.Address, new { @class = "address" })
+                @Html.HiddenFor(m => m.School.City, new { @class = "city" })
+                @Html.HiddenFor(m => m.School.State, new { @class = "state" })
+                @Html.HiddenFor(m => m.School.Zip, new { @class = "zip" })
+                @Html.HiddenFor(m => m.School.Country, new { @class = "country" })
+                @Html.HiddenFor(m => m.School.Latitude, new { @class = "lat" })
+                @Html.HiddenFor(m => m.School.Longitude, new { @class = "lng" })
+                @Html.HiddenFor(m => m.Role)
+                @Html.AntiForgeryToken()
+                <div class="form-horizontal centerform">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        <div class="col-lg-8 center-block">
+                            @Html.EditorFor(model => model.School.Name, new { htmlAttributes = new { @class = "form-control", @placeholder = "School Name" } } )
+                            @Html.ValidationMessageFor(model => model.School.Name, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-lg-8 center-block">
+                            @Html.EditorFor(model => model.School.Description, new { htmlAttributes = new { @class = "form-control", @placeholder = "Description" } })
+                            @Html.ValidationMessageFor(model => model.School.Description, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-lg-8 center-block">
+                            @Html.EditorFor(model => model.School.FacebookLink, new { htmlAttributes = new { @class = "form-control", @placeholder = "Facebook Page" } })
+                            @Html.ValidationMessageFor(model => model.School.FacebookLink, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-lg-8 center-block">
+                            @Html.EditorFor(model => model.School.DateStarted, new { htmlAttributes = new { @class = "form-control", @placeholder = "Date Started" } })
+                            @Html.ValidationMessageFor(model => model.School.DateStarted, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-lg-8 center-block">
+                            @Html.EditorFor(model => model.Location, new { htmlAttributes = new { @class = "form-control locationsearch", @placeholder = "Type in the School Location" } })
+                            @Html.ValidationMessageFor(model => model.Location, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
 
-<h2>Create a School</h2>
-<hr />
-
-@using (Html.BeginForm()) 
-{
-    @Html.HiddenFor(m => m.Role)
-    @Html.AntiForgeryToken()
-    
-    <div class="form-horizontal">
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group">
-            @Html.LabelFor(model => model.School.Name, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.School.Name, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.School.Name, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.School.Description, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.School.Description, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.School.Description, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.School.FacebookLink, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.School.FacebookLink, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.School.FacebookLink, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.School.Public, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                <div class="checkbox">
-                    @Html.EditorFor(model => model.School.Public)
-                    @Html.ValidationMessageFor(model => model.School.Public, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        <div class="col-lg-8 center-block">
+                            <input type="submit" value="Submit Application" class="btn btn-primary" />
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.School.DateStarted, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.School.DateStarted, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.School.DateStarted, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.School.Address, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.School.Address, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.School.Address, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.School.Address2, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.School.Address2, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.School.Address2, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.School.City, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.School.City, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.School.City, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.School.State, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.School.State, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.School.State, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.School.Zip, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.School.Zip, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.School.Zip, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.School.Country, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.School.Country, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.School.Country, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+            }
             </div>
         </div>
     </div>
-}
-
-<div>
-    @Html.ActionLink("Back to List", "Index")
 </div>
+
+@section Scripts {
+@Scripts.Render("~/bundles/jqueryval")
+@Scripts.Render("~/bundles/jqueryUI")
+@Scripts.Render("~/bundles/GeoComplete")
+<script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+
+
+<script>
+//  Location AutoComplete
+$(function () {
+    $.validator.setDefaults({
+        ignore: ""
+    })
+
+    $(".locationsearch").geocomplete({
+        details: "form",
+        types: ["geocode", "establishment"],
+    })
+    .bind("geocode:result", function (event, result) {
+        $('.lat').prop("value", "");
+        $('.lng').prop("value", "");
+        $('.state').prop("value", "");
+        $('.zip').prop("value", "");
+        $('.country').prop("value", "");
+        $('.address').prop("value", "");
+
+        $('.lat').prop("value", result.geometry.location.lat());
+        $('.lng').prop("value", result.geometry.location.lng());
+
+        var street_num;
+        var street_name;
+        $.each(result.address_components, function (i, address_component) {
+
+            //alert(address_component.types[0]);
+            //alert(address_component.long_name);
+            if (address_component.types[0] == "street_number") {
+                street_num = address_component.long_name;
+            }
+            else if (address_component.types[0] == "route") {
+                street_name = address_component.long_name;
+            }
+            else if (address_component.types[0] == "locality") {
+                $('.city').prop("value", address_component.long_name);
+            }
+            else if (address_component.types[0] == "administrative_area_level_1") {
+                $('.state').prop("value", address_component.long_name);
+            }
+            else if (address_component.types[0] == "postal_code") {
+                $('.zip').prop("value", address_component.long_name);
+            }
+            else if (address_component.types[0] == "country") {
+                $('.country').prop("value", address_component.long_name);
+            }
+        });
+        //  alert(street_num + " " + street_name);
+        $('.address').prop("value", street_num + " " + street_name);
+        //  console.log(result);
+    });
+});
+//  Location AutoComplete
+</script>
+}

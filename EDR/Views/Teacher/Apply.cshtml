@@ -1,70 +1,75 @@
 ﻿@model EDR.Models.ViewModels.TeacherApplyViewModel
 
-<h2 class="page-header">Teacher Application</h2>
-@if (Model.Teacher != null)
-{
-    <h5>You've already applied to be a Teacher.  Your application is under review.</h5>
-    @Html.ActionLink("Back to Dancer Page", "Home", "Dancer", new { username = User.Identity.Name }, new { @class = "btn btn-info" } )
+@{
+    ViewBag.Title = "Apply to be a Teacher Eat. Dance. Repeat.";
 }
-else
-{
-    using (Html.BeginForm())
-    {
-        <input type="submit" value="Apply to be a Teacher" class="btn btn-default" />
-    }
-}
-@Html.AntiForgeryToken()
 
-<div class="form-horizontal">
-    <h4>Teacher</h4>
-    <hr />
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    <div class="form-group">
-        @Html.LabelFor(model => model.Teacher.StartDate, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Teacher.StartDate, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Teacher.StartDate, "", new { @class = "text-danger" })
-        </div>
-    </div>
+<div class="container">
+    <div class="center-block col-md-6 text-center" style="float: none;">
+        <h1>Apply to be a Teacher</h1>
+        @if (Model.Teacher.Id != 0)
+        {
+            <h2 class="text-warning">You've already applied to be a Teacher</h2>
+        }
+        <h3 class="text-danger">@ViewBag.Message</h3>
+        <div class="panel panel-default">
+            <div class="panel-body bg-info">
+            @using (Html.BeginForm("Apply", "Teacher", null, FormMethod.Post, new { }))
+            {
+                @Html.HiddenFor(m => m.Teacher.ApplicationUser.Id)
+                @Html.HiddenFor(m => m.Teacher.Id)
+                @Html.AntiForgeryToken()
+                <div class="form-horizontal centerform">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        <div class="col-lg-8 center-block">
+                            @Html.EditorFor(model => model.Teacher.StartDate, new { htmlAttributes = new { @class = "form-control", @placeholder = "When did you start teaching?" } })
+                            @Html.ValidationMessageFor(model => model.Teacher.StartDate, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-lg-8 center-block">
+                            @Html.TextAreaFor(model => model.Teacher.Resume, new { @class = "form-control", @placeholder = "Tell us about yourself...", @rows = "8" })
+                            @Html.ValidationMessageFor(model => model.Teacher.Resume, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-lg-8 center-block">
+                            @Html.EditorFor(model => model.Teacher.Phone, new { htmlAttributes = new { @class = "form-control", @placeholder = "Your Phone Number" } })
+                            @Html.ValidationMessageFor(model => model.Teacher.Phone, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-lg-8 center-block">
+                            @Html.EditorFor(model => model.Teacher.FacebookLink, new { htmlAttributes = new { @class = "form-control", @placeholder = "Your Facebook Page" } })
+                            @Html.ValidationMessageFor(model => model.Teacher.FacebookLink, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-lg-8 center-block">
+                            @Html.EditorFor(model => model.Teacher.Website, new { htmlAttributes = new { @class = "form-control", @placeholder = "Your Website Address" } })
+                            @Html.ValidationMessageFor(model => model.Teacher.Website, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-lg-8 center-block">
+                            @Html.EditorFor(model => model.Teacher.ContactEmail, new { htmlAttributes = new { @class = "form-control", @placeholder = "Your Email Address" } })
+                            @Html.ValidationMessageFor(model => model.Teacher.ContactEmail, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
 
-    <div class="form-group">
-        @Html.LabelFor(model => model.Teacher.Phone, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Teacher.Phone, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Teacher.Phone, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.Teacher.FacebookLink, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Teacher.FacebookLink, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Teacher.FacebookLink, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.Teacher.Website, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Teacher.Website, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Teacher.Website, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.Teacher.ContactEmail, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Teacher.ContactEmail, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Teacher.ContactEmail, "", new { @class = "text-danger" })
-        </div>
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.Teacher.Resume, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.TextAreaFor(model => model.Teacher.Resume, new { cols = 35, @rows = 5, @class = "form-control" })
-            @Html.ValidationMessageFor(model => model.Teacher.Resume, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        <div class="col-lg-8 center-block">
+                            <input type="submit" value="Submit Application" class="btn btn-primary" />
+                        </div>
+                    </div>
+                </div>
+            }
+            </div>
         </div>
     </div>
 </div>
 
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

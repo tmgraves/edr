@@ -485,27 +485,65 @@ namespace EDR.Controllers
             var viewModel = new TeacherApplyViewModel();
             viewModel.Teacher = DataContext.Teachers.Where(x => x.ApplicationUser.Id == user.Id).FirstOrDefault();
 
+            if (viewModel.Teacher == null)
+            {
+                viewModel.Teacher = new Teacher() { ApplicationUser = user };
+            }
+
             return View(viewModel);
         }
 
         // POST: Teacher Apply
         [HttpPost]
-        public ActionResult Apply(Teacher teacher)
-        {
-            DataContext.Teachers.Add(new Teacher { ApplicationUser = DataContext.Users.Find(User.Identity.GetUserId()) });
-            DataContext.SaveChanges();
-            return RedirectToAction("Home", "Dancer", new { username = User.Identity.Name } );
-        }
-
+        [ValidateAntiForgeryToken]
         [Authorize]
-        public ActionResult ApplyNew()
+        public ActionResult Apply(TeacherApplyViewModel model)
         {
-            // TODO: SAVE TEACHER RECORD WITH 'Active=false' ONCE APPROVED SWITCH TO 'True'
-            //       AND ADD USER TO 'Teacher' ROLE
-
-            var model = new Teacher();
-
-            return View(model);
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    if (model.Teacher.Id == 0)
+                    {
+                        model.Teacher.ApplicationUser = DataContext.Users.Find(User.Identity.GetUserId());
+                        DataContext.Teachers.Add(model.Teacher);
+                    }
+                    else
+                    {
+                        DataContext.Entry(model.Teacher).State = EntityState.Modified;
+                    }
+                    DataContext.SaveChanges();
+                    return RedirectToAction("Home", "Dancer", new { username = User.Identity.Name });
+                }
+                catch (DbEntityValidationException e)
+                {
+                    var msg = "";
+                    foreach (var eve in e.EntityValidationErrors)
+                    {
+                        msg = eve.Entry.Entity.GetType().Name + " " + eve.Entry.State;
+                        foreach (var ve in eve.ValidationErrors)
+                        {
+                            msg = ve.PropertyName + " " + ve.ErrorMessage;
+                        }
+                    }
+                    return View(model);
+                }
+            }
+            else
+            {
+                return View(model);
+            }
         }
+
+        //[Authorize]
+        //public ActionResult ApplyNew()
+        //{
+        //    // TODO: SAVE TEACHER RECORD WITH 'Active=false' ONCE APPROVED SWITCH TO 'True'
+        //    //       AND ADD USER TO 'Teacher' ROLE
+
+        //    var model = new Teacher();
+
+        //    return View(model);
+        //}
     }
 }

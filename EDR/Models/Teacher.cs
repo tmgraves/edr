@@ -26,6 +26,7 @@ namespace EDR.Models
         [Display(Name = "Teacher Website")]
         [Url(ErrorMessage = "Please enter a valid webiste address")]
         public string Website { get; set; }
+        [Required(ErrorMessage = "Contact Email is required")]
         [Display(Name = "Contact Email")]
         [EmailAddress(ErrorMessage = "Invalid Email Address")]
         public string ContactEmail { get; set; }

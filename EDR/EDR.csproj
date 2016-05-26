@@ -402,7 +402,6 @@
     <Compile Include="Models\ViewModels\PromoterApplyViewModel.cs" />
     <Compile Include="Models\ViewModels\PromoterEditViewModel.cs" />
     <Compile Include="Models\ViewModels\PromoterViewModels.cs" />
-    <Compile Include="Models\ViewModels\TeacherApplyViewModel.cs" />
     <Compile Include="Models\ViewModels\TeacherEditViewModel.cs" />
     <Compile Include="Models\ViewModels\TeacherListViewModel.cs" />
     <Compile Include="Models\Workshop.cs" />
@@ -487,6 +486,7 @@
     <Content Include="Content\images\yelp.png" />
     <Content Include="Content\images\youtube.png" />
     <Content Include="Content\jquery.rateyo.css" />
+    <Content Include="Content\listnav.css" />
     <Content Include="Content\sidebar.bootstrap.css" />
     <Content Include="Content\timepicker\bootstrap-datepicker.css" />
     <Content Include="Content\timepicker\jquery.timepicker.css" />
@@ -710,6 +710,7 @@
     <Content Include="Scripts\jquery-2.1.1.min.js" />
     <Content Include="Scripts\jquery-2.1.1.min.map" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery-listnav.js" />
     <Content Include="Scripts\jquery-simple-pagination-plugin.js" />
     <Content Include="Scripts\jquery-ui.js" />
     <Content Include="Scripts\jquery-ui.min.js" />
