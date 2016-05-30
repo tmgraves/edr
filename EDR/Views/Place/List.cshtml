@@ -20,31 +20,33 @@
     @Html.HiddenFor(m => m.CenterLat, new { @class = "clatfield" })
     @Html.HiddenFor(m => m.CenterLng, new { @class = "clngfield" })
     @Html.HiddenFor(m => m.Zoom, new { @class = "czoomfield" })
-    <div class="container bg-info text-center" style="padding: 10px;">
+    <div class="container bg-info text-center" style="padding: 0px !important;">
         <div class="form-inline">
-            <div class="form-group">
-                @Html.TextBoxFor(m => m.Location, new { placeholder = "Location", @class = "form-control locationsearch" })
+            <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+                <div class="form-group">
+                    @Html.TextBoxFor(m => m.Location, new { placeholder = "Location", @class = "form-control locationsearch" })
+                </div>
+                <div class="form-group">
+                    @Html.HiddenFor(m => m.DanceStyleId, new { @class = "stylesearchid" })
+                    @Html.TextBoxFor(m => m.Style, new { placeholder = "Dance Style", @class = "form-control stylesearch" })
+                </div>
+                <div class="form-group">
+                    @Html.HiddenFor(m => m.TeacherId, new { @class = "teachersearchid" })
+                    @Html.TextBoxFor(m => m.Teacher, new { placeholder = "Teacher", @class = "form-control teachersearch" })
+                </div>
+                <div class="form-group">
+                    @Html.EnumDropDownListFor(model => model.Type, "Pick a Place Type", htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Search Places" class="btn btn-warning" />
+                </div>
             </div>
-            <div class="form-group">
-                @Html.HiddenFor(m => m.DanceStyleId, new { @class = "stylesearchid" })
-                @Html.TextBoxFor(m => m.Style, new { placeholder = "Dance Style", @class = "form-control stylesearch" })
-            </div>
-            <div class="form-group">
-                @Html.HiddenFor(m => m.TeacherId, new { @class = "teachersearchid" })
-                @Html.TextBoxFor(m => m.Teacher, new { placeholder = "Teacher", @class = "form-control teachersearch" })
-            </div>
-            <div class="form-group">
-                @Html.EnumDropDownListFor(model => model.Type, "Pick a Place Type", htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Search Places" class="btn btn-warning" />
-            </div>
+            <div class="map_canvas"></div>
         </div>
     </div>
 }
 
-<div class="map_canvas"></div>
 
 @Html.DisplayFor(m => m.Places, "Places")
 

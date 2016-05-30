@@ -20,27 +20,29 @@
     @Html.HiddenFor(m => m.CenterLat, new { @class = "clatfield" })
     @Html.HiddenFor(m => m.CenterLng, new { @class = "clngfield" })
     @Html.HiddenFor(m => m.Zoom, new { @class = "czoomfield" })
-    <div class="container bg-info text-center" style="padding: 10px;">
+    <div class="container bg-info text-center" style="padding: 0px !important;">
         <div class="form-inline">
-            <div class="form-group">
-                @Html.TextBoxFor(m => m.Location, new { placeholder = "Location", @class = "form-control locationsearch" })
+            <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+                <div class="form-group">
+                    @Html.TextBoxFor(m => m.Location, new { placeholder = "Location", @class = "form-control locationsearch" })
+                </div>
+                <div class="form-group">
+                    @Html.HiddenFor(m => m.DanceStyleId, new { @class = "stylesearchid" })
+                    @Html.TextBoxFor(m => m.Style, new { placeholder = "Dance Style", @class = "form-control stylesearch" })
+                </div>
+                <div class="form-group">
+                    @Html.HiddenFor(m => m.TeacherId, new { @class = "teachersearchid" })
+                    @Html.TextBoxFor(m => m.Teacher, new { placeholder = "Teacher", @class = "form-control teachersearch" })
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Search" class="btn btn-warning" />
+                </div>
             </div>
-            <div class="form-group">
-                @Html.HiddenFor(m => m.DanceStyleId, new { @class = "stylesearchid" })
-                @Html.TextBoxFor(m => m.Style, new { placeholder = "Dance Style", @class = "form-control stylesearch" })
-            </div>
-            <div class="form-group">
-                @Html.HiddenFor(m => m.TeacherId, new { @class = "teachersearchid" })
-                @Html.TextBoxFor(m => m.Teacher, new { placeholder = "Teacher", @class = "form-control teachersearch" })
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Search" class="btn btn-warning" />
-            </div>
+            <div class="map_canvas"></div>
         </div>
     </div>
 }
 
-<div class="map_canvas"></div>
 
 @Html.DisplayFor(m => m.Teachers, "Teachers")
 
@@ -51,89 +53,89 @@
     @Scripts.Render("~/bundles/foolproof")
     @Scripts.Render("~/bundles/jqueryUI")
     @Scripts.Render("~/bundles/GeoComplete")
-<script src="../../Scripts/searchhelper.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script src="../../Scripts/jquery.geocomplete.js"></script>
-<link rel="stylesheet" href="~/Content/jquery.rateyo.css" />
-<script src="~/Scripts/jquery.rateyo.js"></script>
-<script>
-    //  Map Marker Containers
-    var markers = [];
-    var infowindows = [];
-    $(function () {
+    <script src="../../Scripts/searchhelper.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="../../Scripts/jquery.geocomplete.js"></script>
+    <link rel="stylesheet" href="~/Content/jquery.rateyo.css" />
+    <script src="~/Scripts/jquery.rateyo.js"></script>
+    <script>
         //  Map Marker Containers
-        //  Build up the Markers
-        var map = $('.locationsearch').geocomplete("map");
-        @foreach(var s in Model.Teachers.OrderBy(m => m.ApplicationUser.FullName))
+        var markers = [];
+        var infowindows = [];
+        $(function () {
+            //  Map Marker Containers
+            //  Build up the Markers
+            var map = $('.locationsearch').geocomplete("map");
+            @foreach(var s in Model.Teachers.OrderBy(m => m.ApplicationUser.FullName))
     {
         <text>
-        var marker = new google.maps.Marker({
-            position: new google.maps.LatLng('@s.ApplicationUser.Latitude', @s.ApplicationUser.Longitude),
-            map: map,
-            title: '@s.ApplicationUser.FullName',
-            icon: "../../Content/images/MapMarker.png"
-        });
+            var marker = new google.maps.Marker({
+                position: new google.maps.LatLng('@s.ApplicationUser.Latitude', @s.ApplicationUser.Longitude),
+                map: map,
+                title: '@s.ApplicationUser.FullName',
+                icon: "../../Content/images/MapMarker.png"
+            });
 
-        attachMessage(map, marker, '@s.Id', '@s.ApplicationUser.FullName', '@(s.ApplicationUser.City + ", " + s.ApplicationUser.State + " " + s.ApplicationUser.ZipCode)', '<a href="@Url.Action("Home", "Teacher", new { username = s.ApplicationUser.UserName })">' + '@s.ApplicationUser.FullName' + '</a>');
-        markers.push(marker);
-        </text>
+            attachMessage(map, marker, '@s.Id', '@s.ApplicationUser.FullName', '@(s.ApplicationUser.City + ", " + s.ApplicationUser.State + " " + s.ApplicationUser.ZipCode)', '<a href="@Url.Action("Home", "Teacher", new { username = s.ApplicationUser.UserName })">' + '@s.ApplicationUser.FullName' + '</a>');
+            markers.push(marker);
+            </text>
     }
 
-        function attachMessage(map, marker, num, placeName, address2, link) {
-            var message = marker.title;
-            var infowindow = new google.maps.InfoWindow({
-                disableAutoPan: false,
-                maxWidth: 200,
-                content: '<div id="content" class="text-center" style="width: 200px;">' +
-                '<div id="siteNotice">' +
-                '</div>' +
-                '<div style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
-                link +
-                '</div>' +
-                '<div id="bodyContent">' +
-                '<p>' +
-                address2 +
-                '</p>' +
-                '</div>' +
-                '</div>'
-            });
-            infowindows.push(infowindow);
+            function attachMessage(map, marker, num, placeName, address2, link) {
+                var message = marker.title;
+                var infowindow = new google.maps.InfoWindow({
+                    disableAutoPan: false,
+                    maxWidth: 200,
+                    content: '<div id="content" class="text-center" style="width: 200px;">' +
+                    '<div id="siteNotice">' +
+                    '</div>' +
+                    '<div style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
+                    link +
+                    '</div>' +
+                    '<div id="bodyContent">' +
+                    '<p>' +
+                    address2 +
+                    '</p>' +
+                    '</div>' +
+                    '</div>'
+                });
+                infowindows.push(infowindow);
 
-            google.maps.event.addListener(marker, 'click', function () {
-                clearWindows();
-                infowindow.open(map, marker);
-            });
-        }
-    });
-
-    function clearWindows() {
-        for (var i = 0; i < infowindows.length; i++) {
-            infowindows[i].close();
-        }
-    };
-
-    function openEvent(id, lati, long) {
-        var latLng = new google.maps.LatLng(lati, long); //Makes a latlng
-        var map = $("#Location").geocomplete("map");
-        map.panTo(latLng); //Make map global
-        markers[id].setMap(map);
-        clearWindows();
-        infowindows[id].open(map, markers[id]);
-        return false;
-    };
-
-    $(function () {
-
-        $(".rateYo").rateYo({
-            starWidth: "15px",
-            onInit: function (rating, rateYoInstance) {
-                //  alert("init");
-                var t = $(this);
-                $(this).rateYo("option", "rating", t.parent('div').find('.ratingval').prop('value'));
-                $(this).rateYo("option", "readOnly", true);
+                google.maps.event.addListener(marker, 'click', function () {
+                    clearWindows();
+                    infowindow.open(map, marker);
+                });
             }
         });
-    });
-</script>
+
+        function clearWindows() {
+            for (var i = 0; i < infowindows.length; i++) {
+                infowindows[i].close();
+            }
+        };
+
+        function openEvent(id, lati, long) {
+            var latLng = new google.maps.LatLng(lati, long); //Makes a latlng
+            var map = $("#Location").geocomplete("map");
+            map.panTo(latLng); //Make map global
+            markers[id].setMap(map);
+            clearWindows();
+            infowindows[id].open(map, markers[id]);
+            return false;
+        };
+
+        $(function () {
+
+            $(".rateYo").rateYo({
+                starWidth: "15px",
+                onInit: function (rating, rateYoInstance) {
+                    //  alert("init");
+                    var t = $(this);
+                    $(this).rateYo("option", "rating", t.parent('div').find('.ratingval').prop('value'));
+                    $(this).rateYo("option", "readOnly", true);
+                }
+            });
+        });
+    </script>
 }

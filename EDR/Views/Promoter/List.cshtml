@@ -20,27 +20,29 @@
     @Html.HiddenFor(m => m.CenterLat, new { @class = "clatfield" })
     @Html.HiddenFor(m => m.CenterLng, new { @class = "clngfield" })
     @Html.HiddenFor(m => m.Zoom, new { @class = "czoomfield" })
-    <div class="container bg-info text-center" style="padding: 10px;">
+    <div class="container bg-info text-center" style="padding: 0px !important;">
         <div class="form-inline">
-            <div class="form-group">
-                @Html.TextBoxFor(m => m.Location, new { placeholder = "Location", @class = "form-control locationsearch" })
+            <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+                <div class="form-group">
+                    @Html.TextBoxFor(m => m.Location, new { placeholder = "Location", @class = "form-control locationsearch" })
+                </div>
+                <div class="form-group">
+                    @Html.HiddenFor(m => m.DanceStyleId, new { @class = "stylesearchid" })
+                    @Html.TextBoxFor(m => m.Style, new { placeholder = "Dance Style", @class = "form-control stylesearch" })
+                </div>
+                <div class="form-group">
+                    @Html.HiddenFor(m => m.PromoterId, new { @class = "promotersearchid" })
+                    @Html.TextBoxFor(m => m.PromoterName, new { placeholder = "Promoter Name", @class = "form-control promotersearch" })
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Search" class="btn btn-warning" />
+                </div>
             </div>
-            <div class="form-group">
-                @Html.HiddenFor(m => m.DanceStyleId, new { @class = "stylesearchid" })
-                @Html.TextBoxFor(m => m.Style, new { placeholder = "Dance Style", @class = "form-control stylesearch" })
-            </div>
-            <div class="form-group">
-                @Html.HiddenFor(m => m.PromoterId, new { @class = "promotersearchid" })
-                @Html.TextBoxFor(m => m.PromoterName, new { placeholder = "Promoter Name", @class = "form-control promotersearch" })
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Search" class="btn btn-warning" />
-            </div>
+            <div class="map_canvas"></div>
         </div>
     </div>
 }
 
-<div class="map_canvas"></div>
 
 @Html.DisplayFor(m => m.Promoters, "Promoters")
 
@@ -51,78 +53,78 @@
     @Scripts.Render("~/bundles/foolproof")
     @Scripts.Render("~/bundles/jqueryUI")
     @Scripts.Render("~/bundles/GeoComplete")
-<script src="../../Scripts/searchhelper.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script src="../../Scripts/jquery.geocomplete.js"></script>
+    <script src="../../Scripts/searchhelper.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="../../Scripts/jquery.geocomplete.js"></script>
 
-<script type="text/javascript">
-    //  Map Marker Containers
-    var markers = [];
-    var infowindows = [];
-    $(function () {
+    <script type="text/javascript">
         //  Map Marker Containers
-        //  Build up the Markers
-        var map = $("#Location").geocomplete("map");
-        @foreach(var s in Model.Promoters.OrderBy(m => m.ApplicationUser.FullName))
+        var markers = [];
+        var infowindows = [];
+        $(function () {
+            //  Map Marker Containers
+            //  Build up the Markers
+            var map = $("#Location").geocomplete("map");
+            @foreach(var s in Model.Promoters.OrderBy(m => m.ApplicationUser.FullName))
     {
         <text>
-        var marker = new google.maps.Marker({
-            position: new google.maps.LatLng('@s.ApplicationUser.Latitude', @s.ApplicationUser.Longitude),
-            map: map,
-            title: '@s.ApplicationUser.FullName',
-            icon: "../../Content/images/MapMarker.png"
-        });
+            var marker = new google.maps.Marker({
+                position: new google.maps.LatLng('@s.ApplicationUser.Latitude', @s.ApplicationUser.Longitude),
+                map: map,
+                title: '@s.ApplicationUser.FullName',
+                icon: "../../Content/images/MapMarker.png"
+            });
 
-        attachMessage(map, marker, '@s.Id', '@s.ApplicationUser.FullName', '@(s.ApplicationUser.City + ", " + s.ApplicationUser.State + " " + s.ApplicationUser.ZipCode)', '<a href="@Url.Action("Home", "Promoter", new { username = s.ApplicationUser.UserName })">' + '@s.ApplicationUser.FullName' + '</a>');
-        markers.push(marker);
-        </text>
+            attachMessage(map, marker, '@s.Id', '@s.ApplicationUser.FullName', '@(s.ApplicationUser.City + ", " + s.ApplicationUser.State + " " + s.ApplicationUser.ZipCode)', '<a href="@Url.Action("Home", "Promoter", new { username = s.ApplicationUser.UserName })">' + '@s.ApplicationUser.FullName' + '</a>');
+            markers.push(marker);
+            </text>
     }
 
-        function attachMessage(map, marker, num, placeName, address2, link) {
-            var message = marker.title;
-            var infowindow = new google.maps.InfoWindow({
-                disableAutoPan: false,
-                maxWidth: 200,
-                content: '<div id="content" class="text-center" style="width: 200px;">' +
-                '<div id="siteNotice">' +
-                '</div>' +
-                '<div style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
-                link +
-                '</div>' +
-                '<div id="bodyContent">' +
-                '<p>' +
-                address2 +
-                '</p>' +
-                '</div>' +
-                '</div>'
-            });
-            infowindows.push(infowindow);
+            function attachMessage(map, marker, num, placeName, address2, link) {
+                var message = marker.title;
+                var infowindow = new google.maps.InfoWindow({
+                    disableAutoPan: false,
+                    maxWidth: 200,
+                    content: '<div id="content" class="text-center" style="width: 200px;">' +
+                    '<div id="siteNotice">' +
+                    '</div>' +
+                    '<div style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
+                    link +
+                    '</div>' +
+                    '<div id="bodyContent">' +
+                    '<p>' +
+                    address2 +
+                    '</p>' +
+                    '</div>' +
+                    '</div>'
+                });
+                infowindows.push(infowindow);
 
-            //  infowindow.open(map, marker);
+                //  infowindow.open(map, marker);
 
-            google.maps.event.addListener(marker, 'click', function () {
-                clearWindows();
-                infowindow.open(map, marker);
-            });
-        }
-    });
+                google.maps.event.addListener(marker, 'click', function () {
+                    clearWindows();
+                    infowindow.open(map, marker);
+                });
+            }
+        });
 
-    function clearWindows() {
-        for (var i = 0; i < infowindows.length; i++) {
-            infowindows[i].close();
-        }
-    };
+        function clearWindows() {
+            for (var i = 0; i < infowindows.length; i++) {
+                infowindows[i].close();
+            }
+        };
 
-    function openEvent(id, lati, long) {
-        var latLng = new google.maps.LatLng(lati, long); //Makes a latlng
-        var map = $("#Location").geocomplete("map");
-        map.panTo(latLng); //Make map global
-        markers[id].setMap(map);
-        clearWindows();
-        infowindows[id].open(map, markers[id]);
-        return false;
-    };
-</script>
+        function openEvent(id, lati, long) {
+            var latLng = new google.maps.LatLng(lati, long); //Makes a latlng
+            var map = $("#Location").geocomplete("map");
+            map.panTo(latLng); //Make map global
+            markers[id].setMap(map);
+            clearWindows();
+            infowindows[id].open(map, markers[id]);
+            return false;
+        };
+    </script>
 }
 

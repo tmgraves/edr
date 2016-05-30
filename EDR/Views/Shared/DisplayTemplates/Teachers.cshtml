@@ -7,8 +7,8 @@
     @foreach (var item in Model.OrderBy(m => m.ApplicationUser.FullName))
     {
         <text>
-            <div class="col-lg-4" style="padding: 5px !important;">
-                <div class="row box-default" style="padding: 5px;">
+            <div class="col-lg-6" style="padding: 5px !important;">
+                <div class="box-default col-lg-12 nospace" style="padding: 5px !important;">
                     <div class="col-lg-3 bg-success helper">
                         <span></span><img src='@Url.Content(item.ApplicationUser.PhotoUrl ?? "~/Content/images/NoImage.png")' />
                     </div>
@@ -35,7 +35,7 @@
                 </div>
             </div>
         </text>
-        rowNo++;
+                        rowNo++;
     }
 </div>
 
