@@ -12,8 +12,8 @@ namespace EDR.Models.ViewModels
     public class PlaceViewModel
     {
         public Place Place { get; set; }
-        public PlaceEventSearchViewModel Classes { get; set; }
-        public PlaceEventSearchViewModel Socials { get; set; }
+        public IEnumerable<Class> Classes { get; set; }
+        public IEnumerable<Social> Socials { get; set; }
         public IEnumerable<Owner> Owners { get; set; }
         public string TeacherId { get; set; }
         public List<SelectListItem> TeacherList { get; set; }

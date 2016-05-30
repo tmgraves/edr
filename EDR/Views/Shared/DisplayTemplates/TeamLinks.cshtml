@@ -1,0 +1,11 @@
+﻿@model List<EDR.Models.Team>
+
+@foreach (var team in Model)
+{
+    <div class="row">
+        <div class="col-lg-12">
+            @Html.DisplayFor(m => team)
+        </div>
+    </div>
+    <hr />
+}

@@ -27,97 +27,106 @@ window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]
 .mainnav.open > ul {
     display: inline-flex !important;
 }
+.navbar-default{
+    font-weight: 600;
+    background-color: #00889f;
+}
+.navbar-default .navbar-nav > li > a {
+    color: #fff;
+}
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus {
+    color: #ACDDE4;
+}
 </style>
 
-<div class="row" style="margin-bottom: 40px;">
-        <div class="navbar navbar-inverse navbar-fixed-top">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a href="@Url.Action("Index", "Home")" class="navbar-brand">
-                        <img src="~/Content/images/eatdancerepeat.png" style="height: 100%;" />
-                    </a>
-                </div>
-                <div class="navbar-collapse collapse">
-                    <ul class="nav navbar-nav">
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                            <li>@Html.ActionLink("Explore", "Explore", "Home")</li>
-                            <li class="mainnav dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Learn<span class="caret"></span></a>
-                                <ul class="mainnav dropdown-menu" role="menu">
-                                    <li>@Html.ActionLink("Classes", "Learn", "Home")</li>
-                                    @*<li>@Html.ActionLink("+ Add a Class", "Create", "Event", new { eventType = EDR.Enums.EventType.Class })</li>*@
-                                    <li role="separator" class="divider"></li>
-                                    <li>@Html.ActionLink("Schools", "List", "School")</li>
-                                    @*<li>@Html.ActionLink("+ Add a School", "Create", "School")</li>*@
-                                    <li role="separator" class="divider"></li>
-                                    <li>@Html.ActionLink("Studios", "List", "Place", new { TypeParam = EDR.Enums.PlaceType.Studio }, null)</li>
-                                </ul>
-                            </li>
-                            <li class="mainnav dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dance<span class="caret"></span></a>
-                                <ul class="mainnav dropdown-menu">
-                                    <li>@Html.ActionLink("Socials", "Social", "Home")</li>
-                                    @*<li>@Html.ActionLink("+ Add a Social", "Create", "Event", new { eventType = EDR.Enums.EventType.Social })</li>*@
-                                    <li role="separator" class="divider"></li>
-                                    <li>@Html.ActionLink("Dance Venues", "List", "Place")</li>
-                                </ul>
-                            </li>
-                            <li class="mainnav dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">People<span class="caret"></span></a>
-                                <ul class="mainnav dropdown-menu">
-                                    <li>@Html.ActionLink("Teachers", "List", "Teacher")</li>
-                                    <li role="separator" class="divider"></li>
-                                    <li>@Html.ActionLink("Owners", "List", "Owner")</li>
-                                    <li role="separator" class="divider"></li>
-                                    <li>@Html.ActionLink("Promoters", "List", "Promoter")</li>
-                                </ul>
-                            </li>
-                            <li class="mainnav dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Performance<span class="caret"></span></a>
-                                <ul class="mainnav dropdown-menu">
-                                    <li>@Html.ActionLink("Dance Teams", "Index", "Team")</li>
-                                    <li><a href="#">Performances</a></li>
-                                </ul>
-                            </li>
-                        }
-                        else
-                        {
-                            <li>@Html.ActionLink("Explore", "Explore", "Home")</li>
-                            <li>@Html.ActionLink("Learn", "Learn", "Home")</li>
-                            <li>@Html.ActionLink("Dance", "Social", "Home")</li>
-                        }
-                    </ul>
-                    <div style="margin-right: 50px;">
-                        @Html.Partial("_LoginPartial")
-                    </div>
-                </div>
-                <div>
-                    <div class="pull-right" style="display: inline-block; vertical-align: bottom !important; margin: 1px;">
-                        <a class="twitter-share-button"
-                           data-count="none"
-                           href="https://twitter.com/share"
-                           data-url="http://www.eatdancerepeat.com"
-                           data-text="Check out Eat. Dance. Repeat.">
-                            Tweet
-                        </a>
-                    </div>
-                    <div class="pull-right" style="display: inline-block; margin: 1px;">
-                        <div class="fb-share-button" data-href="http://www.eatdancerepeat.com" data-layout="button" style="margin-bottom: 5px !important;"></div>
-                    </div>
+    <div class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a href="@Url.Action("Index", "Home")" class="navbar-brand">
+                    <img src="~/Content/images/eatdancerepeat.png" style="height: 100%;" />
+                </a>
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li>@Html.ActionLink("Explore", "Explore", "Home")</li>
+                        <li class="mainnav dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Learn<span class="caret"></span></a>
+                            <ul class="mainnav dropdown-menu" role="menu">
+                                <li>@Html.ActionLink("Classes", "Learn", "Home")</li>
+                                @*<li>@Html.ActionLink("+ Add a Class", "Create", "Event", new { eventType = EDR.Enums.EventType.Class })</li>*@
+                                <li role="separator" class="divider"></li>
+                                <li>@Html.ActionLink("Schools", "List", "School")</li>
+                                @*<li>@Html.ActionLink("+ Add a School", "Create", "School")</li>*@
+                                <li role="separator" class="divider"></li>
+                                <li>@Html.ActionLink("Studios", "List", "Place", new { TypeParam = EDR.Enums.PlaceType.Studio }, null)</li>
+                            </ul>
+                        </li>
+                        <li class="mainnav dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dance<span class="caret"></span></a>
+                            <ul class="mainnav dropdown-menu">
+                                <li>@Html.ActionLink("Socials", "Social", "Home")</li>
+                                @*<li>@Html.ActionLink("+ Add a Social", "Create", "Event", new { eventType = EDR.Enums.EventType.Social })</li>*@
+                                <li role="separator" class="divider"></li>
+                                <li>@Html.ActionLink("Dance Venues", "List", "Place")</li>
+                            </ul>
+                        </li>
+                        <li class="mainnav dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">People<span class="caret"></span></a>
+                            <ul class="mainnav dropdown-menu">
+                                <li>@Html.ActionLink("Teachers", "List", "Teacher")</li>
+                                <li role="separator" class="divider"></li>
+                                <li>@Html.ActionLink("Owners", "List", "Owner")</li>
+                                <li role="separator" class="divider"></li>
+                                <li>@Html.ActionLink("Promoters", "List", "Promoter")</li>
+                            </ul>
+                        </li>
+                        <li class="mainnav dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Performance<span class="caret"></span></a>
+                            <ul class="mainnav dropdown-menu">
+                                <li>@Html.ActionLink("Dance Teams", "Index", "Team")</li>
+                                <li><a href="#">Performances</a></li>
+                            </ul>
+                        </li>
+                    }
+                    else
+                    {
+                        <li>@Html.ActionLink("Explore", "Explore", "Home")</li>
+                        <li>@Html.ActionLink("Learn", "Learn", "Home")</li>
+                        <li>@Html.ActionLink("Dance", "Social", "Home")</li>
+                    }
+                </ul>
+                <div style="margin-right: 50px;">
+                    @Html.Partial("_LoginPartial")
                 </div>
             </div>
+        </div>
+    </div>
+    <div>
+        <div class="pull-right" style="display: inline-block; vertical-align: bottom !important; margin: 1px;">
+            <a class="twitter-share-button"
+               data-count="none"
+               href="https://twitter.com/share"
+               data-url="http://www.eatdancerepeat.com"
+               data-text="Check out Eat. Dance. Repeat.">
+                Tweet
+            </a>
+        </div>
+        <div class="pull-right" style="display: inline-block; margin: 1px;">
+            <div class="fb-share-button" data-href="http://www.eatdancerepeat.com" data-layout="button" style="margin-bottom: 5px !important;"></div>
         </div>
     </div>
 
     @RenderSection("jumbotron", required: false)
 
-    <div class="container">
+    <div class="container-fluid">
         <div class="row">
             <div>
                 @RenderBody()

@@ -111,6 +111,84 @@ namespace EDR.Controllers
             }
         }
 
+        [HttpGet]
+        public virtual ActionResult GetStylesPartial(int id)
+        {
+            var styles = DataContext.Classes.Where(c => c.PlaceId == id).SelectMany(e => e.DanceStyles).Distinct().OrderBy(s => s.Name).ToList();
+            return PartialView("~/Views/Shared/DisplayTemplates/DanceStyleLabels.cshtml", styles);
+        }
+
+        [HttpGet]
+        public virtual ActionResult GetTeachersPartial(int id)
+        {
+            var teachers = DataContext.Teachers.Where(t => t.Classes.Any(s => s.PlaceId == id)).ToList();
+            return PartialView("~/Views/Shared/DisplayTemplates/TeacherThumbLinks.cshtml", teachers);
+        }
+
+        [HttpGet]
+        public virtual ActionResult GetDancersPartial(int id)
+        {
+            var dancers = DataContext.Events.Where(e => e.PlaceId == id).SelectMany(e => e.EventInstances.SelectMany(i => i.EventRegistrations).Select(r => r.User).Distinct()).ToList();
+            return PartialView("~/Views/Shared/DisplayTemplates/DancerThumbLinks.cshtml", dancers);
+        }
+
+        [HttpGet]
+        public virtual ActionResult GetPromotersPartial(int id)
+        {
+            var promoters = DataContext.Promoters.Where(p => p.Socials.Any(s => s.PlaceId == id)).ToList();
+            return PartialView("~/Views/Shared/DisplayTemplates/PromoterThumbLinks.cshtml", promoters);
+        }
+
+        [HttpGet]
+        public virtual ActionResult GetOwnersPartial(int id)
+        {
+            var owners = DataContext.Owners.Where(o => o.Classes.Any(c => c.PlaceId == id) || o.Socials.Any(s => s.PlaceId == id)).ToList();
+            return PartialView("~/Views/Shared/DisplayTemplates/OwnerThumbLinks.cshtml", owners);
+        }
+
+        [HttpGet]
+        public virtual ActionResult GetClassesPartial(int id)
+        {
+            var start = DateTime.Today;
+            var classes = DataContext.Classes
+                                .Include("DanceStyles")
+                                .Include("Place")
+                                .Include("EventInstances.EventRegistrations")
+                                .Include("Reviews")
+                                .Include("Teachers.ApplicationUser")
+                                .Where(c => c.EventInstances.Any(i => i.DateTime >= start)
+                                        && c.PlaceId == id);
+            return PartialView("~/Views/Shared/_EventsPartial.cshtml", classes);
+        }
+
+        [HttpGet]
+        public virtual ActionResult GetSocialsPartial(int id)
+        {
+            var start = DateTime.Today;
+            var socials = DataContext.Socials
+                                .Include("DanceStyles")
+                                .Include("Place")
+                                .Include("EventInstances.EventRegistrations")
+                                .Include("Reviews")
+                                .Where(s => s.EventInstances.Any(i => i.DateTime >= start)
+                                        && s.PlaceId == id);
+            return PartialView("~/Views/Shared/_EventsPartial.cshtml", socials);
+        }
+
+        [HttpGet]
+        public virtual ActionResult GetSchoolsPartial(int id)
+        {
+            var schools = DataContext.Schools.Where(s => s.Classes.Any(c => c.PlaceId == id)).ToList();
+            return PartialView("~/Views/Shared/DisplayTemplates/SchoolLinks.cshtml", schools);
+        }
+
+        [HttpGet]
+        public virtual ActionResult GetTeamsPartial(int id)
+        {
+            var teams = DataContext.Teams.Where(t => t.Auditions.Any(a => a.PlaceId == id) || t.Performances.Any(p => p.PlaceId == id)).ToList();
+            return PartialView("~/Views/Shared/DisplayTemplates/TeamLinks.cshtml", teams);
+        }
+
         //private PlaceViewModel LoadPlace(int id)
         //{
         //    var viewModel = new PlaceViewModel();
@@ -177,69 +255,63 @@ namespace EDR.Controllers
             }
 
             var viewModel = new PlaceViewModel();
-            viewModel.ClassDaysOfWeek = new List<DayOfWeek>() { DayOfWeek.Sunday, DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday };
-            viewModel.SocialDaysOfWeek = new List<DayOfWeek>() { DayOfWeek.Sunday, DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday };
-            viewModel.ClassDays = new List<DayOfWeek>();
-            viewModel.SocialDays = new List<DayOfWeek>();
-            viewModel.Place = DataContext.Places.Include("Teachers").Include("Owners").Where(x => x.Id == id).FirstOrDefault();
-            viewModel.DanceStyleList = DataContext.DanceStyles.Select(d => new SelectListItem() { Text = d.Name, Value = d.Id.ToString() }).ToList();
-            //  viewModel.Owners = DataContext.Owners.Where(y => y.Places.Any(x => x.Id == id)).ToList();
-            viewModel.TeacherList = DataContext.Teachers.Where(x => x.Classes.Any(c => c.Place.Id == id) || x.Workshops.Any(w => w.Place.Id == id)).Select(t => new SelectListItem() { Text = t.ApplicationUser.FirstName + " " + t.ApplicationUser.LastName, Value = t.ApplicationUser.Id.ToString() }).ToList();
-            var date = DateTime.Now.AddDays(21);
-            viewModel.Classes = new PlaceEventSearchViewModel();
-            viewModel.Classes.Events = DataContext.Events
-                                    .OfType<Class>()
+            viewModel.Place = DataContext.Places
                                     .Include("Teachers")
-                                    .Include("Teachers.ApplicationUser")
-                                    .Include("DanceStyles")
-                                    .Include("EventMembers.Member")
-                                    .Include("Reviews")
-                                    .Include("Creator")
-                                    .Include("Pictures")
-                                    .Include("Pictures.PostedBy")
-                                    .Include("Videos")
-                                    .Include("Videos.Author")
-                                    .Include("Playlists")
-                                    .Include("Playlists.Author")
-                                    .Include("LinkedFacebookObjects")
-                                    .Where(c => c.Place.Id == id)
-                                    .Where(x => x.IsAvailable == true)
-                                    .Where(y => !y.Recurring ? (y.StartDate >= DateTime.Now) : (y.EndDate == null || y.EndDate >= DateTime.Now))
-                                    .OrderBy(z => z.StartDate)
-                                    .ToList();
-            viewModel.Classes.MediaUpdates = EventHelper.BuildAllUpdates(viewModel.Classes.Events, MediaTarget.Place);
-            viewModel.Socials = new PlaceEventSearchViewModel();
-            viewModel.Socials.Events = DataContext.Events
-                                    .OfType<Social>()
-                                    .Include("Promoters")
-                                    .Include("Promoters.ApplicationUser")
-                                    .Include("DanceStyles")
-                                    .Include("EventMembers.Member")
-                                    .Include("Reviews")
-                                    .Include("Creator")
-                                    .Include("Pictures")
-                                    .Include("Pictures.PostedBy")
-                                    .Include("Videos")
-                                    .Include("Videos.Author")
-                                    .Include("Playlists")
-                                    .Include("Playlists.Author")
-                                    .Include("LinkedFacebookObjects")
-                                    .Where(c => c.Place.Id == id)
-                                    .Where(x => x.IsAvailable == true)
-                                    .Where(y => !y.Recurring ? (y.StartDate >= DateTime.Now) : (y.EndDate == null || y.EndDate >= DateTime.Now))
-                                    .OrderBy(z => z.StartDate)
-                                    .ToList();
-            viewModel.Socials.MediaUpdates = EventHelper.BuildAllUpdates(viewModel.Socials.Events, MediaTarget.Place);
+                                    .Include("Owners")
+                                    .Include("Events")
+                                    .Where(x => x.Id == id).FirstOrDefault();
+            //viewModel.ClassDaysOfWeek = new List<DayOfWeek>() { DayOfWeek.Sunday, DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday };
+            //viewModel.SocialDaysOfWeek = new List<DayOfWeek>() { DayOfWeek.Sunday, DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday, DayOfWeek.Saturday };
+            //viewModel.ClassDays = new List<DayOfWeek>();
+            //viewModel.SocialDays = new List<DayOfWeek>();
+            //viewModel.DanceStyleList = DataContext.DanceStyles.Select(d => new SelectListItem() { Text = d.Name, Value = d.Id.ToString() }).ToList();
+            ////  viewModel.Owners = DataContext.Owners.Where(y => y.Places.Any(x => x.Id == id)).ToList();
+            //viewModel.TeacherList = DataContext.Teachers.Where(x => x.Classes.Any(c => c.Place.Id == id) || x.Workshops.Any(w => w.Place.Id == id)).Select(t => new SelectListItem() { Text = t.ApplicationUser.FirstName + " " + t.ApplicationUser.LastName, Value = t.ApplicationUser.Id.ToString() }).ToList();
+            //var date = DateTime.Now.AddDays(21);
+            //viewModel.Classes = DataContext.Classes
+            //                        .Include("Teachers")
+            //                        .Include("Teachers.ApplicationUser")
+            //                        .Include("DanceStyles")
+            //                        .Include("EventMembers.Member")
+            //                        .Include("Reviews")
+            //                        .Include("Creator")
+            //                        .Include("Pictures")
+            //                        .Include("Pictures.PostedBy")
+            //                        .Include("Videos")
+            //                        .Include("Videos.Author")
+            //                        .Include("Playlists")
+            //                        .Include("Playlists.Author")
+            //                        .Include("LinkedFacebookObjects")
+            //                        .Where(c => c.Place.Id == id)
+            //                        .Where(x => x.IsAvailable == true)
+            //                        .ToList();
+            //viewModel.Socials = DataContext.Socials
+            //                        .Include("Promoters")
+            //                        .Include("Promoters.ApplicationUser")
+            //                        .Include("DanceStyles")
+            //                        .Include("EventMembers.Member")
+            //                        .Include("Reviews")
+            //                        .Include("Creator")
+            //                        .Include("Pictures")
+            //                        .Include("Pictures.PostedBy")
+            //                        .Include("Videos")
+            //                        .Include("Videos.Author")
+            //                        .Include("Playlists")
+            //                        .Include("Playlists.Author")
+            //                        .Include("LinkedFacebookObjects")
+            //                        .Where(c => c.Place.Id == id)
+            //                        .Where(x => x.IsAvailable == true)
+            //                        .ToList();
 
-            //  Get Current Facebook Picture/Video
-            if (viewModel.Place.FacebookId != null)
-            {
-                var obj = FacebookHelper.GetData(FacebookHelper.GetGlobalToken(), viewModel.Place.FacebookId + "?fields=cover");
-                if (obj != null && obj.cover != null)
-                {
-                    viewModel.Place.Filename = obj.cover.source;
-                }
-            }
+            ////  Get Current Facebook Picture/Video
+            //if (viewModel.Place.FacebookId != null)
+            //{
+            //    var obj = FacebookHelper.GetData(FacebookHelper.GetGlobalToken(), viewModel.Place.FacebookId + "?fields=cover");
+            //    if (obj != null && obj.cover != null)
+            //    {
+            //        viewModel.Place.Filename = obj.cover.source;
+            //    }
+            //}
 
             ////  viewModel.Workshops = DataContext.Events.Include("Teachers").Include("Teachers.ApplicationUser").Include("DanceStyles").Include("EventMembers.Member").OfType<Workshop>().Where(c => c.Place.Id == id).Where(x => x.IsAvailable == true).Where(y => !y.Recurring ? (y.StartDate >= DateTime.Now) : (y.StartDate <= date && (y.EndDate == null || y.EndDate >= DateTime.Now))).OrderBy(z => z.StartDate).ToList();
             //var Events = DataContext.Events.Include("DanceStyles").Include("EventMembers.Member").Include("Reviews").Where(c => c.Place.Id == id).Where(x => x.IsAvailable == true).Where(y => !y.Recurring ? (y.StartDate >= DateTime.Now) : (y.StartDate <= date && (y.EndDate == null || y.EndDate >= DateTime.Now))).OrderBy(z => z.StartDate).ToList();

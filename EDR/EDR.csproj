@@ -781,7 +781,6 @@
     <Content Include="Views\School\Create.cshtml" />
     <Content Include="Views\School\View.cshtml" />
     <Content Include="Views\School\Delete.cshtml" />
-    <Content Include="Views\School\Edit.cshtml" />
     <Content Include="Views\Store\AddTicket.cshtml" />
     <Content Include="Views\School\_UpdateMembersPartial.cshtml" />
     <Content Include="Views\Home\Test2.cshtml" />
@@ -840,7 +839,6 @@
     <Content Include="Views\Shared\DisplayTemplates\DanceStyleMedium.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Teacher.cshtml" />
     <Content Include="Views\Shared\_EventsPartial.cshtml" />
-    <Content Include="Views\Shared\DisplayTemplates\Dancers.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\School.cshtml" />
     <Content Include="Views\Shared\_PickFacebookPicturePartial.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Team.cshtml" />
@@ -848,6 +846,13 @@
     <Content Include="Views\Shared\DisplayTemplates\Place.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Auditions.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Performances.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\TeacherThumbLinks.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\DancerThumbLinks.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\PromoterThumbLinks.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\OwnerThumbLinks.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Promoter.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\TeamLinks.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\SchoolLinks.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

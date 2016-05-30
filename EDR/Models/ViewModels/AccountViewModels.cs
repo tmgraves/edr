@@ -10,16 +10,23 @@ namespace EDR.Models.ViewModels
         [Required]
         [Display(Name = "User name")]
         public string UserName { get; set; }
-        [Required]
+        [Required(ErrorMessage = "***Please enter a date")]
         [Display(Name = "Started Dancing")]
         public DateTime StartDate { get; set; }
-        [Required]
-        [Display(Name = "Zipcode")]
-        public string Zipcode { get; set; }
+        [Required(ErrorMessage ="***Please specify your location")]
+        [Display(Name = "Your Location")]
+        public string Location { get; set; }
         public virtual ICollection<DanceStyle> DanceStyles { get; set; }
         public IEnumerable<DanceStyleListItem> AvailableStyles { get; set; }
         public IEnumerable<DanceStyleListItem> SelectedStyles { get; set; }
         public PostedStyles PostedStyles { get; set; }
+        public string City { get; set; }
+        public string State { get; set; }
+        public string ZipCode { get; set; }
+        public string Country { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+        public string StyleIds { get; set; }
     }
 
     public class ExternalLoginListViewModel

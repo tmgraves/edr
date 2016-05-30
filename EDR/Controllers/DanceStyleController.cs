@@ -142,5 +142,26 @@ namespace EDR.Controllers
             var styles = DataContext.DanceStyles.Where(s => s.Name.Contains(searchString)).Select(s => new { Id = s.Id, Name = s.Name }).ToList();
             return Json(styles, JsonRequestBehavior.AllowGet);
         }
+
+        [HttpGet]
+        public virtual ActionResult GetTeachersPartial(int id)
+        {
+            var teachers = DataContext.Teachers.Where(t => t.DanceStyles.Any(s => s.Id == id)).Take(20).ToList();
+            return PartialView("~/Views/Shared/DisplayTemplates/TeacherThumbLinks.cshtml", teachers);
+        }
+
+        [HttpGet]
+        public virtual ActionResult GetSchoolsPartial(int id)
+        {
+            var schools = DataContext.Schools.Where(s => s.Classes.Any(c => c.DanceStyles.Any(st => st.Id == id))).Take(20).ToList();
+            return PartialView("~/Views/Shared/DisplayTemplates/SchoolLinks.cshtml", schools);
+        }
+
+        [HttpGet]
+        public virtual ActionResult GetTeamsPartial(int id)
+        {
+            var teams = DataContext.Teams.Where(t => t.DanceStyles.Any(s => s.Id == id)).Take(20).ToList();
+            return PartialView("~/Views/Shared/DisplayTemplates/TeamLinks.cshtml", teams);
+        }
     }
 }

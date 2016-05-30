@@ -152,7 +152,7 @@ namespace EDR.Models
         public ICollection<LinkedFacebookObject> LinkedFacebookObjects { get; set; }
         public ICollection<LinkedMedia> LinkedMedia { get; set; }
 
-        public ICollection<DanceStyle> DanceStyles { get; set; }
+        public virtual ICollection<DanceStyle> DanceStyles { get; set; }
 
         public virtual Series Series { get; set; }
 

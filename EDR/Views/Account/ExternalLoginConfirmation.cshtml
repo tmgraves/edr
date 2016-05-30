@@ -2,62 +2,193 @@
 @using MvcCheckBoxList.Model
 
 @{
-    ViewBag.Title = "Register";
+    ViewBag.Title = "Register on Eat.Dance.Repeat.";
 }
-<h2>@ViewBag.Title.</h2>
-<h3>Associate your @ViewBag.LoginProvider account.</h3>
 
-@using (Html.BeginForm("ExternalLoginConfirmation", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-{
-    @Html.AntiForgeryToken()
-
-    <h4>Association Form</h4>
-    <hr />
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    <p class="text-info">
-        You've successfully authenticated with <strong>@ViewBag.LoginProvider</strong>.
-            Please enter a user name for this site below and click the Register button to finish
-            logging in.
-    </p>
-    <div class="form-group">
-        @Html.LabelFor(m => m.UserName, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.UserName)
+<div class="container">
+    <div class="center-block col-md-6 text-center" style="float: none;">
+        <h1>Finish Registration Process</h1>
+        <div class="panel panel-default">
+            <div class="panel-body bg-info">
+                @using (Html.BeginForm("ExternalLoginConfirmation", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    @Html.HiddenFor(m => m.UserName)
+                    <div class="form-horizontal centerform">
+                        <div class="form-group">
+                            <div class="col-lg-8 center-block text-info">
+                                Please fill in this form to complete your Registration
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-8 center-block">
+                                @Html.TextBoxFor(m => m.StartDate, new { @class = "form-control", @placeholder = "When did you start dancing?", @type = "date" })
+                                @Html.ValidationMessageFor(m => m.StartDate, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-8 center-block">
+                                @Html.TextBoxFor(m => m.Location, new { @class = "form-control locationsearch", @placeholder = "Your City, State" })
+                                @Html.ValidationMessageFor(m => m.Location, "", new { @class = "text-danger" })
+                                @Html.HiddenFor(m => m.Longitude, new { @class = "lat" })
+                                @Html.HiddenFor(m => m.Latitude, new { @class = "lng" })
+                                @Html.HiddenFor(m => m.City, new { @class = "city" })
+                                @Html.HiddenFor(m => m.State, new { @class = "state" })
+                                @Html.HiddenFor(m => m.ZipCode, new { @class = "zip" })
+                                @Html.HiddenFor(m => m.Country, new { @class = "country" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-8 center-block lg">
+                                @Html.TextBox("Style", "", new { @class = "form-control stylesearch", @placeholder = "Type your Dance Style(s)" })
+                                <div id="stylesdiv" style="text-align: left; background-color: #fff;"></div>
+                                @Html.HiddenFor(m => m.StyleIds)
+                            </div>
+                        </div>
+                        @*<div class="form-group">
+                            @Html.LabelFor(model => model.DanceStyles, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <section class="checkBoxListFor col-md-10">
+                                @Html.CheckBoxListFor(model => model.PostedStyles.DanceStyleIds,
+                                                  model => model.AvailableStyles.OrderBy(s => s.Name),
+                                                  style => style.Id,
+                                                  style => style.Name,
+                                                  model => model.SelectedStyles,
+                                                  Position.Horizontal)
+                            </section>
+                        </div>*@
+                        <div class="form-group">
+                            <div class="col-lg-8 center-block">
+                                <input type="submit" class="btn btn-primary" value="Register" />
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
         </div>
     </div>
-    <div class="form-group">
-        @Html.LabelFor(m => m.StartDate, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.TextBoxFor(m => m.StartDate, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.StartDate)
-        </div>
-    </div>
-    <div class="form-group">
-        @Html.LabelFor(m => m.Zipcode, new { @class = "col-md-2 control-label" })
-        <div class="col-md-10">
-            @Html.TextBoxFor(m => m.Zipcode, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.Zipcode)
-        </div>
-    </div>
-    <div class="form-group">
-        @Html.LabelFor(model => model.DanceStyles, htmlAttributes: new { @class = "control-label col-md-2" })
-        <section class="checkBoxListFor col-md-10">
-            @Html.CheckBoxListFor(model => model.PostedStyles.DanceStyleIds,
-                                  model => model.AvailableStyles.OrderBy(s => s.Name),
-                                  style => style.Id,
-                                  style => style.Name,
-                                  model => model.SelectedStyles,
-                                  Position.Horizontal)
-        </section>
-    </div>
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" class="btn btn-default" value="Register" />
-        </div>
-    </div>
-}
+</div>
 
 @section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+@Scripts.Render("~/bundles/jqueryval")
+@Scripts.Render("~/bundles/foolproof")
+@Scripts.Render("~/bundles/jqueryUI")
+<script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
+@Scripts.Render("~/bundles/GeoComplete")
+<script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+
+<script type="text/javascript">
+    $(function () {
+        $(".locationsearch").geocomplete({
+            details: "form",
+            types: ["geocode", "establishment"],
+        })
+        .bind("geocode:result", function (event, result) {
+            $('.lat').prop("value", result.geometry.location.lat());
+            $('.lng').prop("value", result.geometry.location.lng());
+
+            $.each(result.address_components, function (i, address_component) {
+                if (address_component.types[0] == "locality") {
+                    $('.city').prop("value", address_component.long_name);
+                }
+                else if (address_component.types[0] == "administrative_area_level_1") {
+                    $('.state').prop("value", address_component.long_name);
+                }
+                else if (address_component.types[0] == "postal_code") {
+                    $('.zip').prop("value", address_component.long_name);
+                }
+                else if (address_component.types[0] == "country") {
+                    $('.country').prop("value", address_component.long_name);
+                }
+            });
+            $('.locationsearch').val($('.city').val() + ", " + $('.state').val() + " " + $('.country').val());
+        });
+    });
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(success);
+    }
+    else {
+
+    }
+
+    function success(position) {
+        var loc = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+        $(".locationsearch").val(position.coords.latitude.toString() + ", " + position.coords.longitude.toString());
+        $(".locationsearch").trigger("geocode");
+        //  buildLocation(position.coords.latitude.toString() + ", " + position.coords.longitude.toString());
+    }
+
+    $('.stylesearch').autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: '../DanceStyle/Search',
+                data: { searchString: request.term },
+                dataType: 'json',
+                type: 'GET',
+                success: function (data) {
+                    response($.map(data, function (item) {
+                        return {
+                            label: item.Name,
+                            value: item.Id
+                        }
+                    }));
+                }
+            })
+        },
+        select: function (event, ui) {
+            $('#StyleIds').val($('#StyleIds').val() + '-' + ui.item.value);
+            var styles = $("#stylesdiv").html();
+            if ($("#stylesdiv").html() == "")
+            {
+                styles = ui.item.label;
+            }
+            else
+            {
+                if (styles.indexOf(ui.item.label) < 0) {
+                    styles = styles + ", " + ui.item.label;
+                }
+            }
+            $("#stylesdiv").html(styles);
+            //  $('.stylesearch').val(ui.item.label);
+            //  $('.stylesearchid').val(ui.item.value);
+            $('.stylesearch').val('');
+            return false;
+        },
+        minLength: 1
+    });
+
+    //function buildLocation(loc) {
+    //    //  alert("search");
+    //    var options = {
+    //        location: loc
+    //    };
+
+    //    $(".locationsearch").geocomplete(options)
+    //    .bind("geocode:result", function (event, result) {
+    //        var city;
+    //        var state;
+    //        var country;
+    //        $('.lat').prop("value", result.geometry.location.lat());
+    //        $('.lng').prop("value", result.geometry.location.lng());
+
+    //        $.each(result.address_components, function (i, address_component) {
+    //            if (address_component.types[0] == "locality") {
+    //                $('.city').prop("value", address_component.long_name);
+    //            }
+    //            else if (address_component.types[0] == "administrative_area_level_1") {
+    //                $('.state').prop("value", address_component.long_name);
+    //            }
+    //            else if (address_component.types[0] == "postal_code") {
+    //                $('.zip').prop("value", address_component.long_name);
+    //            }
+    //            else if (address_component.types[0] == "country") {
+    //                $('.country').prop("value", address_component.long_name);
+    //            }
+    //        });
+    //    });
+    //}
+</script>
 }

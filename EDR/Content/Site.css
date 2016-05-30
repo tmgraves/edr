@@ -196,14 +196,20 @@ facebookvideoimage img
 {
     max-width: 100%;
 }
-.checkboxlist input
+.checkboxlist{
+    width: 100%;
+}
+.checkboxlist input[type=checkbox]
 {
-    width: 15px;
-    height: 15px;
-    margin: 10px;
+    display: normal !important;
+    width: 20px !important;
+    max-width: 20px !important;
 }
 .checkboxlist label
 {
+    display: normal !important;
+    width: 30px !important;
+    display: inline-block !important;
     font-weight: normal;
 }
 
@@ -424,24 +430,24 @@ facebookvideoimage img
     top: 5px;
 }
 
-.centerform input{
-    width: 100% !important;
-    max-width: 100% !important;
+.centerform .center-block input{
+    width: 100%;
+    max-width: 100%;
 }
 
-.centerform textarea{
-    width: 100% !important;
-    max-width: 100% !important;
+.centerform .center-block textarea{
+    width: 100%;
+    max-width: 100%;
 }
 
 .centerform select{
-    width: 100% !important;
-    max-width: 100% !important;
+    width: 100%;
+    max-width: 100%;
 }
 
-.centerform a{
-    width: 100% !important;
-    max-width: 100% !important;
+.centerform .center-block a{
+    width: 100%;
+    max-width: 100%;
 }
 
 .centerform > div > div{

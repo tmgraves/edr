@@ -3,24 +3,348 @@
 @using MvcCheckBoxList.Model
 
 @{
-    ViewBag.Title = "Create";
+    ViewBag.Title = "New " + Model.EventType;
 }
 
-<h2>New Event</h2>
+<ol class="breadcrumb">
+    @if (Model.EventType == EventType.Class)
+    {
+        <li>@Html.ActionLink("All Classes", "Learn", "Home")</li>
+        <li>@Html.ActionLink("School Page", "Manage", "School", new { id = Model.SchoolId }, null)</li>
+        <li class="active">New Class</li>
+    }
+</ol>
 
+<div class="container">
+    <div class="center-block col-md-6 text-center" style="float: none;">
+        <h1>New @Model.EventType</h1>
+        <div class="panel panel-default">
+            <div class="panel-body bg-info">
+                <div class="form-horizontal centerform">
+                    <div class="form-group">
+                        <div class="col-lg-8 center-block text-info">
+                            <div class="row" style="margin: 10px;">
+                                @Html.ValidationSummary("", new { @class = "text-danger" })
+                                <div id="createevent">
+                                    <div class="newevent">
+                                        <input type="button" class="newbtn btn btn-primary" value="Create a New Event" />
+                                        <h4 class="linebehind">OR</h4>
+                                        <input type="button" class="facebookbtn btn btn-primary" value="Import from Facebook" />
+                                    </div>
+                                    <div class="pickfacebook" style="display: none;">
+                                        @using (Html.BeginForm())
+            {
+                                            @Html.HiddenFor(x => x.Event.FacebookLink)
+                                            @Html.HiddenFor(x => x.FacebookEventName)
+                                            <h3>Pick a Facebook Event</h3>
+                                            <p>
+                                                @if (Model.FacebookEvents != null)
+                                                {
+                                                    @Html.DropDownListFor(model => model.FacebookId, Model.FacebookEvents.Select(e => new SelectListItem() { Text = e.Name, Value = e.Id }), null, new { @class = "form-control" })
+                                                }
+                                            </p>
+                                            <p>
+                                                <input type="submit" id="submit" value="Pick Event" class="btn btn-primary" />
+                                            </p>
+                                        }
+                                    </div>
+                                </div>
+                                @using (Html.BeginForm("Create", "Event", FormMethod.Post, new { @id = "createform", @class = "main" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    @Html.HiddenFor(m => m.CreateAction)
+                                    @Html.HiddenFor(m => m.Role)
+                                    @Html.HiddenFor(m => m.EventType)
+                                    @Html.HiddenFor(m => m.SchoolId)
+                                    @Html.HiddenFor(x => x.Event.PhotoUrl)
+                                    @Html.HiddenFor(x => x.Event.FacebookLink)
+                                    @Html.HiddenFor(x => x.Event.FacebookId)
+                                    @Html.HiddenFor(x => x.FacebookEventName)
+                                    @Html.HiddenFor(x => x.Event.Interval)
+                                    @Html.HiddenFor(x => x.Event.IsAvailable)
+                                    @Html.HiddenFor(x => x.Event.UpdatedDate)
+                                    <div id="wizard" class="wizard" style="display: none;">
+                                        <div id="wizeventtypediv" class="step active" title="New Event">
+                                            <div class="row">
+                                                <h3>Step: Type of Event</h3>
+                                                <p>
+                                                    @Html.EnumDropDownListFor(model => model.EventType, "-- Select a Event Type --", htmlAttributes: new { @class = "form-control", @id = "EventTypeDD" })
+                                                </p>
+                                                <p>
+                                                    <div id="classtype" hidden="hidden">
+                                                        @Html.EnumDropDownListFor(model => model.ClassType, "-- Select a Class Type --", htmlAttributes: new { @class = "form-control" })
+                                                        @Html.ValidationMessageFor(model => model.ClassType, "", new { @class = "text-danger" })
+                                                    </div>
+                                                    <div id="socialtype" hidden="hidden">
+                                                        @Html.EnumDropDownListFor(model => model.SocialType, "-- Select a Social Type --", htmlAttributes: new { @class = "form-control" })
+                                                        @Html.ValidationMessageFor(model => model.SocialType, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div id="wizdatetimediv" class="step" style="display:none">
+                                            <h3>Step: Date & Time</h3>
+                                            <div class="row" style="margin-bottom: 5px;">
+                                                @if (Model.Event.FacebookId != null)
+                                                {
+                                                    @Html.HiddenFor(m => m.Event.StartDate, new { Value = Model.Event.StartDate.ToString("yyyy-MM-dd") })
+                                                    @Html.TextBox("StartLabel", Model.Event.StartDate.ToString("yyyy-MM-dd"), htmlAttributes: new { @type = "date", @class = "form-control", @disabled = "disabled" })
+                                                    @Html.ValidationMessageFor(model => model.Event.StartDate, "", new { @class = "text-danger" })
+                                                }
+                                                else
+                                                {
+                                                    @Html.TextBoxFor(m => m.Event.StartDate, "{0:yyyy-MM-dd}", htmlAttributes: new { @type = "date", @class = "form-control", @placeholder = "Start Date" })
+                                                    @*@Html.EditorFor(model => model.Event.StartDate, new { htmlAttributes = new { @class = "form-control" } })*@
+                                                    @Html.ValidationMessageFor(model => model.Event.StartDate, "", new { @class = "text-danger" })
+                                                }
+                                            </div>
+                                            <div class="row" style="margin-bottom: 5px;">
+                                                @Html.TextBoxFor(m => m.Event.EndDate, "{0:yyyy-MM-dd}", htmlAttributes: new { @type = "date", @class = "form-control", @placeholder = "End Date" })
+                                                @*@Html.EditorFor(model => model.Event.EndDate, new { htmlAttributes = new { @class = "form-control" } })*@
+                                                @Html.ValidationMessageFor(model => model.Event.EndDate, "", new { @class = "text-danger" })
+                                            </div>
+                                            <div class="row" style="margin-bottom: 5px;">
+                                                <p><input id="start" type="text" class="start timepicker form-control" /></p>
+                                                @Html.HiddenFor(m => m.Event.StartTime, new { @class = "timeelement begintime" })
+                                                @Html.ValidationMessageFor(model => model.Event.StartTime, "", new { @class = "text-danger" })
+                                            </div>
+                                            <div class="row" style="margin-bottom: 5px;">
+                                                <p><input id="end" type="text" class="end timepicker form-control" /></p>
+                                                @Html.HiddenFor(m => m.Event.EndTime, new { @class = "timeelement endtime" })
+                                                @Html.ValidationMessageFor(model => model.Event.EndTime, "", new { @class = "text-danger" })
+                                            </div>
+
+                                            <div class="row text-left" style="margin-bottom: 5px;">
+                                                <div class="col-lg-8 nospace">
+                                                    @Html.LabelFor(model => model.Event.Recurring, htmlAttributes: new { @class = "text-danger text-uppercase control-label" })
+                                                </div>
+                                                <div class="col-lg-4 nospace pull-right text-right">
+                                                    @Html.CheckBoxFor(m => m.Event.Recurring, new { @class = "recurring", @data_toggle = "toggle", @data_on = "Yes", @data_off = "No" })
+                                                 </div>
+                                            </div>
+                                            <div class="row" id="recurring" style="margin-top: 5px;" @(Model.Event.Recurring ? "" : "hidden")>
+                                                <div style="margin-bottom: 10px;">
+                                                    <div class="col-lg-6 nospace text-left pull-left">
+                                                        @Html.Label("Repeats", htmlAttributes: new { @class = "text-danger text-uppercase control-label" })
+                                                    </div>
+                                                    <div class="col-lg-6 nospace">
+                                                        @Html.EnumDropDownListFor(model => model.Event.Frequency, htmlAttributes: new { @class = "form-control pull-right" })
+                                                        @Html.ValidationMessageFor(model => model.Event.Frequency, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                                <div class="row text-left" style="padding-top: 30px; margin-bottom: 10px;">
+                                                    <div class="col-lg-6 col-md-6">
+                                                        @Html.DropDownListFor(m => m.Event.Interval,
+                                                                            new SelectList(new List<SelectListItem> {
+                                                                                new SelectListItem { Text = "Every 1", Value = "1" },
+                                                                                new SelectListItem { Text = "Every 2", Value = "2" },
+                                                                                new SelectListItem { Text = "Every 3", Value = "3" },
+                                                                                new SelectListItem { Text = "Every 4", Value = "4" },
+                                                                                new SelectListItem { Text = "Every 5", Value = "5" },
+                                                                                new SelectListItem { Text = "Every 6", Value = "6" },
+                                                                                new SelectListItem { Text = "Every 7", Value = "7" },
+                                                                                new SelectListItem { Text = "Every 8", Value = "8" },
+                                                                                new SelectListItem { Text = "Every 9", Value = "9" },
+                                                                                new SelectListItem { Text = "Every 10", Value = "10" },
+                                                                            }, "Value", "Text"), new { @class = "form-control col-lg-6" })
+                                                        @Html.ValidationMessageFor(model => model.Event.Interval, "", new { @class = "text-danger" })
+                                                    </div>
+                                                    <div class="col-lg-6 col-md-6 text-right">
+                                                        <label class="text-warning control-label" id="frequency" style="font-weight: bold; height: 30px; vertical-align: bottom;">
+                                                            @if (Model.Event.Frequency == Frequency.Daily)
+                                                        {
+                                                                @: Day(s)
+                                                        }
+                                                            else if (Model.Event.Frequency == Frequency.Weekly)
+                                                            {
+                                                                @: Week(s)
+                                                        }
+                                                            else if (Model.Event.Frequency == Frequency.Monthly)
+                                                            {
+                                                                @: Month(s)
+                                                        }
+                                                            else if (Model.Event.Frequency == Frequency.Yearly)
+                                                            {
+                                                                @: Year(s)
+                                                        }
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                @*<div class="col-md-3 col-lg-3">
+                                                    @Html.TextBoxFor(model => model.Event.Interval, htmlAttributes: new { @class = "form-control", @type = "number", @min = "1", @max = "200" })
+                                                </div>*@
+                                                <div id="monthly" style="padding-top: 5px; margin-top: 5px;" @(Model.Event.Frequency == Frequency.Monthly ? "" : "hidden='hidden'")>
+                                                    <div class="panel panel-info">
+                                                        <div class="panel-body">
+                                                            <div class="text-center">
+                                                                <label class="control-label text-warning">On the</label>
+                                                            </div>
+
+                                                            <div class="text-center">
+                                                                <div>
+                                                                    @Html.CheckBoxListFor(model => model.MonthDays.PostedItems,
+                                                                    model => model.MonthDays.AvailableItems,
+                                                                    item => item.Value,
+                                                                    item => item.Text,
+                                                                    model => model.MonthDays.SelectedItems,
+                                                                    new HtmlListInfo(HtmlTag.table, 4, new { @class = "checkboxlist text-warning" }, TextLayout.Default))
+                                                                </div>
+                                                            </div>
+                                                            <div class="text-center">
+                                                                <label class="text-warning" id="dayofweek">@Model.Event.StartDate.DayOfWeek</label>
+                                                                @Html.HiddenFor(x => x.HiddenMonthDay)
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="wizdetaildiv" class="step" style="display:none">
+                                            <h3>Step: Details</h3>
+                                            <div class="row" style="margin-bottom: 5px;">
+                                                @Html.EditorFor(model => model.Event.Name, new { htmlAttributes = new { @class = "form-control", @placeholder = "Event Name" } })
+                                                @Html.ValidationMessageFor(model => model.Event.Name, "", new { @class = "text-danger" })
+                                            </div>
+                                            <div id="skilllevel" class="row" style="margin-bottom: 5px;" hidden="hidden">
+                                                @Html.DropDownListFor(m => m.SkillLevel,
+                                                                        new SelectList(new List<SelectListItem> {
+                                                                            new SelectListItem() { Text = "-- Select a Skill Level --", Value = "" },
+                                                                            new SelectListItem() { Text = "Beginner", Value = "1" },
+                                                                            new SelectListItem() { Text = "Beginner/Intermediate", Value = "2" },
+                                                                            new SelectListItem() { Text = "Intermediate", Value = "3" },
+                                                                            new SelectListItem() { Text = "Intermediate/Advanced", Value = "4" },
+                                                                            new SelectListItem() { Text = "Advanced", Value = "5" },
+                                                                        }, "Value", "Text"), new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(m => m.SkillLevel, "", new { @class = "text-danger" })
+                                            </div>
+                                            <div class="row" style="margin-bottom: 5px;">
+                                                @Html.TextBox("Style", "", new { @class = "form-control stylesearch", @placeholder = "Add Dance Style(s) for this Event" })
+                                                <div id="stylesdiv" style="text-align: left; background-color: #fff;"></div>
+                                                @Html.HiddenFor(m => m.StyleIds)
+                                                @Html.ValidationMessageFor(m => m.StyleIds, "", new { @class = "text-danger" })
+
+                                                @*@Html.LabelFor(model => model.Event.Name, "Dance Styles", htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
+                                                <div class="col-md-10 col-lg-9">
+                                                    @Html.CheckBoxListFor(model => model.StylesCheckboxList.PostedItems,
+                                                    model => model.StylesCheckboxList.AvailableItems,
+                                                    style => style.Value,
+                                                    style => style.Text,
+                                                    model => model.StylesCheckboxList.SelectedItems,
+                                                    new HtmlListInfo(HtmlTag.table, 2, new { @class = "checkboxlist" }, TextLayout.Default))
+                                                    <span id="validationMessage" class="text-danger" style="display: none;">Please choose at least one style</span>
+                                                </div>*@
+                                            </div>
+                                            <div class="row" style="margin-bottom: 5px;">
+                                                @Html.TextAreaFor(model => model.Event.Description, new { @class = "form-control", @rows = "10", @placeholder = "Enter a description for your event" } )
+                                                @Html.ValidationMessageFor(model => model.Event.Description, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div id="wizlocationdiv" class="step" style="display:none">
+                                            <h3>Step: Location</h3>
+                                            <div class="row" style="margin-bottom: 5px;">
+                                                @Html.HiddenFor(model => model.Event.Place.Name)
+                                                @Html.HiddenFor(model => model.Event.Place.Address)
+                                                @Html.HiddenFor(model => model.Event.Place.Address2)
+                                                @Html.HiddenFor(model => model.Event.Place.City)
+                                                @Html.HiddenFor(model => model.Event.Place.StateName)
+                                                @Html.HiddenFor(model => model.Event.Place.Zip)
+                                                @Html.HiddenFor(model => model.Event.Place.Country)
+                                                @Html.HiddenFor(model => model.Event.Place.Latitude)
+                                                @Html.HiddenFor(model => model.Event.Place.Longitude)
+                                                @Html.HiddenFor(model => model.Event.Place.GooglePlaceId)
+                                                @Html.HiddenFor(model => model.Event.Place.GoogleUrl)
+                                                @Html.HiddenFor(model => model.Event.Place.Website)
+                                                @Html.HiddenFor(model => model.Event.Place.GoogleRating)
+                                                @Html.HiddenFor(m => m.Event.Place.FacebookId)
+                                                @Html.HiddenFor(m => m.Event.Place.Public)
+                                                @Html.HiddenFor(m => m.Event.Place.Website)
+                                                @Html.HiddenFor(m => m.Event.Place.FacebookLink)
+                                                @Html.HiddenFor(m => m.Event.Place.Filename)
+                                                @Html.HiddenFor(m => m.Event.Place.ThumbnailFilename)
+                                                @*@Html.TextBoxFor(model => model.NewPlace.PlaceType, new { @Value = EDR.Enums.PlaceType.OtherPlace })*@
+                                                <div class="row" style="margin-bottom: 5px;">
+                                                    <input id="newplace" type="text" placeholder="Type the Event Location" class="form-control" />
+                                                    @Html.ValidationMessageFor(model => model.Event.Place.Name, "", new { @class = "text-danger" })
+                                                </div>
+                                                <div class="row" style="margin-bottom: 5px;">
+                                                    @Html.EnumDropDownListFor(model => model.Event.Place.PlaceType, new { @class = "form-control" })
+                                                    @Html.ValidationMessageFor(model => model.Event.Place.PlaceType, "", new { @class = "text-danger" })
+                                                </div>
+                                                <div class="row" style="margin-bottom: 5px;">
+                                                    @Html.TextArea("Location", Model.Event.Place.Address + "\n" + Model.Event.Place.City + ", " + Model.Event.Place.StateName + " " + Model.Event.Place.Zip + "\n" + Model.Event.Place.Country, 4, 50, new { @class = "form-control", Name = "formatted_address", @readonly = true })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="wizticketsdiv" class="step" style="display:none">
+                                            <h2>Step: Tickets</h2>
+                                            <div class="form-horizontal">
+                                                <div class="form-group">
+                                                    @Html.DropDownListFor(m => m.UseSchoolTickets, new SelectList(new List<SelectListItem>() { new SelectListItem() { Text = "Use Existing School Tickets", Value = "true" }, new SelectListItem() { Text = "Set up New Ticket for this Event", Value = "false" } }, "Value", "Text").AsEnumerable(), null, new { @class = "form-control" })
+                                                    <div id="newticketdiv" class="panel panel-success" style="margin-top: 20px; display: none;">
+                                                        <div class="panel-body">
+                                                            <div class="col-lg-12">
+                                                                <h4>New Event Ticket</h4>
+                                                                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                                                <div class="form-group">
+                                                                    @Html.EditorFor(model => model.TicketQuantity, new { htmlAttributes = new { @class = "form-control", @placeholder = "# of Tickets" } })
+                                                                    @Html.ValidationMessageFor(model => model.TicketQuantity, "", new { @class = "text-danger" })
+                                                                </div>
+
+                                                                <div class="form-group">
+                                                                    @Html.EditorFor(model => model.TicketPrice, new { htmlAttributes = new { @class = "form-control", @placeholder = "Ticket Price (e.g. $40.00)" } })
+                                                                    @Html.ValidationMessageFor(model => model.TicketPrice, "", new { @class = "text-danger" })
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="navbuttons">
+                                            <div class="row">
+                                                <div class="col-lg-6 nospace pull-left text-left">
+                                                    <button type="button" class="prev btn btn-primary" style="display: none">Previous</button>
+                                                </div>
+                                                <div class="col-lg-6 nospace pull-right text-right">
+                                                    <button type="button" class="next btn btn-primary" style="display: none" disabled="disabled">Next</button>
+                                                    <button type="submit" id="finish" class="btn btn-primary" style="display: none;">Save Event</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    @if (Model.EventType == EventType.Class)
+                    {
+                        <a class="btn btn-warning" href="@Url.Action("Manage", "School", new { id = Model.SchoolId })" style="float: right;">Cancel</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-warning" href="@Url.Action("Home", "Promoter", new { username = User.Identity.Name })" style="float: right;">Cancel</a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @section Scripts
 {
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/foolproof")
-@Scripts.Render("~/bundles/jqueryUI")
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
-@Scripts.Render("~/bundles/GeoComplete")
-<script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
-@Scripts.Render("~/bundles/TimePicker")
-@Styles.Render("~/Content/TimePickercss")
+    @Scripts.Render("~/bundles/jqueryUI")
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    @Scripts.Render("~/bundles/GeoComplete")
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+    @Scripts.Render("~/bundles/TimePicker")
+    @Styles.Render("~/Content/TimePickercss")
+<script src="../../Scripts/bootstrap-toggle.js"></script>
+<link href="../../Content/bootstrap-toggle.css" rel="stylesheet">
 
 
-<script type="text/javascript">
+    <script type="text/javascript">
     $.validator.setDefaults({
         ignore: ""
     })
@@ -52,6 +376,44 @@
         start.prop('value', startdt.toLocaleDateString() + " " + startdt.toLocaleTimeString());
         end.prop('value', enddt.toLocaleDateString() + " " + enddt.toLocaleTimeString());
         var val = $('#createform.main').valid();
+    });
+
+    $('.stylesearch').autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: '../DanceStyle/Search',
+                data: { searchString: request.term },
+                dataType: 'json',
+                type: 'GET',
+                success: function (data) {
+                    response($.map(data, function (item) {
+                        return {
+                            label: item.Name,
+                            value: item.Id
+                        }
+                    }));
+                }
+            })
+        },
+        select: function (event, ui) {
+            $('#StyleIds').val($('#StyleIds').val() + '-' + ui.item.value);
+            var styles = $("#stylesdiv").html();
+            if ($("#stylesdiv").html() == "") {
+                styles = ui.item.label;
+            }
+            else {
+                if (styles.indexOf(ui.item.label) < 0) {
+                    styles = styles + ", " + ui.item.label;
+                }
+            }
+            $("#stylesdiv").html(styles);
+            //  $('.stylesearch').val(ui.item.label);
+            //  $('.stylesearchid').val(ui.item.value);
+            $('.stylesearch').val('');
+            $('#StyleIds').valid()
+            return false;
+        },
+        minLength: 1
     });
 
     //  New Place AutoComplete
@@ -106,6 +468,64 @@
     //  New Place AutoComplete
 
     $(function () {
+        //  Wizard Navigation
+        $('.wizard .prev').click(function () {
+            $('#finish').hide();
+            var wizard = $('.wizard');
+
+            $('.step.active', wizard).hide();
+
+            var currentStep = $('.step.active', wizard);
+            currentStep.hide();
+            currentStep.removeClass('active');
+
+            var newStep = currentStep.prev('.step', wizard);
+            newStep.addClass('active');
+            newStep.show();
+
+            if ($('.step:first', wizard)[0] == newStep[0]) {
+                $(this).hide();
+            }
+
+            $('.next', wizard).show();
+        });
+
+        $('.wizard .next').click(function () {
+            var wizard = $('.wizard');
+
+            var allinputs = $(":input", $('.step.active', wizard));
+
+            var valid = true;
+
+            allinputs.each(function (index, element) {
+                if (!$(this).valid())
+                {
+                    valid = false;
+                }
+            });
+
+            if (valid)
+            {
+                $('.step.active', wizard).hide();
+
+                var currentStep = $('.step.active', wizard);
+                currentStep.hide();
+                currentStep.removeClass('active');
+
+                var newStep = currentStep.next('.step', wizard);
+                newStep.addClass('active');
+                newStep.show();
+
+                if ($('.step:last', wizard)[0] == newStep[0]) {
+                    $(this).hide();
+                    $('#finish').show();
+                }
+
+                $('.prev', wizard).show();
+            }
+        });
+        //  Wizard Navigation
+
         function SetFirstScreen(action) {
             if (action == "New")
             {
@@ -117,6 +537,8 @@
                 wizard.show();
                 createevent.hide();
                 $('.next', wizard).show();
+                $('.prev', wizard).hide();
+                $('.finish', wizard).hide();
             }
             else
             {
@@ -220,32 +642,44 @@
         });
         $('#btndetailnext').click(function () {
             var form = $('#createform.main');
-            var count = $('input[name="StylesCheckboxList.PostedItems"]:checked').length;
-            var valid = true;
-
-            if (count == 0)
-            {
-                $('#validationMessage').show();
-                valid = false;
-            }
-            else
-            {
-                $('#validationMessage').hide();
+            var nmval = $('#Event_Name').valid();
+            var skillval = $('#SkillLevel').valid();
+            var styleval = $('#StyleIds').valid();
+            if (nmval && skillval && styleval) {
+                $('#wizlocationdiv').show();
+                $('#wizdetaildiv').hide();
             }
 
-            if (valid) {
-                if ($('#Event_Name').valid() && $('#SkillLevel').valid()) {
-                    $('#validationMessage').hide();
-                    $('#wizlocationdiv').show();
-                    $('#wizdetaildiv').hide();
-                }
-                else {
-                    var val = $('#createform.main').validate();
-                    for (var i = 0; i < val.errorList.length; i++) {
-                        alert(val.errorList[i].message);
-                    }
-                }
-            }
+            //for (var i = 0; i < val.errorList.length; i++) {
+            //    alert(val.errorList[i].message);
+            //}
+                
+            //    var count = $('input[name="StylesCheckboxList.PostedItems"]:checked').length;
+            //var valid = true;
+
+            //if (count == 0)
+            //{
+            //    $('#validationMessage').show();
+            //    valid = false;
+            //}
+            //else
+            //{
+            //    $('#validationMessage').hide();
+            //}
+
+            //if (valid) {
+            //    if ($('#Event_Name').valid() && $('#SkillLevel').valid()) {
+            //        $('#validationMessage').hide();
+            //        $('#wizlocationdiv').show();
+            //        $('#wizdetaildiv').hide();
+            //    }
+            //    else {
+            //        var val = $('#createform.main').validate();
+            //        for (var i = 0; i < val.errorList.length; i++) {
+            //            alert(val.errorList[i].message);
+            //        }
+            //    }
+            //}
         });
         $('#btnlocationprev').click(function () {
             $('#wizdetaildiv').show();
@@ -504,8 +938,8 @@
             SetEventType(eventType);
         }
     });
-</script>
-<script type="text/javascript">
+    </script>
+    <script type="text/javascript">
 
     $(document).ready(function () {
         var date = '@Model.Event.StartDate';
@@ -591,14 +1025,24 @@
             setDate($('input[name="Event.StartDate"]').val());
         });
 
-        $('input[name="Event.Recurring"]').click(function () {
-            if ($(this).attr("value") == "True") {
+        $('.recurring').change(function () {
+            if ($(this).prop('checked'))
+            {
                 $("#recurring").show();
             }
-            if ($(this).attr("value") == "False") {
+            else {
                 $("#recurring").hide();
             }
         });
+
+        //$('input[name="Event.Recurring"]').click(function () {
+        //    if ($(this).attr("value") == "True") {
+        //        $("#recurring").show();
+        //    }
+        //    if ($(this).attr("value") == "False") {
+        //        $("#recurring").hide();
+        //    }
+        //});
 
         $('select[id="Event_Frequency"]').change(function () {
             if ($('option:selected', $(this)).text() == "Daily") {
@@ -623,514 +1067,81 @@
             }
         });
     });
-</script>
+    </script>
 }
-<div class="row" style="margin: 10px;">
-    <div class="col-lg-6 col-md-6">
-        @Html.ValidationSummary("", new { @class = "text-danger" })
-        <div id="createevent">
-            <div class="newevent">
-                <input type="button" class="newbtn btn btn-primary" value="Create a New Event" />
-                <br />or<br />
-                <input type="button" class="facebookbtn btn btn-primary" value="Import from Facebook" />
-            </div>
-            <div class="pickfacebook" style="display: none;">
-            @using (Html.BeginForm())
-            {
-                @Html.HiddenFor(x => x.Event.FacebookLink)
-                @Html.HiddenFor(x => x.FacebookEventName)
-                <h2>Pick a Facebook Event</h2>
-                <div class="row" style="margin-bottom: 5px;">
-                    <div class="col-md-10 col-lg-9">
-                        @if (Model.FacebookEvents != null)
-                        {
-                            @Html.DropDownListFor(model => model.FacebookId, Model.FacebookEvents.Select(e => new SelectListItem() { Text = e.Name, Value = e.Id }), null, new { @class = "form-control" })
-                        }
-                    </div>
-                </div>
-                <input type="submit" id="submit" value="Pick Event" class="btn btn-primary" />
-            }
-            </div>
+
+@*<div class="row" style="margin-bottom: 5px;">
+        <label class="control-label col-lg-3 col-md-2">From</label>
+        <div class="col-lg-9 col-md-10">
+            @Html.HiddenFor(m => m.Event.StartTime)
+            @Html.DropDownListFor(m => m.StartHour, new SelectList(new List<SelectListItem>
+                                    {
+                                        new SelectListItem { Text = "01", Value = "1" },
+                                        new SelectListItem { Text = "02", Value = "2" },
+                                        new SelectListItem { Text = "03", Value = "3" },
+                                        new SelectListItem { Text = "04", Value = "4" },
+                                        new SelectListItem { Text = "05", Value = "5" },
+                                        new SelectListItem { Text = "06", Value = "6" },
+                                        new SelectListItem { Text = "07", Value = "7" },
+                                        new SelectListItem { Text = "08", Value = "8" },
+                                        new SelectListItem { Text = "09", Value = "9" },
+                                        new SelectListItem { Text = "10", Value = "10" },
+                                        new SelectListItem { Text = "11", Value = "11" },
+                                        new SelectListItem { Text = "12", Value = "12" }
+                                        }, "Value", "Text", null), new { @class = "form-control time", style = "width: 70px; display: inline;" })
+            @Html.DropDownListFor(m => m.StartMinute, new SelectList(new List<string> { "00", "15", "30", "45" }), new { @class = "form-control time", style = "width: 70px; display: inline;" })
+            @Html.DropDownListFor(m => m.StartAMPM, new SelectList(new List<string>() { "AM", "PM" }), new { @class = "form-control time", style = "width: 70px; display: inline;" })
+            @Html.ValidationMessageFor(model => model.Event.StartTime, "", new { @class = "text-danger" })
         </div>
-        @using (Html.BeginForm("Create", "Event", FormMethod.Post, new { @id = "createform", @class = "main" }))
+    </div>
+    <div class="row" style="margin-bottom: 5px;">
+        <label class="control-label col-lg-3 col-md-2">To</label>
+        <div class="col-lg-9 col-md-10">
+            @Html.HiddenFor(m => m.Event.EndTime)
+            @Html.DropDownListFor(m => m.EndHour, new SelectList(new List<SelectListItem>
+                                    {
+                                        new SelectListItem { Text = "01", Value = "1" },
+                                        new SelectListItem { Text = "02", Value = "2" },
+                                        new SelectListItem { Text = "03", Value = "3" },
+                                        new SelectListItem { Text = "04", Value = "4" },
+                                        new SelectListItem { Text = "05", Value = "5" },
+                                        new SelectListItem { Text = "06", Value = "6" },
+                                        new SelectListItem { Text = "07", Value = "7" },
+                                        new SelectListItem { Text = "08", Value = "8" },
+                                        new SelectListItem { Text = "09", Value = "9" },
+                                        new SelectListItem { Text = "10", Value = "10" },
+                                        new SelectListItem { Text = "11", Value = "11" },
+                                        new SelectListItem { Text = "12", Value = "12" }
+                                        }, "Value", "Text", null), new { @class = "form-control time", style = "width: 70px; display: inline;" })
+            @Html.DropDownListFor(m => m.EndMinute, new SelectList(new List<string> { "00", "15", "30", "45" }), new { @class = "form-control time", style = "width: 70px; display: inline;" })
+            @Html.DropDownListFor(m => m.EndAMPM, new SelectList(new List<string>() { "AM", "PM" }), new { @class = "form-control time", style = "width: 70px; display: inline;" })
+            @Html.ValidationMessageFor(model => model.Event.EndTime, "", new { @class = "text-danger" })
+            <p>
+                <span id="EndTimevalidationMessage" class="text-danger" style="display: none;">End Time Must Be After Start Time</span>
+            </p>
+        </div>
+    </div>*@
+
+
+@*<span class="col-lg-2">
+        @if (!Model.Event.Recurring)
         {
-        @Html.AntiForgeryToken()
-        @Html.HiddenFor(m => m.CreateAction)
-        @Html.HiddenFor(m => m.Role)
-        @Html.HiddenFor(m => m.EventType)
-        @Html.HiddenFor(m => m.SchoolId)
-        @Html.HiddenFor(x => x.Event.PhotoUrl)
-        @Html.HiddenFor(x => x.Event.FacebookLink)
-        @Html.HiddenFor(x => x.Event.FacebookId)
-        @Html.HiddenFor(x => x.FacebookEventName)
-        @Html.HiddenFor(x => x.Event.Interval)
-        @Html.HiddenFor(x => x.Event.IsAvailable)
-        @Html.HiddenFor(x => x.Event.UpdatedDate)
-        @*@Html.HiddenFor(m => m.Event.Place.FacebookId)
-        @Html.HiddenFor(m => m.Event.Place.Public)
-        @Html.HiddenFor(m => m.Event.Place.Country)
-        @Html.HiddenFor(m => m.Event.Place.Longitude)
-        @Html.HiddenFor(m => m.Event.Place.Latitude)
-        @Html.HiddenFor(m => m.Event.Place.Filename)
-        @Html.HiddenFor(m => m.Event.Place.ThumbnailFilename)*@
-        <div id="wizard" class="wizard" style="display: none;">
-            <div id="wizeventtypediv" class="step active" title="New Event">
-                <h2>Step: Type of Event</h2>
-                <div class="row" style="margin-bottom: 5px;">
-                    <div class="col-md-10 col-lg-9">
-                        @Html.EnumDropDownListFor(model => model.EventType, "-- Select a Event Type --", htmlAttributes: new { @class = "form-control", @id = "EventTypeDD" })
-                    </div>
-                    <div class="col-md-10 col-lg-9">
-                        <div class="row" style="margin-top: 5px;">
-                            <div id="classtype" hidden="hidden">
-                                <div class="col-md-10 col-lg-9">
-                                    @Html.EnumDropDownListFor(model => model.ClassType, "-- Select a Class Type --", htmlAttributes: new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(model => model.ClassType, "", new { @class = "text-danger" })
-                                </div>
-                            </div>
-                            <div id="socialtype" hidden="hidden">
-                                <div class="col-md-10 col-lg-9">
-                                    @Html.EnumDropDownListFor(model => model.SocialType, "-- Select a Social Type --", htmlAttributes: new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(model => model.SocialType, "", new { @class = "text-danger" })
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-10 col-lg-9" style="margin-top: 5px;">
-                        <input id="btneventtypenext" type="button" class="next btn btn-primary" style="display: none" value="Next" disabled="disabled" />
-                    </div>
-                </div>
-            </div>
-            <div id="wizdatetimediv" class="step" style="display:none">
-                <h2>Step: Date & Time</h2>
-                <div class="row" style="margin-bottom: 5px;">
-                    @if (Model.Event.FacebookId != null)
-                    {
-                        @Html.LabelFor(model => model.Event.StartDate, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
-                        <div class="col-md-10 col-lg-9">
-                            @Html.HiddenFor(m => m.Event.StartDate, new { Value = Model.Event.StartDate.ToString("yyyy-MM-dd") })
-                            @Html.TextBox("StartLabel", Model.Event.StartDate.ToString("yyyy-MM-dd"), htmlAttributes: new { @type = "date", @class = "form-control", @disabled = "disabled" })
-                            @Html.ValidationMessageFor(model => model.Event.StartDate, "", new { @class = "text-danger" })
-                        </div>
-                    }
-                    else
-                    {
-                        @Html.LabelFor(model => model.Event.StartDate, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
-                        <div class="col-md-10 col-lg-9">
-                            @Html.TextBoxFor(m => m.Event.StartDate, "{0:yyyy-MM-dd}", htmlAttributes: new { @type = "date", @class = "form-control" })
-                            @*@Html.EditorFor(model => model.Event.StartDate, new { htmlAttributes = new { @class = "form-control" } })*@
-                            @Html.ValidationMessageFor(model => model.Event.StartDate, "", new { @class = "text-danger" })
-                        </div>
-                    }
-                </div>
-                <div class="row" style="margin-bottom: 5px;">
-                    @Html.LabelFor(model => model.Event.EndDate, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
-                    <div class="col-md-10 col-lg-9">
-                        @Html.TextBoxFor(m => m.Event.EndDate, "{0:yyyy-MM-dd}", htmlAttributes: new { @type = "date", @class = "form-control" })
-                        @*@Html.EditorFor(model => model.Event.EndDate, new { htmlAttributes = new { @class = "form-control" } })*@
-                        @Html.ValidationMessageFor(model => model.Event.EndDate, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="row" style="margin-bottom: 5px;">
-                    @Html.LabelFor(model => model.Event.StartTime, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
-                    <div class="col-md-10 col-lg-9">
-                        <p><input id="start" type="text" class="start timepicker form-control" /></p>
-                        @Html.HiddenFor(m => m.Event.StartTime, new { @class = "timeelement begintime" })
-                        @Html.ValidationMessageFor(model => model.Event.StartTime, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="row" style="margin-bottom: 5px;">
-                    @Html.LabelFor(model => model.Event.EndTime, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
-                    <div class="col-md-10 col-lg-9">
-                        <p><input id="end" type="text" class="end timepicker form-control" /></p>
-                        @Html.HiddenFor(m => m.Event.EndTime, new { @class = "timeelement endtime" })
-                        @Html.ValidationMessageFor(model => model.Event.EndTime, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-
-                @*<div class="row" style="margin-bottom: 5px;">
-                    <label class="control-label col-lg-3 col-md-2">From</label>
-                    <div class="col-lg-9 col-md-10">
-                        @Html.HiddenFor(m => m.Event.StartTime)
-                        @Html.DropDownListFor(m => m.StartHour, new SelectList(new List<SelectListItem>
-                                                {
-                                                    new SelectListItem { Text = "01", Value = "1" },
-                                                    new SelectListItem { Text = "02", Value = "2" },
-                                                    new SelectListItem { Text = "03", Value = "3" },
-                                                    new SelectListItem { Text = "04", Value = "4" },
-                                                    new SelectListItem { Text = "05", Value = "5" },
-                                                    new SelectListItem { Text = "06", Value = "6" },
-                                                    new SelectListItem { Text = "07", Value = "7" },
-                                                    new SelectListItem { Text = "08", Value = "8" },
-                                                    new SelectListItem { Text = "09", Value = "9" },
-                                                    new SelectListItem { Text = "10", Value = "10" },
-                                                    new SelectListItem { Text = "11", Value = "11" },
-                                                    new SelectListItem { Text = "12", Value = "12" }
-                                                    }, "Value", "Text", null), new { @class = "form-control time", style = "width: 70px; display: inline;" })
-                        @Html.DropDownListFor(m => m.StartMinute, new SelectList(new List<string> { "00", "15", "30", "45" }), new { @class = "form-control time", style = "width: 70px; display: inline;" })
-                        @Html.DropDownListFor(m => m.StartAMPM, new SelectList(new List<string>() { "AM", "PM" }), new { @class = "form-control time", style = "width: 70px; display: inline;" })
-                        @Html.ValidationMessageFor(model => model.Event.StartTime, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="row" style="margin-bottom: 5px;">
-                    <label class="control-label col-lg-3 col-md-2">To</label>
-                    <div class="col-lg-9 col-md-10">
-                        @Html.HiddenFor(m => m.Event.EndTime)
-                        @Html.DropDownListFor(m => m.EndHour, new SelectList(new List<SelectListItem>
-                                                {
-                                                    new SelectListItem { Text = "01", Value = "1" },
-                                                    new SelectListItem { Text = "02", Value = "2" },
-                                                    new SelectListItem { Text = "03", Value = "3" },
-                                                    new SelectListItem { Text = "04", Value = "4" },
-                                                    new SelectListItem { Text = "05", Value = "5" },
-                                                    new SelectListItem { Text = "06", Value = "6" },
-                                                    new SelectListItem { Text = "07", Value = "7" },
-                                                    new SelectListItem { Text = "08", Value = "8" },
-                                                    new SelectListItem { Text = "09", Value = "9" },
-                                                    new SelectListItem { Text = "10", Value = "10" },
-                                                    new SelectListItem { Text = "11", Value = "11" },
-                                                    new SelectListItem { Text = "12", Value = "12" }
-                                                    }, "Value", "Text", null), new { @class = "form-control time", style = "width: 70px; display: inline;" })
-                        @Html.DropDownListFor(m => m.EndMinute, new SelectList(new List<string> { "00", "15", "30", "45" }), new { @class = "form-control time", style = "width: 70px; display: inline;" })
-                        @Html.DropDownListFor(m => m.EndAMPM, new SelectList(new List<string>() { "AM", "PM" }), new { @class = "form-control time", style = "width: 70px; display: inline;" })
-                        @Html.ValidationMessageFor(model => model.Event.EndTime, "", new { @class = "text-danger" })
-                        <p>
-                            <span id="EndTimevalidationMessage" class="text-danger" style="display: none;">End Time Must Be After Start Time</span>
-                        </p>
-                    </div>
-                </div>*@
-                <div class="row" style="margin-bottom: 5px;">
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        @Html.LabelFor(model => model.Event.Recurring, htmlAttributes: new { @class = "control-label text-danger text-uppercase" })
-                        <span>
-                            @if (!Model.Event.Recurring)
-                            {
-                                @Html.RadioButtonFor(model => model.Event.Recurring, false, new { @checked = "checked", id = "recurring_no" })
-                            }
-                            else
-                            {
-                                @Html.RadioButtonFor(model => model.Event.Recurring, false, new { id = "recurring_no" })
-                            }
-                            <label for="recurring_no">NO</label>
-                        </span>
-                        <span>
-                            @if (Model.Event.Recurring)
-                            {
-                                @Html.RadioButtonFor(model => model.Event.Recurring, true, new { @checked = "checked", id = "recurring_yes" })
-                            }
-                            else
-                            {
-                                @Html.RadioButtonFor(model => model.Event.Recurring, true, new { id = "recurring_yes" })
-                            }
-                            <label for="recurring_yes">YES</label>
-                        </span>
-                    </div>
-                    <div class="row col-lg-12 col-md-12">
-                        <div class="col-lg-3 col-md-3"></div>
-                        <div class="col-md-9 col-lg-9">
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="recurring" style="margin-top: 5px;" @(Model.Event.Recurring ? "" : "hidden")>
-                                <div class="row">
-                                    <span class="control-label col-lg-3 col-md-3 text-warning">Repeats</span>
-                                    <div class="col-md-9 col-lg-9">
-                                        @Html.EnumDropDownListFor(model => model.Event.Frequency, htmlAttributes: new { @class = "form-control" })
-                                        @Html.ValidationMessageFor(model => model.Event.Frequency, "", new { @class = "text-danger" })
-                                    </div>
-                                </div>
-                                <div class="row" style="margin-top: 5px;">
-                                    <span class="control-label col-lg-3 col-md-3 text-warning">Every</span>
-                                    <div class="col-md-4 col-lg-4">
-                                        @Html.TextBoxFor(model => model.Event.Interval, htmlAttributes: new { @class = "form-control", @type = "number", @min = "1", @max = "200" })
-                                        @Html.ValidationMessageFor(model => model.Event.Interval, "", new { @class = "text-danger" })
-                                    </div>
-                                    <label class="text-warning" id="frequency" style="font-weight: normal; height: 30px; vertical-align: bottom;">
-                                        @if (Model.Event.Frequency == Frequency.Daily)
-                                        {
-                                            @: Day(s)
-                                        }
-                                        else if (Model.Event.Frequency == Frequency.Weekly)
-                                        {
-                                            @: Week(s)
-                                        }
-                                        else if (Model.Event.Frequency == Frequency.Monthly)
-                                        {
-                                            @: Month(s)
-                                        }
-                                        else if (Model.Event.Frequency == Frequency.Yearly)
-                                        {
-                                            @: Year(s)
-                                        }
-                                    </label>
-                                </div>
-                                <div class="row col-lg-12 col-md-12" id="monthly" style="padding-top: 5px; margin-top: 5px;" @(Model.Event.Frequency == Frequency.Monthly ? "" : "hidden='hidden'")>
-                                    <div class="panel panel-info">
-                                        <div class="panel-body">
-                                            <div class="row">
-                                                <span class="control-label col-lg-3 col-md-3 text-warning">On the </span>
-                                                <span class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                                    @Html.CheckBoxListFor(model => model.MonthDays.PostedItems,
-                                                                model => model.MonthDays.AvailableItems,
-                                                                item => item.Value,
-                                                                item => item.Text,
-                                                                model => model.MonthDays.SelectedItems,
-                                                                new HtmlListInfo(HtmlTag.table, 2, new { @class = "checkboxlist text-warning" }, TextLayout.Default))
-                                                </span>
-                                                <label class="col-lg-1 col-md-1 text-warning" id="dayofweek">@Model.Event.StartDate.DayOfWeek</label>
-                                                @Html.HiddenFor(x => x.HiddenMonthDay)
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-10 col-lg-9" style="margin-top: 5px;">
-                    <input id="btndatetimeprev" type="button" class="prev btn btn-primary" value="Previous" />
-                    <input id="btndatetimenext" type="button" class="next btn btn-primary" style="display: none" value="Next" disabled="disabled" />
-                </div>
-            </div>
-            <div id="wizdetaildiv" class="step" style="display:none">
-                <h2>Step: Details</h2>
-                <div class="row" style="margin-bottom: 5px;">
-                    @Html.LabelFor(model => model.Event.Name, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
-                    <div class="col-md-10 col-lg-9">
-                        @Html.EditorFor(model => model.Event.Name, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.Event.Name, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div id="skilllevel" class="row" style="margin-bottom: 5px;" hidden="hidden">
-                    @Html.LabelFor(m => m.SkillLevel, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
-                    <div class="col-md-10 col-lg-9">
-                        @Html.DropDownListFor(m => m.SkillLevel, new SelectList(new List<int> { 1, 2, 3, 4, 5 }), "-- Select a Skill Level --", new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.SkillLevel, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="row" style="margin-bottom: 5px;">
-                    @Html.LabelFor(model => model.Event.Name, "Dance Styles", htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
-                    <div class="col-md-10 col-lg-9">
-                        @Html.CheckBoxListFor(model => model.StylesCheckboxList.PostedItems,
-                                    model => model.StylesCheckboxList.AvailableItems,
-                                    style => style.Value,
-                                    style => style.Text,
-                                    model => model.StylesCheckboxList.SelectedItems,
-                                    new HtmlListInfo(HtmlTag.table, 2, new { @class = "checkboxlist" }, TextLayout.Default))
-                        <span id="validationMessage" class="text-danger" style="display: none;" >Please choose at least one style</span>
-                        @*@Html.ValidationMessageFor(model => model.StylesCheckboxList.PostedItems, "Please choose at least one style", new { @class = "text-danger" })*@
-                    </div>
-                </div>
-                <div class="row" style="margin-bottom: 5px;">
-                    @Html.LabelFor(model => model.Event.Description, htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
-                    <div class="col-md-10 col-lg-9">
-                        @Html.EditorFor(model => model.Event.Description, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.Event.Description, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="col-md-10 col-lg-9" style="margin-top: 5px;">
-                    <input id="btndetailprev" type="button" class="prev btn btn-primary" value="Previous" />
-                    <input id="btndetailnext" type="button" class="next btn btn-primary" style="display: none" value="Next" disabled="disabled" />
-                </div>
-            </div>
-            <div id="wizlocationdiv" class="step" style="display:none">
-                <h2>Step: Location</h2>
-                <div class="col-lg-12 col-md-12" style="margin-bottom: 5px;">
-                    @Html.HiddenFor(model => model.Event.Place.Name)
-                    @Html.HiddenFor(model => model.Event.Place.Address)
-                    @Html.HiddenFor(model => model.Event.Place.Address2)
-                    @Html.HiddenFor(model => model.Event.Place.City)
-                    @Html.HiddenFor(model => model.Event.Place.StateName)
-                    @Html.HiddenFor(model => model.Event.Place.Zip)
-                    @Html.HiddenFor(model => model.Event.Place.Country)
-                    @Html.HiddenFor(model => model.Event.Place.Latitude)
-                    @Html.HiddenFor(model => model.Event.Place.Longitude)
-                    @Html.HiddenFor(model => model.Event.Place.GooglePlaceId)
-                    @Html.HiddenFor(model => model.Event.Place.GoogleUrl)
-                    @Html.HiddenFor(model => model.Event.Place.Website)
-                    @Html.HiddenFor(model => model.Event.Place.GoogleRating)
-                    @Html.HiddenFor(m => m.Event.Place.FacebookId)
-                    @Html.HiddenFor(m => m.Event.Place.Public)
-                    @Html.HiddenFor(m => m.Event.Place.Website)
-                    @Html.HiddenFor(m => m.Event.Place.FacebookLink)
-                    @Html.HiddenFor(m => m.Event.Place.Filename)
-                    @Html.HiddenFor(m => m.Event.Place.ThumbnailFilename)
-                    @*@Html.TextBoxFor(model => model.NewPlace.PlaceType, new { @Value = EDR.Enums.PlaceType.OtherPlace })*@
-                    <div class="row" style="margin-bottom: 5px;">
-                        @Html.Label("New Location", htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
-                        <div class="col-md-10 col-lg-9">
-                            <input id="newplace" type="text" placeholder="Search for a new Location" class="form-control" />
-                            @Html.ValidationMessageFor(model => model.Event.Place.Name, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
-                    <div class="row" style="margin-bottom: 5px;">
-                        @Html.Label("Type of Location", htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
-                        <div class="col-md-10 col-lg-9">
-                            @Html.EnumDropDownListFor(model => model.Event.Place.PlaceType, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(model => model.Event.Place.PlaceType, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
-                    <div class="row" style="margin-bottom: 5px;">
-                        @Html.Label("Location", htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
-                        <div class="col-md-10 col-lg-9">
-                            @Html.TextArea("Location", Model.Event.Place.Address + "\n" + Model.Event.Place.City + ", " + Model.Event.Place.StateName + " " + Model.Event.Place.Zip + "\n" + Model.Event.Place.Country, 4, 50, new { @class = "form-control", Name = "formatted_address", @readonly = true })
-                        </div>
-                    </div>
-
-                    @*@Html.HiddenFor(m => m.Event.Place.FacebookId)
-                    @Html.HiddenFor(m => m.Event.Place.Public)
-                    @Html.HiddenFor(m => m.Event.Place.Country)
-                    @Html.HiddenFor(m => m.Event.Place.Longitude)
-                    @Html.HiddenFor(m => m.Event.Place.Latitude)
-                    @Html.HiddenFor(m => m.Event.Place.Filename)
-                    @Html.HiddenFor(m => m.Event.Place.ThumbnailFilename)
-                    <div class="col-md-10 col-lg-9">
-                        <div id="existinglocationdiv">
-                            <div class="row">
-                                <h3>Pick an Existing Location</h3><br />
-                                @if (Model.Places != null)
-                                {
-                                    @Html.DropDownListFor(model => model.Event.PlaceId, Model.Places.Select(p => new SelectListItem() { Text = p.Name, Value = p.Id.ToString() }), null, new { @class = "form-control", @id = "ExistingPlace" })
-                                }
-                            </div>
-                        </div>
-                        <div id="ordiv" class="row">
-                            <h3>Or</h3>
-                        </div>
-                        <div id="newlocationdiv">
-                            <div class="row">
-                                <h3>Create a New Location</h3>
-                            </div>
-                            <div class="row" id="newplace">
-                                @Html.HiddenFor(m => m.Event.Place.Id)
-                                @Html.HiddenFor(m => m.Event.Place.Website)
-                                @Html.HiddenFor(m => m.Event.Place.FacebookLink)
-                                <div style="margin-bottom: 2px;">
-                                    @if (Model.Event.Place.Name == null)
-                                    {
-                                        @Html.EditorFor(model => model.Event.Place.Name, new { htmlAttributes = new { @class = "form-control", @placeholder = "Place Name" } })
-                                        @Html.ValidationMessageFor(model => model.Event.Place.Name, "", new { @class = "text-danger" })
-                                    }
-                                    else
-                                    {
-                                        @Html.HiddenFor(m => m.Event.Place.Name)
-                                        @Html.DisplayFor(m => m.Event.Place.Name)
-                                    }
-                                </div>
-                                <div style="margin-bottom: 2px;">
-                                    @if (Model.Event.Place.FacebookId == null)
-                                    {
-                                        @Html.EnumDropDownListFor(model => model.Event.Place.PlaceType, "- Select a Place Type-", new { @class = "form-control" })
-                                        @Html.ValidationMessageFor(model => model.Event.Place.PlaceType, "", new { @class = "text-danger" })
-                                    }
-                                    else
-                                    {
-                                        @Html.HiddenFor(m => m.Event.Place.PlaceType)
-                                        @Html.DisplayFor(m => m.Event.Place.PlaceType)
-                                    }
-                                </div>
-                                <div style="margin-bottom: 2px;">
-                                    @if (Model.Event.Place.Address == null)
-                                    {
-                                        @Html.EditorFor(model => model.Event.Place.Address, new { htmlAttributes = new { @class = "form-control", @placeholder = "Address" } })
-                                        @Html.ValidationMessageFor(model => model.Event.Place.Address, "", new { @class = "text-danger" })
-                                    }
-                                    else
-                                    {
-                                        @Html.HiddenFor(m => m.Event.Place.Address)
-                                        @Html.DisplayFor(m => m.Event.Place.Address)
-                                    }
-                                </div>
-                                <div style="margin-bottom: 2px;">
-                                    @if (Model.Event.Place.City == null)
-                                    {
-                                        @Html.EditorFor(model => model.Event.Place.City, new { htmlAttributes = new { @class = "form-control", @placeholder = "City" } })
-                                        @Html.ValidationMessageFor(model => model.Event.Place.City, "", new { @class = "text-danger" })
-                                    }
-                                    else
-                                    {
-                                        @Html.HiddenFor(m => m.Event.Place.City)
-                                        @Html.DisplayFor(m => m.Event.Place.City)
-                                    }
-                                </div>
-                                <div style="margin-bottom: 2px;">
-                                    @if (Model.Event.Place.State == null)
-                                    {
-                                        @Html.EnumDropDownListFor(model => model.Event.Place.State, "- Select a State-", new { @class = "form-control" })
-                                        @Html.ValidationMessageFor(model => model.Event.Place.State, "", new { @class = "text-danger" })
-                                    }
-                                    else
-                                    {
-                                        @Html.HiddenFor(m => m.Event.Place.State)
-                                        @Html.DisplayFor(m => m.Event.Place.State)
-                                    }
-                                </div>
-                                <div style="margin-bottom: 2px;">
-                                    @if (Model.Event.Place.Zip == null)
-                                    {
-                                        @Html.EditorFor(model => model.Event.Place.Zip, new { htmlAttributes = new { @class = "form-control", @placeholder = "Zipcode" } })
-                                        @Html.ValidationMessageFor(model => model.Event.Place.Zip, "", new { @class = "text-danger" })
-                                    }
-                                    else
-                                    {
-                                        @Html.HiddenFor(m => m.Event.Place.Zip)
-                                        @Html.DisplayFor(m => m.Event.Place.Zip)
-                                    }
-                                </div>
-                            </div>
-                            @if (Model.Event.FacebookId != null)
-                            {
-                                <div class="row">
-                                    <img src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Event.Place.Latitude,@Model.Event.Place.Longitude&zoom=10&size=200x100&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Event.Place.Latitude, @Model.Event.Place.Longitude">
-                                </div>
-                            }
-                        </div>
-                    </div>*@
-                </div>
-                <div class="col-md-10 col-lg-9" style="margin-top: 5px;">
-                <input id="btnlocationprev" type="button" class="prev btn btn-primary" value="Previous" />
-                <input id="btnlocationnext" type="button" class="next btn btn-primary" style="display: none" value="Next" disabled="disabled" />
-        </div>
-    </div>
-            <div id="wizticketsdiv" class="step" style="display:none">
-                <h2>Step: Tickets</h2>
-                <div class="col-lg-12 col-md-12" style="margin-bottom: 5px;">
-                    <div class="form-horizontal">
-                        <div class="form-group">
-                            @Html.DropDownListFor(m => m.UseSchoolTickets, new SelectList(new List<SelectListItem>() { new SelectListItem() { Text = "Use Existing School Tickets", Value = "true" }, new SelectListItem() { Text = "Set up New Ticket for this Event", Value = "false" } }, "Value", "Text").AsEnumerable(), null, new { @class = "form-control" })
-                        </div>
-                        <div id="newticketdiv" class="panel" style="display: none;">
-                            <h4>New Event Ticket</h4>
-                            <hr />
-                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                            <div class="form-group">
-                                @Html.LabelFor(model => model.TicketQuantity, htmlAttributes: new { @class = "control-label col-md-2" })
-                                <div class="col-md-10">
-                                    @Html.EditorFor(model => model.TicketQuantity, new { htmlAttributes = new { @class = "form-control" } })
-                                    @Html.ValidationMessageFor(model => model.TicketQuantity, "", new { @class = "text-danger" })
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                @Html.LabelFor(model => model.TicketPrice, htmlAttributes: new { @class = "control-label col-md-2" })
-                                <div class="col-md-10">
-                                    @Html.EditorFor(model => model.TicketPrice, new { htmlAttributes = new { @class = "form-control" } })
-                                    @Html.ValidationMessageFor(model => model.TicketPrice, "", new { @class = "text-danger" })
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-10 col-lg-9" style="margin-top: 5px;">
-                    <input id="btnticketsprev" type="button" class="prev btn btn-primary" value="Previous" />
-                    <input type="submit" id="finish" value="Save Event" class="btn btn-primary" />
-                </div>
-            </div>
-
-    @*<input type="button" class="prev btn btn-primary" style="display: none" value="Previous" />
-    <input type="button" class="next btn btn-primary" style="display: none" value="Next" disabled="disabled" />*@
-            @*<input type="submit" id="finish" value="Save Event" class="btn btn-primary" style="display: none;" />*@
-        </div>
+            @Html.RadioButtonFor(model => model.Event.Recurring, false, new { @checked = "checked", id = "recurring_no" })
         }
-        <a class="btn btn-warning" href="@Url.Action("Home", Session["CurrentRole"] != null ? Session["CurrentRole"].ToString() : "Dancer", new { username = User.Identity.Name })" style="float: right;">Cancel</a>
-
-
-    </div>
-</div>
+        else
+        {
+            @Html.RadioButtonFor(model => model.Event.Recurring, false, new { id = "recurring_no" })
+        }
+        <label for="recurring_no">NO</label>
+    </span>
+    <span class="col-lg-2">
+        @if (Model.Event.Recurring)
+        {
+            @Html.RadioButtonFor(model => model.Event.Recurring, true, new { @checked = "checked", id = "recurring_yes" })
+        }
+        else
+        {
+            @Html.RadioButtonFor(model => model.Event.Recurring, true, new { id = "recurring_yes" })
+        }
+        <label for="recurring_yes">YES</label>
+    </span>*@

@@ -409,7 +409,7 @@ namespace EDR.Controllers
                 ViewBag.ReturnUrl = returnUrl;
                 ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
 
-                var model = new ExternalLoginConfirmationViewModel { UserName = loginInfo.DefaultUserName, StartDate = DateTime.Today };
+                var model = new ExternalLoginConfirmationViewModel { UserName = loginInfo.DefaultUserName };
                 var selectedStyles = new List<DanceStyleListItem>();
                 model.SelectedStyles = selectedStyles;
                 var styles = new List<DanceStyleListItem>();
@@ -510,22 +510,22 @@ namespace EDR.Controllers
                 var user = new ApplicationUser();
                 IdentityResult result = new IdentityResult();
 
-                //  Get User's Location
-                var address = new Address();
-                var locationData = FacebookHelper.GetData(token, "me?fields=location");
-                if (locationData.location != null)
-                {
-                    var addressData = locationData.location;
-                    if (locationData.location.name != null)
-                    {
-                        address = Geolocation.ParseAddress(addressData.name);
-                    }
-                }
-                else
-                {
-                    address = Geolocation.ParseAddress(model.Zipcode);
-                }
-                //  Get User's Location
+                ////  Get User's Location
+                //var address = new Address();
+                //var locationData = FacebookHelper.GetData(token, "me?fields=location");
+                //if (locationData.location != null)
+                //{
+                //    var addressData = locationData.location;
+                //    if (locationData.location.name != null)
+                //    {
+                //        address = Geolocation.ParseAddress(addressData.name);
+                //    }
+                //}
+                //else
+                //{
+                //    address = Geolocation.ParseAddress(model.Zipcode);
+                //}
+                ////  Get User's Location
 
 
                 if (DataContext.Users.Where(x => x.Email == email).Count() == 1)
@@ -534,15 +534,33 @@ namespace EDR.Controllers
                     user.FacebookToken = token;
                     user.FacebookUsername = username;
                     user.StartDate = model.StartDate;
-                    user.ZipCode = model.Zipcode;
-                    user.Latitude = address != null ? address.Latitude : 0;
-                    user.Longitude = address != null ? address.Longitude : 0;
+                    user.City = model.City;
+                    user.State = model.State;
+                    user.ZipCode = model.ZipCode;
+                    user.Country = model.Country;
+                    user.Latitude = model.Latitude;
+                    user.Longitude = model.Longitude;
                     user.EmailConfirmed = true;
                     DataContext.SaveChanges();
                 }
                 else
                 {
-                    user = new ApplicationUser() { UserName = model.UserName, Email = email, FirstName = firstName, LastName = lastName, FacebookToken = token, FacebookUsername = username, StartDate = model.StartDate, ZipCode = model.Zipcode, EmailConfirmed = true };
+                    user = new ApplicationUser() {
+                        UserName = model.UserName,
+                        Email = email,
+                        FirstName = firstName,
+                        LastName = lastName,
+                        FacebookToken = token,
+                        FacebookUsername = username,
+                        StartDate = model.StartDate,
+                        City = model.City,
+                        State = model.State,
+                        ZipCode = model.ZipCode,
+                        Country = model.Country,
+                        Latitude = model.Latitude,
+                        Longitude = model.Longitude,
+                        EmailConfirmed = true
+                    };
                     result = await UserManager.CreateAsync(user);
                     if (!result.Succeeded)
                     {
@@ -560,16 +578,10 @@ namespace EDR.Controllers
                 }
 
                 //  Add Dance Styles
-                if (model.PostedStyles != null)
+                var styleids = model.StyleIds.Split('-');
+                if (styleids.Length != 0)
                 {
-                    var styles = DataContext.DanceStyles.Where(x => model.PostedStyles.DanceStyleIds.Contains(x.Id.ToString())).ToList();
-
-                    user.DanceStyles = new List<DanceStyle>();
-
-                    foreach (DanceStyle s in styles)
-                    {
-                        user.DanceStyles.Add(s);
-                    }
+                    user.DanceStyles = DataContext.DanceStyles.Where(x => styleids.Contains(x.Id.ToString())).ToList();
                     DataContext.SaveChanges();
                 }
 

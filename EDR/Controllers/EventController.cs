@@ -1888,7 +1888,14 @@ namespace EDR.Controllers
                     //    cls.Place = null;
                     //}
 
-                    cls.DanceStyles = DataContext.DanceStyles.Where(s => model.StylesCheckboxList.PostedItems.Contains(s.Id.ToString())).ToList();
+                    //  cls.DanceStyles = DataContext.DanceStyles.Where(s => model.StylesCheckboxList.PostedItems.Contains(s.Id.ToString())).ToList();
+                    //  Add Dance Styles
+                    var styleids = model.StyleIds.Split('-');
+                    if (styleids.Length != 0)
+                    {
+                        cls.DanceStyles = DataContext.DanceStyles.Where(x => styleids.Contains(x.Id.ToString())).ToList();
+                        DataContext.SaveChanges();
+                    }
 
                     //  Add Recurring Events
                     if (model.Event.Recurring)
@@ -1976,7 +1983,15 @@ namespace EDR.Controllers
                     //{
                     //    soc.Place = null;
                     //}
-                    soc.DanceStyles = DataContext.DanceStyles.Where(s => model.StylesCheckboxList.PostedItems.Contains(s.Id.ToString())).ToList();
+
+                    //  soc.DanceStyles = DataContext.DanceStyles.Where(s => model.StylesCheckboxList.PostedItems.Contains(s.Id.ToString())).ToList();
+                    //  Add Dance Styles
+                    var styleids = model.StyleIds.Split('-');
+                    if (styleids.Length != 0)
+                    {
+                        soc.DanceStyles = DataContext.DanceStyles.Where(x => styleids.Contains(x.Id.ToString())).ToList();
+                        DataContext.SaveChanges();
+                    }
 
                     //  Add Recurring Events
                     if (model.Event.Recurring)

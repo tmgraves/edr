@@ -3,28 +3,152 @@
 @using EDR.Models
 
 @{
-    ViewBag.Title = "Details";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = Model.Name + " at Eat.Dance.Repeat.";
 }
 
-<h1 class="page-header">@Model.Name</h1>
+<ol class="breadcrumb">
+    <li>@Html.ActionLink("All Styles", "Explore", "Home")</li>
+    <li class="active">@Model.Name</li>
+</ol>
 
-<div class="row">
-    <div class="col-lg-12 col-md-12 well">
-        <div class="col-lg-4 col-md-4">
-            <div class="thumbnail">
-                <div class="croppedpic" style="height: 200px;">
-                    @if (Model.PhotoUrl != null)
-                    {
-                        <img style="max-width: 100%;" src="@Url.Content(Model.PhotoUrl)" />
-                    }
-                    else
-                    {
-                        <img style="max-width: 100%;" src="~/Content/images/NoImage.png" />
-                    }
-                </div>
+<div class="container">
+    <div class="row" style="margin-bottom: 20px;">
+        <div class="col-lg-4 nospace">
+            <div id="dimg" style="height: 250px; width: 100%;">
+                <img class="fitpicture" id="pimg" src="@Url.Content(Model.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
             </div>
         </div>
+        <div class="col-lg-8">
+            <h2>@Model.Name</h2>
+            <div class="description">
+                @Html.Raw(EDR.Utilities.ApplicationUtility.WithActiveLinks(Model.Description))
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-4 nospace">
+            <div class="col-lg-12 nospace" style="margin-bottom: 20px !important;">
+                <h4>@Model.Name Music...</h4>
+                <iframe src="https://embed.spotify.com/?uri=@Model.SpotifyPlaylist" width="300" height="380" frameborder="0" allowtransparency="true"></iframe>
+            </div>
+            <div class="col-lg-12 nospace" style="margin-bottom: 20px !important;">
+                <h4>Teachers</h4>
+                <div class="row">
+                    <div id="teachers"></div>
+                </div>
+                <hr />
+            </div>
+            <div class="col-lg-12 nospace" style="margin-bottom: 20px !important;">
+                <h4>Schools</h4>
+                <div id="schools">
+                </div>
+                @Html.ActionLink("Find a " + Model.Name + " School", "List", "School", null, new { @class = "btn btn-primary btn-sm" } )
+            </div>
+            <div class="col-lg-12 nospace" style="margin-bottom: 20px !important;">
+                <h4>Performance Teams</h4>
+                <div id="teams">
+                </div>
+                @Html.ActionLink("Find a " + Model.Name + " Team", "Index", "Team", null, new { @class = "btn btn-primary btn-sm" })
+            </div>
+        </div>
+        <div class="col-lg-8 nospace">
+            <div class="btn-group text-uppercase btn-group-justified" role="group" aria-label="...">
+                <div class="btn-group" role="group">
+                    @Html.ActionLink("Find a Class", "Learn", "Home", null, new { @class = "btn btn-lg btn-info" })
+                </div>
+                <div class="btn-group" role="group">
+                    @Html.ActionLink("Find a Social", "Social", "Home", null, new { @class = "btn btn-lg btn-warning" })
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <h4>Sample Videos</h4>
+                @if (Model.Videos != null)
+                {
+                foreach (var video in Model.Videos)
+                {
+                        <div class="thumbnail col-lg-6 col-md-6 col-sm-12 col-xs-12" style="height: 200px;">
+                            @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new Video() { PhotoUrl = video.PhotoUrl, VideoUrl = video.VideoUrl, Title = video.Title, PublishDate = video.PublishDate })
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<div id="map"></div>
+@section Scripts
+{
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jqueryUI")
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="~/Content/jquery.rateyo.css" />
+    <script src="~/Scripts/jquery.rateyo.js"></script>
+    <script src="~/Scripts/jquery-simple-pagination-plugin.js"></script>
+    @*<link href="~/Content/Simple-Pagination.css" rel="stylesheet" />*@
+    @Scripts.Render("~/bundles/GeoComplete")
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+    <script src="~/Scripts/readmore.js"></script>
+
+    <script>
+        function LoadClasses() {
+            $.get('@Url.Action("GetClassesPartial", "DanceStyle")', { 'id': '@Model.Id' }, function (data) {
+                $("#classes").empty();
+                $("#classes").html(data);
+                BuildRatingStars();
+            });
+        }
+        function LoadSocials() {
+            $.get('@Url.Action("GetSocialsPartial", "DanceStyle")', { 'id': '@Model.Id' }, function (data) {
+                $("#socials").empty();
+                $("#socials").html(data);
+                BuildRatingStars();
+            });
+        }
+        function LoadTeachers() {
+            $.get('@Url.Action("GetTeachersPartial", "DanceStyle")', { 'id': '@Model.Id' }, function (data) {
+                $("#teachers").empty();
+                $("#teachers").html(data);
+            });
+        }
+        function LoadSchools() {
+            $.get('@Url.Action("GetSchoolsPartial", "DanceStyle")', { 'id': '@Model.Id' }, function (data) {
+                $("#schools").empty();
+                $("#schools").html(data);
+            });
+        }
+        function LoadTeams() {
+            $.get('@Url.Action("GetTeamsPartial", "DanceStyle")', { 'id': '@Model.Id' }, function (data) {
+                $("#teams").empty();
+                $("#teams").html(data);
+            });
+        }
+
+$(document).ready(function () {
+        LoadClasses();
+        LoadSocials();
+        LoadTeachers();
+        LoadSchools();
+        LoadTeams();
+        $('.description').readmore({ speed: 500 });
+});
+function BuildRatingStars() {
+        $(".rateYo").rateYo({
+        starWidth: "18px",
+        ratedFill: "#FFD700",
+        normalFill: "#ccc",
+        onInit: function (rating, rateYoInstance) {
+            var t = $(this);
+            $(this).rateYo("option", "rating", t.parent('div').find('.ratingval').prop('value'));
+            $(this).rateYo("option", "readOnly", true);
+        }
+    });
+}
+</script>
+}
+
+@*<div class="row">
+    <div class="col-lg-12 col-md-12 well">
         <div class="col-lg-8 col-md-8">
             <div class="row">
                 <div class="col-lg-6 col-md-6">
@@ -46,9 +170,6 @@
                     </a>
                 </div>
             </div>
-            <div class="row well-lg">
-                @Html.DisplayFor(model => model.Description)
-            </div>
         </div>
     </div>
 
@@ -58,22 +179,11 @@
             @Html.Partial("~/Views/Shared/_TeacherListPartial.cshtml", Model.Teachers)
         </div>
         <div class="col-lg-12 col-md-12">
-            <h4>The Music...</h4>
-            <iframe src="https://embed.spotify.com/?uri=@Model.SpotifyPlaylist" width="300" height="380" frameborder="0" allowtransparency="true"></iframe>
         </div>
     </div>
 
     <div class="col-lg-8 col-md-8">
         <h4>And The Dance...</h4>
-            @if (Model.Videos != null)
-            {
-                foreach (var video in Model.Videos)
-                {
-                    <div class="thumbnail col-lg-6 col-md-6 col-sm-12 col-xs-12" style="height: 200px;">
-                        @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new Video() { PhotoUrl = video.PhotoUrl, VideoUrl = video.VideoUrl, Title = video.Title, PublishDate = video.PublishDate })
-                    </div>
-                }
-            }
     </div>
 
 </div>
@@ -81,4 +191,4 @@
     <p>
         @Html.ActionLink("Back to Dance Styles", "Explore", "Home", null, new { @class = "btn btn-primary" } )
     </p>
-</div>
+</div>*@
