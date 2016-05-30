@@ -3,6 +3,7 @@
 /// <reference path="../client scripts/mvcfoolproofjqueryvalidation.min.js" />
 /// <reference path="../client scripts/mvcfoolproofvalidation.min.js" />
 /// <reference path="bootstrap.js" />
+/// <reference path="bootstrap-toggle.js" />
 /// <reference path="cropper.js" />
 /// <reference path="daypilot/daypilot-all.min.js" />
 /// <reference path="dhtmlxscheduler/dhtmlxscheduler.js" />
@@ -107,6 +108,7 @@
 /// <reference path="modernizr-2.7.2.js" />
 /// <reference path="mvcfoolproof.unobtrusive.js" />
 /// <reference path="qunit.js" />
+/// <reference path="readmore.js" />
 /// <reference path="respond.js" />
 /// <reference path="respond.matchmedia.addlistener.js" />
 /// <reference path="searchhelper.js" />
