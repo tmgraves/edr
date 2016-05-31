@@ -26,7 +26,7 @@
     <div class="box-default" style="padding: 5px; height: 100%;">
         <div class="col-lg-4 nospace bg-success helper text-center" style="height: 100%;">
             <div class="col-lg-2 nospace text-center" style="height: 100%;">
-                <div class="@(Model is EDR.Models.Class ? "bg-primary" : "bg-warning") text-center vertical-container">
+                <div class="@(Model is EDR.Models.Class ? "bg-class" : "bg-social") text-center vertical-container">
                     <div style="font-weight: bolder;">
                         @(cls != null ? cls.ClassType.ToString().ToUpper() : soc.SocialType.ToString().ToUpper())
                     </div>
@@ -42,7 +42,7 @@
                 <div id="cont" class="rateYo"></div>
             </div>
             <div class="item-title text-primary">
-                <a href="@Url.Action("View", "Event", new { id = Model.Id, eventType = EDR.Enums.EventType.Class })">
+                <a href="@Url.Action("View", "Event", new { id = Model.Id, eventType = Model is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social })">
                     @Model.Name
                 </a>
             </div>

@@ -1817,6 +1817,11 @@ namespace EDR.Controllers
             model.Event.PlaceId = place.Id;
             //  Create the Place
 
+            if (model.EventType == EventType.Social)
+            {
+                ModelState["SkillLevel"].Errors.Clear();
+            }
+
             int id = 0;
             //if (model.Event.PlaceId >= 0)
             //{
@@ -1866,11 +1871,11 @@ namespace EDR.Controllers
 
                     if (model.Role == RoleName.Teacher)
                     {
-                        cls.Teachers.Add(DataContext.Teachers.Single(t => t.ApplicationUser.Id == userid));
+                        cls.Teachers = new List<Teacher>() { DataContext.Teachers.Single(t => t.ApplicationUser.Id == userid) };
                     }
                     else
                     {
-                        cls.Owners.Add(DataContext.Owners.Single(o => o.ApplicationUser.Id == userid));
+                        cls.Owners = new List<Owner>() { DataContext.Owners.Single(o => o.ApplicationUser.Id == userid) };
                     }
                     cls.Creator = user;
 
@@ -1962,11 +1967,11 @@ namespace EDR.Controllers
 
                     if (model.Role == RoleName.Promoter)
                     {
-                        soc.Promoters.Add(DataContext.Promoters.Single(t => t.ApplicationUser.Id == userid));
+                        soc.Promoters = new List<Promoter>() { DataContext.Promoters.Single(t => t.ApplicationUser.Id == userid) };
                     }
                     else
                     {
-                        soc.Owners.Add(DataContext.Owners.Single(o => o.ApplicationUser.Id == userid));
+                        soc.Owners = new List<Owner>() { DataContext.Owners.Single(o => o.ApplicationUser.Id == userid) };
                     }
                     soc.Creator = user;
 
@@ -2883,6 +2888,7 @@ namespace EDR.Controllers
                     .Include("Playlists")
                     .Include("Reviews")
                     .Include("LinkedFacebookObjects")
+                    .Include("LinkedMedia")
                     .Include("EventMembers")
                     .Include("Feeds")
                     .Include("Tickets")
@@ -2898,6 +2904,7 @@ namespace EDR.Controllers
             DataContext.EventMembers.RemoveRange(evt.EventMembers);
             DataContext.Tickets.RemoveRange(evt.Tickets);
             DataContext.EventInstances.RemoveRange(evt.EventInstances);
+            DataContext.LinkedMedia.RemoveRange(evt.LinkedMedia);
             DataContext.Events.Remove(evt);
             DataContext.SaveChanges();
 

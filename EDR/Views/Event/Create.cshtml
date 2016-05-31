@@ -205,18 +205,21 @@
                                                 @Html.EditorFor(model => model.Event.Name, new { htmlAttributes = new { @class = "form-control", @placeholder = "Event Name" } })
                                                 @Html.ValidationMessageFor(model => model.Event.Name, "", new { @class = "text-danger" })
                                             </div>
-                                            <div id="skilllevel" class="row" style="margin-bottom: 5px;" hidden="hidden">
-                                                @Html.DropDownListFor(m => m.SkillLevel,
-                                                                        new SelectList(new List<SelectListItem> {
-                                                                            new SelectListItem() { Text = "-- Select a Skill Level --", Value = "" },
-                                                                            new SelectListItem() { Text = "Beginner", Value = "1" },
-                                                                            new SelectListItem() { Text = "Beginner/Intermediate", Value = "2" },
-                                                                            new SelectListItem() { Text = "Intermediate", Value = "3" },
-                                                                            new SelectListItem() { Text = "Intermediate/Advanced", Value = "4" },
-                                                                            new SelectListItem() { Text = "Advanced", Value = "5" },
-                                                                        }, "Value", "Text"), new { @class = "form-control" })
-                                                @Html.ValidationMessageFor(m => m.SkillLevel, "", new { @class = "text-danger" })
-                                            </div>
+                                            @if (Model.EventType == EventType.Class)
+                                            {
+                                                <div id="skilllevel" class="row" style="margin-bottom: 5px;">
+                                                    @Html.DropDownListFor(m => m.SkillLevel,
+                                                                            new SelectList(new List<SelectListItem> {
+                                                                                new SelectListItem() { Text = "-- Select a Skill Level --", Value = "" },
+                                                                                new SelectListItem() { Text = "Beginner", Value = "1" },
+                                                                                new SelectListItem() { Text = "Beginner/Intermediate", Value = "2" },
+                                                                                new SelectListItem() { Text = "Intermediate", Value = "3" },
+                                                                                new SelectListItem() { Text = "Intermediate/Advanced", Value = "4" },
+                                                                                new SelectListItem() { Text = "Advanced", Value = "5" },
+                                                                            }, "Value", "Text"), new { @class = "form-control" })
+                                                    @Html.ValidationMessageFor(m => m.SkillLevel, "", new { @class = "text-danger" })
+                                                </div>
+                                            }
                                             <div class="row" style="margin-bottom: 5px;">
                                                 @Html.TextBox("Style", "", new { @class = "form-control stylesearch", @placeholder = "Add Dance Style(s) for this Event" })
                                                 <div id="stylesdiv" style="text-align: left; background-color: #fff;"></div>
@@ -242,7 +245,6 @@
                                         <div id="wizlocationdiv" class="step" style="display:none">
                                             <h3>Step: Location</h3>
                                             <div class="row" style="margin-bottom: 5px;">
-                                                @Html.HiddenFor(model => model.Event.Place.Name)
                                                 @Html.HiddenFor(model => model.Event.Place.Address)
                                                 @Html.HiddenFor(model => model.Event.Place.Address2)
                                                 @Html.HiddenFor(model => model.Event.Place.City)
@@ -263,7 +265,7 @@
                                                 @Html.HiddenFor(m => m.Event.Place.ThumbnailFilename)
                                                 @*@Html.TextBoxFor(model => model.NewPlace.PlaceType, new { @Value = EDR.Enums.PlaceType.OtherPlace })*@
                                                 <div class="row" style="margin-bottom: 5px;">
-                                                    <input id="newplace" type="text" placeholder="Type the Event Location" class="form-control" />
+                                                    @Html.TextBoxFor(model => model.Event.Place.Name, new { @class = "form-control newplace", @placeholder = "Type the Event Location" })
                                                     @Html.ValidationMessageFor(model => model.Event.Place.Name, "", new { @class = "text-danger" })
                                                 </div>
                                                 <div class="row" style="margin-bottom: 5px;">
@@ -418,7 +420,7 @@
 
     //  New Place AutoComplete
     $(function () {
-        $("#newplace").geocomplete({
+        $(".newplace").geocomplete({
             details: "form",
             types: ["geocode", "establishment"],
         })
@@ -500,6 +502,7 @@
             allinputs.each(function (index, element) {
                 if (!$(this).valid())
                 {
+                    alert($(this).prop('name'));
                     valid = false;
                 }
             });
@@ -522,6 +525,13 @@
                 }
 
                 $('.prev', wizard).show();
+            }
+            else {
+                var valerr = $('#createform.main').validate();
+                alert(valerr.errorList.length);
+                for (var i = 0; i < valerr.errorList.length; i++) {
+                    alert(valerr.errorList[i].message);
+                }
             }
         });
         //  Wizard Navigation
@@ -607,94 +617,94 @@
         //});
         //var form = $('#createform.main');
         //alert(form.prop('id'));
-        $('#btneventtypenext').click(function () {
-            $('#wizeventtypediv').hide();
-            $('#wizdatetimediv').show();
-        });
-        $('#btndatetimeprev').click(function () {
-            $('#wizeventtypediv').show();
-            $('#wizdatetimediv').hide();
-        });
-        $('#btndatetimenext').click(function () {
-            if ($('.timeelement.begintime').valid() && $('.timeelement.endtime').valid() && $('#Event_StartDate').valid() && $('#Event_EndDate').valid())
-            {
-                $('#wizdatetimediv').hide();
-                $('#wizdetaildiv').show();
-            }
-            else {
-                var val = $('#createform.main').validate();
-                for (var i = 0; i < val.errorList.length; i++) {
-                    alert(val.errorList[i].message);
-                }
-            }
+        //$('#btneventtypenext').click(function () {
+        //    $('#wizeventtypediv').hide();
+        //    $('#wizdatetimediv').show();
+        //});
+        //$('#btndatetimeprev').click(function () {
+        //    $('#wizeventtypediv').show();
+        //    $('#wizdatetimediv').hide();
+        //});
+        //$('#btndatetimenext').click(function () {
+        //    if ($('.timeelement.begintime').valid() && $('.timeelement.endtime').valid() && $('#Event_StartDate').valid() && $('#Event_EndDate').valid())
+        //    {
+        //        $('#wizdatetimediv').hide();
+        //        $('#wizdetaildiv').show();
+        //    }
+        //    else {
+        //        var val = $('#createform.main').validate();
+        //        for (var i = 0; i < val.errorList.length; i++) {
+        //            alert(val.errorList[i].message);
+        //        }
+        //    }
 
-            //var form = $('#createform.main');
-            //var val = form.validate();
-            //alert($('.timeelement.endtime').valid());
-            //if (form.valid()) {
-            //    $('#wizdatetimediv').hide();
-            //    $('#wizdetaildiv').show();
-            //}
-        });
-        $('#btndetailprev').click(function () {
-            $('#wizdatetimediv').show();
-            $('#wizdetaildiv').hide();
-        });
-        $('#btndetailnext').click(function () {
-            var form = $('#createform.main');
-            var nmval = $('#Event_Name').valid();
-            var skillval = $('#SkillLevel').valid();
-            var styleval = $('#StyleIds').valid();
-            if (nmval && skillval && styleval) {
-                $('#wizlocationdiv').show();
-                $('#wizdetaildiv').hide();
-            }
+        //    //var form = $('#createform.main');
+        //    //var val = form.validate();
+        //    //alert($('.timeelement.endtime').valid());
+        //    //if (form.valid()) {
+        //    //    $('#wizdatetimediv').hide();
+        //    //    $('#wizdetaildiv').show();
+        //    //}
+        //});
+        //$('#btndetailprev').click(function () {
+        //    $('#wizdatetimediv').show();
+        //    $('#wizdetaildiv').hide();
+        //});
+        //$('#btndetailnext').click(function () {
+        //    var form = $('#createform.main');
+        //    var nmval = $('#Event_Name').valid();
+        //    var skillval = $('#SkillLevel').valid();
+        //    var styleval = $('#StyleIds').valid();
+        //    if (nmval && skillval && styleval) {
+        //        $('#wizlocationdiv').show();
+        //        $('#wizdetaildiv').hide();
+        //    }
 
-            //for (var i = 0; i < val.errorList.length; i++) {
-            //    alert(val.errorList[i].message);
-            //}
+        //    //for (var i = 0; i < val.errorList.length; i++) {
+        //    //    alert(val.errorList[i].message);
+        //    //}
                 
-            //    var count = $('input[name="StylesCheckboxList.PostedItems"]:checked').length;
-            //var valid = true;
+        //    //    var count = $('input[name="StylesCheckboxList.PostedItems"]:checked').length;
+        //    //var valid = true;
 
-            //if (count == 0)
-            //{
-            //    $('#validationMessage').show();
-            //    valid = false;
-            //}
-            //else
-            //{
-            //    $('#validationMessage').hide();
-            //}
+        //    //if (count == 0)
+        //    //{
+        //    //    $('#validationMessage').show();
+        //    //    valid = false;
+        //    //}
+        //    //else
+        //    //{
+        //    //    $('#validationMessage').hide();
+        //    //}
 
-            //if (valid) {
-            //    if ($('#Event_Name').valid() && $('#SkillLevel').valid()) {
-            //        $('#validationMessage').hide();
-            //        $('#wizlocationdiv').show();
-            //        $('#wizdetaildiv').hide();
-            //    }
-            //    else {
-            //        var val = $('#createform.main').validate();
-            //        for (var i = 0; i < val.errorList.length; i++) {
-            //            alert(val.errorList[i].message);
-            //        }
-            //    }
-            //}
-        });
-        $('#btnlocationprev').click(function () {
-            $('#wizdetaildiv').show();
-            $('#wizlocationdiv').hide();
-        });
-        $('#btnlocationnext').click(function () {
-            if ($('#Event_Place_Name').valid()) {
-                $('#wizlocationdiv').hide();
-                $('#wizticketsdiv').show();
-            }
-        });
-        $('#btnticketsprev').click(function () {
-            $('#wizlocationdiv').show();
-            $('#wizticketsdiv').hide();
-        });
+        //    //if (valid) {
+        //    //    if ($('#Event_Name').valid() && $('#SkillLevel').valid()) {
+        //    //        $('#validationMessage').hide();
+        //    //        $('#wizlocationdiv').show();
+        //    //        $('#wizdetaildiv').hide();
+        //    //    }
+        //    //    else {
+        //    //        var val = $('#createform.main').validate();
+        //    //        for (var i = 0; i < val.errorList.length; i++) {
+        //    //            alert(val.errorList[i].message);
+        //    //        }
+        //    //    }
+        //    //}
+        //});
+        //$('#btnlocationprev').click(function () {
+        //    $('#wizdetaildiv').show();
+        //    $('#wizlocationdiv').hide();
+        //});
+        //$('#btnlocationnext').click(function () {
+        //    if ($('#Event_Place_Name').valid()) {
+        //        $('#wizlocationdiv').hide();
+        //        $('#wizticketsdiv').show();
+        //    }
+        //});
+        //$('#btnticketsprev').click(function () {
+        //    $('#wizlocationdiv').show();
+        //    $('#wizticketsdiv').hide();
+        //});
 
         $('#createform.main').submit(function () {
             if (!$('#createform.main').valid()) {
@@ -842,8 +852,8 @@
                     btn.prop('disabled', true);
                 }
 
-                //  Show Skill Level
-                $('#skilllevel').show();
+                ////  Show Skill Level
+                //$('#skilllevel').show();
             }
             else if (eventtype == "0") {
                 $('#classtype').hide();
@@ -857,12 +867,12 @@
                 else {
                     btn.prop('disabled', true);
                 }
-                $('#skilllevel').hide();
+                //$('#skilllevel').hide();
             }
             else {
                 $('#classtype').hide();
                 $('#socialtype').hide();
-                $('#skilllevel').hide();
+                //$('#skilllevel').hide();
             }
         }
 
@@ -888,7 +898,7 @@
         if (eventtype == "1") {
             $('#classtype').show();
             $('#socialtype').hide();
-            $('#skilllevel').show();
+            //$('#skilllevel').show();
 
             var classtype = $("#ClassType option:selected").val();
             var btn = $('.wizard .next');
@@ -902,7 +912,7 @@
         else if (eventtype == "0") {
             $('#classtype').hide();
             $('#socialtype').show();
-            $('#skilllevel').hide();
+            //$('#skilllevel').hide();
 
             var socialtype = $("#SocialType option:selected").val();
             var btn = $('.wizard .next');
@@ -916,7 +926,7 @@
         else {
             $('#classtype').hide();
             $('#socialtype').hide();
-            $('#skilllevel').hide();
+            //$('#skilllevel').hide();
         }
 
         if ('@Model.EventType' != "")

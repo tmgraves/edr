@@ -65,7 +65,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-12 verticaljustify nospace">
-            <div class="col-lg-4 nospace" style="height: 100%;">
+            <div class="col-lg-4" style="height: 100%;">
                 <img style="max-height: 100%; max-width: 100%;" src="@Url.Content(Model.Event.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
             </div>
             <div class="col-lg-8">
@@ -144,7 +144,7 @@
         <div class="col-lg-4">
             <div style="border: 1px solid #ddd;" >
                 <a target="_blank" href="https://maps.google.com/?q=@Model.Event.Place.Latitude,@Model.Event.Place.Longitude">
-                    <img style="width: 100%;" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Event.Place.Latitude,@Model.Event.Place.Longitude&zoom=10&size=350x200&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Event.Place.Latitude, @Model.Event.Place.Longitude" title="@Model.Event.Place.City, @Model.Event.Place.State">
+                    <img style="width: 100%;" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Event.Place.Latitude,@Model.Event.Place.Longitude&zoom=10&size=500x200&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Event.Place.Latitude, @Model.Event.Place.Longitude" title="@Model.Event.Place.City, @Model.Event.Place.StateName">
                 </a>
             </div>
             <div style="border: 1px solid #ccc;">
@@ -185,17 +185,9 @@
         </div>
         <div class="col-lg-8">
             <h3>Details</h3>
-            <div>
-                <div class="expand container">
-                    <div class="expand text_container">
-                        <div class='expand text'>
-                            <div style="white-space: pre-line;">
-                                @Html.Raw(EDR.Utilities.ApplicationUtility.WithActiveLinks(Model.Event.Description))
-                            </div>
-                        </div>
-                    </div>
-                    <div class='exbutton exopen text-primary'>...Show More</div>
-                    <div class='exbutton exclose text-primary'>...Show Less</div>
+            <div class="description">
+                <div style="white-space: pre-line;">
+                    @Html.Raw(EDR.Utilities.ApplicationUtility.WithActiveLinks(Model.Event.Description))
                 </div>
             </div>
         </div>
@@ -205,7 +197,7 @@
         <div class="col-lg-4">
             <div class="col-lg-12 nospace">
                 <div class="row">
-                    <div class="col-lg-6 nospace">
+                    <div class="col-lg-6">
                         <h3>Reviews</h3>
                     </div>
                     <div class="col-lg-6 text-right">
@@ -253,7 +245,7 @@
                     }
                     else
                     {
-                        <h5>No Dancers Registered</h5>
+                        <h5 class="text-center">No Dancers Registered</h5>
                     }
                 </div>
                 <hr />
@@ -371,10 +363,13 @@
     <script src="~/Scripts/jquery.rateyo.js"></script>
     <script src="~/Scripts/jquery-simple-pagination-plugin.js"></script>
     @*<link href="~/Content/Simple-Pagination.css" rel="stylesheet" />*@
+    <script src="~/Scripts/readmore.js"></script>
 
 <script>
     loadReviews();
     pageUpdates();
+    $('.description').readmore({ speed: 500 });
+
     //Reviews List
     function pageReviews() {
         $('#reviews-container').simplePagination({
@@ -401,56 +396,17 @@
             fullStar: true,
             onInit: function (rating, rateYoInstance) {
                 var t = $(this);
-                $(this).rateYo("option", "rating", t.parent('div').find('.ratingval').prop('value'));
+                var rating = t.parent('div').find('.ratingval').prop('value');
+                if (rating >= 1 && rating <= 5)
+                {
+                    $(this).rateYo("option", "rating", rating);
+                }
+                else {
+                    $(this).rateYo("option", "rating", 5);
+                }
             }
         });
     });
-
-    ////Expandable Vertical Box
-    //Editable Values
-
-    var lines = 12; //Choose how many lines you would like to initially show
-    var buttonspacing = 7; //Choose Button Spacing
-    var buttonside = 'left'; //Choose the Side the Button will display on: 'right' or 'left'
-    var animationspeed = 10; //Choose Animation Speed (Milliseconds)
-
-
-    //Do not edit below
-    var lineheight = $('.expand.text').css("line-height").replace("px", "");
-    startheight = lineheight * lines;
-    $('.expand.text_container').css({ 'height': startheight });
-
-    var buttonheight = $('.exbutton').height();
-
-    $('div.expand.container').css({ 'padding-bottom': (buttonheight + buttonspacing) });
-
-    if (buttonside == 'right') {
-        $('.exbutton').css({ 'bottom': (buttonspacing / 2), 'right': buttonspacing });
-    } else {
-        $('.exbutton').css({ 'bottom': (buttonspacing / 2), 'left': buttonspacing });
-    }
-
-    $('.exopen').on('click', function () {
-        var newheight = $(this).parent('div.expand.container').find('div.expand.text').height();
-        $(this).parent('div.expand.container').find('div.expand.text_container').animate({ 'height': newheight }, animationspeed);
-        $(this).hide().siblings('.exclose').show();
-
-    });
-
-    $('.exclose').on('click', function () {
-        var h = $(this).parent('div.expand.container').find('div.expand.text').height();
-        $(this).parent('div.expand.container').find('div.expand.text_container').animate({ 'height': startheight }, animationspeed);
-        $(this).hide().siblings('.exopen').show();
-    });
-
-
-    $('div.expand.container').each(function () {
-        if ($(this).find('div.expand.text').height() >= $(this).find('div.expand.text_container').height()) {
-            $(this).find('.exbutton.exopen').show();
-
-        }
-    });
-    ////Expandable Vertical Box
 
     //  Load Reviews via JSON
     function loadReviews() {

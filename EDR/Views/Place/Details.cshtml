@@ -16,10 +16,10 @@
 <div class="container">
     <div class="row" style="margin-bottom: 20px;">
         <div class="col-lg-4 nospace">
-            <div id="dimg" style="height: 250px; width: 100%; background-repeat: no-repeat;">
+            <div id="dimg" style="height: 250px; width: 100%; background-repeat: no-repeat; background-image: url(@Model.Place.Filename)">
                 @*<a id="limg" target="_blank" href="https://maps.google.com/?q=@Model.Place.Latitude,@Model.Place.Longitude">
-                    <img class="fitpicture" id="pimg" />
-                </a>*@
+                <img class="fitpicture" id="pimg" />
+            </a>*@
             </div>
         </div>
         <div class="col-lg-8">
@@ -201,13 +201,29 @@
                     if (status == google.maps.places.PlacesServiceStatus.OK) {
                         //$('#pimg').prop('src', place.photos[0].getUrl({'maxWidth': 600, 'maxHeight': 600 }));
                         //alert(place.photos[0].getUrl({ 'maxWidth': 600, 'maxHeight': 600 }));
-                        var url = place.photos[0].getUrl({ 'maxWidth': 600, 'maxHeight': 600 });
-                        $('#dimg').css('background-image', 'url(' + url  + ')');
+                        if (place.photos != null && place.photos.length > 0)
+                        {
+                            var url = place.photos[0].getUrl({ 'maxWidth': 600, 'maxHeight': 600 });
+                            $('#dimg').css('background-image', 'url(' + url + ')');
+                        }
                         //alert($('#dimg').css('background-image'));
                         $('#location').text(place.formatted_address);
-                        $('#rv').val(place.rating);
-                        $("#placerating").rateYo("rating", place.rating);
-                        $("#placerating").rateYo("option", "readOnly", true);
+                        if (place.rating != null)
+                        {
+                            alert("here");
+                            $('#rv').val(place.rating);
+                            $("#placerating").rateYo("rating", place.rating);
+                            $("#placerating").rateYo("option", "readOnly", true);
+                        }
+                        else
+                        {
+                            $("#placerating").rateYo("rating", "0");
+                            $("#placerating").rateYo("option", "readOnly", true);
+                        }
+                    }
+                    else
+                    {
+                        alert("error");
                     }
                 }
         }

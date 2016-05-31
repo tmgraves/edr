@@ -453,3 +453,13 @@ facebookvideoimage img
 .centerform > div > div{
     float: none;
 }
+
+.bg-class{
+    background-color: #65AE25;
+    color: #fff;
+}
+
+.bg-social{
+    background-color : #006A90;
+    color: #fff;
+}

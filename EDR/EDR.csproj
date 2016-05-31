@@ -457,6 +457,7 @@
     <Content Include="Content\images\MapMarker.png" />
     <Content Include="Content\images\MissingImage.jpg" />
     <Content Include="Content\images\MissingImageThumbnail.jpg" />
+    <Content Include="Content\images\NoImage.png" />
     <Content Include="Content\images\NoImageSmall.png" />
     <Content Include="Content\images\NoPicThumb.gif" />
     <Content Include="Content\images\NoPicTiny.png" />
