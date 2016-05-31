@@ -20,7 +20,7 @@ namespace EDR.Models.ViewModels
         public Address SearchAddress { get; set; }
         public string Location { get; set; }
         [Display(Name = "Skill Level:")]
-        public int? SkillLevel { get; set; }
+        public int[] SkillLevel { get; set; }
         public DayOfWeek[] Days { get; set; }
 
         //  Map Settings

@@ -32,6 +32,20 @@
                     @Html.TextBoxFor(m => m.Style, new { placeholder = "Dance Style", @class = "form-control stylesearch" })
                 </div>
                 <div class="form-group">
+                    @Html.ListBoxFor(m => m.Days,
+                                        (Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>().Select(enu => new SelectListItem() { Text = enu.ToString(), Value = enu.ToString() })).ToList(), new { multiple = "multiple", @class = "form-control" })
+                </div>
+                @*<select id="Days" name="Days" multiple="multiple">
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                    <option value="Sunday">Sunday</option>
+                </select>*@
+
+                @*<div class="form-group">
                     <a href="#days" class="toggle btn btn-default">Day of Week <span class="caret"></span></a>
                     <div id="daysdiv" class="well text-left" style="display: none;">
                         @Html.CheckBoxListFor(model => model.Days,
@@ -41,7 +55,7 @@
                                                     model => (Model.Days != null ? (Model.Days.Select(d => new SelectListItem() { Text = d.ToString(), Value = d.ToString() })) : null),
                                                     new MvcCheckBoxList.Model.HtmlListInfo(MvcCheckBoxList.Model.HtmlTag.table, 1, new { @class = "checkboxlist text-warning" }, MvcCheckBoxList.Model.TextLayout.Default))
                     </div>
-                </div>
+                </div>*@
                 <div class="form-group">
                     <input type="submit" value="Search Socials" class="btn btn-warning" />
                 </div>
@@ -66,6 +80,8 @@
 <script src="../../Scripts/jquery.geocomplete.js"></script>
 <link rel="stylesheet" href="~/Content/jquery.rateyo.css" />
 <script src="~/Scripts/jquery.rateyo.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="~/Content/bootstrap-multiselect.css" type="text/css" />
 
 <script>
     //  Global Map Variables
@@ -151,7 +167,15 @@
         });
     });
 
-
+    $(function () {
+        $('#Days').multiselect({
+            nonSelectedText: 'Day of Week',
+            buttonClass: 'multiselectbutton form-control',
+            buttonText: function(options, select) {
+                return 'Day of Week';
+            }
+        });
+    });
 </script>
 
 <script>

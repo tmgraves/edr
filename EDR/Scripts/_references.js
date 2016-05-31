@@ -3,6 +3,7 @@
 /// <reference path="../client scripts/mvcfoolproofjqueryvalidation.min.js" />
 /// <reference path="../client scripts/mvcfoolproofvalidation.min.js" />
 /// <reference path="bootstrap.js" />
+/// <reference path="bootstrap-multiselect.js" />
 /// <reference path="bootstrap-toggle.js" />
 /// <reference path="cropper.js" />
 /// <reference path="daypilot/daypilot-all.min.js" />

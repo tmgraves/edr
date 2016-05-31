@@ -261,7 +261,7 @@ namespace EDR.Controllers
             }
             if (model.SkillLevel != null)
             {
-                model.Classes = model.Classes.Where(x => x.SkillLevel == model.SkillLevel);
+                model.Classes = model.Classes.Where(x => model.SkillLevel.Contains(x.SkillLevel));
             }
             if (model.Days != null)
             {

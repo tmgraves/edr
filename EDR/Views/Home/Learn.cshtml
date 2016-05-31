@@ -38,18 +38,36 @@
                     @Html.TextBoxFor(m => m.Teacher, new { placeholder = "Teacher", @class = "form-control teachersearch" })
                 </div>
                 <div class="form-group">
-                    @Html.DropDownListFor(m => m.SkillLevel, new SelectList(new List<int> { 1, 2, 3, 4, 5 }), "Skill Level", new { @class = "form-control text-center" })
+                    @*@Html.DropDownListFor(m => m.SkillLevel, new SelectList(new List<int> { 1, 2, 3, 4, 5 }), "Skill Level", new { @class = "form-control text-center" })*@
+                    @Html.ListBoxFor(m => m.SkillLevel,
+                                        new SelectList(new List<SelectListItem> {
+                                            new SelectListItem { Text = "Beginner", Value = "1" },
+                                            new SelectListItem { Text = "Beginner/Intermediate", Value = "2" },
+                                            new SelectListItem { Text = "Intermediate", Value = "3" },
+                                            new SelectListItem { Text = "Intermediate/Advanced", Value = "4" },
+                                            new SelectListItem { Text = "Advanced", Value = "5" },
+                                        }, "Value", "Text"), new { multiple = "multiple", @class = "form-control" })
+
+                    @*<select id="SkillLevel" name="SkillLevel" multiple="multiple">
+                        <option value="1">Beginner</option>
+                        <option value="2">Beginner/Intermediate</option>
+                        <option value="3">Intermediate</option>
+                        <option value="4">Intermediate/Advanced</option>
+                        <option value="5">Advanced</option>
+                    </select>*@
                 </div>
                 <div class="form-group">
-                    <a href="#days" class="toggle btn btn-default">Day of Week <span class="caret"></span></a>
-                    <div id="daysdiv" class="well text-left" style="display: none;">
-                        @Html.CheckBoxListFor(model => model.Days,
-                                                    model => (Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>().Select(enu => new SelectListItem() { Text = enu.ToString(), Value = enu.ToString() })).ToList(),
-                                                    item => item.Value,
-                                                    item => item.Text,
-                                                    model => (Model.Days != null ? (Model.Days.Select(d => new SelectListItem() { Text = d.ToString(), Value = d.ToString() })) : null),
-                                                    new MvcCheckBoxList.Model.HtmlListInfo(MvcCheckBoxList.Model.HtmlTag.table, 1, new { @class = "checkboxlist text-warning" }, MvcCheckBoxList.Model.TextLayout.Default))
-                    </div>
+                    @Html.ListBoxFor(m => m.Days,
+                                        (Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>().Select(enu => new SelectListItem() { Text = enu.ToString(), Value = enu.ToString() })).ToList(), new { multiple = "multiple", @class = "form-control" })
+                    @*<select id="Days" name="Days" multiple="multiple">
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                        <option value="Sunday">Sunday</option>
+                    </select>*@
                 </div>
                 <div class="form-group">
                     <input type="submit" value="Search Classes" class="btn btn-warning" />
@@ -75,6 +93,8 @@
     <script src="../../Scripts/jquery.geocomplete.js"></script>
     <link rel="stylesheet" href="~/Content/jquery.rateyo.css" />
     <script src="~/Scripts/jquery.rateyo.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap-multiselect.js"></script>
+<link rel="stylesheet" href="~/Content/bootstrap-multiselect.css" type="text/css" />
 
     @*<script type="text/javascript">
             $('#Style').autocomplete({
@@ -342,6 +362,23 @@
                 var t = $(this);
                 $(this).rateYo("option", "rating", t.parent('div').find('.ratingval').prop('value'));
                 $(this).rateYo("option", "readOnly", true);
+            }
+        });
+    });
+
+    $(function () {
+        $('#Days').multiselect({
+            nonSelectedText: 'Day of Week',
+            buttonClass: 'multiselectbutton form-control',
+            buttonText: function(options, select) {
+                return 'Day of Week';
+            }
+        });
+        $('#SkillLevel').multiselect({
+            nonSelectedText: 'Skill Level',
+            buttonClass: 'multiselectbutton form-control',
+            buttonText: function(options, select) {
+                return 'Skill Level';
             }
         });
     });

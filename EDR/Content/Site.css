@@ -463,3 +463,7 @@ facebookvideoimage img
     background-color : #006A90;
     color: #fff;
 }
+
+.multiselectbutton{
+    font-style: italic;
+}
