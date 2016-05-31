@@ -368,16 +368,27 @@
         $('.end').timepicker('setTime', new Date($('.timeelement.endtime').val()));
     });
 
-    $('.timepicker').change(function () {
-        var start = $('.timeelement.begintime');
-        var end = $('.timeelement.endtime');
-
-        var time = new Date();
-        var startdt = new Date(time.getMonth().toString() + "/" + time.getDate().toString() + "/" + time.getFullYear().toString() + " " + $('.timepicker.start').val());
-        var enddt = new Date(time.getMonth().toString() + "/" + time.getDate().toString() + "/" + time.getFullYear().toString() + " " + $('.timepicker.end').val());
-        start.prop('value', startdt.toLocaleDateString() + " " + startdt.toLocaleTimeString());
-        end.prop('value', enddt.toLocaleDateString() + " " + enddt.toLocaleTimeString());
+    function SetDates() {
+        var start = new Date($('#Event_StartDate').val());
+        var end = new Date($('#Event_EndDate').val());
+        var startdt = new Date((start.getUTCMonth() + 1).toString() + "/" + start.getUTCDate().toString() + "/" + start.getUTCFullYear().toString() + " " + $('.timepicker.start').val());
+        var enddt = new Date((end.getUTCMonth() + 1).toString() + "/" + end.getUTCDate().toString() + "/" + end.getUTCFullYear().toString() + " " + $('.timepicker.end').val());
+        $('.timeelement.begintime').prop('value', startdt.toLocaleDateString() + " " + startdt.toLocaleTimeString());
+        $('.timeelement.endtime').prop('value', enddt.toLocaleDateString() + " " + enddt.toLocaleTimeString());
         var val = $('#createform.main').valid();
+    }
+
+
+    $('.timepicker').change(function () {
+        SetDates();
+    });
+
+    $('#Event_StartDate').change(function () {
+        SetDates();
+    });
+
+    $('#Event_EndDate').change(function () {
+        SetDates();
     });
 
     $('.stylesearch').autocomplete({

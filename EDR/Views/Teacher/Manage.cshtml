@@ -216,9 +216,9 @@
                 </div>
             </div>
         </div>
-        <div class="panel panel-info">
+        <div class="panel panel-info buttoncontainer">
             <h4 class="col-lg-6 col-md-6 col-sm-6 col-xs-6">My Schools</h4>
-            @Html.ActionLink("Add School", "Create", "School", new { role = EDR.Enums.RoleName.Teacher }, new { @class = "btn btn-text" })
+            @Html.ActionLink("Add School", "Create", "School", new { role = EDR.Enums.RoleName.Teacher }, new { @class = "btn btn-warning actionbutton" })
             <div class="panel-body">
                 <div class="row">
                 </div>
@@ -288,10 +288,10 @@
         </div>
     </div>
     <div class="col-lg-6 col-md-6">
-        <div class="panel panel-default">
+        <div class="panel panel-default buttoncontainer">
             <div class="panel-body ">
                 <h3>Classes</h3>
-                @Html.ActionLink("Create Class", "Create", "Event", new { eventType = EDR.Enums.EventType.Class }, null)
+                @Html.ActionLink("Create Class", "Create", "Event", new { eventType = EDR.Enums.EventType.Class }, new { @class = "btn btn-warning actionbutton" } )
                 <table class="table">
                     <thead>
                         <tr>

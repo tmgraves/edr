@@ -153,7 +153,7 @@
                                     @Html.LabelFor(model => model.Website, htmlAttributes: new { @class = "control-label col-md-2" })
                                 </dt>
                                 <dd>
-                                    @Html.EditorFor(model => model.Website, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.EditorFor(model => model.Website, new { htmlAttributes = new { @class = "form-control", @placeholder = "e.g. https://www.google.com" } })
                                     @Html.ValidationMessageFor(model => model.Website, "", new { @class = "text-danger" })
                                 </dd>
                             </dl>
@@ -166,9 +166,9 @@
 
     <div class="col-lg-6 col-md-6">
         <div class="panel panel-default">
-            <div class="panel-body ">
+            <div class="panel-body buttoncontainer">
                 <h3>Socials</h3>
-                @Html.ActionLink("Create Social", "Create", "Event", new { eventType = EDR.Enums.EventType.Social, role = EDR.Enums.RoleName.Promoter }, null)
+                @Html.ActionLink("Create Social", "Create", "Event", new { eventType = EDR.Enums.EventType.Social, role = EDR.Enums.RoleName.Promoter }, new { @class = "btn btn-warning actionbutton" })
                 <table class="table">
                     <thead>
                         <tr>
@@ -223,6 +223,21 @@
         $('#saveform.main').submit(function () {
             var valid = $('#saveform.main').valid();
         });
+    });
+    $('#Facebook').change(function () {
+        if ($(this).val().length > 0) {
+            if ($(this).val().toString().indexOf("http") != 0) {
+                $(this).val("https://" + $(this).val());
+            }
+        }
+    });
+    $('#Website').change(function () {
+        if ($(this).val().length > 0)
+        {
+            if ($(this).val().toString().indexOf("http") != 0) {
+                $(this).val("http://" + $(this).val());
+            }
+        }
     });
     </script>
 }

@@ -6,6 +6,12 @@
     ViewBag.Title = Model.Name + " at Eat.Dance.Repeat.";
 }
 
+<style>
+    .buttonoverlay_container{
+        height: 100% !important;
+    }
+</style>
+
 <ol class="breadcrumb">
     <li>@Html.ActionLink("All Styles", "Explore", "Home")</li>
     <li class="active">@Model.Name</li>
@@ -67,7 +73,8 @@
                 foreach (var video in Model.Videos)
                 {
                         <div class="thumbnail col-lg-6 col-md-6 col-sm-12 col-xs-12" style="height: 200px;">
-                            @Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new Video() { PhotoUrl = video.PhotoUrl, VideoUrl = video.VideoUrl, Title = video.Title, PublishDate = video.PublishDate })
+                            @Html.DisplayFor(m => video, "VideoPlayer")
+                            @*@Html.Partial("~/Views/Shared/_VideoPlayerPartial.cshtml", new Video() { PhotoUrl = video.PhotoUrl, VideoUrl = video.VideoUrl, Title = video.Title, PublishDate = video.PublishDate })*@
                         </div>
                     }
                 }
@@ -91,7 +98,7 @@
     <script src="~/Scripts/readmore.js"></script>
 
     <script>
-        function LoadClasses() {
+        @*function LoadClasses() {
             $.get('@Url.Action("GetClassesPartial", "DanceStyle")', { 'id': '@Model.Id' }, function (data) {
                 $("#classes").empty();
                 $("#classes").html(data);
@@ -104,7 +111,7 @@
                 $("#socials").html(data);
                 BuildRatingStars();
             });
-        }
+        }*@
         function LoadTeachers() {
             $.get('@Url.Action("GetTeachersPartial", "DanceStyle")', { 'id': '@Model.Id' }, function (data) {
                 $("#teachers").empty();
@@ -125,8 +132,8 @@
         }
 
 $(document).ready(function () {
-        LoadClasses();
-        LoadSocials();
+        //LoadClasses();
+        //LoadSocials();
         LoadTeachers();
         LoadSchools();
         LoadTeams();

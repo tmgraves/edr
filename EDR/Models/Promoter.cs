@@ -20,7 +20,7 @@ namespace EDR.Models
         [RegularExpression("http[s]?://(www.facebook.com)/?[a-zA-Z0-9/\\-\\.]*", ErrorMessage = "Please enter a valid facebook page.")]
         public string Facebook { get; set; }
         [Display(Name = "Owner Website")]
-        [Url(ErrorMessage = "Please enter a valid webiste address")]
+        [Url(ErrorMessage = "Enter a valid website(e.g. https://www.google.com)")]
         public string Website { get; set; }
         public bool? Approved { get; set; }
         public DateTime? ApproveDate { get; set; }

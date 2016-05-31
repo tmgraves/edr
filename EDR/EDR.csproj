@@ -857,6 +857,7 @@
     <Content Include="Views\Shared\DisplayTemplates\Promoter.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\TeamLinks.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\SchoolLinks.cshtml" />
+    <Content Include="Views\Shared\_VideoPlayerPartial.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

@@ -299,10 +299,10 @@ namespace EDR.Models
         public decimal Price { get; set; }
         public int? SchoolId { get; set; }
         [ForeignKey("SchoolId")]
-        public School School { get; set; }
+        public virtual School School { get; set; }
         public int? EventId { get; set; }
         [ForeignKey("EventId")]
-        public Event Event { get; set; }
+        public virtual Event Event { get; set; }
         //public ICollection<EventTicket> EventTickets { get; set; }
         [Display(Name = "Purchase Limit")]
         public int? Limit { get; set; }
