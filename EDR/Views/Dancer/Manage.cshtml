@@ -99,14 +99,6 @@
                         </dl>
                         <dl class="dl-horizontal">
                             <dt>
-                                @Html.LabelFor(model => model.Dancer.YouTubeUsername, htmlAttributes: new { @class = "control-label col-md-2" })
-                            </dt>
-                            <dd>
-                                @Html.DisplayFor(model => model.Dancer.YouTubeUsername)
-                            </dd>
-                        </dl>
-                        <dl class="dl-horizontal">
-                            <dt>
                                 @Html.LabelFor(model => model.Dancer.InstagramUsername, htmlAttributes: new { @class = "control-label col-md-2" })
                             </dt>
                             <dd>
@@ -143,14 +135,22 @@
                         </dl>
                         <dl class="dl-horizontal">
                             <dt>
-                                @Html.Label("Spotify Playlist Uri", htmlAttributes: new { @class = "control-label col-md-2" })
+                                @Html.Label("Spotify Playlist", htmlAttributes: new { @class = "control-label col-md-2" })
                             </dt>
                             <dd>
-                                <a class="btn btn-primary" href=@Url.Action("ChangeSpotifyPlaylist", "Dancer", new { username = Model.Dancer.UserName }) title="Add Your Playlist">
-                                    <img class="img-rounded" style="height: 20px;" src="@Url.Content("~/Content/images/spotify.png")" />
-                                    Change Playlist
-                                </a>
-                                @*<div class="item-short">@Model.Dancer.SpotifyUri</div>*@
+                                @if (Model.Dancer.SpotifyId != null)
+                                {
+                                    <iframe src="https://embed.spotify.com/?uri=@Model.Dancer.SpotifyUri" width="250" height="100" frameborder="0" allowtransparency="true"></iframe>
+                                    @*<div class="item-short">@Model.Dancer.SpotifyUri</div>*@
+                                }
+                            </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.LabelFor(model => model.Dancer.YouTubeUsername, htmlAttributes: new { @class = "control-label col-md-2" })
+                            </dt>
+                            <dd>
+                                @Html.DisplayFor(model => model.Dancer.YouTubeUsername)
                             </dd>
                         </dl>
                     </div>
@@ -241,15 +241,6 @@
                         </dl>
                         <dl class="dl-horizontal">
                             <dt>
-                                @Html.LabelFor(model => model.Dancer.YouTubeUsername, htmlAttributes: new { @class = "control-label col-md-2" })
-                            </dt>
-                            <dd>
-                                @Html.EditorFor(model => model.Dancer.YouTubeUsername, new { htmlAttributes = new { @class = "form-control" } })
-                                @Html.ValidationMessageFor(model => model.Dancer.YouTubeUsername, "", new { @class = "text-danger" })
-                            </dd>
-                        </dl>
-                        <dl class="dl-horizontal">
-                            <dt>
                                 @Html.LabelFor(model => model.Dancer.InstagramUsername, htmlAttributes: new { @class = "control-label col-md-2" })
                             </dt>
                             <dd>
@@ -269,9 +260,29 @@
                                 @Html.Label("Spotify Playlist Uri", htmlAttributes: new { @class = "control-label col-md-2" })
                             </dt>
                             <dd>
-                                <div class="item-short">@Model.Dancer.SpotifyUri</div>
+                                @if (Model.Dancer.SpotifyToken != null)
+                                {
+                                    @Html.DropDownListFor(m => m.Dancer.SpotifyUri, Model.SpotifyPlaylists.Select(p => new SelectListItem() { Text = p.name, Value = p.uri }), "", new { @class = "form-control" })
+                                }
+                                else
+                                {
+                                    <a class="btn btn-primary btn-sm" href=@Url.Action("AddSpotify", "SocialMedia", null) title="Link to your Spotify">
+                                        <img class="img-rounded" style="height: 30px;" src="@Url.Content("~/Content/images/spotify.png")" />
+                                        Add Spotify
+                                    </a>
+                                }
+                                @*<div class="item-short">@Model.Dancer.SpotifyUri</div>*@
                                 @*@Html.EditorFor(model => model.Dancer.SpotifyUri, new { htmlAttributes = new { @class = "form-control" } })
                                 @Html.ValidationMessageFor(model => model.Dancer.SpotifyUri, "", new { @class = "text-danger" })*@
+                            </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.LabelFor(model => model.Dancer.YouTubeUsername, htmlAttributes: new { @class = "control-label col-md-2" })
+                            </dt>
+                            <dd>
+                                @Html.EditorFor(model => model.Dancer.YouTubeUsername, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Dancer.YouTubeUsername, "", new { @class = "text-danger" })
                             </dd>
                         </dl>
                     </div>

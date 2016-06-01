@@ -8,6 +8,7 @@ using System.Net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Configuration;
+using SpotifyAPI;
 
 namespace EDR.Utilities
 {
@@ -27,6 +28,11 @@ namespace EDR.Utilities
             catch (WebException ex)
             {
                 token = GetAccessToken(token.Refresh_Token, SpotifyGrantType.refresh_token);
+
+                if (token == null)
+                {
+                    return null;
+                }
             }
             
             var result = client.DownloadString("https://api.spotify.com/v1/users/" + spotifyid + "/playlists?access_token=" + token.Access_Token);
@@ -51,30 +57,37 @@ namespace EDR.Utilities
 
             NameValueCollection parameters = new NameValueCollection();
 
-            if (grant_type == SpotifyGrantType.authorization_code)
+            try
             {
-                parameters.Add("client_id", client_id);
-                parameters.Add("client_secret", client_secret);
-                parameters.Add("grant_type", grant_type.ToString());
-                parameters.Add("redirect_uri", redirect_uri);
-                parameters.Add("code", code);
+                if (grant_type == SpotifyGrantType.authorization_code)
+                {
+                    parameters.Add("client_id", client_id);
+                    parameters.Add("client_secret", client_secret);
+                    parameters.Add("grant_type", grant_type.ToString());
+                    parameters.Add("redirect_uri", redirect_uri);
+                    parameters.Add("code", code);
+                }
+                else
+                {
+                    parameters.Add("client_id", client_id);
+                    parameters.Add("client_secret", client_secret);
+                    parameters.Add("grant_type", grant_type.ToString());
+                    parameters.Add("redirect_uri", redirect_uri);
+                    parameters.Add("refresh_token", code);
+                }
+
+                WebClient client = new WebClient();
+                var result = client.UploadValues("https://accounts.spotify.com/api/token", "POST", parameters);
+                var response = System.Text.Encoding.Default.GetString(result);
+                // deserializing nested JSON string to object  
+                var jsToken = JsonConvert.DeserializeObject<SpotifyAccessToken>(response);
+
+                return jsToken;
             }
-            else
+            catch(Exception ex)
             {
-                parameters.Add("client_id", client_id);
-                parameters.Add("client_secret", client_secret);
-                parameters.Add("grant_type", grant_type.ToString());
-                parameters.Add("redirect_uri", redirect_uri);
-                parameters.Add("refresh_token", code);
+                return new SpotifyAccessToken();
             }
-
-            WebClient client = new WebClient();
-            var result = client.UploadValues("https://accounts.spotify.com/api/token", "POST", parameters);
-            var response = System.Text.Encoding.Default.GetString(result);
-            // deserializing nested JSON string to object  
-            var jsToken = JsonConvert.DeserializeObject<SpotifyAccessToken>(response);
-
-            return jsToken;
         }
     }
 }

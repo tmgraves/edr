@@ -66,6 +66,7 @@ namespace EDR.Models.ViewModels
         public ApplicationUser Dancer { get; set; }
         public int? NewStyleId { get; set; }
         public IEnumerable<FacebookPhoto> FacebookPictures { get; set; }
+        public List<SpotifyPlaylist> SpotifyPlaylists { get; set; }
     }
 
     public class DancerStylesViewModel

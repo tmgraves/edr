@@ -30,6 +30,7 @@ using EDR.Enums;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using System.Configuration;
 
 namespace EDR.Controllers
 {
@@ -53,6 +54,28 @@ namespace EDR.Controllers
             {
                 model.FacebookPictures = FacebookHelper.GetPhotos(model.Dancer.FacebookToken);
             }
+
+            //  Get Spotify Token for user
+            if (model.Dancer.SpotifyRefreshToken != null)
+            {
+                var accesstoken = SpotifyHelper.GetAccessToken(model.Dancer.SpotifyRefreshToken, SpotifyGrantType.refresh_token);
+                if (accesstoken.Access_Token != null)
+                {
+                    model.Dancer.SpotifyToken = accesstoken.Access_Token;
+                    model.Dancer.SpotifyRefreshToken = accesstoken.Refresh_Token;
+                }
+                else
+                {
+                    model.Dancer.SpotifyToken = null;
+                }
+            }
+            if (model.Dancer.SpotifyToken != null)
+            {
+                var token = new SpotifyAccessToken() { Access_Token = model.Dancer.SpotifyToken, Refresh_Token = model.Dancer.SpotifyRefreshToken };
+                model.SpotifyPlaylists = SpotifyHelper.GetPlaylists(ref token, model.Dancer.SpotifyId);
+            }
+            //  Get Spotify Token for user
+
 
             return View(model);
         }
@@ -680,15 +703,27 @@ namespace EDR.Controllers
             //  Return Spotify Playlists
             if (viewModel.Dancer.SpotifyId != null)
             {
-                var token = new SpotifyAccessToken() { Access_Token = viewModel.Dancer.SpotifyToken, Refresh_Token = viewModel.Dancer.SpotifyRefreshToken };
-                Session["SpotifyPlaylists"] = SpotifyHelper.GetPlaylists(ref token, viewModel.Dancer.SpotifyId);
-                viewModel.SpotifyPlaylists = new List<SpotifyPlaylist>();
-                viewModel.SpotifyPlaylists = (List<SpotifyPlaylist>)Session["SpotifyPlaylists"];
+                //  Get token
+                var accesstoken = SpotifyHelper.GetAccessToken(viewModel.Dancer.SpotifyRefreshToken, SpotifyGrantType.refresh_token);
 
-                if (token.Refresh_Token == null)
+                if (accesstoken.Access_Token == null)
                 {
-                    dancer.SpotifyToken = token.Access_Token;
-                    DataContext.SaveChanges();
+                    var client_id = ConfigurationManager.AppSettings["SpotifyClientId"];
+                    var redirect_uri = ConfigurationManager.AppSettings["SpotifyRedirectUri"];
+                    return Redirect("https://accounts.spotify.com/en/authorize/?client_id=" + client_id + "&redirect_uri=" + redirect_uri + "&response_type=code&scope=playlist-read-private%20playlist-modify-public");
+                }
+                else
+                {
+                    var token = new SpotifyAccessToken() { Access_Token = accesstoken.Access_Token, Refresh_Token = viewModel.Dancer.SpotifyRefreshToken };
+                    Session["SpotifyPlaylists"] = SpotifyHelper.GetPlaylists(ref token, viewModel.Dancer.SpotifyId);
+                    viewModel.SpotifyPlaylists = new List<SpotifyPlaylist>();
+                    viewModel.SpotifyPlaylists = (List<SpotifyPlaylist>)Session["SpotifyPlaylists"];
+
+                    if (token.Refresh_Token == null)
+                    {
+                        dancer.SpotifyToken = token.Access_Token;
+                        DataContext.SaveChanges();
+                    }
                 }
             }
             //  Return Spotify Playlists
