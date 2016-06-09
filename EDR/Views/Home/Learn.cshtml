@@ -46,7 +46,7 @@
                                             new SelectListItem { Text = "Intermediate", Value = "3" },
                                             new SelectListItem { Text = "Intermediate/Advanced", Value = "4" },
                                             new SelectListItem { Text = "Advanced", Value = "5" },
-                                        }, "Value", "Text"), new { multiple = "multiple", @class = "form-control" })
+                                        }, "Value", "Text"), new { multiple = "multiple", @class = "form-control", @style = "display: none;" })
 
                     @*<select id="SkillLevel" name="SkillLevel" multiple="multiple">
                         <option value="1">Beginner</option>
@@ -58,7 +58,7 @@
                 </div>
                 <div class="form-group">
                     @Html.ListBoxFor(m => m.Days,
-                                        (Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>().Select(enu => new SelectListItem() { Text = enu.ToString(), Value = enu.ToString() })).ToList(), new { multiple = "multiple", @class = "form-control" })
+                                        (Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>().Select(enu => new SelectListItem() { Text = enu.ToString(), Value = enu.ToString() })).ToList(), new { multiple = "multiple", @class = "form-control", @style = "display: none;" })
                     @*<select id="Days" name="Days" multiple="multiple">
                         <option value="Monday">Monday</option>
                         <option value="Tuesday">Tuesday</option>
@@ -242,6 +242,25 @@
         }
     });*@
 
+    $(function () {
+        $('#Days').multiselect({
+            nonSelectedText: 'Day of Week',
+            buttonClass: 'multiselectbutton form-control',
+            buttonText: function(options, select) {
+                return 'Day of Week';
+            }
+        });
+        $('#SkillLevel').multiselect({
+            nonSelectedText: 'Skill Level',
+            buttonClass: 'multiselectbutton form-control',
+            buttonText: function(options, select) {
+                return 'Skill Level';
+            }
+        });
+        $('#Days').show();
+        $('#SkillLevel').show();
+    });
+
     //  Global Map Variables
     var markers = [];
     var infowindows = [];
@@ -362,23 +381,6 @@
                 var t = $(this);
                 $(this).rateYo("option", "rating", t.parent('div').find('.ratingval').prop('value'));
                 $(this).rateYo("option", "readOnly", true);
-            }
-        });
-    });
-
-    $(function () {
-        $('#Days').multiselect({
-            nonSelectedText: 'Day of Week',
-            buttonClass: 'multiselectbutton form-control',
-            buttonText: function(options, select) {
-                return 'Day of Week';
-            }
-        });
-        $('#SkillLevel').multiselect({
-            nonSelectedText: 'Skill Level',
-            buttonClass: 'multiselectbutton form-control',
-            buttonText: function(options, select) {
-                return 'Skill Level';
             }
         });
     });

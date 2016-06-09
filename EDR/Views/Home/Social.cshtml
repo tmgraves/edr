@@ -33,7 +33,7 @@
                 </div>
                 <div class="form-group">
                     @Html.ListBoxFor(m => m.Days,
-                                        (Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>().Select(enu => new SelectListItem() { Text = enu.ToString(), Value = enu.ToString() })).ToList(), new { multiple = "multiple", @class = "form-control" })
+                                        (Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>().Select(enu => new SelectListItem() { Text = enu.ToString(), Value = enu.ToString() })).ToList(), new { multiple = "multiple", @class = "form-control", @style = "display: none;" })
                 </div>
                 @*<select id="Days" name="Days" multiple="multiple">
                     <option value="Monday">Monday</option>
@@ -84,6 +84,17 @@
 <link rel="stylesheet" href="~/Content/bootstrap-multiselect.css" type="text/css" />
 
 <script>
+    $(function () {
+        $('#Days').multiselect({
+            nonSelectedText: 'Day of Week',
+            buttonClass: 'multiselectbutton form-control',
+            buttonText: function(options, select) {
+                return 'Day of Week';
+            }
+        });
+        $('#Days').show();
+    });
+
     //  Global Map Variables
     var markers = [];
     var infowindows = [];
@@ -164,16 +175,6 @@
             });
             $( "#daysdiv" ).toggle( "fast", function() {
             });
-        });
-    });
-
-    $(function () {
-        $('#Days').multiselect({
-            nonSelectedText: 'Day of Week',
-            buttonClass: 'multiselectbutton form-control',
-            buttonText: function(options, select) {
-                return 'Day of Week';
-            }
         });
     });
 </script>
