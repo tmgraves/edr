@@ -143,61 +143,69 @@ namespace EDR.Controllers
         [HttpPost]
         public ActionResult BuyTicket(OrderViewModel model)
         {
-            if (ModelState.IsValid)
+            try
             {
-                var userid = User.Identity.GetUserId();
-                //  Create Order and Details
-                model.Order.EventInstanceId = model.EventInstanceId;
-                model.Order.UserId = userid;
-                if (model.Order.Id != 0)
+                if (ModelState.IsValid)
                 {
-                    DataContext.Entry(model.Order).State = EntityState.Modified;
-                    DataContext.SaveChanges();
-                    model.Order = DataContext.Orders.Include("OrderDetails.Ticket").Single(o => o.Id == model.Order.Id);
-                }
-                else
-                {
-                    DataContext.Orders.Add(model.Order);
-                    DataContext.SaveChanges();
-                    model.Order.OrderDetails = new List<OrderDetail>();
-                    var ticket = DataContext.Tickets.Single(t => t.Id == model.TicketId);
-                    model.Order.OrderDetails.Add(new OrderDetail() { Quantity = model.Quantity, TicketId = model.TicketId, UnitPrice = ticket.Price });
-                    DataContext.SaveChanges();
-                }
-                //  Create Order and Details
-
-                //  Post Transaction
-                if (PostTransaction(model).messages.resultCode == messageTypeEnum.Ok)
-                {
-                    //  Create User Ticket record
-                    var user = DataContext.Users.Single(u => u.Id == userid);
-                    var uticket = new UserTicket() { UserId = userid, TicketId = model.TicketId, Quantity = model.Quantity };
-                    DataContext.UserTickets.Add(uticket);
-                    DataContext.SaveChanges();
-                    //  Create User Ticket record
-
-                    //  Register User for Event
-                    if (model.EventInstance != null)
+                    var userid = User.Identity.GetUserId();
+                    //  Create Order and Details
+                    model.Order.EventInstanceId = model.EventInstanceId;
+                    model.Order.UserId = userid;
+                    if (model.Order.Id != 0)
                     {
-                        DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = (int)model.EventInstanceId, UserTicketId = uticket.Id });
+                        DataContext.Entry(model.Order).State = EntityState.Modified;
+                        DataContext.SaveChanges();
+                        model.Order = DataContext.Orders.Include("OrderDetails.Ticket").Single(o => o.Id == model.Order.Id);
+                    }
+                    else
+                    {
+                        DataContext.Orders.Add(model.Order);
+                        DataContext.SaveChanges();
+                        model.Order.OrderDetails = new List<OrderDetail>();
+                        var ticket = DataContext.Tickets.Single(t => t.Id == model.TicketId);
+                        model.Order.OrderDetails.Add(new OrderDetail() { Quantity = model.Quantity, TicketId = model.TicketId, UnitPrice = ticket.Price });
                         DataContext.SaveChanges();
                     }
-                    //  Register User for Event
-                    return RedirectToAction("Confirmation", "Store", new { id = model.Order.Id });
+                    //  Create Order and Details
+
+                    //  Post Transaction
+                    if (PostTransaction(model).messages.resultCode == messageTypeEnum.Ok)
+                    {
+                        //  Create User Ticket record
+                        var user = DataContext.Users.Single(u => u.Id == userid);
+                        var uticket = new UserTicket() { UserId = userid, TicketId = model.TicketId, Quantity = model.Quantity };
+                        DataContext.UserTickets.Add(uticket);
+                        DataContext.SaveChanges();
+                        //  Create User Ticket record
+
+                        //  Register User for Event
+                        if (model.EventInstance != null)
+                        {
+                            DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = (int)model.EventInstanceId, UserTicketId = uticket.Id });
+                            DataContext.SaveChanges();
+                        }
+                        //  Register User for Event
+                        return RedirectToAction("Confirmation", "Store", new { id = model.Order.Id });
+                    }
+                    else
+                    {
+                        DataContext.SaveChanges();
+                        LoadOrderModel(model);
+                        return View(model);
+                    }
+                    //  Post Transaction
+
                 }
                 else
                 {
-                    DataContext.SaveChanges();
                     LoadOrderModel(model);
                     return View(model);
                 }
-                //  Post Transaction
-
             }
-            else
+            catch(Exception ex)
             {
-                LoadOrderModel(model);
-                return View(model);
+                ViewBag.errorMessage = ex.Message;
+                return View("Error");
             }
         }
 

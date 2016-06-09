@@ -720,6 +720,8 @@
     <Content Include="Scripts\jquery-2.1.1.min.map" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery-listnav.js" />
+    <Content Include="Scripts\jquery-qrcode-0.14.0.js" />
+    <Content Include="Scripts\jquery-qrcode-0.14.0.min.js" />
     <Content Include="Scripts\jquery-simple-pagination-plugin.js" />
     <Content Include="Scripts\jquery-ui.js" />
     <Content Include="Scripts\jquery-ui.min.js" />
