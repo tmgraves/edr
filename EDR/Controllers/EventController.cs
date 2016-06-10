@@ -140,15 +140,15 @@ namespace EDR.Controllers
         //    return View(model);
         //}
 
-        public ActionResult View(int id, EventType eventType)
+        public ActionResult View(int? id, EventType eventType)
         {
-            var userid = User.Identity.GetUserId();
-            if (id == null)
+            if (!id.HasValue)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return RedirectToAction("Learn", "Home", null);
             }
+            var userid = User.Identity.GetUserId();
 
-            var model = LoadEvent(id, eventType);
+            var model = LoadEvent((int)id, eventType);
             if (User.Identity.IsAuthenticated)
             {
                 model.Review = model.Event.Reviews.Where(r => r.Author.Id == userid).FirstOrDefault();
@@ -176,11 +176,21 @@ namespace EDR.Controllers
         }
 
         [Authorize(Roles = "Owner,Promoter,Teacher")]
-        public ActionResult Manage(int id, EventType eventType)
+        public ActionResult Manage(int? id, EventType eventType)
         {
+            if (!id.HasValue)
+            {
+                ViewBag.errorMessage = "Invalid Id";
+                return View("Error");
+            }
+
             var userid = User.Identity.GetUserId();
             var user = DataContext.Users.Single(u => u.Id == userid);
-            var model = new EventManageViewModel(DataContext.Events
+            var model = new EventManageViewModel();
+            if (eventType == EventType.Class)
+            {
+                model.Event =
+                    DataContext.Events.OfType<Class>()
                     .Include("Tickets.UserTickets.EventRegistrations")
                     .Include("EventInstances.EventRegistrations.User")
                     .Include("Pictures.PostedBy")
@@ -190,7 +200,24 @@ namespace EDR.Controllers
                     .Include("DanceStyles")
                     .Include("Place")
                     .Include("LinkedMedia")
-                    .Single(e => e.Id == id));
+                    .Single(e => e.Id == id);
+            }
+            else
+            {
+                model.Event =
+                DataContext.Events.OfType<Social>()
+                        .Include("Tickets.UserTickets.EventRegistrations")
+                        .Include("EventInstances.EventRegistrations.User")
+                        .Include("Pictures.PostedBy")
+                        .Include("Albums.PostedBy")
+                        .Include("Videos.Author")
+                        .Include("Playlists.Author")
+                        .Include("DanceStyles")
+                        .Include("Place")
+                        .Include("LinkedMedia")
+                        .Single(e => e.Id == id);
+            }
+
             model.NewPlace = new Place();
             model.NewPlace.PlaceType = PlaceType.OtherPlace;
 
@@ -934,22 +961,42 @@ namespace EDR.Controllers
             //})
             //.FirstOrDefault();
 
-            model.Event =
-            DataContext.Events.Where(x => x.Id == id)
-            .Include("Place")
-            .Include("DanceStyles")
-            .Include("Reviews")
-            .Include("EventMembers")
-            .Include("EventMembers.Member")
-            .Include("EventInstances")
-            .Include("EventInstances.EventRegistrations")
-            .Include("EventInstances.EventRegistrations.User")
-            .Include("EventInstances.EventRegistrations.UserTicket.Ticket")
-            .Include("Creator")
-            .Include("Tickets")
-            .Include("LinkedMedia")
-            .FirstOrDefault();
-
+            if(eventType == EventType.Class)
+            {
+                model.Event =
+                DataContext.Events.OfType<Class>().Where(x => x.Id == id)
+                .Include("Place")
+                .Include("DanceStyles")
+                .Include("Reviews")
+                .Include("EventMembers")
+                .Include("EventMembers.Member")
+                .Include("EventInstances")
+                .Include("EventInstances.EventRegistrations")
+                .Include("EventInstances.EventRegistrations.User")
+                .Include("EventInstances.EventRegistrations.UserTicket.Ticket")
+                .Include("Creator")
+                .Include("Tickets")
+                .Include("LinkedMedia")
+                .FirstOrDefault();
+            }
+            else
+            {
+                model.Event =
+                DataContext.Events.OfType<Social>().Where(x => x.Id == id)
+                .Include("Place")
+                .Include("DanceStyles")
+                .Include("Reviews")
+                .Include("EventMembers")
+                .Include("EventMembers.Member")
+                .Include("EventInstances")
+                .Include("EventInstances.EventRegistrations")
+                .Include("EventInstances.EventRegistrations.User")
+                .Include("EventInstances.EventRegistrations.UserTicket.Ticket")
+                .Include("Creator")
+                .Include("Tickets")
+                .Include("LinkedMedia")
+                .FirstOrDefault();
+            }
             ////  Get Tickets
             //if (model.Event.Tickets.Count() != 0)
             //{

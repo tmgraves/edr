@@ -60,7 +60,11 @@
                                 School:
                             </dt>
                             <dd>
-                                @Html.ActionLink("Go to School Page", "View", "School", new { id = Model.SchoolId }, new { @class = "btn btn-info" } )
+                                <a href="@Url.Action("View", "School", new { id = Model.SchoolId })">
+                                    <div class="item-short">
+                                        @(((EDR.Models.Class)Model.Event).School.Name)
+                                    </div>
+                                </a>
                             </dd>
                         </dl>
                     }

@@ -28,12 +28,18 @@ namespace EDR
             routes.MapRoute(
                 name: "SocialActionId",
                 url: "Social/{action}/{id}",
-                defaults: new { controller = "Event", action = "View", eventType = EDR.Enums.EventType.Social }
+                defaults: new { controller = "Event", action = "View", eventType = EDR.Enums.EventType.Social}
             );
             routes.MapRoute(
                 name: "SocialAction",
                 url: "Social/{action}",
                 defaults: new { controller = "Event", action = "View", eventType = EDR.Enums.EventType.Social }
+            );
+            routes.MapRoute(
+                name: "DanceStyleAction",
+                url: "DanceStyle/{action}/{styleName}",
+                defaults: new { controller = "DanceStyle", action = "List"},
+                namespaces: new[] { "EDR.Controllers" }
             );
 
             routes.MapRoute(

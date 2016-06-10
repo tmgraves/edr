@@ -155,6 +155,19 @@
                 </a>
             </div>
             <div style="border: 1px solid #ccc;">
+                @if (eventType == "Class")
+                {
+                    <div class="row" style="padding: 5px;">
+                        <div class="col-lg-12">
+                            <div class="col-lg-3">
+                                @Html.Label("School:")
+                            </div>
+                            <div class="col-lg-9">
+                                @Html.ActionLink(((Class)Model.Event).School.Name, "View", "School", new { id = ((Class)Model.Event).SchoolId }, null)
+                            </div>
+                        </div>
+                    </div>
+                }
                 <div class="row" style="padding: 5px;">
                     <div class="col-lg-12">
                         <div class="col-lg-3">

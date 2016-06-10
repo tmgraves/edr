@@ -302,7 +302,6 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\CheckoutController.cs" />
-    <Compile Include="Controllers\ClassController.cs" />
     <Compile Include="Controllers\ClassSeriesController.cs" />
     <Compile Include="Controllers\DanceStyleController.cs" />
     <Compile Include="Controllers\DayPilotController.cs" />

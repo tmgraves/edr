@@ -337,16 +337,18 @@
                         <tr>
                             <td class="text-left">
                                 <p>
-                                    <div class="item-short">
                                     @if (item.Ticket.EventId != null)
                                     {
-                                        @Html.ActionLink(item.Ticket.Event.Name, "View", "Event", new { id = item.Ticket.EventId, eventType = item.Ticket.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social }, null)
+                                        <a href="@Url.Action("View", "Event", new { id = item.Ticket.EventId, eventType = item.Ticket.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social })">
+                                            @item.Ticket.Event.Name
+                                        </a>
                                     }
                                     else
                                     {
-                                        @Html.ActionLink(item.Ticket.School.Name, "View", "School", new { id = item.Ticket.SchoolId }, null)
+                                        <a href="@Url.Action("View", "School", new { id = item.Ticket.SchoolId })">
+                                            @item.Ticket.School.Name
+                                        </a>
                                     }
-                                    </div>
                                 </p>
                                 @(String.Format("{0:N0}", item.Ticket.Quantity) + " tix for " + String.Format("{0:C}", item.Ticket.Price))
                             </td>

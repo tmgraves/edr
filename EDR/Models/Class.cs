@@ -16,7 +16,7 @@ namespace EDR.Models
         [Required]
         public int SchoolId { get; set; }
         [ForeignKey("SchoolId")]
-        public School School { get; set; }
+        public virtual School School { get; set; }
         public ICollection<Teacher> Teachers { get; set; }
         public ICollection<ClassTeacherInvitation> ClassTeacherInvitations { get; set; }
         public ICollection<Owner> Owners { get; set; }
