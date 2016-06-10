@@ -535,6 +535,7 @@
     <Content Include="Scripts\bootstrap-toggle.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\changepicture.js" />
     <Content Include="Scripts\cropper.js" />
     <Content Include="Scripts\DayPilot\daypilot-all.min.js" />
     <Content Include="Scripts\dhtmlxScheduler\dhtmlxscheduler.css" />
