@@ -467,3 +467,12 @@ facebookvideoimage img
 .multiselectbutton{
     font-style: italic;
 }
+
+.uploadimg {
+    max-width: 100%; /* This rule is very important, please do not ignore this! */
+}
+
+input[type="file"] {
+    display: none;
+}
+

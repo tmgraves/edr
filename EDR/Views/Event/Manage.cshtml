@@ -8,6 +8,12 @@
     var eventType = Model.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social;
 }
 
+<style>
+    img {
+        max-width: 100%; /* This rule is very important, please do not ignore this! */
+    }
+</style>
+
 <ol class="breadcrumb">
     @if (eventType == EDR.Enums.EventType.Class)
     {
@@ -47,41 +53,41 @@
                 <h3 class="picheader">Upload a New Picture</h3>
             </div>
             <div class="modal-body">
-                <div id="divPick" class="text-center">
+                <div class="divPick text-center">
                     <p>
-                        <button id="btnNewPicture" type="button" class="btn btn-primary">
+                        <button type="button" class="btn btn-primary newpicturebtn">
                             Upload New Picture
                         </button>
                     </p>
                     <p>
-                        <button id="btnPickFacebook" type="button" class="btn btn-warning">
+                        <button type="button" class="btn btn-warning facebookpicturebtn">
                             Choose a Facebook Picture
                         </button>
                     </p>
                 </div>
-                <div id="divOptions" style="display: none;">
+                <div class="divOptions" style="display: none;">
                     <div class="row text-center" style="padding: 5px;">
-                        <div id="divUploadPic" style="display: none;">
+                        <div class="divUploadPic" style="display: none;">
                             <label for="imgInp" class="btn btn-primary btn-lg">
                                 Choose File
                             </label>
-                            <input id="imgInp" type="file" accept="image/*" />
+                            <input id="imgInp" type="file" accept="image/*" class="uploadfile" />
                         </div>
-                        <div id="divFacebookPic" style="display: none;">
-                            <div id="facebookpics">
+                        <div class="divFacebookPic" style="display: none;">
+                            <div class="facebookpics">
                             </div>
                         </div>
                     </div>
-                    <div class="row" id="croppic">
+                    <div class="row" div="croppic">
                         <div>
-                            <img class="img-responsive" id="image" alt="">
+                            <img class="img-responsive cropimage" alt="">
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button id="btnupload" class="btn btn-danger" data-dismiss="modal" style="display: none;">Upload</button>
+                <button class="btn btn-danger btnupload" data-dismiss="modal" style="display: none;">Upload</button>
             </div>
         </div>
     </div>
@@ -98,8 +104,8 @@
                     </div>
                     <div>
                         <div class="buttoncontainer col-lg-6 nospace">
-                            <img style="max-width: 100%;" src="@Url.Content(Model.Event.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
-                            <button id="btnChangePicture" type="button" class="btn btn-info actionbutton" data-toggle="modal" data-target="#modalPic">
+                            <img class="targetpic" style="max-width: 100%;" src="@Url.Content(Model.Event.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
+                            <button type="button" class="btn btn-info actionbutton changepicbutton" data-toggle="modal" data-target="#modalPic">
                                 Change
                             </button>
                         </div>
@@ -843,6 +849,10 @@
     $.validator.setDefaults({
         ignore: ""
     })
+
+    uploadImageUrl = "../../Event/UploadImageAsync";
+    id = '@Model.Event.Id'; //  SchoolId
+        aspectratio = 16 / 9;
 
     //Reviews List
     function pageInstances() {

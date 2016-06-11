@@ -1,19 +1,29 @@
-﻿function loadImage(input) {
+﻿var uploadImageUrl; //  "../../School/UploadImageAsync"
+var id; //  SchoolId
+var imagesize = 4000000;
+var aspectratio = 10 / 10;
+
+function loadImage(input) {
     if (input.files && input.files[0]) {
-        if (input.files[0].size < 1000000)
+        if (input.files[0].size < imagesize)
         {
-            var reader = new FileReader();
+            try{
+                var reader = new FileReader();
 
-            reader.onload = function (e) {
-                $('#image').cropper({
-                    aspectRatio: 10 / 10,
-                    zoomable: false,
-                });
-                $("#image").cropper('replace', e.target.result);
-                $("#btnupload").show();
+                reader.onload = function (e) {
+                    $('.cropimage').cropper({
+                        aspectRatio: aspectratio,
+                        zoomable: false,
+                    });
+                    $(".cropimage").cropper('replace', e.target.result);
+                    $(".btnupload").show();
+                }
+
+                reader.readAsDataURL(input.files[0]);
             }
-
-            reader.readAsDataURL(input.files[0]);
+            catch (err) {
+                alert(err.message);
+            }
         }
         else
         {
@@ -22,27 +32,31 @@
     }
 }
 
-$("#imgInp").change(function () {
+$(".uploadfile").change(function () {
     loadImage(this);
-    $("#croppic").show();
+    $(".croppic").show();
 });
 
 function LoadFacebookPhotos() {
-        $.get('@Url.Action("GetFacebookPicturesPartial", "Dancer")', {}, function (data) {
-        $("#facebookpics").empty();
-        $("#facebookpics").html(data);
+    $.get('../../Dancer/GetFacebookPicturesPartial', {}, function (data) {
+        $(".facebookpics").empty();
+        $(".facebookpics").html(data);
     });
 }
 
 $(function () {
     LoadFacebookPhotos();
-    $('#btnupload').click(function () {
+    $('.btnupload').click(function () {
         try {
-            var imageData = $("#image").cropper("getCroppedCanvas").toDataURL('png', 1);
+            var imageData = $(".cropimage")
+                                .cropper("getCroppedCanvas", {
+                                    width: 500,
+                                    height: 500
+                                }).toDataURL('png', 1);
             $.ajax({
-                url: "../../School/UploadImageAsync",
+                url: uploadImageUrl,
                 type: 'POST',
-                data: { 'imageData': imageData, 'id': '@Model.School.Id' },
+                data: { 'imageData': imageData, 'id': id },
                 dataType: 'json',
                 timeout: 300000,
                 success: function (result) {
@@ -57,15 +71,18 @@ $(function () {
                         }
                     });
                     if (status == "Success") {
-                        $('#profilepic').attr('src', filePath);
+                        $('.targetpic').attr('src', filePath);
                         //  Set Hidden Value for the Photo
-                        $("#image").cropper('destroy');
-                        $('#image').attr('src', "");
-                        $("#btnupload").hide();
+                        $(".cropimage").cropper('destroy');
+                        $('.cropimage').attr('src', "");
+                        $(".btnupload").hide();
                     }
                     else {
                         alert("Upload Failed");
                     }
+                },
+                error: function (request, status, error) {
+                    alert(error);
                 }
             });
         }
@@ -74,39 +91,42 @@ $(function () {
         }
     });
 
-    $('#btnChangePicture').click(function () {
-        $('#divPick').show();
-        $('#divOptions').hide();
+    $('.changepicbutton').click(function () {
+        $('.divPick').show();
+        $('.divOptions').hide();
     });
 
-    $('#btnNewPicture').click(function () {
-        $('#divPick').hide();
-        $('#divOptions').show();
-        $('#divUploadPic').show();
-        $('#divFacebookPic').hide();
-        $('#croppic').hide();
-        $('#image').attr('src', "");
+    $('.newpicturebtn').click(function () {
+        $('.divPick').hide();
+        $('.divOptions').show();
+        $('.divUploadPic').show();
+        $('.divFacebookPic').hide();
+        $('.croppic').hide();
+        $('.cropimage').attr('src', "");
     });
 
-    $('#btnPickFacebook').click(function () {
-        $('#divPick').hide();
-        $('#divOptions').show();
-        $('#divUploadPic').hide();
-        $('#divFacebookPic').show();
-        $('#croppic').hide();
-        $('#image').attr('src', "");
+    $('.facebookpicturebtn').click(function () {
+        $('.divPick').hide();
+        $('.divOptions').show();
+        $('.divUploadPic').hide();
+        $('.divFacebookPic').show();
+        $('.croppic').hide();
+        $('.cropimage').attr('src', "");
     });
 
-    $('#facebookpics').on("click", ".pickfbpic", function () {
+    $('.facebookpics').on("click", ".pickfbpic", function () {
         var src = $(this).prop('value');
-        $('#image').attr('src', src);
-        $('#croppic').show();
-        $('#divFacebookPic').hide();
-        $('#image').cropper({
+        $('.cropimage').attr('src', src);
+        $('.croppic').show();
+        $('.divFacebookPic').hide();
+        $('.cropimage').cropper({
             aspectRatio: 10 / 10,
             zoomable: false,
         });
-        $("#image").cropper('replace', src);
-        $("#btnupload").show();
+        $(".cropimage").cropper('replace', src);
+        $(".btnupload").show();
     });
 });
+
+$.getScript("../../Scripts/cropper.js");
+$('head').append('<link rel="stylesheet" type="text/css" href="../../Content/cropper.css">');
