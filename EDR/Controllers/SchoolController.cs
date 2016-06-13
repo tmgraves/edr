@@ -93,8 +93,13 @@ namespace EDR.Controllers
         }
 
         // GET: School
-        public ActionResult View(int id)
+        public ActionResult View(int? id)
         {
+            if (!id.HasValue)
+            {
+                return RedirectToAction("List");
+            }
+
             var userid = User.Identity.GetUserId();
             var model = new ViewSchoolViewModel(
                         DataContext.Schools
@@ -118,8 +123,13 @@ namespace EDR.Controllers
 
         [Authorize(Roles = "Teacher,Owner")]
         // GET: School
-        public ActionResult Manage(int id)
+        public ActionResult Manage(int? id)
         {
+            if (!id.HasValue)
+            {
+                return RedirectToAction("List");
+            }
+
             var userid = User.Identity.GetUserId();
             var admin = DataContext.OrganizationMembers.Where(m => m.OrganizationId == id && m.UserId == userid && m.Admin).Count() != 0 ? true : false;
             if (admin)
@@ -252,6 +262,28 @@ namespace EDR.Controllers
                 DataContext.SaveChanges();
             }
             return RedirectToAction("Manage", new { id = model.School.Id });
+        }
+
+        [Authorize(Roles = "Teacher,Owner")]
+        [HttpPost]
+        public ActionResult AddTeacher(FormCollection formCollection)
+        {
+            int id = Convert.ToInt32(formCollection["id"]);
+            string teacherid = formCollection["teacherid"];
+            if (DataContext.Schools.Where(s => s.Id == id && s.Teachers.Any(t => t.ApplicationUser.Id == teacherid)).Count() == 0)
+            {
+                DataContext.Schools.Single(s => s.Id == id).Teachers.Add(DataContext.Teachers.Single(t => t.ApplicationUser.Id == teacherid));
+                DataContext.SaveChanges();
+            }
+            return RedirectToAction("Manage", new { id = id });
+        }
+
+        [Authorize(Roles = "Teacher,Owner")]
+        public ActionResult RemoveTeacher(int id, int teacherid)
+        {
+            DataContext.Schools.Where(s => s.Id == id).Include("Teachers").FirstOrDefault().Teachers.Remove(DataContext.Teachers.Single(t => t.Id == teacherid));
+            DataContext.SaveChanges();
+            return RedirectToAction("Manage", new { id = id });
         }
 
         [Authorize]

@@ -5,28 +5,36 @@
  */
 
 $(function () {
-    var options = {
-        map: ".map_canvas"
-    };
+    if ($('.locationsearch').length != 0) {
+        var options = {
+            map: ".map_canvas"
+        };
 
-    $(".locationsearch").geocomplete(options)
-      .on("geocode:result", function (event, result) {
-      });
-});
-
-$(function () {
-    var map = $('.locationsearch').geocomplete("map");
-    if ($('.czoomfield').val() != "") {
-        map.setZoom(parseInt($('.czoomfield').val()));
-    }
-    else {
-        map.setZoom(10);
+        $(".locationsearch").geocomplete(options)
+          .on("geocode:result", function (event, result) {
+          });
     }
 });
 
 $(function () {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(success);
+    if ($('.locationsearch').length != 0)
+    {
+        var map = $('.locationsearch').geocomplete("map");
+        if ($('.czoomfield').val() != "") {
+            map.setZoom(parseInt($('.czoomfield').val()));
+        }
+        else {
+            map.setZoom(10);
+        }
+    }
+});
+
+$(function () {
+    if ($('.map_canvas').length != 0)
+    {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(success);
+        }
     }
 
     function success(position) {
@@ -34,8 +42,12 @@ $(function () {
         if ($('.clatfield').val() != "" && $('.clngfield').val() != "") {
             loc = new google.maps.LatLng($('.clatfield').val(), $('.clngfield').val());
         }
-        var map = $('.locationsearch').geocomplete("map");
-        map.setCenter(loc);
+
+        if ($('.locationsearch').length != 0)
+        {
+            var map = $('.locationsearch').geocomplete("map");
+            map.setCenter(loc);
+        }
     }
 });
 
@@ -67,7 +79,7 @@ $('.stylesearch').autocomplete({
 $('.teachersearch').autocomplete({
     source: function (request, response) {
         $.ajax({
-            url: '../Teacher/Search',
+            url: '../../Teacher/Search',
             data: { searchString: request.term },
             dataType: 'json',
             type: 'GET',

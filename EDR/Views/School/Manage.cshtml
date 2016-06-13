@@ -7,7 +7,7 @@
 <ol class="breadcrumb">
     <li>@Html.ActionLink("All Schools", "List", "School")</li>
     <li>@Html.ActionLink("School Profile", "View", "School", new { id = Model.School.Id }, null)</li>
-    <li class="active">Manage Team</li>
+    <li class="active">Manage School</li>
 </ol>
 
 <h2>Manage: <span class="text-info">@Model.School.Name</span></h2>
@@ -172,6 +172,47 @@
                 </div>
             </div>
         </div>
+        <div class="panel panel-default">
+            <div class="panel-body buttoncontainer">
+                <h3>Teachers</h3>
+                <div>
+                    @using (Html.BeginForm("AddTeacher", "School", FormMethod.Post))
+                    {
+                        <input type="hidden" id="id" name="id" value="@Model.School.Id" />
+                        <input type="hidden" class="teachersearchid" id="teacherid" name="teacherid" />
+                        <input type="text" class="teachersearch form-control" placeholder="Type in a Teacher Name" style="display: inline-block;" />
+                        <button type="submit" class="btn btn-primary btn-sm" style="display: inline-block;">Add Teacher</button>
+                    }
+                </div>
+                <div id="teachers">
+                    <table style="width: 100%;">
+                        <tr>
+                            <th>
+                                Name
+                            </th>
+                            <th>
+                            </th>
+                        </tr>
+                        @foreach (var t in Model.School.Teachers)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(model => t.ApplicationUser.FullName)
+                                </td>
+                                <td class="text-right">
+                                    @if (t.ApplicationUser.UserName != User.Identity.Name)
+                                    {
+                                        <a class="btn btn-link text-danger" title="Remove" href="@Url.Action("RemoveTeacher", new { id = Model.School.Id, teacherid = t.Id })" onclick="return confirm('Are you sure you want to remove this Teacher?')">
+                                            <i class="text-danger glyphicon glyphicon-remove-circle"></i>
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="col-lg-6 col-md-6">
@@ -182,8 +223,8 @@
                 {
                     @Html.HiddenFor(model => model.School.Id)
                     @Html.HiddenFor(m => m.NewMemberId)
-                    <input type="text" id="newmember" placeholder="Search for a User" required class="form-control" />
-                    <input type="submit" value="Add Member" />
+                    <input type="text" id="newmember" placeholder="Search for a User" required class="form-control" style="display: inline-block;" />
+                    <input type="submit" value="Add Member" style="display: inline-block;" class="btn btn-sm btn-primary" />
                 }
                 <div id="membersdiv">
                     @using (Html.BeginForm("UpdateMembers", "School", FormMethod.Post))
@@ -199,83 +240,10 @@
                             </thead>
                             @Html.EditorFor(model => model.School.Members)
                         </table>
-                        @*<table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Admin</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            @for (int i = 0; i < Model.School.Members.Count; i++)
-                            {
-                                <tr>
-                                    <td>
-                                        @Html.HiddenFor(model => model.School.Members.ToList()[i].Id)
-                                    </td>
-                                    <td>
-                                        @Html.EditorFor(model => model.School.Members.ToList()[i].User.FirstName)
-                                    </td>
-                                    <td>
-                                        @Html.EditorFor(model => model.School.Members.ToList()[i].Admin)
-                                    </td>
-                                </tr>
-                            }
-                        </table>*@
                                     <div>
-                                        <input type="submit" value="Update Members" />
+                                        <input type="submit" value="Update Members" style="display: inline-block;" class="btn btn-sm btn-primary" />
                                     </div>
-                                }
-                                @*@Html.Partial("~/Views/School/_UpdateMembersPartial.cshtml", Model.School.Members, new ViewDataDictionary { TemplateInfo = new TemplateInfo { HtmlFieldPrefix = "Members" }})
-
-                    @{
-                         WebGrid grid = new WebGrid(source: Model.School.Members, canPage: false);
-                     }
-                     @using (Html.BeginForm("UpdateMembers", "School", FormMethod.Post))
-                     {
-                         @Html.HiddenFor(model => model.School.Id)
-                         <div>
-                             @grid.GetHtml(
-                                         tableStyle: "gridtable",
-                                         htmlAttributes: new { id = "checkableGrid" },
-                                         columns: grid.Columns
-                                         (
-                                         grid.Column(format: @<text> <input type="checkbox" value="@item.UserId" @(item.Admin ? "checked='checked'" : "") name="userids" /> </text>, header: "Admin"
-                                         ),
-                                         grid.Column("User.FullName", "Name")
-                                         )
-                                     )
-                         </div>
-                         <div>
-                             <input type="submit" value="Update Members" />
-                         </div>
-                     }
-
-                     <table class="table">
-                         <thead>
-                             <tr>
-                                 <th>Name</th>
-                                 <th>Admin</th>
-                                 <th></th>
-                             </tr>
-                         </thead>
-                         @foreach (var item in Model.School.Members)
-                         {
-                             <tr>
-                                 <td>
-                                     @Html.DisplayFor(member => item.User.FullName)
-                                 </td>
-                                 <td>
-                                     @Html.DisplayFor(member => item.Admin)
-                                 </td>
-                                 <td>
-                                     @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                                     @Html.ActionLink("Details", "View", new { id = item.Id }) |
-                                     @Html.ActionLink("Delete", "Delete", new { id = item.Id })
-                                 </td>
-                             </tr>
-                         }
-                     </table>*@
+                    }
                 </div>
             </div>
         </div>
@@ -440,7 +408,7 @@
         <script src="../../Scripts/jquery.geocomplete.js"></script>*@
     <link href="../../Content/cropper.css" rel="stylesheet">
     <script src="../../Scripts/cropper.js"></script>
-
+<script src="~/Scripts/searchhelper.js"></script>
 <script>
         function loadImage(input) {
             if (input.files && input.files[0]) {
@@ -657,3 +625,77 @@
     });
     </script>
 }
+
+@*<table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Admin</th>
+                <th></th>
+            </tr>
+        </thead>
+        @for (int i = 0; i < Model.School.Members.Count; i++)
+        {
+            <tr>
+                <td>
+                    @Html.HiddenFor(model => model.School.Members.ToList()[i].Id)
+                </td>
+                <td>
+                    @Html.EditorFor(model => model.School.Members.ToList()[i].User.FirstName)
+                </td>
+                <td>
+                    @Html.EditorFor(model => model.School.Members.ToList()[i].Admin)
+                </td>
+            </tr>
+        }
+    </table>*@
+@*@Html.Partial("~/Views/School/_UpdateMembersPartial.cshtml", Model.School.Members, new ViewDataDictionary { TemplateInfo = new TemplateInfo { HtmlFieldPrefix = "Members" }})
+
+    @{
+         WebGrid grid = new WebGrid(source: Model.School.Members, canPage: false);
+     }
+     @using (Html.BeginForm("UpdateMembers", "School", FormMethod.Post))
+     {
+         @Html.HiddenFor(model => model.School.Id)
+         <div>
+             @grid.GetHtml(
+                         tableStyle: "gridtable",
+                         htmlAttributes: new { id = "checkableGrid" },
+                         columns: grid.Columns
+                         (
+                         grid.Column(format: @<text> <input type="checkbox" value="@item.UserId" @(item.Admin ? "checked='checked'" : "") name="userids" /> </text>, header: "Admin"
+                         ),
+                         grid.Column("User.FullName", "Name")
+                         )
+                     )
+         </div>
+         <div>
+             <input type="submit" value="Update Members" />
+         </div>
+     }
+
+     <table class="table">
+         <thead>
+             <tr>
+                 <th>Name</th>
+                 <th>Admin</th>
+                 <th></th>
+             </tr>
+         </thead>
+         @foreach (var item in Model.School.Members)
+         {
+             <tr>
+                 <td>
+                     @Html.DisplayFor(member => item.User.FullName)
+                 </td>
+                 <td>
+                     @Html.DisplayFor(member => item.Admin)
+                 </td>
+                 <td>
+                     @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                     @Html.ActionLink("Details", "View", new { id = item.Id }) |
+                     @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                 </td>
+             </tr>
+         }
+     </table>*@

@@ -32,7 +32,14 @@ namespace EDR.Controllers
         {
             var model = new HomeIndexViewModel();
             model.DanceStyles = DataContext.DanceStyles.OrderByDescending(s => s.Events.Count()).Take(4).ToList();
-            return View(model);
+            if (HttpContext.Request.Browser.IsMobileDevice)
+            {
+                return View("Mobile/Index", model);
+            }
+            else
+            {
+                return View(model);
+            }
         }
 
         public ActionResult Test()
