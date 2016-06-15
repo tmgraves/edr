@@ -14,7 +14,6 @@
         <li class="active">New Class</li>
     }
 </ol>
-
 <div class="container">
     <div class="center-block col-md-6 text-center" style="float: none;">
         <h1>New @Model.EventType</h1>
@@ -197,6 +196,15 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <div style="margin-bottom: 20px !important; padding-bottom: 20px !important;">
+                                                    <div class="col-lg-8 nospace text-left pull-left">
+                                                        @Html.Label("# of Events:", htmlAttributes: new { @class = "text-danger text-uppercase control-label" })
+                                                    </div>
+                                                    <div class="col-lg-4 nospace">
+                                                        @Html.TextBoxFor(m => m.EventCount, htmlAttributes: new { @Value = "1" })
+                                                        @Html.ValidationMessageFor(model => model.Event.Frequency, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                         <div id="wizdetaildiv" class="step" style="display:none">
@@ -344,7 +352,7 @@
     @Styles.Render("~/Content/TimePickercss")
 <script src="../../Scripts/bootstrap-toggle.js"></script>
 <link href="../../Content/bootstrap-toggle.css" rel="stylesheet">
-
+<script src="~/Scripts/jquery.mousewheel.js"></script>
 
     <script type="text/javascript">
     $.validator.setDefaults({
@@ -352,6 +360,10 @@
     })
 
     $(function () {
+        $('#EventCount').spinner({
+            min: 1,
+            max: 20
+        });
         $('.start').timepicker({
             'timeFormat': 'h:i A',
             'step': function (i) {

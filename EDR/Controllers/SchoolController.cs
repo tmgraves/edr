@@ -286,6 +286,14 @@ namespace EDR.Controllers
             return RedirectToAction("Manage", new { id = id });
         }
 
+        [Authorize(Roles = "Teacher,Owner")]
+        public ActionResult RemoveMember(int id, string memberid)
+        {
+            DataContext.OrganizationMembers.Remove(DataContext.OrganizationMembers.Single(m => m.OrganizationId == id && m.UserId == memberid));
+            DataContext.SaveChanges();
+            return RedirectToAction("Manage", new { id = id });
+        }
+
         [Authorize]
         [HttpPost]
         public JsonResult UploadImageAsync(string imageData, int id)

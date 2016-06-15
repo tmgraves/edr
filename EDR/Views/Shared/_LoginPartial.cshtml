@@ -20,13 +20,17 @@
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-user"></i> @User.Identity.Name<span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                    <li><a href="@Url.Action("Manage", "Dancer")"><i class="glyphicon glyphicon-user"></i> @User.Identity.Name</a></li>
                     <li role="separator" class="divider"></li>
-                    <li>@Html.ActionLink("My Teacher Profile", "Manage", "Teacher")</li>
+                    <li><a href="@Url.Action("Manage", "Dancer")"><i class="glyphicon glyphicon-user"></i> <b>@User.Identity.Name</b></a></li>
                     <li role="separator" class="divider"></li>
-                    <li>@Html.ActionLink("My Owner Profile", "Manage", "Owner")</li>
+                    <li id="teachernav">@Html.ActionLink("My Teacher Profile", "Manage", "Teacher", null, new { @style = "font-weight: bold;" })</li>
+                    @*<li style="padding-left: 5px;" class="small">@Html.ActionLink("School 1", "Manage", "Teacher")</li>
+        <li style="padding-left: 5px;"  class="small">@Html.ActionLink("School 2", "Manage", "Teacher")</li>
+        <li style="padding-left: 5px;"  class="small">@Html.ActionLink("School 3", "Manage", "Teacher")</li>*@
                     <li role="separator" class="divider"></li>
-                    <li>@Html.ActionLink("My Promoter Profile", "Manage", "Promoter")</li>
+                    <li id="promoternav">@Html.ActionLink("My Promoter Profile", "Manage", "Promoter", null, new { @style = "font-weight: bold;" })</li>
+                    <li role="separator" class="divider"></li>
+                    <li>@Html.ActionLink("My Owner Profile", "Manage", "Owner", null, new { @style = "font-weight: bold;" })</li>
                     <li role="separator" class="divider"></li>
                     <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
                 </ul>
@@ -69,3 +73,49 @@ else
         <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
     </ul>
 }
+<script src="~/Scripts/jquery-2.1.1.js"></script>
+<script>
+    $.ajax({
+        url: '@Url.Action("GetSchools", "Teacher")',
+        dataType: 'json',
+        type: 'GET',
+        success: function (data) {
+            var row = ""
+            $.each(data, function (index, item) {
+                row +=
+                    '<li class="small item-short" style="max-width: 150px !important; padding-left: 4px;"><a href="../../School/Manage/' + item.Id + '">' + item.Name + '</a></li>';
+            });
+            $("#teachernav").after('<li style="padding-left: 2px;"><a><i>Schools</i></a></li>' + row);
+            //  $("#teachernav").after(row + '<li role="separator" class="divider"></li>');
+        }
+    })
+
+    $.ajax({
+        url: '@Url.Action("GetTeams", "Teacher")',
+        dataType: 'json',
+        type: 'GET',
+        success: function (data) {
+            var row = ""
+            $.each(data, function (index, item) {
+                row +=
+                    '<li class="small item-short" style="max-width: 150px !important; padding-left: 4px;"><a href="../../Team/Manage/' + item.Id + '">' + item.Name + '</a></li>';
+            });
+            $("#teachernav").after('<li style="padding-left: 2px;"><a><i>Teams</i></a></li>' + row);
+            //  $("#teachernav").after(row + '<li role="separator" class="divider"></li>');
+        }
+    })
+
+    $.ajax({
+        url: '@Url.Action("GetSocials", "Promoter")',
+        dataType: 'json',
+        type: 'GET',
+        success: function (data) {
+            var row = ""
+            $.each(data, function (index, item) {
+                row +=
+                    '<li class="small item-short" style="max-width: 150px !important; padding-left: 4px;"><a href="../../Social/View/' + item.Id + '">' + item.Name + '</a></li>';
+            });
+            $("#promoternav").after('<li style="padding-left: 2px;"><a><i>Socials</i></a></li>' + row);
+        }
+    })
+</script>

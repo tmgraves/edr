@@ -173,17 +173,13 @@
                     <thead>
                         <tr>
                             <th>Social</th>
-                            <th></th>
                         </tr>
                     </thead>
                     @foreach (var item in Model.Socials)
                     {
                         <tr>
                             <td>
-                                @Html.DisplayFor(member => item.Name)
-                            </td>
-                            <td>
-                                @Html.ActionLink("View", "View", new { id = item.Id })
+                                @Html.ActionLink(item.Name, "View", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Social }, null)
                             </td>
                         </tr>
                     }

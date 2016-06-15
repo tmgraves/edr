@@ -210,7 +210,6 @@
                         $('#location').text(place.formatted_address);
                         if (place.rating != null)
                         {
-                            alert("here");
                             $('#rv').val(place.rating);
                             $("#placerating").rateYo("rating", place.rating);
                             $("#placerating").rateYo("option", "readOnly", true);

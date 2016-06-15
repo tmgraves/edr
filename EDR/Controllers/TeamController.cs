@@ -210,6 +210,28 @@ namespace EDR.Controllers
             return RedirectToAction("Index");
         }
 
+        [Authorize(Roles = "Teacher,Owner")]
+        [HttpPost]
+        public ActionResult AddTeacher(FormCollection formCollection)
+        {
+            int id = Convert.ToInt32(formCollection["id"]);
+            string teacherid = formCollection["teacherid"];
+            if (DataContext.Teams.Where(s => s.Id == id && s.Teachers.Any(t => t.ApplicationUser.Id == teacherid)).Count() == 0)
+            {
+                DataContext.Teams.Single(s => s.Id == id).Teachers.Add(DataContext.Teachers.Single(t => t.ApplicationUser.Id == teacherid));
+                DataContext.SaveChanges();
+            }
+            return RedirectToAction("Manage", new { id = id });
+        }
+
+        [Authorize(Roles = "Teacher,Owner")]
+        public ActionResult RemoveTeacher(int id, int teacherid)
+        {
+            DataContext.Teams.Where(s => s.Id == id).Include("Teachers").FirstOrDefault().Teachers.Remove(DataContext.Teachers.Single(t => t.Id == teacherid));
+            DataContext.SaveChanges();
+            return RedirectToAction("Manage", new { id = id });
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

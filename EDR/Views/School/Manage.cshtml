@@ -213,42 +213,6 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="col-lg-6 col-md-6">
-        <div class="panel panel-default">
-            <div class="panel-body ">
-                <h3>Members</h3>
-                @using (Html.BeginForm("AddMember", "School", FormMethod.Post))
-                {
-                    @Html.HiddenFor(model => model.School.Id)
-                    @Html.HiddenFor(m => m.NewMemberId)
-                    <input type="text" id="newmember" placeholder="Search for a User" required class="form-control" style="display: inline-block;" />
-                    <input type="submit" value="Add Member" style="display: inline-block;" class="btn btn-sm btn-primary" />
-                }
-                <div id="membersdiv">
-                    @using (Html.BeginForm("UpdateMembers", "School", FormMethod.Post))
-                    {
-                        @Html.HiddenFor(model => model.School.Id)
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Admin</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            @Html.EditorFor(model => model.School.Members)
-                        </table>
-                                    <div>
-                                        <input type="submit" value="Update Members" style="display: inline-block;" class="btn btn-sm btn-primary" />
-                                    </div>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-6 col-md-6">
         <div class="panel panel-default">
             <div class="panel-body ">
                 <h3>Tickets</h3>
@@ -299,6 +263,7 @@
             </div>
         </div>
     </div>
+
     <div class="col-lg-6 col-md-6">
         <div class="panel panel-default">
             <div class="panel-body buttoncontainer">
@@ -315,7 +280,7 @@
                     {
                         <tr>
                             <td>
-                                @Html.ActionLink(item.Name, "Manage", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Class }, new { @class = "btn btn-success text-left", @style = "text-align: left !important; width: 100% !important; max-width: 100% !important;" })
+                                @Html.ActionLink(item.Name, "Manage", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Class }, new { @class = "text-primary text-left", @style = "text-align: left !important; width: 100% !important; max-width: 100% !important;" })
                             </td>
                             <td class="text-right">
                                 @item.EventInstances.Sum(i => i.EventRegistrations.Count())
@@ -323,6 +288,37 @@
                         </tr>
                     }
                 </table>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body ">
+                <h3>Members</h3>
+                @using (Html.BeginForm("AddMember", "School", FormMethod.Post))
+                {
+                    @Html.HiddenFor(model => model.School.Id)
+                    @Html.HiddenFor(m => m.NewMemberId)
+                    <input type="text" id="newmember" placeholder="Search for a User" required class="form-control" style="display: inline-block;" />
+                    <input type="submit" value="Add Member" style="display: inline-block;" class="btn btn-sm btn-primary" />
+                }
+                <div id="membersdiv">
+                    @using (Html.BeginForm("UpdateMembers", "School", FormMethod.Post))
+                    {
+                        @Html.HiddenFor(model => model.School.Id)
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Admin</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            @Html.EditorFor(model => model.School.Members)
+                        </table>
+                        <div>
+                            <input type="submit" value="Update Members" style="display: inline-block;" class="btn btn-sm btn-primary" />
+                        </div>
+                    }
+                </div>
             </div>
         </div>
         <div class="panel panel-default">
@@ -334,7 +330,7 @@
                     {
                         <tr>
                             <td>
-                                @Html.ActionLink(item.Name, "Manage", "Team", new { id = item.Id, eventType = EDR.Enums.EventType.Class }, new { @class = "btn btn-info text-left", @style = "text-align: left !important; width: 100% !important; max-width: 100% !important;" })
+                                @Html.ActionLink(item.Name, "Manage", "Team", new { id = item.Id }, new { @class = "text-primary text-left", @style = "text-align: left !important; width: 100% !important; max-width: 100% !important;" })
                             </td>
                         </tr>
                     }

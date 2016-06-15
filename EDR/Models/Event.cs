@@ -180,6 +180,9 @@ namespace EDR.Models
         public virtual Event Event { get; set; }
         [DisplayFormat(DataFormatString = "{0:MM-dd-yyyy}")]
         public DateTime DateTime { get; set; }
+        [DisplayFormat(DataFormatString = "{0:MM-dd-yyyy}")]
+        [GreaterThanOrEqualTo("DateTime")]
+        public DateTime EndDate { get; set; }
         [DataType(DataType.Time)]
         [Display(Name = "Start Time")]
         [DisplayFormat(DataFormatString = "{0:hh:mm tt}", ApplyFormatInEditMode = false)]
@@ -275,6 +278,7 @@ namespace EDR.Models
         public int UserTicketId { get; set; }
         [ForeignKey("UserTicketId")]
         public UserTicket UserTicket { get; set; }
+        public DateTime? Checkedin { get; set; }
     }
 
     //public class EventTicket : Entity

@@ -394,6 +394,23 @@ namespace EDR.Controllers
 
         }
 
+        #region JSON
+        [Authorize(Roles = "Teacher")]
+        public JsonResult GetSocials()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                var userid = User.Identity.GetUserId();
+                var socials = DataContext.Events.OfType<Social>().Where(s => s.Promoters.Any(p => p.ApplicationUser.Id == userid) && s.EventInstances.Any(i => i.DateTime >= DateTime.Today)).Take(5);
+
+                return Json(socials.Select(s => new { Name = s.Name, Id = s.Id }), JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public ActionResult GetUpdates(string username)
         {
             var evts = DataContext.Events.OfType<Social>().Where(s => s.Promoters.Any(p => p.ApplicationUser.UserName == username))
@@ -418,5 +435,6 @@ namespace EDR.Controllers
             var promoters = DataContext.Promoters.Where(t => (t.ApplicationUser.FirstName + " " + t.ApplicationUser.LastName).ToLower().Contains(searchString.ToLower())).Select(s => new { Id = s.ApplicationUser.Id, Name = s.ApplicationUser.FirstName + " " + s.ApplicationUser.LastName }).ToList();
             return Json(promoters, JsonRequestBehavior.AllowGet);
         }
+        #endregion
     }
 }

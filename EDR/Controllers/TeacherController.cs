@@ -535,6 +535,40 @@ namespace EDR.Controllers
             }
         }
 
+        #region JSON
+        [Authorize(Roles = "Teacher")]
+        public JsonResult GetSchools()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                var userid = User.Identity.GetUserId();
+                var schools = DataContext.Schools.Where(s => s.Teachers.Any(t => t.ApplicationUser.Id == userid));
+
+                return Json(schools.Select(s => new { Name = s.Name, Id = s.Id }), JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        [Authorize(Roles = "Teacher")]
+        public JsonResult GetTeams()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                var userid = User.Identity.GetUserId();
+                var schools = DataContext.Teams.Where(s => s.Teachers.Any(t => t.ApplicationUser.Id == userid));
+
+                return Json(schools.Select(s => new { Name = s.Name, Id = s.Id }), JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return null;
+            }
+        }
+        #endregion
+
         //[Authorize]
         //public ActionResult ApplyNew()
         //{

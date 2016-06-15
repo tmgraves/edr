@@ -70,7 +70,8 @@
                             @Html.LabelFor(model => model.Team.Public, htmlAttributes: new { @class = "control-label col-md-2" })
                         </dt>
                         <dd class="checkbox">
-                            @Html.DisplayFor(model => model.Team.Public)
+                            @(Model.Team.Public ? "Yes" : "No")
+                            @*@Html.DisplayFor(model => model.Team.Public)*@
                         </dd>
                     </dl>
                     <dl class="dl-horizontal">
@@ -182,7 +183,8 @@
                                 @Html.LabelFor(model => model.Team.Public, htmlAttributes: new { @class = "control-label col-md-2" })
                             </dt>
                             <dd class="checkbox">
-                                @Html.EditorFor(model => model.Team.Public)
+                                @Html.CheckBoxFor(m => m.Team.Public, new { @class = "recurring", @data_toggle = "toggle", @data_on = "Yes", @data_off = "No" })
+                                @*@Html.EditorFor(model => model.Team.Public)*@
                                 @Html.ValidationMessageFor(model => model.Team.Public, "", new { @class = "text-danger" })
                             </dd>
                         </dl>
@@ -268,6 +270,47 @@
             </div>
         </div>
         <div class="panel panel-default">
+            <div class="panel-body buttoncontainer">
+                <h3>Teachers</h3>
+                <div>
+                    @using (Html.BeginForm("AddTeacher", "Team", FormMethod.Post))
+                    {
+                        <input type="hidden" id="id" name="id" value="@Model.Team.Id" />
+                        <input type="hidden" class="teachersearchid" id="teacherid" name="teacherid" />
+                        <input type="text" class="teachersearch form-control" placeholder="Type in a Teacher Name" style="display: inline-block;" />
+                        <button type="submit" class="btn btn-primary btn-sm" style="display: inline-block;">Add Teacher</button>
+                    }
+                </div>
+                <div id="teachers">
+                    <table style="width: 100%;">
+                        <tr>
+                            <th>
+                                Name
+                            </th>
+                            <th>
+                            </th>
+                        </tr>
+                        @foreach (var t in Model.Team.Teachers)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(model => t.ApplicationUser.FullName)
+                                </td>
+                                <td class="text-right">
+                                    @if (t.ApplicationUser.UserName != User.Identity.Name)
+                                    {
+                                        <a class="btn btn-link text-danger" title="Remove" href="@Url.Action("RemoveTeacher", new { id = Model.Team.Id, teacherid = t.Id })" onclick="return confirm('Are you sure you want to remove this Teacher?')">
+                                            <i class="text-danger glyphicon glyphicon-remove-circle"></i>
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
             <div class="panel-body ">
                 <h3>Dance Styles</h3>
                 @using (Ajax.BeginForm("AddStyle",
@@ -300,8 +343,8 @@
                 {
                     @Html.HiddenFor(model => model.Team.Id)
                     @Html.HiddenFor(m => m.NewMemberId)
-                    <input type="text" id="newmember" placeholder="Search for a User" required class="form-control" />
-                    <input type="submit" value="Add Member" />
+                    <input type="text" id="newmember" placeholder="Search for a User" required class="form-control" style="display: inline-block;" />
+                    <input type="submit" value="Add Member" class="btn btn-primary btn-sm" style="display: inline-block;"  />
                 }
                 <div id="membersdiv">
                     @using (Html.BeginForm("UpdateMembers", "Team", FormMethod.Post))
@@ -318,7 +361,7 @@
                             @Html.EditorFor(model => model.Team.Members)
                         </table>
                         <div>
-                            <input type="submit" value="Update Members" />
+                            <input type="submit" value="Update Members" class="btn btn-warning" />
                         </div>
                     }
                 </div>
@@ -748,6 +791,9 @@
     <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
 <link href="../../Content/cropper.css" rel="stylesheet">
 <script src="../../Scripts/cropper.js"></script>
+<script src="../../Scripts/bootstrap-toggle.js"></script>
+<link href="../../Content/bootstrap-toggle.css" rel="stylesheet">
+<script src="~/Scripts/searchhelper.js"></script>
 
     <script type="text/javascript">
     $.validator.setDefaults({

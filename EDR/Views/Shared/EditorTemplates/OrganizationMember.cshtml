@@ -8,5 +8,13 @@
     <td>
         @Html.EditorFor(model => model.Admin)
     </td>
+    <td>
+        @if (Model.User.UserName != User.Identity.Name)
+        {
+            <a class="text-danger" title="Delete" href="@Url.Action("RemoveMember", "School", new { id = Model.OrganizationId, memberid = Model.UserId })">
+                <i class="glyphicon glyphicon-remove-circle"></i>
+            </a>
+        }
+    </td>
 </tr>
 

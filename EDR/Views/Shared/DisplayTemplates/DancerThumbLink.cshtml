@@ -1,5 +1,5 @@
 ﻿@model EDR.Models.ApplicationUser
 
 <a title="@Model.FirstName" href="@Url.Action("Home", "Dancer", new { username = Model.UserName })">
-    <img style="max-height: 100%; max-width: 100%;" src="@Url.Content(Model.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" title="@Model.FirstName" />
+    <img class="img-circle" style="max-height: 100%; max-width: 100%;" src="@Url.Content(Model.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" title="@Model.FirstName" />
 </a>

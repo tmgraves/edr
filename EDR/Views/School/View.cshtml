@@ -29,101 +29,115 @@
 <div class="container">
     <div class="row">
         <div class="col-lg-6">
-            <div class="col-lg-12 profilecontainer" style="background-color: #ddd; padding: 20px; border: 1px solid #aaa;">
-                @if (Model.Member != null && Model.Member.Admin)
-                {
-                    @Html.ActionLink("Manage", "Manage", "School", new { id = Model.School.Id }, new { @class = "btn btn-warning button" })
-                }
-                <div class="row">
-                    <div class="col-lg-4">
-                        <div id="img_container">
-                            <img id="profilepic" style="max-width: 100%; max-height: 100%;" src="@Url.Content(Model.School.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
-                        </div>
-                    </div>
-                    <div class="col-lg-8 nospace">
-                        <h2>@Model.School.Name</h2>
-                        <p>
-                            @Model.School.City, @Model.School.State
-                        </p>
-                        <div>
-                            @if (Model.School.FacebookLink != null)
-                            {
-                                <a class="img-thumbnail" href='@Model.School.FacebookLink' target="_blank" title="Visit Me On Facebook"><img src="@Url.Content("~/Content/images/facebookSmall.png")" /></a>
-                            }
-                            @*@if (Model.School.Website != null)
-                            {
-                                <a class="img-thumbnail" href='@Model.School.Website' target="_blank" title="Visit Me On the Web"><img src="@Url.Content("~/Content/images/web.png")" /></a>
-                            }*@
-                            @*@if (Model.School.ContactEmail != null)
-                            {
-                                <a class="img-thumbnail" href='mailto:@Model.Teacher.ContactEmail' title="Email Me"><img src="@Url.Content("~/Content/images/email.png")" /></a>
-                            }*@
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-12" style="background-color: #fff; margin-top: 20px; padding-top: 20px;">
-                    <p>
-                        @Html.Label("Dance Styles:", new { @class = "form-label col-md-4" })
-                        @Html.DisplayFor(m => Model.School.DanceStyles, "DanceStyleLabels")
-                    </p>
-                    <div class="col-lg-12" style="padding-bottom: 20px;">
-                        @Html.DisplayFor(m => m.School.Description)
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-12" style="margin-top: 20px; padding-bottom: 20px; border: 1px solid #aaa;">
-                <h3>Teachers</h3>
-                @foreach (var item in Model.School.Teachers)
-                {
-                    <div class="col-lg-2">
-                        @Html.DisplayFor(m => item, "Teacher")
-                    </div>
-                }
-            </div>
-            <div class="col-lg-12" style="margin-top: 20px; border: 1px solid #aaa;">
-                <h3>Performance Teams</h3>
-                @foreach (var team in Model.School.Teams)
-                {
+            <div class="panel panel-default">
+                <div class="panel-body buttoncontainer bg-info">
+                    @if (Model.Member != null && Model.Member.Admin)
+                    {
+                        @Html.ActionLink("Manage", "Manage", "School", new { id = Model.School.Id }, new { @class = "btn btn-warning actionbutton" })
+                    }
                     <div class="row">
-                        <div class="col-lg-12">
-                            @Html.DisplayFor(m => team)
+                        <div class="col-lg-4">
+                            <div id="img_container">
+                                <img id="profilepic" style="max-width: 100%; max-height: 100%;" src="@Url.Content(Model.School.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
+                            </div>
+                        </div>
+                        <div class="col-lg-8 nospace">
+                            <h2>@Model.School.Name</h2>
+                            <p>
+                                @Model.School.City, @Model.School.State
+                            </p>
+                            <div>
+                                @if (Model.School.FacebookLink != null)
+                                {
+                                    <a class="img-thumbnail" href='@Model.School.FacebookLink' target="_blank" title="Visit Me On Facebook"><img src="@Url.Content("~/Content/images/facebookSmall.png")" /></a>
+                                }
+                                @*@if (Model.School.Website != null)
+                    {
+                        <a class="img-thumbnail" href='@Model.School.Website' target="_blank" title="Visit Me On the Web"><img src="@Url.Content("~/Content/images/web.png")" /></a>
+                    }*@
+                                @*@if (Model.School.ContactEmail != null)
+                    {
+                        <a class="img-thumbnail" href='mailto:@Model.Teacher.ContactEmail' title="Email Me"><img src="@Url.Content("~/Content/images/email.png")" /></a>
+                    }*@
+                            </div>
                         </div>
                     </div>
-                    <hr />
-                }
-            </div>
-            <div class="col-lg-12" style="margin-top: 20px; border: 1px solid #aaa;">
-                <h3>Owners</h3>
-                @foreach (var item in Model.School.Owners)
-                {
-                    <div class="col-lg-2">
-                        @Html.DisplayFor(m => item, "Owner")
+                    <div class="row">
+                        <div class="col-lg-12" style="margin-top: 20px; padding-top: 20px;">
+                            <p>
+                                @Html.Label("Dance Styles:", new { @class = "form-label col-md-4" })
+                                @Html.DisplayFor(m => Model.School.DanceStyles, "DanceStyleLabels")
+                            </p>
+                            <div class="col-lg-12" style="padding-bottom: 20px;">
+                                @Html.DisplayFor(m => m.School.Description)
+                            </div>
+                        </div>
                     </div>
-                }
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-body buttoncontainer">
+                    <h3>Teachers</h3>
+                    @foreach (var item in Model.School.Teachers)
+                    {
+                        <div class="col-lg-2">
+                            @Html.DisplayFor(m => item, "Teacher")
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-body buttoncontainer">
+                    <h3>Performance Teams</h3>
+                    @foreach (var team in Model.School.Teams)
+                    {
+                        <div class="row">
+                            <div class="col-lg-12">
+                                @Html.DisplayFor(m => team)
+                            </div>
+                        </div>
+                        <hr />
+                    }
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-body buttoncontainer">
+                    <h3>Owners</h3>
+                    @foreach (var item in Model.School.Owners)
+                    {
+                        <div class="col-lg-2">
+                            @Html.DisplayFor(m => item, "Owner")
+                        </div>
+                    }
+                </div>
             </div>
         </div>
         <div class="col-lg-6 col-md-6">
-            <div class="col-lg-12" style="background-color: #eee; padding: 20px; border: 1px solid #aaa;">
-                <div class="bg-warning text-center" style="padding: 5px; border: 1px solid #aaa;">
-                    <h4>You have <b>(@Convert.ToInt32(Model.UserTickets != null ? Model.UserTickets.Sum(t => t.Quantity * t.Ticket.Quantity) - Model.UserTickets.Sum(t => t.EventRegistrations.Count()) : 0))</b> Tickets Available to Use at this School</h4>
-                </div>
-                <h3>Avaiable Tickets for Purchase</h3>
-                @foreach (var item in Model.School.Tickets.Where(t => t.EventId == null).OrderBy(t => t.Quantity))
-                {
-                    <div class="row" style="padding: 5px;">
-                        <div class="col-lg-8">
-                            @Html.DisplayFor(member => item.Quantity) Class(es) for
-                            @Html.DisplayFor(member => item.Price)
-                        </div>
-                        <div class="col-lg-4">
-                            @Html.ActionLink("Purchase Ticket", "BuyTicket", "School", new { id = item.Id }, new { @class = "btn btn-primary" })
-                        </div>
+            <div class="panel panel-default">
+                <div class="panel-body buttoncontainer bg-success">
+                    <div class="bg-warning text-center" style="padding: 5px; border: 1px solid #aaa;">
+                        <h4>You have <b>(@Convert.ToInt32(Model.UserTickets != null ? Model.UserTickets.Sum(t => t.Quantity * t.Ticket.Quantity) - Model.UserTickets.Sum(t => t.EventRegistrations.Count()) : 0))</b> Tickets Available to Use at this School</h4>
                     </div>
-                }
+                    <h3>Avaiable Tickets for Purchase</h3>
+                    @foreach (var item in Model.School.Tickets.Where(t => t.EventId == null).OrderBy(t => t.Quantity))
+                    {
+                        <div class="row" style="padding: 5px;">
+                            <div class="col-lg-8">
+                                @Html.DisplayFor(member => item.Quantity) Class(es) for
+                                @Html.DisplayFor(member => item.Price)
+                            </div>
+                            <div class="col-lg-4">
+                                @Html.ActionLink("Purchase Ticket", "BuyTicket", "School", new { id = item.Id }, new { @class = "btn btn-primary" })
+                            </div>
+                        </div>
+                    }
+                </div>
             </div>
-            <div class="col-lg-12" style="border: 1px solid #aaa; margin-top: 20px;">
-                <h3>Classes/Workshops</h3>
-                <div id="classes">
+            <div class="panel panel-default">
+                <div class="panel-body buttoncontainer">
+                    <h3>Classes/Workshops</h3>
+                    <div id="classes">
+                    </div>
                 </div>
             </div>
         </div>

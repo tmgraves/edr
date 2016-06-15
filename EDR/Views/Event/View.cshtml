@@ -95,9 +95,33 @@
                         </h2>
                     </div>
                 </div>
-                <p>
-                    <span class="large">@@ @Html.ActionLink(Model.Event.Place.Name, "Details", "Place", new { id = Model.Event.Place.Id }, new { })</span>
-                </p>
+                @if (Model.EventType == EventType.Class)
+                {
+                    <p>
+                        <span class="label label-success">
+                            @{
+                                switch (((Class)Model.Event).SkillLevel)
+                                {
+                                    case 1:
+                                        <text>Beginner</text>;
+                                        break;
+                                    case 2:
+                                        <text>Beginner/Intermediate</text>;
+                                        break;
+                                    case 3:
+                                        <text>Intermediate</text>;
+                                        break;
+                                    case 4:
+                                        <text>Intermediate/Advanced</text>;
+                                        break;
+                                    case 5:
+                                        <text>Advanced</text>;
+                                        break;
+                                }
+                            }
+                        </span>
+                    </p>
+                    }
             </div>
             <div class="col-lg-8 attachbottom bg-success">
                 @{
@@ -155,6 +179,17 @@
                 </a>
             </div>
             <div style="border: 1px solid #ccc;">
+                <div class="row" style="padding: 5px;">
+                    <div class="col-lg-12">
+                        <div class="col-lg-3">
+                            @Html.Label("Where:")
+                        </div>
+                        <div class="col-lg-9">
+                            @Html.ActionLink(Model.Event.Place.Name, "Details", "Place", new { id = Model.Event.Place.Id }, new { }) (@Model.Event.Place.PlaceType.ToString())<br />
+                            @Model.Event.Place.Address <br /> @Model.Event.Place.City, @Model.Event.Place.StateName @Model.Event.Place.Zip
+                        </div>
+                    </div>
+                </div>
                 @if (eventType == "Class")
                 {
                     <div class="row" style="padding: 5px;">
@@ -168,16 +203,6 @@
                         </div>
                     </div>
                 }
-                <div class="row" style="padding: 5px;">
-                    <div class="col-lg-12">
-                        <div class="col-lg-3">
-                            @Html.Label("Where:")
-                        </div>
-                        <div class="col-lg-9">
-                            @Model.Event.Place.Address <br /> @Model.Event.Place.City, @Model.Event.Place.StateName @Model.Event.Place.Zip
-                        </div>
-                    </div>
-                </div>
                 <div class="row" style="padding: 5px;">
                     <div class="col-lg-12">
                         <div class="col-lg-3">

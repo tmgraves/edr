@@ -86,6 +86,10 @@ namespace EDR.Models.ViewModels
         public decimal? TicketPrice { get; set; }
         [Required(ErrorMessage ="Please select at least one Dance Style for this Event")]
         public string StyleIds { get; set; }
+        [Display(Name = "# of Events")]
+        [DefaultValue(1)]
+        [Range(1, 100)]
+        public int EventCount { get; set; }
 
         //[Range(1, 12)]
         //public int StartHour { get; set; }

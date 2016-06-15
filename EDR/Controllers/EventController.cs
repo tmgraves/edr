@@ -150,6 +150,12 @@ namespace EDR.Controllers
             var userid = User.Identity.GetUserId();
 
             var model = LoadEvent((int)id, eventType);
+
+            if (model.Event == null)
+            {
+                return RedirectToAction("Learn", "Home", null);
+            }
+
             if (User.Identity.IsAuthenticated)
             {
                 model.Review = model.Event.Reviews.Where(r => r.Author.Id == userid).FirstOrDefault();
@@ -1905,7 +1911,6 @@ namespace EDR.Controllers
                 ModelState["SkillLevel"].Errors.Clear();
             }
 
-            int id = 0;
             //if (model.Event.PlaceId >= 0)
             //{
             //    ModelState["Event.Place.Name"].Errors.Clear();
@@ -1917,6 +1922,130 @@ namespace EDR.Controllers
 
             if (ModelState.IsValid)
             {
+                try
+                {
+                    var evnt = new Event();
+                    if (model.EventType == EventType.Class)
+                    {
+                        evnt = new Class();
+                        ((Class)evnt).SchoolId = (int)model.SchoolId;
+                        ((Class)evnt).SkillLevel = (int)model.SkillLevel;
+                        //  Add Teachers for Class
+                        if (model.Role == RoleName.Teacher)
+                        {
+                            ((Class)evnt).Teachers = new List<Teacher>() { DataContext.Teachers.Single(t => t.ApplicationUser.Id == userid) };
+                        }
+                        else
+                        {
+                            ((Class)evnt).Owners = new List<Owner>() { DataContext.Owners.Single(o => o.ApplicationUser.Id == userid) };
+                        }
+                        //  Add Teachers for Class
+                    }
+                    else
+                    {
+                        evnt = new Social();
+                        if (model.Role == RoleName.Promoter)
+                        {
+                            ((Social)evnt).Promoters = new List<Promoter>() { DataContext.Promoters.Single(t => t.ApplicationUser.Id == userid) };
+                        }
+                        else
+                        {
+                            ((Social)evnt).Owners = new List<Owner>() { DataContext.Owners.Single(o => o.ApplicationUser.Id == userid) };
+                        }
+                    }
+
+                    //  Build Class/Social
+                    evnt.Creator = user;
+                    evnt.EventInstances = new List<EventInstance>();
+                    TryUpdateModel(evnt, "Event");
+                    TryUpdateModel(evnt);
+                    evnt.Place = null;
+                    evnt.PlaceId = place.Id;
+                    //  Build Class/Social
+
+                    //  Add Admin
+                    evnt.EventMembers = new List<EventMember>() { new EventMember() { Admin = true, UserId = user.Id } };
+                    //  Add Admin
+
+                    //  Update Month Days
+                    if (model.MonthDays.PostedItems != null)
+                    {
+                        evnt.MonthDays = String.Join("-", model.MonthDays.PostedItems) + (model.HiddenMonthDay != "" ? ("-" + model.HiddenMonthDay) : "");
+                    }
+                    else
+                    {
+                        evnt.MonthDays = model.HiddenMonthDay;
+                    }
+                    //  Update Month Days
+
+                    //  Add Recurring Events
+                    model.Event.EventInstances = new List<EventInstance>();
+                    if (model.Event.Recurring)
+                    {
+                        var sdate = model.Event.StartDate;
+                        var edate = model.Event.EndDate;
+                        var daylength = (Convert.ToDateTime(model.Event.EndDate) - model.Event.StartDate).TotalDays;
+                        sdate = ApplicationUtility.GetNextDate(sdate, model.Event.Frequency, (int)model.Event.Interval, model.Event.Day, sdate, model.Event.MonthDays);
+
+                        for (int i = 1; i <= model.EventCount; i++)
+                        {
+                            evnt.EventInstances.Add(new EventInstance() { DateTime = sdate, EndDate = sdate.AddDays(daylength), PlaceId = evnt.PlaceId, StartTime = Convert.ToDateTime(sdate.ToShortDateString() + " " + ((DateTime)evnt.StartTime).ToShortTimeString()), EndTime = Convert.ToDateTime(sdate.AddDays(daylength).ToShortDateString() + " " + ((DateTime)evnt.EndTime).ToShortTimeString()) });
+                            sdate = ApplicationUtility.GetNextDate(sdate, model.Event.Frequency, (int)model.Event.Interval, model.Event.Day, sdate.AddDays(1), model.Event.MonthDays);
+                        }
+                    }
+                    else
+                    {
+                        evnt.EventInstances.Add(new EventInstance() { DateTime = evnt.StartDate, EndDate = Convert.ToDateTime(evnt.EndDate), PlaceId = evnt.PlaceId, StartTime = evnt.StartTime, EndTime = evnt.EndTime });
+                    }
+                    //  Add Recurring Events
+
+                    //  Add Linked Object
+                    if (evnt.FacebookId != null)
+                    {
+                        evnt.LinkedMedia = new List<LinkedMedia>() { new LinkedMedia() { FacebookId = evnt.FacebookId, MediaSource = MediaSource.Facebook, Name = model.FacebookEventName, ObjectType = "Event", Url = evnt.FacebookLink, Default = true } };
+                    }
+                    //  Add Linked Object
+
+                    //  Add Dance Styles
+                    var styleids = model.StyleIds.Split('-');
+                    if (styleids.Length != 0)
+                    {
+                        evnt.DanceStyles = DataContext.DanceStyles.Where(x => styleids.Contains(x.Id.ToString())).ToList();
+                        DataContext.SaveChanges();
+                    }
+                    //  Add Dance Styles
+
+                    //  Add Tickets
+                    if (!model.UseSchoolTickets)
+                    {
+                        evnt.Tickets = new List<Ticket>();
+                        evnt.Tickets.Add(new Ticket() { Price = (decimal)model.TicketPrice, Quantity = (decimal)model.TicketQuantity });
+                        //  DataContext.SaveChanges();
+                    }
+                    //  Add Tickets
+
+                    //  Save Event
+                    DataContext.Events.Add(evnt);
+                    DataContext.SaveChanges();
+                    //  Save Event
+
+                    return RedirectToAction("View", new { id = evnt.Id, eventType = model.EventType });
+                }
+                catch (DbEntityValidationException e)
+                {
+                    foreach (var eve in e.EntityValidationErrors)
+                    {
+                        Console.WriteLine("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                            eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                        foreach (var ve in eve.ValidationErrors)
+                        {
+                            Console.WriteLine("- Property: \"{0}\", Error: \"{1}\"",
+                                ve.PropertyName, ve.ErrorMessage);
+                        }
+                    }
+                    throw;
+                }
+
                 //if (model.Event.PlaceId == 0)
                 //{
                 //    var add = Geolocation.ParseAddress(model.Event.Place.Address + ", " + model.Event.Place.City + ", " + model.Event.Place.State + ", " + model.Event.Place.Zip);
@@ -1924,191 +2053,6 @@ namespace EDR.Controllers
                 //    model.Event.Place.Longitude = add.Longitude;
                 //}
 
-                if (model.EventType == EventType.Class)
-                {
-                    var cls = new Class();
-                    cls.EventInstances = new List<EventInstance>();
-                    TryUpdateModel(cls, "Event");
-                    TryUpdateModel(cls);
-                    cls.Place = null;
-                    cls.PlaceId = place.Id;
-                    //  TryUpdateModel(cls.EventInstances, "EventInstances");
-
-                    //  Add Linked Object
-                    if (cls.FacebookId != null)
-                    {
-                        cls.LinkedMedia = new List<LinkedMedia>() { new LinkedMedia() { FacebookId = cls.FacebookId, MediaSource = MediaSource.Facebook, Name = model.FacebookEventName, ObjectType = "Event", Url = cls.FacebookLink, Default = true } };
-                    }
-                    //  Add Linked Object
-
-                    //  Update Month Days
-                    if (model.MonthDays.PostedItems != null)
-                    {
-                        cls.MonthDays = String.Join("-", model.MonthDays.PostedItems) + (model.HiddenMonthDay != "" ? ("-" + model.HiddenMonthDay) : "");
-                    }
-                    else
-                    {
-                        cls.MonthDays = model.HiddenMonthDay;
-                    }
-                    //  Update Month Days
-
-                    if (model.Role == RoleName.Teacher)
-                    {
-                        cls.Teachers = new List<Teacher>() { DataContext.Teachers.Single(t => t.ApplicationUser.Id == userid) };
-                    }
-                    else
-                    {
-                        cls.Owners = new List<Owner>() { DataContext.Owners.Single(o => o.ApplicationUser.Id == userid) };
-                    }
-                    cls.Creator = user;
-
-                    //  Add Admin
-                    cls.EventMembers = new List<EventMember>() { new EventMember() { Admin = true, UserId = user.Id } };
-                    //  Add Admin
-
-                    //if (cls.PlaceId == 0)
-                    //{
-                    //    cls.Place.Latitude = model.Event.Place.Latitude;
-                    //    cls.Place.Longitude = model.Event.Place.Longitude;
-                    //}
-                    //else
-                    //{
-                    //    cls.Place = null;
-                    //}
-
-                    //  cls.DanceStyles = DataContext.DanceStyles.Where(s => model.StylesCheckboxList.PostedItems.Contains(s.Id.ToString())).ToList();
-                    //  Add Dance Styles
-                    var styleids = model.StyleIds.Split('-');
-                    if (styleids.Length != 0)
-                    {
-                        cls.DanceStyles = DataContext.DanceStyles.Where(x => styleids.Contains(x.Id.ToString())).ToList();
-                        DataContext.SaveChanges();
-                    }
-
-                    //  Add Recurring Events
-                    if (model.Event.Recurring)
-                    {
-                        var sdate = model.Event.StartDate;
-                        var edate = model.Event.EndDate;
-                        sdate = ApplicationUtility.GetNextDate(sdate, model.Event.Frequency, (int)model.Event.Interval, model.Event.Day, sdate, model.Event.MonthDays);
-
-                        while (sdate <= edate)
-                        {
-                            cls.EventInstances.Add(new EventInstance() { Event = cls, DateTime = sdate, PlaceId = cls.PlaceId, StartTime = cls.StartTime, EndTime = cls.EndTime });
-                            sdate = ApplicationUtility.GetNextDate(sdate, model.Event.Frequency, (int)model.Event.Interval, model.Event.Day, sdate.AddDays(1), model.Event.MonthDays);
-                        }
-                    }
-                    else
-                    {
-                        cls.EventInstances.Add(new EventInstance() { Event = cls, DateTime = cls.StartDate });
-                    }
-                    //  Add Recurring Events
-
-                    DataContext.Classes.Add(cls);
-                    DataContext.SaveChanges();
-                    id = cls.Id;
-
-                    ////  Add Tickets
-                    //cls.EventTickets = DataContext.Tickets.Where(t => model.TicketId.Contains(t.Id.ToString())).AsEnumerable().Select(t => new EventTicket() { TicketId = t.Id, EventId = cls.Id }).ToList();
-                    //DataContext.SaveChanges();
-                    //  Add Tickets
-                    if (!model.UseSchoolTickets)
-                    {
-                        cls.Tickets = new List<Ticket>();
-                        cls.Tickets.Add(new Ticket() { EventId = cls.Id, Price = (decimal)model.TicketPrice, Quantity = (decimal)model.TicketQuantity });
-                        DataContext.SaveChanges();
-                    }
-                }
-                //  Social
-                else
-                {
-                    var soc = new Social();
-                    soc.EventInstances = new List<EventInstance>();
-                    TryUpdateModel(soc, "Event");
-                    TryUpdateModel(soc);
-                    soc.Place = null;
-                    soc.PlaceId = place.Id;
-                    //  TryUpdateModel(soc.EventInstances, "EventInstances");
-
-                    //  Add Linked Object
-                    if (soc.FacebookId != null)
-                    {
-                        soc.LinkedMedia = new List<LinkedMedia>() { new LinkedMedia() { FacebookId = soc.FacebookId, MediaSource = MediaSource.Facebook, Name = model.FacebookEventName, ObjectType = "Event", Url = soc.FacebookLink, Default = true } };
-                    }
-                    //  Add Linked Object
-
-                    //  Update Month Days
-                    if (model.MonthDays.PostedItems != null)
-                    {
-                        soc.MonthDays = String.Join("-", model.MonthDays.PostedItems) + (model.HiddenMonthDay != "" ? ("-" + model.HiddenMonthDay) : "");
-                    }
-                    else
-                    {
-                        soc.MonthDays = model.HiddenMonthDay;
-                    }
-                    //  Update Month Days
-
-                    if (model.Role == RoleName.Promoter)
-                    {
-                        soc.Promoters = new List<Promoter>() { DataContext.Promoters.Single(t => t.ApplicationUser.Id == userid) };
-                    }
-                    else
-                    {
-                        soc.Owners = new List<Owner>() { DataContext.Owners.Single(o => o.ApplicationUser.Id == userid) };
-                    }
-                    soc.Creator = user;
-
-                    //  Add Admin
-                    soc.EventMembers = new List<EventMember>() { new EventMember() { Admin = true, UserId = user.Id } };
-                    //  Add Admin
-
-                    //if (soc.PlaceId == 0)
-                    //{
-                    //    soc.Place.Latitude = model.Event.Place.Latitude;
-                    //    soc.Place.Longitude = model.Event.Place.Longitude;
-                    //}
-                    //else
-                    //{
-                    //    soc.Place = null;
-                    //}
-
-                    //  soc.DanceStyles = DataContext.DanceStyles.Where(s => model.StylesCheckboxList.PostedItems.Contains(s.Id.ToString())).ToList();
-                    //  Add Dance Styles
-                    var styleids = model.StyleIds.Split('-');
-                    if (styleids.Length != 0)
-                    {
-                        soc.DanceStyles = DataContext.DanceStyles.Where(x => styleids.Contains(x.Id.ToString())).ToList();
-                        DataContext.SaveChanges();
-                    }
-
-                    //  Add Recurring Events
-                    if (model.Event.Recurring)
-                    {
-                        var sdate = model.Event.StartDate;
-                        var edate = model.Event.EndDate;
-                        sdate = ApplicationUtility.GetNextDate(sdate, model.Event.Frequency, (int)model.Event.Interval, model.Event.Day, sdate, model.Event.MonthDays);
-
-                        while (sdate <= edate)
-                        {
-                            soc.EventInstances.Add(new EventInstance() { Event = soc, DateTime = sdate, PlaceId = soc.PlaceId, StartTime = soc.StartTime, EndTime = soc.EndTime });
-                            sdate = ApplicationUtility.GetNextDate(sdate, model.Event.Frequency, (int)model.Event.Interval, model.Event.Day, sdate.AddDays(1), model.Event.MonthDays);
-                        }
-                    }
-                    else
-                    {
-                        soc.EventInstances.Add(new EventInstance() { Event = soc, DateTime = soc.StartDate });
-                    }
-                    //  Add Recurring Events
-
-                    DataContext.Socials.Add(soc);
-                    DataContext.SaveChanges();
-                    id = soc.Id;
-
-                    //  Add Tickets
-                    soc.Tickets = new List<Ticket>();
-                    soc.Tickets.Add(new Ticket() { EventId = soc.Id, Price = (decimal)model.TicketPrice, Quantity = (decimal)model.TicketQuantity });
-                    DataContext.SaveChanges();
-                }
             }
             else
             {
@@ -2116,8 +2060,6 @@ namespace EDR.Controllers
 
                 return View(model);
             }
-
-            return RedirectToAction("View", new { id = id, eventType = model.EventType });
         }
 
         [Authorize(Roles = "Owner,Promoter,Teacher")]
@@ -2510,31 +2452,6 @@ namespace EDR.Controllers
                     DataContext.Entry(evnt).State = EntityState.Modified; 
                     DataContext.SaveChanges();
 
-                    //  Add Recurring Events
-                    if (evnt.Recurring)
-                    {
-                        var instances = DataContext.EventInstances.Where(i => i.EventId == evnt.Id);
-
-                        var sdate = instances.Max(i => i.DateTime).AddDays(1);
-                        var edate = model.Event.EndDate;
-                        sdate = ApplicationUtility.GetNextDate(evnt.StartDate, model.Event.Frequency, (int)model.Event.Interval, model.Event.Day, sdate, model.Event.MonthDays);
-
-                        if (edate > sdate)
-                        {
-                            while (sdate <= edate)
-                            {
-                                DataContext.EventInstances.Add(new EventInstance() { EventId = evnt.Id, DateTime = sdate, PlaceId = evnt.PlaceId, StartTime = evnt.StartTime, EndTime = evnt.EndTime });
-                                sdate = ApplicationUtility.GetNextDate(sdate, model.Event.Frequency, (int)model.Event.Interval, model.Event.Day, sdate.AddDays(1), model.Event.MonthDays);
-                            }
-                        }
-                        else
-                        {
-                            DataContext.EventInstances.RemoveRange(DataContext.EventInstances.Where(i => i.EventId == evnt.Id && i.EventRegistrations.Count() == 0 && i.DateTime > edate));
-                        }
-
-                        DataContext.SaveChanges();
-                    }
-
                     return RedirectToAction("Manage", new { id = model.Event.Id, eventType = model.EventType });
                 }
                 catch (DbEntityValidationException e)
@@ -2556,6 +2473,33 @@ namespace EDR.Controllers
             {
                 return View(model);
             }
+        }
+
+        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        [HttpPost]
+        public ActionResult AddInstances(int id, int eventCount)
+        {
+            var evnt = DataContext.Events.Include("EventInstances").Single(e => e.Id == id);
+
+            //  Add Recurring Events
+            if (evnt.Recurring)
+            {
+                if (DataContext.EventInstances.Where(i => i.EventId == id && i.DateTime >= DateTime.Today).Count() < 20)
+                {
+                    var sdate = DataContext.EventInstances.Where(i => i.EventId == id).Max(i => i.DateTime).AddDays(1);
+                    var daylength = (Convert.ToDateTime(evnt.EndDate) - evnt.StartDate).TotalDays;
+                    sdate = ApplicationUtility.GetNextDate(evnt.StartDate, evnt.Frequency, (int)evnt.Interval, evnt.Day, sdate, evnt.MonthDays);
+
+                    for (int i = 1; i <= eventCount; i++)
+                    {
+                        evnt.EventInstances.Add(new EventInstance() { DateTime = sdate, EndDate = sdate.AddDays(daylength), PlaceId = evnt.PlaceId, StartTime = Convert.ToDateTime(sdate.ToShortDateString() + " " + ((DateTime)evnt.StartTime).ToShortTimeString()), EndTime = Convert.ToDateTime(sdate.AddDays(daylength).ToShortDateString() + " " + ((DateTime)evnt.EndTime).ToShortTimeString()) });
+                        sdate = ApplicationUtility.GetNextDate(sdate, evnt.Frequency, (int)evnt.Interval, evnt.Day, sdate.AddDays(1), evnt.MonthDays);
+                    }
+                    DataContext.SaveChanges();
+                }
+            }
+
+            return RedirectToAction("Manage", new { id = id });
         }
 
         [Authorize(Roles = "Owner,Promoter,Teacher")]
@@ -4406,6 +4350,17 @@ namespace EDR.Controllers
             var instanceid = registration.EventInstanceId;
 
             DataContext.EventRegistrations.Remove(registration);
+            DataContext.SaveChanges();
+
+            return RedirectToAction("ManageInstance", new { id = instanceid });
+        }
+
+        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        public ActionResult CheckinRegistration(int id)
+        {
+            var registration = DataContext.EventRegistrations.Where(i => i.Id == id).FirstOrDefault();
+            registration.Checkedin = registration.Checkedin == null ? (DateTime?)DateTime.Now : null;
+            var instanceid = registration.EventInstanceId;
             DataContext.SaveChanges();
 
             return RedirectToAction("ManageInstance", new { id = instanceid });

@@ -2,6 +2,8 @@
 
 @{
     ViewBag.Title = "ManageInstance";
+
+    var eventType = Model.Instance.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social;
 }
 @section Scripts
 {
@@ -86,14 +88,13 @@
     });
 
     $('.timepicker').change(function () {
-        var start = $('.timeelement.begintime');
-        var end = $('.timeelement.endtime');
+        var start = new Date($('#Instance_DateTime').val());
+        var end = new Date($('#Instance_EndDate').val());
+        var startdt = new Date((start.getUTCMonth() + 1).toString() + "/" + start.getUTCDate().toString() + "/" + start.getUTCFullYear().toString() + " " + $('.timepicker.start').val());
+        var enddt = new Date((end.getUTCMonth() + 1).toString() + "/" + end.getUTCDate().toString() + "/" + end.getUTCFullYear().toString() + " " + $('.timepicker.end').val());
+        $('.timeelement.begintime').prop('value', startdt.toLocaleDateString() + " " + startdt.toLocaleTimeString());
+        $('.timeelement.endtime').prop('value', enddt.toLocaleDateString() + " " + enddt.toLocaleTimeString());
 
-        var time = new Date();
-        var startdt = new Date(time.getMonth().toString() + "/" + time.getDate().toString() + "/" + time.getFullYear().toString() + " " + $('.timepicker.start').val());
-        var enddt = new Date(time.getMonth().toString() + "/" + time.getDate().toString() + "/" + time.getFullYear().toString() + " " + $('.timepicker.end').val());
-        start.prop('value', startdt.toLocaleDateString() + " " + startdt.toLocaleTimeString());
-        end.prop('value', enddt.toLocaleDateString() + " " + enddt.toLocaleTimeString());
         var val = $('#saveform.main').valid();
     });
 
@@ -146,12 +147,23 @@
     });
 </script>
 }
+
+<ol class="breadcrumb">
+    @if (eventType == EDR.Enums.EventType.Class)
+    {
+        <li>@Html.ActionLink("All Classes", "Learn", "Home")</li>
+    }
+    else
+    {
+        <li>@Html.ActionLink("All Socials", "Social", "Home")</li>
+    }
+    <li>@Html.ActionLink("View " + eventType, "View", "Event", new { id = Model.Instance.Event.Id, eventType = eventType }, null)</li>
+    <li>@Html.ActionLink("Manage " + eventType, "Manage", "Event", new { id = Model.Instance.EventId, eventType = eventType }, null)</li>
+    <li class="active">Manage Instance</li>
+</ol>
+<h2>Manage Instance</h2>
+
 <div class="container-fluid">
-    <h2>Manage Instance</h2>
-    <p>
-        @Html.ActionLink("Back to Event", "Manage", new { id = Model.Instance.EventId, eventType = Model.Instance.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social })
-    </p>
-    <hr />
     <div class="col-lg-6 col-md-6">
         <div class="panel panel-default">
             <div class="panel-body ">
@@ -182,6 +194,14 @@
                             </dt>
                             <dd>
                                 @Html.DisplayFor(model => model.Instance.DateTime)
+                            </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                End Date
+                            </dt>
+                            <dd>
+                                @Html.DisplayFor(model => model.Instance.EndDate)
                             </dd>
                         </dl>
                         <dl class="dl-horizontal">
@@ -244,8 +264,17 @@
                                 Date
                             </dt>
                             <dd>
-                                @Html.TextBoxFor(m => m.Instance.DateTime, "{0:yyyy-MM-dd}", htmlAttributes: new { @type = "date", @class = "form-control" })
+                                @Html.TextBoxFor(m => m.Instance.DateTime, "{0:yyyy-MM-dd}", htmlAttributes: new { @type = "date", @class = "form-control timepicker" })
                                 @Html.ValidationMessageFor(model => model.Instance.DateTime, "", new { @class = "text-danger" })
+                            </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                End Date
+                            </dt>
+                            <dd>
+                                @Html.TextBoxFor(m => m.Instance.EndDate, "{0:yyyy-MM-dd}", htmlAttributes: new { @type = "date", @class = "form-control timepicker" })
+                                @Html.ValidationMessageFor(model => model.Instance.EndDate, "", new { @class = "text-danger" })
                             </dd>
                         </dl>
                         <dl class="dl-horizontal">
@@ -325,6 +354,8 @@
                             </th>
                             <th>
                             </th>
+                            <th>
+                            </th>
                         </tr>
                     </thead>
                     @foreach (var r in Model.Instance.EventRegistrations)
@@ -332,6 +363,20 @@
                         <tr>
                             <td>
                                 @r.User.FullName
+                            </td>
+                            <td>
+                                @if (r.Checkedin == null)
+                                {
+                                    <a class="btn btn-sm btn-primary" title="Checkin" href="@Url.Action("CheckinRegistration", "Event", new { id = r.Id })">
+                                        Checkin
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a class="btn btn-sm btn-info" title="Remove Checkin" href="@Url.Action("CheckinRegistration", "Event", new { id = r.Id })">
+                                        Remove Checkin
+                                    </a>
+                                }
                             </td>
                             <td>
                                 <a class="btn btn-sm btn-danger" title="Delete" href="@Url.Action("DeleteRegistration", "Event", new { id = r.Id })" onclick="return confirm('Are you sure you want to DELETE this Registration?')">

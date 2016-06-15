@@ -256,8 +256,8 @@
                             @Html.DisplayNameFor(model => model.Event.StartDate)
                         </dt>
                         <dd>
-                            @*@Html.DisplayFor(m => m.Event.StartDate, "{0:yyyy-MM-dd}")*@
-                            @Html.TextBoxFor(m => m.Event.StartDate, "{0:yyyy-MM-dd}", htmlAttributes: new { @type = "date", @class = "form-control", @readonly = "readonly" })
+                            @Html.TextBoxFor(m => m.Event.StartDate, "{0:yyyy-MM-dd}", htmlAttributes: new { @type = "date", @class = "form-control timepicker", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(model => model.Event.StartDate, "", new { @class = "text-danger" })
                         </dd>
                     </dl>
                     <dl class="dl-horizontal">
@@ -265,7 +265,7 @@
                             @Html.DisplayNameFor(model => model.Event.EndDate)
                         </dt>
                         <dd>
-                            @Html.TextBoxFor(m => m.Event.EndDate, "{0:yyyy-MM-dd}", htmlAttributes: new { @type = "date", @class = "form-control" })
+                            @Html.TextBoxFor(m => m.Event.EndDate, "{0:yyyy-MM-dd}", htmlAttributes: new { @type = "date", @class = "form-control timepicker" })
                             @Html.ValidationMessageFor(model => model.Event.EndDate, "", new { @class = "text-danger" })
                         </dd>
                     </dl>
@@ -507,13 +507,10 @@
                         @Html.AntiForgeryToken()
                         @Html.HiddenFor(m => m.Event.Id)
                         @Html.HiddenFor(m => m.EventType)
-                        @Html.TextBoxFor(m => m.NewLinkedMedia, "", new { placeholder = "Enter url for link", @class = "form-control col-md-4" })
+                        @Html.TextBoxFor(m => m.NewLinkedMedia, "", new { placeholder = "Enter Facebook url for link", @class = "form-control col-md-4" })
                         @Html.ValidationMessageFor(model => model.NewLinkedMedia, "", new { @class = "text-danger" })
-                        <input class="btn" type="submit" value="Add Linked Media" />
+                        <input class="btn btn-primary" type="submit" value="Add Linked Media" />
                     }
-                </p>
-                <p>
-                    Add Twitter Link
                 </p>
                 <div id="linksdiv">
                     @Html.Partial("~/Views/Shared/Events/_ManageLinkedMediaPartial.cshtml", Model.Event.LinkedMedia)
@@ -527,6 +524,12 @@
             <div class="panel panel-default">
                 <div class="panel-body ">
                     <h3>Event Dates</h3>
+                    @using (Html.BeginForm("AddInstances", "Event", FormMethod.Post))
+                    {
+                        <input type="hidden" id="id" name="id" value="@Model.Event.Id" />
+                        <input id="eventCount" name="eventCount" value="1" placeholder="# of Dates to add" />
+                        <button type="submit" class="btn btn-primary btn-sm" value="Add Instances">Add Dates</button>
+                    }
                     <div id="instances-container">
                         <ul class="my-navigation pagination">
                             <li class="simple-pagination-first"></li>
@@ -552,7 +555,7 @@
                                 </tr>
                             </thead>
                             @foreach (var i in Model.Event.EventInstances)
-                            {
+                    {
                                 <tr>
                                     <td>
                                         <strong>@i.DateTime.ToLongDateString()</strong><br />
@@ -666,7 +669,7 @@
                     @Html.HiddenFor(m => m.NewStyleId)
                     @Html.HiddenFor(m => m.EventType)
                     @Html.TextBox("stylesearch", "", new { placeholder = "Search for a Dance Style", @class = "form-control col-md-4" })
-                    <input class="btn" type="submit" value="Add Style" />
+                    <input class="btn btn-primary" type="submit" value="Add Style" />
                 }
                 <div id="stylesdiv">
                     @Html.Partial("~/Views/Event/Partial/_DanceStylesPartial.cshtml", new EDR.Models.ViewModels.EventDanceStylesPartialViewModel() { DanceStyles = Model.Event.DanceStyles, EventId = Model.Event.Id, EventType = (EDR.Enums.EventType)Model.EventType })
@@ -844,11 +847,17 @@
     <script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
     <script src="~/Scripts/jquery-simple-pagination-plugin.js"></script>
     <script src="~/Scripts/changepicture.js"></script>
+    <script src="~/Scripts/jquery.mousewheel.js"></script>
 
     <script type="text/javascript">
     $.validator.setDefaults({
         ignore: ""
     })
+
+    $('#eventCount').spinner({
+        min: 1,
+        max: 10
+    });
 
     uploadImageUrl = "../../Event/UploadImageAsync";
     id = '@Model.Event.Id'; //  SchoolId
@@ -896,11 +905,19 @@
         var start = $('.timeelement.begintime');
         var end = $('.timeelement.endtime');
 
-        var time = new Date();
-        var startdt = new Date(time.getMonth().toString() + "/" + time.getDate().toString() + "/" + time.getFullYear().toString() + " " + $('.timepicker.start').val());
-        var enddt = new Date(time.getMonth().toString() + "/" + time.getDate().toString() + "/" + time.getFullYear().toString() + " " + $('.timepicker.end').val());
-        start.prop('value', startdt.toLocaleDateString() + " " + startdt.toLocaleTimeString());
-        end.prop('value', enddt.toLocaleDateString() + " " + enddt.toLocaleTimeString());
+        var start = new Date($('#Event_StartDate').val());
+        var end = new Date($('#Event_EndDate').val());
+        var startdt = new Date((start.getUTCMonth() + 1).toString() + "/" + start.getUTCDate().toString() + "/" + start.getUTCFullYear().toString() + " " + $('.timepicker.start').val());
+        var enddt = new Date((end.getUTCMonth() + 1).toString() + "/" + end.getUTCDate().toString() + "/" + end.getUTCFullYear().toString() + " " + $('.timepicker.end').val());
+        $('.timeelement.begintime').prop('value', startdt.toLocaleDateString() + " " + startdt.toLocaleTimeString());
+        $('.timeelement.endtime').prop('value', enddt.toLocaleDateString() + " " + enddt.toLocaleTimeString());
+
+        //var time = new Date();
+        //var startdt = new Date(time.getMonth().toString() + "/" + time.getDate().toString() + "/" + time.getFullYear().toString() + " " + $('.timepicker.start').val());
+        //var enddt = new Date(time.getMonth().toString() + "/" + time.getDate().toString() + "/" + time.getFullYear().toString() + " " + $('.timepicker.end').val());
+        //start.prop('value', startdt.toLocaleDateString() + " " + startdt.toLocaleTimeString());
+        //end.prop('value', enddt.toLocaleDateString() + " " + enddt.toLocaleTimeString());
+
         var val = $('#saveform.main').valid();
     });
     $('#placesearch').autocomplete({
