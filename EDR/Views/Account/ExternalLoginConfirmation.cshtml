@@ -159,21 +159,22 @@
             })
         },
         select: function (event, ui) {
-            $('#StyleIds').val($('#StyleIds').val() + '-' + ui.item.value);
-            var styles = $("#stylesdiv").val();
-            if ($("#stylesdiv").val() == "")
+            if (ui.item.label != "No matches found")
             {
-                styles = ui.item.label;
-            }
-            else
-            {
-                if (styles.indexOf(ui.item.label) < 0) {
-                    styles = styles + ", " + ui.item.label;
+                $('#StyleIds').val($('#StyleIds').val() + '-' + ui.item.value);
+                var styles = $("#stylesdiv").val();
+                if ($("#stylesdiv").val() == "") {
+                    styles = ui.item.label;
                 }
+                else {
+                    if (styles.indexOf(ui.item.label) < 0) {
+                        styles = styles + ", " + ui.item.label;
+                    }
+                }
+                $("#stylesdiv").val(styles);
+                //  $('.stylesearch').val(ui.item.label);
+                //  $('.stylesearchid').val(ui.item.value);
             }
-            $("#stylesdiv").val(styles);
-            //  $('.stylesearch').val(ui.item.label);
-            //  $('.stylesearchid').val(ui.item.value);
             $('.stylesearch').val('');
             return false;
         },
