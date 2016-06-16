@@ -1,0 +1,5 @@
+﻿@model EDR.Models.Owner
+
+<a title="@Model.ApplicationUser.FullName" href="@Url.Action("Home", "Owner", new { username = Model.ApplicationUser.UserName })">
+    <img style="max-height: 100%; max-width: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.ApplicationUser.PhotoUrl))" title="@Model.ApplicationUser.FullName" />
+</a>

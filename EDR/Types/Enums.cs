@@ -289,4 +289,14 @@ namespace EDR.Enums
         Event,
         Place
     }
+
+    public enum MusicType
+    {
+        [Display(Name = "DJ")]
+        DJ,
+        [Display(Name = "Live Band")]
+        LiveBand,
+        [Display(Name = "Live Band & DJ")]
+        Both
+    }
 }

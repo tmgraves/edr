@@ -1,4 +1,5 @@
 ﻿@model EDR.Models.ViewModels.EventManageViewModel
+@using EDR.Models
 
 @{
     ViewBag.Title = "Manage";
@@ -104,7 +105,7 @@
                     </div>
                     <div>
                         <div class="buttoncontainer col-lg-6 nospace">
-                            <img class="targetpic" style="max-width: 100%;" src="@Url.Content(Model.Event.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
+                            <img class="targetpic" style="max-width: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.Event.PhotoUrl))" />
                             <button type="button" class="btn btn-info actionbutton changepicbutton" data-toggle="modal" data-target="#modalPic">
                                 Change
                             </button>
@@ -130,6 +131,17 @@
                                         @(((EDR.Models.Class)Model.Event).School.Name)
                                     </div>
                                 </a>
+                            </dd>
+                        </dl>
+                    }
+                    @if (Model.EventType == EDR.Enums.EventType.Social)
+                    {
+                        <dl class="dl-horizontal">
+                            <dt>
+                                Music Type:
+                            </dt>
+                            <dd>
+                                @(EDR.Utilities.ApplicationUtility.GetDisplayName(((Social)Model.Event).MusicType))
                             </dd>
                         </dl>
                     }
@@ -251,6 +263,17 @@
                             @Html.ValidationMessageFor(model => model.Event.Name, "", new { @class = "text-danger" })
                         </dd>
                     </dl>
+                    if (Model.EventType == EDR.Enums.EventType.Social)
+                    {
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.DisplayName("Music Type:")
+                            </dt>
+                            <dd>
+                                @Html.EnumDropDownListFor(model => ((EDR.Models.Social)model.Event).MusicType, new { @class = "form-control" })
+                            </dd>
+                        </dl>
+                    }
                     <dl class="dl-horizontal">
                         <dt>
                             @Html.DisplayNameFor(model => model.Event.StartDate)

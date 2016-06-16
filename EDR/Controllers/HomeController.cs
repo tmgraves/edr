@@ -252,6 +252,7 @@ namespace EDR.Controllers
                                 .Include("Place")
                                 .Include("EventMembers.Member")
                                 .Include("Reviews")
+                                .Where(c => c.EventInstances.Any(i => i.DateTime >= DateTime.Today))
                                 .AsQueryable();
             if (model.DanceStyleId != null)
             {
@@ -286,6 +287,7 @@ namespace EDR.Controllers
                                 .Include("Place")
                                 .Include("EventMembers.Member")
                                 .Include("Reviews")
+                                .Where(c => c.EventInstances.Any(i => i.DateTime >= DateTime.Today))
                                 .AsQueryable();
             if (model.DanceStyleId != null)
             {

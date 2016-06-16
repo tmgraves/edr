@@ -24,7 +24,7 @@
                     </div>
                     <div class="text-center">
                         <div class="buttoncontainer" style="display: inline-block;">
-                            <img id="profilepic" src="@Url.Content(Model.Team.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
+                            <img id="profilepic" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.Team.PhotoUrl))"  />
                             <button id="btnChangePicture" type="button" class="btn btn-info actionbutton" data-toggle="modal" data-target="#modalPic">
                                 Change
                             </button>

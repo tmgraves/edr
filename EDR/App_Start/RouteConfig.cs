@@ -60,388 +60,388 @@ namespace EDR
                 namespaces: new[] { "EDR.Controllers" }
             );
 
-            routes.MapRoute(
-                name: "Test",
-                url: "Home/Test",
-                defaults: new { controller = "Home", action = "Test" }
-            );
-
-            routes.MapRoute(
-                name: "Store",
-                url: "Store/Index",
-                defaults: new { controller = "Store", action = "Index" }
-            );
-
-            routes.MapRoute(
-                name: "ShoppingCart",
-                url: "ShoppingCart/{action}",
-                defaults: new { controller = "ShoppingCart", action = UrlParameter.Optional }
-            );
-
-            routes.MapRoute(
-                name: "Checkout",
-                url: "Checkout/{action}",
-                defaults: new { controller = "Checkout", action = UrlParameter.Optional }
-            );
-
-            routes.MapRoute(
-                name: "SchoolList",
-                url: "School/List",
-                defaults: new { controller = "School", action = "List" }
-            );
-
-            routes.MapRoute(
-                name: "SchoolCreate",
-                url: "School/Create",
-                defaults: new { controller = "School", action = "Create" }
-            );
-
-            routes.MapRoute(
-                name: "SchoolAction",
-                url: "School/{id}/{action}",
-                defaults: new { controller = "School", id = UrlParameter.Optional, action = "View" }
-            );
-
-            routes.MapRoute(
-                name: "DancerList",
-                url: "Dancer/List",
-                defaults: new { controller = "Dancer", action = "List" }
-            );
-
-            routes.MapRoute(
-                name: "DancerHome",
-                url: "Dancer/{username}",
-                defaults: new { controller = "Dancer", action = "Home" }
-            );
-
-            routes.MapRoute(
-                name: "SocialMedia",
-                url: "SocialMedia/{action}",
-                defaults: new { controller = "SocialMedia", action = UrlParameter.Optional }
-            );
-
-            routes.MapRoute(
-                name: "StyleIndex",
-                url: "DanceStyle/Index",
-                defaults: new { controller = "DanceStyle", action = "Index" },
-                namespaces: new[] { "EDR.Controllers" }
-            );
-            routes.MapRoute(
-                name: "StyleView",
-                url: "DanceStyle/{styleName}",
-                defaults: new { controller = "DanceStyle", action = "Details", styleName = UrlParameter.Optional },
-                namespaces: new[] { "EDR.Controllers" }
-            );
-            routes.MapRoute(
-                name: "StyleIndexAdd",
-                url: "DanceStyle/Index_AddItem",
-                defaults: new { controller = "DanceStyle", action = "Index_AddItem" },
-                namespaces: new[] { "EDR.Controllers" }
-            );
-
-            routes.MapRoute(
-                name: "VisitorView",
-                url: "Visitor/View",
-                defaults: new { controller = "Visitor", action = "View" }
-            );
-
-            routes.MapRoute(
-                name: "PlaceList",
-                url: "Place/List",
-                defaults: new { controller = "Place", action = "List" }
-            );
-
-            routes.MapRoute(
-                name: "PlaceAction",
-                url: "Place/{id}/{action}",
-                defaults: new { controller = "Place", id = UrlParameter.Optional, action = "Details" }
-            );
-
-            routes.MapRoute(
-                name: "EventAddReview",
-                url: "Event/Reviews_Insert",
-                defaults: new { controller = "Event", action = "Reviews_Insert" }
-            );
-
-            routes.MapRoute(
-                name: "EventImportYouTubeVideo",
-                url: "Event/ImportYouTubeVideo",
-                defaults: new { controller = "Event", action = "ImportYouTubeVideo" }
-            );
-
-            routes.MapRoute(
-                name: "EventImportFacebookVideo",
-                url: "Event/ImportFacebookVideo",
-                defaults: new { controller = "Event", action = "ImportFacebookVideo" }
-            );
-
-            routes.MapRoute(
-                name: "EventDeleteVideo",
-                url: "Event/DeleteVideo",
-                defaults: new { controller = "Event", action = "DeleteVideo" }
-            );
-
-            routes.MapRoute(
-                name: "EventDeletePlaylist",
-                url: "Event/DeletePlaylist",
-                defaults: new { controller = "Event", action = "DeletePlaylist" }
-            );
-
-            routes.MapRoute(
-                name: "EventUploadPic",
-                url: "Event/UploadPicture",
-                defaults: new { controller = "Event", action = "UploadPicture" }
-            );
-
-            routes.MapRoute(
-                name: "EventDeletePic",
-                url: "Event/DeletePicture",
-                defaults: new { controller = "Event", action = "DeletePicture" }
-            );
-
-            routes.MapRoute(
-                name: "EventTeacherJoin",
-                url: "Event/JoinTeachers",
-                defaults: new { controller = "Event", action = "JoinTeachers" }
-            );
-
-            routes.MapRoute(
-                name: "EventApproveTeacher",
-                url: "Event/ApproveTeacher",
-                defaults: new { controller = "Event", action = "ApproveTeacher" }
-            );
-
-            routes.MapRoute(
-                name: "EventImportYouTubeList",
-                url: "Event/ImportYouTubeList",
-                defaults: new { controller = "Event", action = "ImportYouTubeList" }
-            );
-
-            routes.MapRoute(
-                name: "EventImportYouTubePlaylistLink",
-                url: "Event/ImportYouTubePlaylistLink",
-                defaults: new { controller = "Event", action = "ImportYouTubePlaylistLink" }
-            );
-
-            routes.MapRoute(
-                name: "EventImportPlayListVideoLink",
-                url: "Event/ImportPlayListVideoLink",
-                defaults: new { controller = "Event", action = "ImportPlayListVideoLink" }
-            );
-
-            routes.MapRoute(
-                name: "EventImportFacebookEvent",
-                url: "Event/ImportFacebookEvent",
-                defaults: new { controller = "Event", action = "ImportFacebookEvent" }
-            );
-
-            routes.MapRoute(
-                name: "ClassCreate",
-                url: "Class/Create",
-                defaults: new { controller = "Event", action = "CreateClass" }
-            );
-
-            routes.MapRoute(
-                name: "SocialCreate",
-                url: "Social/Create",
-                defaults: new { controller = "Event", action = "CreateSocial" }
-            );
-
-            routes.MapRoute(
-                name: "ClassFromFacebook",
-                url: "Class/ImportFromFacebook",
-                defaults: new { controller = "Event", action = "ImportClassFromFacebook" }
-            );
-
-            routes.MapRoute(
-                name: "SocialFromFacebook",
-                url: "Social/ImportFromFacebook",
-                defaults: new { controller = "Event", action = "ImportSocialFromFacebook" }
-            );
-
-            routes.MapRoute(
-                name: "ClassEdit",
-                url: "Class/{id}/Edit",
-                defaults: new { controller = "Event", action = "Edit", eventType = EventType.Class }
-            );
-
-            routes.MapRoute(
-                name: "SocialEdit",
-                url: "Social/{id}/Edit",
-                defaults: new { controller = "Event", action = "Edit", eventType = EventType.Social }
-            );
-
-            routes.MapRoute(
-                name: "AddTeacher",
-                url: "Class/{id}/AddTeacher",
-                defaults: new { controller = "Event", action = "AddTeacher" }
-            );
-
-            routes.MapRoute(
-                name: "ClassAdd",
-                url: "Class/Edit",
-                defaults: new { controller = "Event", action = "Edit", eventType = EventType.Class }
-            );
-            routes.MapRoute(
-                name: "SocialAdd",
-                url: "Social/Edit",
-                defaults: new { controller = "Event", action = "Edit", eventType = EventType.Social }
-            );
-
-            routes.MapRoute(
-                name: "ClassView",
-                url: "Class/{id}",
-                defaults: new { controller = "Event", action = "View", eventType = EventType.Class }
-            );
-
-            routes.MapRoute(
-                name: "SocialView",
-                url: "Social/{id}",
-                defaults: new { controller = "Event", action = "View", eventType = EventType.Social }
-            );
-
-            routes.MapRoute(
-                name: "ClassActions",
-                url: "Class/{id}/{action}",
-                defaults: new { controller = "Event", action = UrlParameter.Optional, eventType = EventType.Class }
-            );
-
-            routes.MapRoute(
-                name: "SocialActions",
-                url: "Social/{id}/{action}",
-                defaults: new { controller = "Event", action = UrlParameter.Optional, eventType = EventType.Social }
-            );
-
             //routes.MapRoute(
-            //    name: "EventCreate",
-            //    url: "Event/Create",
-            //    defaults: new { controller = "Event", action = "Create" }
+            //    name: "Test",
+            //    url: "Home/Test",
+            //    defaults: new { controller = "Home", action = "Test" }
             //);
 
-
             //routes.MapRoute(
-            //    name: "EventCreate",
-            //    url: "Event/Edit",
-            //    defaults: new { controller = "Event", action = "Edit" }
+            //    name: "Store",
+            //    url: "Store/Index",
+            //    defaults: new { controller = "Store", action = "Index" }
             //);
 
-            routes.MapRoute(
-                name: "EventAction",
-                url: "Event/{id}/{action}",
-                defaults: new { controller = "Event", action = "View" }
-            );
+            //routes.MapRoute(
+            //    name: "ShoppingCart",
+            //    url: "ShoppingCart/{action}",
+            //    defaults: new { controller = "ShoppingCart", action = UrlParameter.Optional }
+            //);
 
-            routes.MapRoute(
-                name: "Home",
-                url: "Home/{action}",
-                defaults: new { controller = "Home", action = UrlParameter.Optional }
-            );
-            routes.MapRoute(
-                name: "Account",
-                url: "Account/{action}/{id}",
-                defaults: new { controller = "Account", action = UrlParameter.Optional, id = UrlParameter.Optional }
-            );
-            routes.MapRoute(
-                name: "AccountAction",
-                url: "Account/{action}",
-                defaults: new { controller = "Account", action = UrlParameter.Optional }
-            );
-            routes.MapRoute(
-                name: "TeacherApply",
-                url: "Teacher/Apply",
-                defaults: new { controller = "Teacher", action = "Apply" }
-            );
-            routes.MapRoute(
-                name: "TeacherList",
-                url: "Teacher/List",
-                defaults: new { controller = "Teacher", action = "List" }
-            );
+            //routes.MapRoute(
+            //    name: "Checkout",
+            //    url: "Checkout/{action}",
+            //    defaults: new { controller = "Checkout", action = UrlParameter.Optional }
+            //);
 
-            routes.MapRoute(
-                name: "TeacherDetail",
-                url: "Teacher/{username}/{action}",
-                defaults: new { controller = "Teacher", action = "Home", username = UrlParameter.Optional }
-            );
+            //routes.MapRoute(
+            //    name: "SchoolList",
+            //    url: "School/List",
+            //    defaults: new { controller = "School", action = "List" }
+            //);
 
-            routes.MapRoute(
-                name: "PromoterApply",
-                url: "Promoter/Apply",
-                defaults: new { controller = "Promoter", action = "Apply" }
-            );
-            routes.MapRoute(
-                name: "PromoterList",
-                url: "Promoter/List",
-                defaults: new { controller = "Promoter", action = "List" }
-            );
-            routes.MapRoute(
-                name: "Promoter",
-                url: "Promoter/{username}/{action}",
-                defaults: new { controller = "Promoter", action = "Home" }
-            );
+            //routes.MapRoute(
+            //    name: "SchoolCreate",
+            //    url: "School/Create",
+            //    defaults: new { controller = "School", action = "Create" }
+            //);
 
-            routes.MapRoute(
-                name: "OwnerApply",
-                url: "Owner/Apply",
-                defaults: new { controller = "Owner", action = "Apply" }
-            );
-            routes.MapRoute(
-                name: "OwnerList",
-                url: "Owner/List",
-                defaults: new { controller = "Owner", action = "List" }
-            );
-            routes.MapRoute(
-                name: "Owner",
-                url: "Owner/{username}/{action}",
-                defaults: new { controller = "Owner", action = "Home" }
-            );
+            //routes.MapRoute(
+            //    name: "SchoolAction",
+            //    url: "School/{id}/{action}",
+            //    defaults: new { controller = "School", id = UrlParameter.Optional, action = "View" }
+            //);
 
-            routes.MapRoute(
-                name: "DancerProfilePic",
-                url: "Dancer/ProfilePicture",
-                defaults: new { controller = "Dancer", action = "ProfilePicture" }
-            );
-            routes.MapRoute(
-                name: "DancerPicture",
-                url: "Dancer/ChangePicture",
-                defaults: new { controller = "Dancer", action = "ChangePicture" }
-            );
-            routes.MapRoute(
-                name: "DancerUpload",
-                url: "Dancer/UploadPicture",
-                defaults: new { controller = "Dancer", action = "UploadPicture" }
-            );
-            routes.MapRoute(
-                name: "DancerDetail",
-                url: "{username}/{action}",
-                defaults: new { controller = "Dancer", action = UrlParameter.Optional }
-            );
-            routes.MapRoute(
-                name: "DancerEdit",
-                url: "Dancer/Edit",
-                defaults: new { controller = "Dancer", action = "Edit" }
-            );
-            routes.MapRoute(
-                name: "DancerDeletePic",
-                url: "Dancer/DeletePicture",
-                defaults: new { controller = "Dancer", action = "DeletePicture" }
-            );
-            routes.MapRoute(
-                name: "DancerMapEvents",
-                url: "Dancer/MapEvents",
-                defaults: new { controller = "Dancer", action = "MapEvents" }
-            );
-            routes.MapRoute(
-                name: "DancerBackend",
-                url: "Dancer/Backend",
-                defaults: new { controller = "Dancer", action = "Backend" }
-            );
+            //routes.MapRoute(
+            //    name: "DancerList",
+            //    url: "Dancer/List",
+            //    defaults: new { controller = "Dancer", action = "List" }
+            //);
 
-            routes.MapRoute(
-                name: "Default",
-                url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional },
-                namespaces: new[] { "EDR.Controllers" }
-            );
+            //routes.MapRoute(
+            //    name: "DancerHome",
+            //    url: "Dancer/{username}",
+            //    defaults: new { controller = "Dancer", action = "Home" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "SocialMedia",
+            //    url: "SocialMedia/{action}",
+            //    defaults: new { controller = "SocialMedia", action = UrlParameter.Optional }
+            //);
+
+            //routes.MapRoute(
+            //    name: "StyleIndex",
+            //    url: "DanceStyle/Index",
+            //    defaults: new { controller = "DanceStyle", action = "Index" },
+            //    namespaces: new[] { "EDR.Controllers" }
+            //);
+            //routes.MapRoute(
+            //    name: "StyleView",
+            //    url: "DanceStyle/{styleName}",
+            //    defaults: new { controller = "DanceStyle", action = "Details", styleName = UrlParameter.Optional },
+            //    namespaces: new[] { "EDR.Controllers" }
+            //);
+            //routes.MapRoute(
+            //    name: "StyleIndexAdd",
+            //    url: "DanceStyle/Index_AddItem",
+            //    defaults: new { controller = "DanceStyle", action = "Index_AddItem" },
+            //    namespaces: new[] { "EDR.Controllers" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "VisitorView",
+            //    url: "Visitor/View",
+            //    defaults: new { controller = "Visitor", action = "View" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "PlaceList",
+            //    url: "Place/List",
+            //    defaults: new { controller = "Place", action = "List" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "PlaceAction",
+            //    url: "Place/{id}/{action}",
+            //    defaults: new { controller = "Place", id = UrlParameter.Optional, action = "Details" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "EventAddReview",
+            //    url: "Event/Reviews_Insert",
+            //    defaults: new { controller = "Event", action = "Reviews_Insert" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "EventImportYouTubeVideo",
+            //    url: "Event/ImportYouTubeVideo",
+            //    defaults: new { controller = "Event", action = "ImportYouTubeVideo" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "EventImportFacebookVideo",
+            //    url: "Event/ImportFacebookVideo",
+            //    defaults: new { controller = "Event", action = "ImportFacebookVideo" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "EventDeleteVideo",
+            //    url: "Event/DeleteVideo",
+            //    defaults: new { controller = "Event", action = "DeleteVideo" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "EventDeletePlaylist",
+            //    url: "Event/DeletePlaylist",
+            //    defaults: new { controller = "Event", action = "DeletePlaylist" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "EventUploadPic",
+            //    url: "Event/UploadPicture",
+            //    defaults: new { controller = "Event", action = "UploadPicture" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "EventDeletePic",
+            //    url: "Event/DeletePicture",
+            //    defaults: new { controller = "Event", action = "DeletePicture" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "EventTeacherJoin",
+            //    url: "Event/JoinTeachers",
+            //    defaults: new { controller = "Event", action = "JoinTeachers" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "EventApproveTeacher",
+            //    url: "Event/ApproveTeacher",
+            //    defaults: new { controller = "Event", action = "ApproveTeacher" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "EventImportYouTubeList",
+            //    url: "Event/ImportYouTubeList",
+            //    defaults: new { controller = "Event", action = "ImportYouTubeList" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "EventImportYouTubePlaylistLink",
+            //    url: "Event/ImportYouTubePlaylistLink",
+            //    defaults: new { controller = "Event", action = "ImportYouTubePlaylistLink" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "EventImportPlayListVideoLink",
+            //    url: "Event/ImportPlayListVideoLink",
+            //    defaults: new { controller = "Event", action = "ImportPlayListVideoLink" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "EventImportFacebookEvent",
+            //    url: "Event/ImportFacebookEvent",
+            //    defaults: new { controller = "Event", action = "ImportFacebookEvent" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "ClassCreate",
+            //    url: "Class/Create",
+            //    defaults: new { controller = "Event", action = "CreateClass" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "SocialCreate",
+            //    url: "Social/Create",
+            //    defaults: new { controller = "Event", action = "CreateSocial" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "ClassFromFacebook",
+            //    url: "Class/ImportFromFacebook",
+            //    defaults: new { controller = "Event", action = "ImportClassFromFacebook" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "SocialFromFacebook",
+            //    url: "Social/ImportFromFacebook",
+            //    defaults: new { controller = "Event", action = "ImportSocialFromFacebook" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "ClassEdit",
+            //    url: "Class/{id}/Edit",
+            //    defaults: new { controller = "Event", action = "Edit", eventType = EventType.Class }
+            //);
+
+            //routes.MapRoute(
+            //    name: "SocialEdit",
+            //    url: "Social/{id}/Edit",
+            //    defaults: new { controller = "Event", action = "Edit", eventType = EventType.Social }
+            //);
+
+            //routes.MapRoute(
+            //    name: "AddTeacher",
+            //    url: "Class/{id}/AddTeacher",
+            //    defaults: new { controller = "Event", action = "AddTeacher" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "ClassAdd",
+            //    url: "Class/Edit",
+            //    defaults: new { controller = "Event", action = "Edit", eventType = EventType.Class }
+            //);
+            //routes.MapRoute(
+            //    name: "SocialAdd",
+            //    url: "Social/Edit",
+            //    defaults: new { controller = "Event", action = "Edit", eventType = EventType.Social }
+            //);
+
+            //routes.MapRoute(
+            //    name: "ClassView",
+            //    url: "Class/{id}",
+            //    defaults: new { controller = "Event", action = "View", eventType = EventType.Class }
+            //);
+
+            //routes.MapRoute(
+            //    name: "SocialView",
+            //    url: "Social/{id}",
+            //    defaults: new { controller = "Event", action = "View", eventType = EventType.Social }
+            //);
+
+            //routes.MapRoute(
+            //    name: "ClassActions",
+            //    url: "Class/{id}/{action}",
+            //    defaults: new { controller = "Event", action = UrlParameter.Optional, eventType = EventType.Class }
+            //);
+
+            //routes.MapRoute(
+            //    name: "SocialActions",
+            //    url: "Social/{id}/{action}",
+            //    defaults: new { controller = "Event", action = UrlParameter.Optional, eventType = EventType.Social }
+            //);
+
+            ////routes.MapRoute(
+            ////    name: "EventCreate",
+            ////    url: "Event/Create",
+            ////    defaults: new { controller = "Event", action = "Create" }
+            ////);
+
+
+            ////routes.MapRoute(
+            ////    name: "EventCreate",
+            ////    url: "Event/Edit",
+            ////    defaults: new { controller = "Event", action = "Edit" }
+            ////);
+
+            //routes.MapRoute(
+            //    name: "EventAction",
+            //    url: "Event/{id}/{action}",
+            //    defaults: new { controller = "Event", action = "View" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "Home",
+            //    url: "Home/{action}",
+            //    defaults: new { controller = "Home", action = UrlParameter.Optional }
+            //);
+            //routes.MapRoute(
+            //    name: "Account",
+            //    url: "Account/{action}/{id}",
+            //    defaults: new { controller = "Account", action = UrlParameter.Optional, id = UrlParameter.Optional }
+            //);
+            //routes.MapRoute(
+            //    name: "AccountAction",
+            //    url: "Account/{action}",
+            //    defaults: new { controller = "Account", action = UrlParameter.Optional }
+            //);
+            //routes.MapRoute(
+            //    name: "TeacherApply",
+            //    url: "Teacher/Apply",
+            //    defaults: new { controller = "Teacher", action = "Apply" }
+            //);
+            //routes.MapRoute(
+            //    name: "TeacherList",
+            //    url: "Teacher/List",
+            //    defaults: new { controller = "Teacher", action = "List" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "TeacherDetail",
+            //    url: "Teacher/{username}/{action}",
+            //    defaults: new { controller = "Teacher", action = "Home", username = UrlParameter.Optional }
+            //);
+
+            //routes.MapRoute(
+            //    name: "PromoterApply",
+            //    url: "Promoter/Apply",
+            //    defaults: new { controller = "Promoter", action = "Apply" }
+            //);
+            //routes.MapRoute(
+            //    name: "PromoterList",
+            //    url: "Promoter/List",
+            //    defaults: new { controller = "Promoter", action = "List" }
+            //);
+            //routes.MapRoute(
+            //    name: "Promoter",
+            //    url: "Promoter/{username}/{action}",
+            //    defaults: new { controller = "Promoter", action = "Home" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "OwnerApply",
+            //    url: "Owner/Apply",
+            //    defaults: new { controller = "Owner", action = "Apply" }
+            //);
+            //routes.MapRoute(
+            //    name: "OwnerList",
+            //    url: "Owner/List",
+            //    defaults: new { controller = "Owner", action = "List" }
+            //);
+            //routes.MapRoute(
+            //    name: "Owner",
+            //    url: "Owner/{username}/{action}",
+            //    defaults: new { controller = "Owner", action = "Home" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "DancerProfilePic",
+            //    url: "Dancer/ProfilePicture",
+            //    defaults: new { controller = "Dancer", action = "ProfilePicture" }
+            //);
+            //routes.MapRoute(
+            //    name: "DancerPicture",
+            //    url: "Dancer/ChangePicture",
+            //    defaults: new { controller = "Dancer", action = "ChangePicture" }
+            //);
+            //routes.MapRoute(
+            //    name: "DancerUpload",
+            //    url: "Dancer/UploadPicture",
+            //    defaults: new { controller = "Dancer", action = "UploadPicture" }
+            //);
+            //routes.MapRoute(
+            //    name: "DancerDetail",
+            //    url: "{username}/{action}",
+            //    defaults: new { controller = "Dancer", action = UrlParameter.Optional }
+            //);
+            //routes.MapRoute(
+            //    name: "DancerEdit",
+            //    url: "Dancer/Edit",
+            //    defaults: new { controller = "Dancer", action = "Edit" }
+            //);
+            //routes.MapRoute(
+            //    name: "DancerDeletePic",
+            //    url: "Dancer/DeletePicture",
+            //    defaults: new { controller = "Dancer", action = "DeletePicture" }
+            //);
+            //routes.MapRoute(
+            //    name: "DancerMapEvents",
+            //    url: "Dancer/MapEvents",
+            //    defaults: new { controller = "Dancer", action = "MapEvents" }
+            //);
+            //routes.MapRoute(
+            //    name: "DancerBackend",
+            //    url: "Dancer/Backend",
+            //    defaults: new { controller = "Dancer", action = "Backend" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "Default",
+            //    url: "{controller}/{action}/{id}",
+            //    defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional },
+            //    namespaces: new[] { "EDR.Controllers" }
+            //);
 
             //routes.MapRoute(
             //    name: "EventReview",

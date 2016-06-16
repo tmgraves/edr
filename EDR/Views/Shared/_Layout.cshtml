@@ -88,13 +88,14 @@ window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]
                                 <li>@Html.ActionLink("Promoters", "List", "Promoter")</li>
                             </ul>
                         </li>
-                        <li class="mainnav dropdown">
+                        <li>@Html.ActionLink("Performance", "Index", "Team")</li>
+                        @*<li class="mainnav dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Performance<span class="caret"></span></a>
                             <ul class="mainnav dropdown-menu">
                                 <li>@Html.ActionLink("Dance Teams", "Index", "Team")</li>
                                 <li><a href="#">Performances</a></li>
                             </ul>
-                        </li>
+                        </li>*@
                     }
                     else
                     {

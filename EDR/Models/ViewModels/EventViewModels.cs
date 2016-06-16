@@ -282,6 +282,7 @@ namespace EDR.Models.ViewModels
         [DataType(DataType.Url)]
         [Url(ErrorMessage = "Please enter a valid Facebook, Twitter, or other url")]
         public Uri NewLinkedMedia { get; set; }
+        public MusicType MusicType { get; set; }
 
         public EventManageViewModel()
         {

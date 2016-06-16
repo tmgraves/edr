@@ -36,7 +36,7 @@
                     </div>
                     <div class="text-center">
                         <div class="buttoncontainer" style="display: inline-block;">
-                            <img id="profilepic" src="@Url.Content(Model.School.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
+                            <img id="profilepic" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.School.PhotoUrl))"  />
                             <button id="btnChangePicture" type="button" class="btn btn-info actionbutton" data-toggle="modal" data-target="#modalPic">
                                 Change
                             </button>
@@ -203,6 +203,47 @@
                                     @if (t.ApplicationUser.UserName != User.Identity.Name)
                                     {
                                         <a class="btn btn-link text-danger" title="Remove" href="@Url.Action("RemoveTeacher", new { id = Model.School.Id, teacherid = t.Id })" onclick="return confirm('Are you sure you want to remove this Teacher?')">
+                                            <i class="text-danger glyphicon glyphicon-remove-circle"></i>
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body buttoncontainer">
+                <h3>Owners</h3>
+                <div>
+                    @using (Html.BeginForm("AddOwner", "School", FormMethod.Post))
+                    {
+                        <input type="hidden" id="id" name="id" value="@Model.School.Id" />
+                        <input type="hidden" class="ownersearchid" id="ownerid" name="ownerid" />
+                        <input type="text" class="ownersearch form-control" placeholder="Type in a Owner Name" style="display: inline-block;" />
+                        <button type="submit" class="btn btn-primary btn-sm" style="display: inline-block;">Add Owner</button>
+                    }
+                </div>
+                <div id="owners">
+                    <table style="width: 100%;">
+                        <tr>
+                            <th>
+                                Name
+                            </th>
+                            <th>
+                            </th>
+                        </tr>
+                        @foreach (var t in Model.School.Owners)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(model => t.ApplicationUser.FullName)
+                                </td>
+                                <td class="text-right">
+                                    @if (t.ApplicationUser.UserName != User.Identity.Name)
+                                    {
+                                        <a class="btn btn-link text-danger" title="Remove" href="@Url.Action("RemoveOwner", new { id = Model.School.Id, ownerid = t.Id })" onclick="return confirm('Are you sure you want to remove this Owner?')">
                                             <i class="text-danger glyphicon glyphicon-remove-circle"></i>
                                         </a>
                                     }

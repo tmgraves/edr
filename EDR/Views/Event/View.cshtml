@@ -72,7 +72,7 @@
     <div class="row">
         <div class="col-lg-12 verticaljustify nospace">
             <div class="col-lg-4" style="height: 100%;">
-                <img style="max-height: 100%; max-width: 100%;" src="@Url.Content(Model.Event.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
+                <img style="max-height: 100%; max-width: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.Event.PhotoUrl))" />
             </div>
             <div class="col-lg-8">
                 <div class="row nospace">
@@ -84,13 +84,17 @@
                             @if (Model.EventType == EventType.Class)
                             {
                                 @:(@Model.Class.ClassType)
-                                if(Model.Event.EventMembers.Where(m => m.UserId == User.Identity.GetUserId() && m.Admin).Count() != 0)
-                                {
-                                    <a class="btn btn-warning" title="Edit" href="@Url.Action("Manage", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">
-                                        <i class="glyphicon glyphicon-edit"></i>
-                                        <span class="sr-only">Edit</span>
-                                    </a>
-                                }
+                            }
+                            else
+                            {
+                                @:(@(((EDR.Models.Social)Model.Event).SocialType))
+                            }
+                            @if(Model.Event.EventMembers.Where(m => m.UserId == User.Identity.GetUserId() && m.Admin).Count() != 0)
+                            {
+                            <a class="btn btn-warning" title="Edit" href="@Url.Action("Manage", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">
+                                <i class="glyphicon glyphicon-edit"></i>
+                                <span class="sr-only">Edit</span>
+                            </a>
                             }
                         </h2>
                     </div>
@@ -199,6 +203,19 @@
                             </div>
                             <div class="col-lg-9">
                                 @Html.ActionLink(((Class)Model.Event).School.Name, "View", "School", new { id = ((Class)Model.Event).SchoolId }, null)
+                            </div>
+                        </div>
+                    </div>
+                }
+                @if (eventType == "Social")
+                {
+                    <div class="row" style="padding: 5px;">
+                        <div class="col-lg-12">
+                            <div class="col-lg-3">
+                                @Html.Label("Music:")
+                            </div>
+                            <div class="col-lg-9">
+                                @(EDR.Utilities.ApplicationUtility.GetDisplayName(((Social)Model.Event).MusicType))
                             </div>
                         </div>
                     </div>

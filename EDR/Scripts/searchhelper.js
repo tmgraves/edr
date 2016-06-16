@@ -104,7 +104,7 @@ $('.teachersearch').autocomplete({
 $('.promotersearch').autocomplete({
     source: function (request, response) {
         $.ajax({
-            url: '../Promoter/Search',
+            url: '../../Promoter/Search',
             data: { searchString: request.term },
             dataType: 'json',
             type: 'GET',
@@ -129,7 +129,7 @@ $('.promotersearch').autocomplete({
 $('.ownersearch').autocomplete({
     source: function (request, response) {
         $.ajax({
-            url: '../Owner/Search',
+            url: '../../Owner/Search',
             data: { searchString: request.term },
             dataType: 'json',
             type: 'GET',

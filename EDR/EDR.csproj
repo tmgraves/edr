@@ -569,6 +569,7 @@
     <Content Include="Content\images\MobileIcons\Set 2\Set 2.ai" />
     <Content Include="Content\images\MobileIcons\Set 3\set 3.ai" />
     <None Include="Properties\PublishProfiles\SmarterASP.pubxml" />
+    <None Include="Properties\PublishProfiles\SmarterASP_FTP.pubxml" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Library\DayPilot.Web.Mvc.dll" />
     <Content Include="Media\elements.css" />
@@ -919,6 +920,7 @@
     <Content Include="Views\Shared\DisplayTemplates\SchoolLinks.cshtml" />
     <Content Include="Views\Shared\_VideoPlayerPartial.cshtml" />
     <Content Include="Views\Home\Mobile\Index.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Owner.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

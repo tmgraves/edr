@@ -9,6 +9,9 @@ using System.Web;
 using System.Web.Helpers;
 using System.Web.Mvc;
 using EDR.Enums;
+using System.Net;
+using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
 namespace EDR.Utilities
 {
@@ -279,7 +282,50 @@ namespace EDR.Utilities
                                 @"((http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?)",
                                 "<a target='_blank' href='$1'>$1</a>");
             }
-            return text; 
+            return text;
+        }
+
+        /// <summary>
+        /// Finds web and email addresses in a string and surrounds then with the appropriate HTML anchor tags 
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns>String</returns>
+        public static string CheckImageLink(string imageLink)
+        {
+            if (imageLink != null)
+            {
+                if (imageLink.StartsWith("http"))
+                {
+                    HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(imageLink);
+                    request.Method = "HEAD";
+
+                    try
+                    {
+                        request.GetResponse();
+                        return imageLink;
+                    }
+                    catch
+                    {
+                        return "~/Content/images/NoImage.png";
+                    }
+                }
+                else
+                {
+                    return File.Exists(HttpContext.Current.Server.MapPath(imageLink)) ? imageLink : "~/Content/images/NoImage.png";
+                }
+            }
+            else
+            {
+                return "~/Content/images/NoImage.png";
+            }
+        }
+
+        public static string GetDisplayName(this Enum enumValue)
+        {
+            return enumValue.GetType().GetMember(enumValue.ToString())
+                           .First()
+                           .GetCustomAttribute<DisplayAttribute>()
+                           .Name;
         }
     }
 }

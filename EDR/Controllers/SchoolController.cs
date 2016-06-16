@@ -294,6 +294,28 @@ namespace EDR.Controllers
             return RedirectToAction("Manage", new { id = id });
         }
 
+        [Authorize(Roles = "Teacher,Owner")]
+        [HttpPost]
+        public ActionResult AddOwner(FormCollection formCollection)
+        {
+            int id = Convert.ToInt32(formCollection["id"]);
+            string ownerid = formCollection["ownerid"];
+            if (DataContext.Schools.Where(s => s.Id == id && s.Owners.Any(t => t.ApplicationUser.Id == ownerid)).Count() == 0)
+            {
+                DataContext.Schools.Single(s => s.Id == id).Owners.Add(DataContext.Owners.Single(t => t.ApplicationUser.Id == ownerid));
+                DataContext.SaveChanges();
+            }
+            return RedirectToAction("Manage", new { id = id });
+        }
+
+        [Authorize(Roles = "Teacher,Owner")]
+        public ActionResult RemoveOwner(int id, int ownerid)
+        {
+            DataContext.Schools.Where(s => s.Id == id).Include("Owners").FirstOrDefault().Owners.Remove(DataContext.Owners.Single(t => t.Id == ownerid));
+            DataContext.SaveChanges();
+            return RedirectToAction("Manage", new { id = id });
+        }
+
         [Authorize]
         [HttpPost]
         public JsonResult UploadImageAsync(string imageData, int id)

@@ -211,7 +211,7 @@ namespace EDR.Controllers
             }
             else
             {
-                model.Event =
+                var soc =
                 DataContext.Events.OfType<Social>()
                         .Include("Tickets.UserTickets.EventRegistrations")
                         .Include("EventInstances.EventRegistrations.User")
@@ -223,6 +223,8 @@ namespace EDR.Controllers
                         .Include("Place")
                         .Include("LinkedMedia")
                         .Single(e => e.Id == id);
+                model.Event = soc;
+                model.MusicType = soc.MusicType;
             }
 
             model.NewPlace = new Place();
@@ -2429,13 +2431,31 @@ namespace EDR.Controllers
             {
                 try
                 {
-                    var evnt = DataContext.Events.Include("Place").Include("EventInstances").Single(s => s.Id == model.Event.Id);
+                    var evnt = new Event();
+                    if (evnt is Class)
+                    {
+                        evnt = DataContext.Events.OfType<Class>()
+                                        .Include("Place")
+                                        .Include("EventInstances")
+                                        .Single(s => s.Id == model.Event.Id);
+                    }
+                    else
+                    {
+                        evnt = DataContext.Events.OfType<Social>()
+                                        .Include("Place")
+                                        .Include("EventInstances")
+                                        .Single(s => s.Id == model.Event.Id);
+                    }
                     evnt.Name = model.Event.Name;
                     evnt.Description = model.Event.Description;
                     evnt.StartTime = model.Event.StartTime;
                     evnt.EndDate = model.Event.EndDate;
                     evnt.EndTime = model.Event.EndTime;
                     evnt.FacebookLink = model.Event.FacebookLink;
+                    if (evnt is Social)
+                    {
+                        ((Social)evnt).MusicType = model.MusicType;
+                    }
 
                     if (model.NewPlace.GooglePlaceId != null)
                     {

@@ -1,7 +1,7 @@
 ﻿@model EDR.Models.Promoter
 
 <a title="@Model.ApplicationUser.FirstName" href="@Url.Action("Home", "Promoter", new { username = Model.ApplicationUser.UserName })">
-    <img style="max-height: 100%; max-width: 100%;" src="@Url.Content(Model.ApplicationUser.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" title="@Model.ApplicationUser.FirstName" />
+    <img style="max-height: 100%; max-width: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.ApplicationUser.PhotoUrl))" title="@Model.ApplicationUser.FirstName" />
 </a>
 
 

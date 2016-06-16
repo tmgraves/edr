@@ -12,5 +12,6 @@ namespace EDR.Models
         public ICollection<Promoter> Promoters { get; set; }
         public ICollection<SocialPromoterInvitation> SocialPromoterInvitations { get; set; }
         public ICollection<Owner> Owners { get; set; }
+        public MusicType MusicType { get; set; }
     }
 }
