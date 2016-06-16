@@ -41,9 +41,10 @@
                         </div>
                         <div class="form-group">
                             <div class="col-lg-8 center-block lg">
-                                @Html.TextBox("Style", "", new { @class = "form-control stylesearch", @placeholder = "Type your Dance Style(s)" })
-                                <div id="stylesdiv" style="text-align: left; background-color: #fff;"></div>
+                                @Html.TextBox("Style", "", new { @class = "form-control stylesearch", @placeholder = "Type your Dance Style(s)", @maxlength = "4" })
+                                <input id="stylesdiv" readonly="readonly" class="form-control" style="text-align: left; background-color: #fff;" placeholder="Selected Styles" />
                                 @Html.HiddenFor(m => m.StyleIds)
+                                @Html.ValidationMessageFor(m => m.StyleIds, "", new { @class = "text-danger" })
                             </div>
                         </div>
                         @*<div class="form-group">
@@ -80,6 +81,10 @@
 <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
 
 <script type="text/javascript">
+    $.validator.setDefaults({
+        ignore: ""
+    })
+
     $(function () {
         $(".locationsearch").geocomplete({
             details: "form",
@@ -129,19 +134,34 @@
                 dataType: 'json',
                 type: 'GET',
                 success: function (data) {
-                    response($.map(data, function (item) {
-                        return {
-                            label: item.Name,
-                            value: item.Id
-                        }
-                    }));
+                    if (!data.length)
+                    {
+                        var result = [
+                               {
+                                   label: 'No matches found',
+                                   value: response.term
+                               }
+                        ];
+                        response(result);
+                    }
+                    else {
+                        response($.map(data, function (item) {
+                            return {
+                                label: item.Name,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                },
+                error: function (request, status, error) {
+                    alert(error);
                 }
             })
         },
         select: function (event, ui) {
             $('#StyleIds').val($('#StyleIds').val() + '-' + ui.item.value);
-            var styles = $("#stylesdiv").html();
-            if ($("#stylesdiv").html() == "")
+            var styles = $("#stylesdiv").val();
+            if ($("#stylesdiv").val() == "")
             {
                 styles = ui.item.label;
             }
@@ -151,7 +171,7 @@
                     styles = styles + ", " + ui.item.label;
                 }
             }
-            $("#stylesdiv").html(styles);
+            $("#stylesdiv").val(styles);
             //  $('.stylesearch').val(ui.item.label);
             //  $('.stylesearchid').val(ui.item.value);
             $('.stylesearch').val('');

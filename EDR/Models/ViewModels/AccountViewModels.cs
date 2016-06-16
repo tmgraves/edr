@@ -26,6 +26,7 @@ namespace EDR.Models.ViewModels
         public string Country { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
+        [Required(ErrorMessage ="Please select at least (1) Dance Style")]
         public string StyleIds { get; set; }
     }
 
