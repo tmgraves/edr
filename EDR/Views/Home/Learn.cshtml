@@ -4,6 +4,40 @@
     ViewBag.Title = "Learn";
 }
 
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+        font-size: 14px;
+    }
+
+    #script-warning {
+        display: none;
+        background: #eee;
+        border-bottom: 1px solid #ddd;
+        padding: 0 10px;
+        line-height: 40px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 12px;
+        color: red;
+    }
+
+    #loading {
+        display: none;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+
+    #calendar {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 0 10px;
+    }
+</style>
+
 <ol class="breadcrumb">
     <li class="active">All Classes</li>
 </ol>
@@ -11,6 +45,8 @@
 <p class="text-center">
     @Html.ActionLink("Find a Teacher", "List", "Teacher", null, null)
 </p>
+
+@*<div id="bcalendar"></div>*@
 
 @using (Html.BeginForm("Learn", "Home", FormMethod.Post, new { @class = "formmain" }))
 {
@@ -78,7 +114,25 @@
     </div>
 }
 
-@Html.DisplayFor(m => m.Classes, "Classes")
+<div class="col-lg-12 text-center" style="padding: 10px;">
+    <div id="myButtons" class="btn-group" data-toggle="buttons">
+        <label class="btn btn-info active">
+            <input type="radio" name="options" id="listbtn" autocomplete="off" checked class="rbutton"> List View
+        </label>
+        <label class="btn btn-info">
+            <input type="radio" name="options" id="calendarbtn" autocomplete="off" class="rbutton"> Calendar View
+        </label>
+    </div>
+</div>
+
+<div id="listdiv">
+    @Html.DisplayFor(m => m.Classes, "Classes")
+</div>
+<div id='script-warning'>
+    <code>php/get-events.php</code> must be running.
+</div>
+<div id='loading'>loading...</div>
+<div id='calendar'></div>
 
 @section Scripts
 {
@@ -96,80 +150,197 @@
 <script type="text/javascript" src="~/Scripts/bootstrap-multiselect.js"></script>
 <link rel="stylesheet" href="~/Content/bootstrap-multiselect.css" type="text/css" />
 
-    @*<script type="text/javascript">
-            $('#Style').autocomplete({
-                source: function (request, response) {
-                    $.ajax({
-                        url: '@Url.Action("Search", "DanceStyle")',
-                        data: { searchString: request.term },
-                        dataType: 'json',
-                        type: 'GET',
-                        success: function (data) {
-                            response($.map(data, function (item) {
-                                return {
-                                    label: item.Name,
-                                    value: item.Id
-                                }
-                            }));
-                        }
-                    })
-                },
-                select: function (event, ui) {
-                    $('#Style').val(ui.item.label);
-                    $('#DanceStyleId').val(ui.item.value);
-                    return false;
-                },
-                minLength: 1
+<link href="~/Content/fullcalendar/fullcalendar.css" rel="stylesheet" />
+<link href="~/Content/fullcalendar/fullcalendar.print.css" rel="stylesheet" media="print" />
+<script src="~/Scripts/fullcalendar/moment.min.js"></script>
+@*<script src="~/Scripts/fullcalendar/jquery.min.js"></script>*@
+<script src="~/Scripts/fullcalendar/fullcalendar.js"></script>
+
+@*<script src="~/Scripts/bootstrapcalendar/calendar.js"></script>
+<script src="~/Scripts/bootstrapcalendar/underscore.js"></script>
+<link href="~/Content/bootstrapcalendar/calendar.css" rel="stylesheet" />
+
+<script type="text/javascript">
+        var calendar = $("#bcalendar").calendar(
+            {
+                tmpl_path: "../../Content/bootstrapcalendar/tmpls/",
+                events_source: function () { return []; }
+            });
+</script>*@
+
+<script>
+    $(document).ready(function() {
+        //$('.formmain').submit(function () {
+        //    alert($('#SkillLevel').val());
+        //});
+
+        $("#calendar").css({"visibility": "hidden"});
+        $('#listbtn').parent().on("click", function () {
+            $('#listdiv').show();
+            $("#calendar").css({"visibility": "hidden"});
+        });
+
+        $('#calendarbtn').parent().on("click", function () {
+            $('#listdiv').hide();
+            $("#calendar").css({"visibility": "visible"});
+        });
+
+		$('#calendar').fullCalendar({
+			header: {
+				left: 'prev,next today',
+				center: 'title',
+				right: 'month,agendaWeek,agendaDay'
+			},
+			defaultDate: new Date(),
+			editable: true,
+			eventLimit: true, // allow "more" link when too many events
+		    events: {
+		        url: '../../Home/GetClasses',
+                traditional: true,
+		        data: {
+		            neLat: $('.nelatfield').val(),
+		            neLng: $('.nelngfield').val(),
+		            swLat: $('.swlatfield').val(),
+		            swLng: $('.swlngfield').val(),
+		            styleId: $('.stylesearchid').val(),
+		            teacherId: $('.teachersearchid').val(),
+		            skillLevel: $('#SkillLevel').val(),
+		            days: $('#Days').val(),
+		        },
+				error: function() {
+					$('#script-warning').show();
+				}
+		    },
+		    eventMouseover: function(event) {
+		        openEvent(event.id, event.lat, event.lng);
+		        //// opens events in a popup window
+		        //window.open(event.url, 'gcalevent', 'width=700,height=600');
+		        return false;
+		    },
+
+		    loading: function(bool) {
+				$('#loading').toggle(bool);
+			}
+		});
+	});
+
+</script>
+
+<script>
+
+    $(function () {
+        $('#Days').multiselect({
+            nonSelectedText: 'Day of Week',
+            buttonClass: 'multiselectbutton form-control',
+            buttonText: function(options, select) {
+                return 'Day of Week';
+            }
+        });
+        $('#SkillLevel').multiselect({
+            nonSelectedText: 'Skill Level',
+            buttonClass: 'multiselectbutton form-control',
+            buttonText: function(options, select) {
+                return 'Skill Level';
+            }
+        });
+        $('#Days').show();
+        $('#SkillLevel').show();
+    });
+
+    //  Global Map Variables
+    var markers = [];
+    var infowindows = [];
+    $(function () {
+        //  Map Marker Containers
+        //  Map Marker Containers
+        //  Build up the Markers
+        var map = $(".locationsearch").geocomplete("map");
+
+        @foreach(var s in Model.Classes.OrderBy(c => c.NextDate))
+        {
+        <text>
+        var marker = new google.maps.Marker({
+            position: new google.maps.LatLng('@s.Place.Latitude', @s.Place.Longitude),
+            map: map,
+            title: '@s.Name',
+            icon: "../../Content/images/MapMarker.png"
+        });
+
+        attachMessage(@s.Id, map, marker, '@s.Id', '@s.Name', '@s.Place.Address', '@(s.Place.City + ", " + s.Place.State + " " + s.Place.Zip)', '<a href="@Url.Action("View", "Event", new { id = s.Id, eventType = EDR.Enums.EventType.Class })">' + '@s.Name' + '</a>');
+        markers.push({
+            id: @s.Id,
+            marker: marker
+        });
+        </text>
+    }
+
+        function attachMessage(id, map, marker, num, placeName, address, address2, link) {
+            var message = marker.title;
+            var infowindow = new google.maps.InfoWindow({
+                disableAutoPan: false,
+                maxWidth: 200,
+                content: '<div id="content" class="text-center" style="width: 200px;">' +
+                '<div id="siteNotice">' +
+                '</div>' +
+                '<div style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
+                link +
+                '</div>' +
+                '<div id="bodyContent">' +
+                '<p>' +
+                address + '<br>' +
+                address2 +
+                '</p>' +
+                '</div>' +
+                '</div>'
+            });
+            infowindows.push({
+                id: id,
+                infowindow: infowindow
             });
 
-            $('#Teacher').autocomplete({
-                source: function (request, response) {
-                    $.ajax({
-                        url: '@Url.Action("Search", "Teacher")',
-                        data: { searchString: request.term },
-                        dataType: 'json',
-                        type: 'GET',
-                        success: function (data) {
-                            response($.map(data, function (item) {
-                                return {
-                                    label: item.Name,
-                                    value: item.Id
-                                }
-                            }));
-                        }
-                    })
-                },
-                select: function (event, ui) {
-                    $('#Teacher').val(ui.item.label);
-                    $('#TeacherId').val(ui.item.value);
-                    return false;
-                },
-                minLength: 1
-            });
+            //  infowindow.open(map, marker);
 
-            $('.formmain').submit(function () {
-                var map = $("#Location").geocomplete("map");
-                $("#Zoom").val(map.getZoom());
-                var bounds = map.getBounds();
-                var ne = bounds.getNorthEast(); // LatLng of the north-east corner
-                var sw = bounds.getSouthWest(); // LatLng of the south-west corder
-                var center = map.getCenter();
-                $("#NELat").val(ne.lat());
-                $("#NELng").val(ne.lng());
-                $("#SWLat").val(sw.lat());
-                $("#SWLng").val(sw.lng());
-                $("#CenterLat").val(center.lat());
-                $("#CenterLng").val(center.lng());
-                if ($('#Teacher').val() == "")
-                {
-                    $('#TeacherId').prop('value', "");
-                }
-                if ($('#Style').val() == "")
-                {
-                    $('#DanceStyleId').prop('value', "");
-                }
+            google.maps.event.addListener(marker, 'click', function () {
+                clearWindows();
+                infowindow.open(map, marker);
             });
-        </script>*@
+        }
+    });
+
+    function clearWindows() {
+        for (var i = 0; i < infowindows.length; i++) {
+            infowindows[i].infowindow.close();
+        }
+    };
+
+    function openEvent(id, lati, long) {
+        var latLng = new google.maps.LatLng(lati, long); //Makes a latlng
+        var map = $("#Location").geocomplete("map");
+        map.panTo(latLng); //Make map global
+        var mark = markers.filter(function (item) { return item.id == id })[0];
+        mark.marker.setMap(map);
+        //  markers[id].setMap(map);
+        clearWindows();
+        iwin = infowindows.filter(function (item) { return item.id == id })[0];
+        iwin.infowindow.open(map, mark.marker);
+        //  infowindows[id].open(map, markers[id]);
+        return false;
+    };
+
+    $(function () {
+        $(".rateYo").rateYo({
+            starWidth: "15px",
+            onInit: function (rating, rateYoInstance) {
+                //  alert("init");
+                var t = $(this);
+                $(this).rateYo("option", "rating", t.parent('div').find('.ratingval').prop('value'));
+                $(this).rateYo("option", "readOnly", true);
+            }
+        });
+    });
+</script>
+}
+
 <script>
     //$(function () {
     //    $("#Location").geocomplete({
@@ -207,7 +378,7 @@
     //      });
     //});
 
-    @*$(function () {
+@*$(function () {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(success);
         }
@@ -242,107 +413,18 @@
         }
     });*@
 
-    $(function () {
-        $('#Days').multiselect({
-            nonSelectedText: 'Day of Week',
-            buttonClass: 'multiselectbutton form-control',
-            buttonText: function(options, select) {
-                return 'Day of Week';
-            }
-        });
-        $('#SkillLevel').multiselect({
-            nonSelectedText: 'Skill Level',
-            buttonClass: 'multiselectbutton form-control',
-            buttonText: function(options, select) {
-                return 'Skill Level';
-            }
-        });
-        $('#Days').show();
-        $('#SkillLevel').show();
-    });
-
-    //  Global Map Variables
-    var markers = [];
-    var infowindows = [];
-    $(function () {
-        //  Map Marker Containers
-        //  Map Marker Containers
-        //  Build up the Markers
-        var map = $("#Location").geocomplete("map");
-        @foreach(var s in Model.Classes.OrderBy(c => c.NextDate))
-    {
-        <text>
-        var marker = new google.maps.Marker({
-            position: new google.maps.LatLng('@s.Place.Latitude', @s.Place.Longitude),
-            map: map,
-            title: '@s.Name',
-            icon: "../../Content/images/MapMarker.png"
-        });
-
-        attachMessage(map, marker, '@s.Id', '@s.Name', '@s.Place.Address', '@(s.Place.City + ", " + s.Place.State + " " + s.Place.Zip)', '<a href="@Url.Action("View", "Event", new { id = s.Id, eventType = EDR.Enums.EventType.Class })">' + '@s.Name' + '</a>');
-        markers.push(marker);
-        </text>
-    }
-
-        function attachMessage(map, marker, num, placeName, address, address2, link) {
-            var message = marker.title;
-            var infowindow = new google.maps.InfoWindow({
-                disableAutoPan: false,
-                maxWidth: 200,
-                content: '<div id="content" class="text-center" style="width: 200px;">' +
-                '<div id="siteNotice">' +
-                '</div>' +
-                '<div style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
-                link +
-                '</div>' +
-                '<div id="bodyContent">' +
-                '<p>' +
-                address + '<br>' +
-                address2 +
-                '</p>' +
-                '</div>' +
-                '</div>'
-            });
-            infowindows.push(infowindow);
-
-            //  infowindow.open(map, marker);
-
-            google.maps.event.addListener(marker, 'click', function () {
-                clearWindows();
-                infowindow.open(map, marker);
-            });
-        }
-    });
-
-    function clearWindows() {
-        for (var i = 0; i < infowindows.length; i++) {
-            infowindows[i].close();
-        }
-    };
-
-    function openEvent(id, lati, long) {
-        var latLng = new google.maps.LatLng(lati, long); //Makes a latlng
-        var map = $("#Location").geocomplete("map");
-        map.panTo(latLng); //Make map global
-        markers[id].setMap(map);
-        clearWindows();
-        infowindows[id].open(map, markers[id]);
-        return false;
-    };
-
-    $(function () {
-        $( ".toggle" ).click(function() {
-            // Animation complete.
-            $("#daysdiv").css({
-                'position': 'absolute',
-                'z-index' : '100',
-                'width' : '150px',
-                'left': $(this).offset().left,
-                'top': $(this).offset().top + $(this).height() + 15
-            });
-            $( "#daysdiv" ).toggle( "fast", function() {
-            });
-        });
+        //$( ".toggle" ).click(function() {
+        //    // Animation complete.
+        //    $("#daysdiv").css({
+        //        'position': 'absolute',
+        //        'z-index' : '100',
+        //        'width' : '150px',
+        //        'left': $(this).offset().left,
+        //        'top': $(this).offset().top + $(this).height() + 15
+        //    });
+        //    $( "#daysdiv" ).toggle( "fast", function() {
+        //    });
+        //});
 
         //$('.popup').click(function (e) {
         //    $('.popuptarget').css({
@@ -370,20 +452,6 @@
         //        return $('#mytab').html();
         //    }
         //})
-    });
-
-    $(function () {
-
-        $(".rateYo").rateYo({
-            starWidth: "15px",
-            onInit: function (rating, rateYoInstance) {
-                //  alert("init");
-                var t = $(this);
-                $(this).rateYo("option", "rating", t.parent('div').find('.ratingval').prop('value'));
-                $(this).rateYo("option", "readOnly", true);
-            }
-        });
-    });
 
     //$(function () {
     //    $("#Location").geocomplete({
@@ -420,7 +488,80 @@
     //        }
     //    });
     //});
+
+@*<script type="text/javascript">
+        $('#Style').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '@Url.Action("Search", "DanceStyle")',
+                    data: { searchString: request.term },
+                    dataType: 'json',
+                    type: 'GET',
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return {
+                                label: item.Name,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+            select: function (event, ui) {
+                $('#Style').val(ui.item.label);
+                $('#DanceStyleId').val(ui.item.value);
+                return false;
+            },
+            minLength: 1
+        });
+
+        $('#Teacher').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '@Url.Action("Search", "Teacher")',
+                    data: { searchString: request.term },
+                    dataType: 'json',
+                    type: 'GET',
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return {
+                                label: item.Name,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+            select: function (event, ui) {
+                $('#Teacher').val(ui.item.label);
+                $('#TeacherId').val(ui.item.value);
+                return false;
+            },
+            minLength: 1
+        });
+
+        $('.formmain').submit(function () {
+            var map = $("#Location").geocomplete("map");
+            $("#Zoom").val(map.getZoom());
+            var bounds = map.getBounds();
+            var ne = bounds.getNorthEast(); // LatLng of the north-east corner
+            var sw = bounds.getSouthWest(); // LatLng of the south-west corder
+            var center = map.getCenter();
+            $("#NELat").val(ne.lat());
+            $("#NELng").val(ne.lng());
+            $("#SWLat").val(sw.lat());
+            $("#SWLng").val(sw.lng());
+            $("#CenterLat").val(center.lat());
+            $("#CenterLng").val(center.lng());
+            if ($('#Teacher').val() == "")
+            {
+                $('#TeacherId').prop('value', "");
+            }
+            if ($('#Style').val() == "")
+            {
+                $('#DanceStyleId').prop('value', "");
+            }
+        });
+    </script>*@
+
 </script>
-
-}
-

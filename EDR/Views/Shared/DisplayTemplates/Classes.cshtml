@@ -18,7 +18,7 @@
                             <div id="cont" class="rateYo"></div>
                         </div>
                         <div class="item-title text-primary">
-                            <a href="@Url.Action("View", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Class })" onmouseover="openEvent(@rowNo, @item.Place.Latitude, @item.Place.Longitude); return false;">
+                            <a href="@Url.Action("View", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Class })" onmouseover="openEvent(@item.Id, @item.Place.Latitude, @item.Place.Longitude); return false;">
                                 @(rowNo + 1). @item.Name
                             </a>
                         </div>

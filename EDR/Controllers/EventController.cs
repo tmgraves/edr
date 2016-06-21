@@ -2432,7 +2432,7 @@ namespace EDR.Controllers
                 try
                 {
                     var evnt = new Event();
-                    if (evnt is Class)
+                    if (model.EventType == EventType.Class)
                     {
                         evnt = DataContext.Events.OfType<Class>()
                                         .Include("Place")
@@ -2448,6 +2448,7 @@ namespace EDR.Controllers
                     }
                     evnt.Name = model.Event.Name;
                     evnt.Description = model.Event.Description;
+                    evnt.StartDate = model.Event.StartDate;
                     evnt.StartTime = model.Event.StartTime;
                     evnt.EndDate = model.Event.EndDate;
                     evnt.EndTime = model.Event.EndTime;
@@ -2519,7 +2520,7 @@ namespace EDR.Controllers
                 }
             }
 
-            return RedirectToAction("Manage", new { id = id });
+            return RedirectToAction("Manage", new { id = id, eventType = evnt is Class ? EventType.Class : EventType.Social });
         }
 
         [Authorize(Roles = "Owner,Promoter,Teacher")]

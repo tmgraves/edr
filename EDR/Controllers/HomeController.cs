@@ -246,19 +246,26 @@ namespace EDR.Controllers
 
         public ActionResult Learn(LearnViewModel model)
         {
+            SearchClasses(model);
+            return View(model);
+        }
+
+        private void SearchClasses(LearnViewModel model)
+        {
             model.Classes = DataContext.Classes
                                 .Include("Teachers.ApplicationUser")
                                 .Include("DanceStyles")
                                 .Include("Place")
                                 .Include("EventMembers.Member")
                                 .Include("Reviews")
+                                .Include("EventInstances")
                                 .Where(c => c.EventInstances.Any(i => i.DateTime >= DateTime.Today))
                                 .AsQueryable();
             if (model.DanceStyleId != null)
             {
                 model.Classes = model.Classes.Where(c => c.DanceStyles.Select(st => st.Id).Contains((int)model.DanceStyleId));
             }
-            if (model.TeacherId != null)
+            if (model.TeacherId != null && model.TeacherId != "")
             {
                 model.Classes = model.Classes.Where(c => c.Teachers.Select(t => t.ApplicationUser.Id).Contains(model.TeacherId));
             }
@@ -277,16 +284,22 @@ namespace EDR.Controllers
             }
 
             model.Classes = model.Classes.ToList().Take(100);
-            return View(model);
         }
 
         public ActionResult Social(SocialViewModel model)
+        {
+            SearchSocials(model);
+            return View(model);
+        }
+
+        private void SearchSocials(SocialViewModel model)
         {
             model.Socials = DataContext.Socials
                                 .Include("DanceStyles")
                                 .Include("Place")
                                 .Include("EventMembers.Member")
                                 .Include("Reviews")
+                                .Include("EventInstances")
                                 .Where(c => c.EventInstances.Any(i => i.DateTime >= DateTime.Today))
                                 .AsQueryable();
             if (model.DanceStyleId != null)
@@ -304,7 +317,6 @@ namespace EDR.Controllers
             }
 
             model.Socials = model.Socials.ToList().Take(100);
-            return View(model);
         }
 
         //public ActionResult Learn(int? danceStyle, string TeacherId, int? PlaceId, int? skillLevel, string location, string[] days, double? CenterLat, double? CenterLng, int? Zoom, double? NELat, double? NELng, double? SWLat, double? SWLng)
@@ -445,5 +457,70 @@ namespace EDR.Controllers
 
             return PartialView("~/Views/Shared/Home/_IndexEventsPartial.cshtml", events);
         }
+
+        #region JSON
+        public JsonResult GetClasses(double? neLat, double? neLng, double? swLat, double? swLng, int? styleId, string teacherId, int[] skillLevel, DayOfWeek[] days, DateTime start, DateTime end)
+        {
+            var model = new LearnViewModel();
+            model.NELat = neLat;
+            model.NELng = neLng;
+            model.SWLat = swLat;
+            model.SWLng = swLng;
+            model.DanceStyleId = styleId;
+            model.TeacherId = teacherId;
+            model.SkillLevel = skillLevel;
+            model.Days = days;
+
+            SearchClasses(model);
+
+            var instances = model.Classes.SelectMany(c => c.EventInstances).Where(i => i.DateTime >= start && i.DateTime <= end);
+
+            return Json(instances.AsEnumerable().Select(s =>
+                        new {
+                            id = s.EventId,
+                            title = s.Event.Name,
+                            start = s.StartTime.Value.ToString("o"),
+                            end = s.EndTime.Value.ToString("o"),
+                            lat = s.Event.Place.Latitude,
+                            lng = s.Event.Place.Longitude,
+                            url = Url.Action("View", "Event", new { id = s.EventId, eventType = EventType.Class })
+                        }), JsonRequestBehavior.AllowGet);
+
+            //var evnts = DataContext.Classes.Include("EventInstances").AsEnumerable();
+            //return Json(evnts.Select(s => 
+            //            new {
+            //                id = s.Id,
+            //                title = s.Name,
+            //                start = (s.EventInstances.Where(i => i.StartTime >= DateTime.Today).OrderBy(i => i.StartTime).FirstOrDefault() ?? s.EventInstances.OrderByDescending(i => i.StartTime).FirstOrDefault()).StartTime.Value.ToString("o"),
+            //                end = (s.EventInstances.Where(i => i.StartTime >= DateTime.Today).OrderBy(i => i.StartTime).FirstOrDefault() ?? s.EventInstances.OrderByDescending(i => i.StartTime).FirstOrDefault()).EndTime.Value.ToString("o")
+            //            }), JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetSocials(double? neLat, double? neLng, double? swLat, double? swLng, int? styleId, DayOfWeek[] days, DateTime start, DateTime end)
+        {
+            var model = new SocialViewModel();
+            model.NELat = neLat;
+            model.NELng = neLng;
+            model.SWLat = swLat;
+            model.SWLng = swLng;
+            model.DanceStyleId = styleId;
+            model.Days = days;
+
+            SearchSocials(model);
+
+            var instances = model.Socials.SelectMany(c => c.EventInstances).Where(i => i.DateTime >= start && i.DateTime <= end);
+
+            return Json(instances.AsEnumerable().Select(s =>
+                        new {
+                            id = s.EventId,
+                            title = s.Event.Name,
+                            start = s.StartTime.Value.ToString("o"),
+                            end = s.EndTime.Value.ToString("o"),
+                            lat = s.Event.Place.Latitude,
+                            lng = s.Event.Place.Longitude,
+                            url = Url.Action("View", "Event", new { id = s.EventId, eventType = EventType.Social })
+                        }), JsonRequestBehavior.AllowGet);
+        }
+        #endregion
     }
 }

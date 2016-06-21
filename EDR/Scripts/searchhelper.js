@@ -11,8 +11,8 @@ $(function () {
         };
 
         $(".locationsearch").geocomplete(options)
-          .on("geocode:result", function (event, result) {
-          });
+            .on("geocode:result", function (event, result) {
+            });
     }
 });
 
@@ -47,6 +47,20 @@ $(function () {
         {
             var map = $('.locationsearch').geocomplete("map");
             map.setCenter(loc);
+
+            google.maps.event.addListenerOnce(map, 'idle', function () {
+                var bounds = map.getBounds();
+                var ne = bounds.getNorthEast(); // LatLng of the north-east corner
+                var sw = bounds.getSouthWest(); // LatLng of the south-west corder
+
+                //alert(ne.lat());
+
+                $('.nelatfield').val(ne.lat());
+                $('.nelngfield').val(ne.lng());
+                $('.swlatfield').val(sw.lat());
+                $('.swlngfield').val(sw.lng());
+                //alert(map);
+            });
         }
     }
 });
