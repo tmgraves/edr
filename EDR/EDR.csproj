@@ -441,6 +441,8 @@
     <Content Include="Content\bootstrap-toggle.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\Cerulean\bootstrap.css" />
+    <Content Include="Content\Cerulean\bootstrap.min.css" />
     <Content Include="Content\cropper.css" />
     <Content Include="Content\fullcalendar\fullcalendar.css" />
     <Content Include="Content\fullcalendar\fullcalendar.min.css" />
