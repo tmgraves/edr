@@ -548,6 +548,12 @@
     <Content Include="Content\timepicker\bootstrap-datepicker.css" />
     <Content Include="Content\timepicker\jquery.timepicker.css" />
     <Content Include="Content\timepicker\site.css" />
+    <Content Include="Content\bootstrap-glyphicons.css" />
+    <Content Include="Content\yeti.bootstrap.css" />
+    <Content Include="Content\yeti.bootstrap.min.css" />
+    <Content Include="Content\YetiBootstrap\yeti.bootstrap-glyphicons.css" />
+    <Content Include="Content\YetiBootstrap\yeti.bootstrap.css" />
+    <Content Include="Content\YetiBootstrap\yeti.bootstrap.min.css" />
     <Content Include="favicon.ico" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />

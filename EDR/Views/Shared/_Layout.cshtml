@@ -27,7 +27,7 @@ window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]
 .mainnav.open > ul {
     display: inline-flex !important;
 }
-.navbar-default{
+/*.navbar-default{
     font-weight: 600;
     background-color: #00889f;
 }
@@ -37,7 +37,7 @@ window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]
 .navbar-default .navbar-nav > li > a:hover,
 .navbar-default .navbar-nav > li > a:focus {
     color: #ACDDE4;
-}
+}*/
 </style>
 
     <nav class="navbar navbar-default navbar-fixed-top">
@@ -53,7 +53,7 @@ window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]
                 </button>
             </div>
             <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
+                <ul class="nav navbar-nav text-uppercase">
                     @if (User.Identity.IsAuthenticated)
                     {
                         <li>@Html.ActionLink("Explore", "Explore", "Home")</li>

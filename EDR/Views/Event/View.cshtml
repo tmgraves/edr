@@ -89,12 +89,19 @@
                             {
                                 @:(@(((EDR.Models.Social)Model.Event).SocialType))
                             }
-                            @if(Model.Event.EventMembers.Where(m => m.UserId == User.Identity.GetUserId() && m.Admin).Count() != 0)
+                            @if (Model.EventType == EventType.Class && ((Class)Model.Event).Teachers.Where(t => t.ApplicationUser.Id == User.Identity.GetUserId()).Count() == 1)
                             {
-                            <a class="btn btn-warning" title="Edit" href="@Url.Action("Manage", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">
-                                <i class="glyphicon glyphicon-edit"></i>
-                                <span class="sr-only">Edit</span>
-                            </a>
+                                <a class="btn btn-warning" title="Edit" href="@Url.Action("Manage", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">
+                                    <i class="glyphicon glyphicon-edit"></i>
+                                    <span class="sr-only">Edit</span>
+                                </a>
+                            }
+                            else if (Model.EventType == EventType.Social && ((Social)Model.Event).Promoters.Where(p => p.ApplicationUser.Id == User.Identity.GetUserId()).Count() == 1)
+                            {
+                                <a class="btn btn-warning" title="Edit" href="@Url.Action("Manage", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">
+                                    <i class="glyphicon glyphicon-edit"></i>
+                                    <span class="sr-only">Edit</span>
+                                </a>
                             }
                         </h2>
                     </div>

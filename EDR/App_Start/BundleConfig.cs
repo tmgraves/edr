@@ -24,8 +24,14 @@ namespace EDR
                       "~/Scripts/bootstrap.js",
                       "~/Scripts/respond.js"));
 
+            //bundles.Add(new StyleBundle("~/Content/css").Include(
+            //          "~/Content/bootstrap.css",
+            //          "~/Content/site.css",
+            //          "~/Content/sidebar.bootstrap.css"));
+
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                      "~/Content/bootstrap.css",
+                      "~/Content/Cerulean/bootstrap.css",
+                      "~/Content/bootstrap-glyphicons.css",
                       "~/Content/site.css",
                       "~/Content/sidebar.bootstrap.css"));
 
