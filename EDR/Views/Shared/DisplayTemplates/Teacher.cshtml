@@ -1,5 +1,6 @@
 ﻿@model EDR.Models.Teacher
 
 <a title="@Model.ApplicationUser.FullName" href="@Url.Action("Home", "Teacher", new { username = Model.ApplicationUser.UserName })">
-    <img style="max-height: 100%; max-width: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.ApplicationUser.PhotoUrl))" title="@Model.ApplicationUser.FullName" />
+    <img class="img-circle" style="max-height: 100%; max-width: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.ApplicationUser.PhotoUrl))" title="@Model.ApplicationUser.FullName" />
+    <div class="text-center small" style="padding-top: 5px;">@Model.ApplicationUser.FullName</div>
 </a>

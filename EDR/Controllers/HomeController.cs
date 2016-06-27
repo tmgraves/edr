@@ -282,6 +282,10 @@ namespace EDR.Controllers
             {
                 model.Classes = model.Classes.Where(x => model.Days.Contains(x.Day));
             }
+            if (model.SchoolId != null)
+            {
+                model.Classes = model.Classes.Where(c => c.SchoolId == model.SchoolId);
+            }
 
             model.Classes = model.Classes.ToList().Take(100);
         }
@@ -459,7 +463,7 @@ namespace EDR.Controllers
         }
 
         #region JSON
-        public JsonResult GetClasses(double? neLat, double? neLng, double? swLat, double? swLng, int? styleId, string teacherId, int[] skillLevel, DayOfWeek[] days, DateTime start, DateTime end)
+        public JsonResult GetClasses(double? neLat, double? neLng, double? swLat, double? swLng, int? styleId, string teacherId, int[] skillLevel, DayOfWeek[] days, DateTime start, DateTime end, int? schoolId)
         {
             var model = new LearnViewModel();
             model.NELat = neLat;
@@ -470,6 +474,7 @@ namespace EDR.Controllers
             model.TeacherId = teacherId;
             model.SkillLevel = skillLevel;
             model.Days = days;
+            model.SchoolId = schoolId;
 
             SearchClasses(model);
 

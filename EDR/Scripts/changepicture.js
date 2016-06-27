@@ -120,7 +120,7 @@ $(function () {
         $('.croppic').show();
         $('.divFacebookPic').hide();
         $('.cropimage').cropper({
-            aspectRatio: 10 / 10,
+            aspectRatio: aspectratio,
             zoomable: false,
         });
         $(".cropimage").cropper('replace', src);

@@ -480,6 +480,50 @@
                 </div>
             </div>
         </div>
+        @if (eventType == EDR.Enums.EventType.Class)
+        {
+            <div class="panel panel-default">
+                <div class="panel-body buttoncontainer">
+                    <h3>Teachers</h3>
+                    <div>
+                        @using (Html.BeginForm("AddTeacher", "Event", FormMethod.Post))
+                        {
+                            <input type="hidden" id="id" name="id" value="@Model.Event.Id" />
+                            <input type="hidden" class="teachersearchid" id="teacherid" name="teacherid" />
+                            <input type="text" class="teachersearch form-control" placeholder="Type in a Teacher Name" style="display: inline-block;" />
+                            <button type="submit" class="btn btn-primary btn-sm" style="display: inline-block;">Add Teacher</button>
+                        }
+                    </div>
+                    <div id="teachers">
+                        <table style="width: 100%;">
+                            <tr>
+                                <th>
+                                    Name
+                                </th>
+                                <th>
+                                </th>
+                            </tr>
+                            @foreach (var t in ((Class)Model.Event).Teachers)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(model => t.ApplicationUser.FullName)
+                                    </td>
+                                    <td class="text-right">
+                                        @if (t.ApplicationUser.UserName != User.Identity.Name)
+                                        {
+                                            <a class="btn btn-link text-danger" title="Remove" href="@Url.Action("RemoveTeacher", new { id = Model.Event.Id, teacherid = t.Id })" onclick="return confirm('Are you sure you want to remove this Teacher?')">
+                                                <i class="text-danger glyphicon glyphicon-remove-circle"></i>
+                                            </a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
         <div class="panel panel-default">
             <div class="panel-body ">
                 <h3>Registrations</h3>
@@ -871,6 +915,7 @@
     <script src="~/Scripts/jquery-simple-pagination-plugin.js"></script>
     <script src="~/Scripts/changepicture.js"></script>
     <script src="~/Scripts/jquery.mousewheel.js"></script>
+<script src="~/Scripts/searchhelper.js"></script>
 
     <script type="text/javascript">
     $.validator.setDefaults({

@@ -126,3 +126,4 @@
 /// <reference path="timepicker/jquery.datepair.js" />
 /// <reference path="timepicker/jquery.timepicker.js" />
 /// <reference path="timepicker/site.js" />
+/// <reference path="youtubepopup.jquery.js" />

@@ -90,6 +90,7 @@ namespace EDR.Models.ViewModels
         [DefaultValue(1)]
         [Range(1, 100)]
         public int EventCount { get; set; }
+        public bool FreeEvent { get; set; }
 
         //[Range(1, 12)]
         //public int StartHour { get; set; }
@@ -120,6 +121,8 @@ namespace EDR.Models.ViewModels
             MonthDays = new MultiCheckBox();
             StylesCheckboxList = new MultiCheckBox();
             UseSchoolTickets = true;
+            TicketQuantity = 1;
+            TicketPrice = 5;
             //  Tickets = new List<Ticket>();
 
             NewPlace = new Place() { Id = 0, Latitude = 0.0, Longitude = 0.0, Public = false, PlaceType = PlaceType.OtherPlace };

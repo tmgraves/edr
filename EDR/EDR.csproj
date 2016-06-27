@@ -546,6 +546,14 @@
     <Content Include="Content\images\youtube.png" />
     <Content Include="Content\jquery.rateyo.css" />
     <Content Include="Content\listnav.css" />
+    <Content Include="Content\Metheor\bootstrap.css" />
+    <Content Include="Content\Metheor\bootstrap.min.css" />
+    <Content Include="Content\Metheor\feather-icons.css" />
+    <Content Include="Content\Metheor\feather-icons.min.css" />
+    <Content Include="Content\Metheor\fontawesome.css" />
+    <Content Include="Content\Metheor\fontawesome.min.css" />
+    <Content Include="Content\Metheor\pixeden.css" />
+    <Content Include="Content\Metheor\pixeden.min.css" />
     <Content Include="Content\sidebar.bootstrap.css" />
     <Content Include="Content\timepicker\bootstrap-datepicker.css" />
     <Content Include="Content\timepicker\jquery.timepicker.css" />
@@ -556,6 +564,7 @@
     <Content Include="Content\YetiBootstrap\yeti.bootstrap-glyphicons.css" />
     <Content Include="Content\YetiBootstrap\yeti.bootstrap.css" />
     <Content Include="Content\YetiBootstrap\yeti.bootstrap.min.css" />
+    <Content Include="Content\YouTubePopUp.css" />
     <Content Include="favicon.ico" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -825,6 +834,7 @@
     <Content Include="Scripts\timepicker\jquery.timepicker.js" />
     <Content Include="Scripts\timepicker\jquery.timepicker.min.js" />
     <Content Include="Scripts\timepicker\site.js" />
+    <Content Include="Scripts\YouTubePopUp.jquery.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Views\Dancer\MyDance.cshtml">
       <SubType>Code</SubType>

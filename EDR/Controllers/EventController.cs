@@ -343,7 +343,7 @@ namespace EDR.Controllers
             //  Get YouTube Playlist Videos
             //  Add Videos
             var videos = GetVideos(id);
-            return Json(videos.Select(v => new { PhotoUrl = v.PhotoUrl, VideoUrl = v.VideoUrl, Title = v.Title }), JsonRequestBehavior.AllowGet);
+            return Json(videos.OrderByDescending(v => v.PublishDate).Select(v => new { PhotoUrl = v.PhotoUrl, VideoUrl = v.VideoUrl, Title = v.Title, Id = v.YoutubeId }), JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult GetFeedJSON(int id)
@@ -1008,7 +1008,7 @@ namespace EDR.Controllers
             if(eventType == EventType.Class)
             {
                 model.Event =
-                DataContext.Events.OfType<Class>().Where(x => x.Id == id)
+                DataContext.Classes.Where(x => x.Id == id)
                 .Include("Place")
                 .Include("DanceStyles")
                 .Include("Reviews")
@@ -1783,33 +1783,30 @@ namespace EDR.Controllers
 
 //          [Route("{eventType}/Create")]
         [Authorize(Roles = "Owner,Promoter,Teacher")]
-        public ActionResult Create(EventType eventType, int? schoolId, RoleName role)
+        public ActionResult Create(EventType eventType, int? schoolId, RoleName role, string fbId)
         {
             var model = new EventCreateViewModel(eventType, schoolId, role);
-            //model.EventType = eventType;
-            //model.SchoolId = schoolId;
-            //var userid = User.Identity.GetUserId();
-            //var user = DataContext.Users.Where(u => u.Id == userid).Include("Places").FirstOrDefault();
-            //  model.Places = new List<PlaceItem>();
-            //model.NewPlace = new Place() { Id = 0, Latitude = 0.0, Longitude = 0.0, Public = false, PlaceType = PlaceType.OtherPlace };
+            var userid = User.Identity.GetUserId();
+            var user = DataContext.Users.Single(u => u.Id == userid);
+            //  Pick a Facebook Event
+            if (fbId != null)
+            {
+                model.FacebookId = fbId;
+                model.CreateAction = "Facebook";
+                var f = FacebookHelper.GetEvent(model.FacebookId, user.FacebookToken);
+                model.Event = new Event() { Description = f.Description, Name = f.Name, StartDate = Convert.ToDateTime(f.StartTime.ToShortDateString()), StartTime = f.StartTime, EndDate = f.EndTime != null ? (DateTime?)Convert.ToDateTime(((DateTime)f.EndTime).ToShortDateString()) : Convert.ToDateTime(f.StartTime.ToShortDateString()), EndTime = f.EndTime, FacebookId = f.Id, FacebookLink = f.EventLink, PhotoUrl = f.CoverPhoto.LargeSource, Place = new Place() { Name = f.Address.Location, Address = f.Address.Street, City = f.Address.City, StateName = f.Address.State ?? "CA", Zip = f.Address.ZipCode, Country = f.Address.Country, Latitude = f.Address.Latitude, Longitude = f.Address.Longitude, FacebookId = f.Address.FacebookId, PlaceType = FacebookHelper.ParsePlaceType(f.Address.Categories), Public = true, Website = Uri.IsWellFormedUriString(f.Address.WebsiteUrl, UriKind.RelativeOrAbsolute) ? f.Address.WebsiteUrl : null, FacebookLink = f.Address.FacebookUrl, Filename = f.Address.CoverPhotoUrl, ThumbnailFilename = f.Address.ThumbnailUrl, GooglePlaceId = f.Address.GooglePlaceId } };
+                model.FacebookId = null;
 
-            ////  New Event
-            //if (model.Event == null)
-            //{
-            //    if (model.EventType == EventType.Class)
-            //    {
-            //        model.Event = new Class() { StartDate = DateTime.Today, Place = new Place(), SchoolId = schoolId };
-            //    }
-            //    else
-            //    {
-            //        model.Event = new Social() { StartDate = DateTime.Today, Place = new Place() };
-            //    }
-            //}
-            ////  New Event
-
-            LoadCreateModel(model);
-
-            return View(model);
+                ModelState.Clear();
+                LoadCreateModel(model);
+                return View(model);
+            }
+            //  Pick a Facebook Event
+            else
+            {
+                LoadCreateModel(model);
+                return View(model);
+            }
         }
 
         //[Authorize(Roles = "Owner,Promoter,Teacher")]
@@ -1888,7 +1885,7 @@ namespace EDR.Controllers
             {
                 model.CreateAction = "Facebook";
                 var f = FacebookHelper.GetEvent(model.FacebookId, user.FacebookToken);
-                model.Event = new Event() { Description = f.Description, Name = f.Name, StartDate = Convert.ToDateTime(f.StartTime.ToShortDateString()), StartTime = f.StartTime, EndDate = f.EndTime != null ? (DateTime?)Convert.ToDateTime(((DateTime)f.EndTime).ToShortDateString()) : Convert.ToDateTime(f.StartTime.ToShortDateString()), EndTime = f.EndTime, FacebookId = f.Id, FacebookLink = f.EventLink, PhotoUrl = f.CoverPhoto.LargeSource, Place = new Place() { Name = f.Address.Location, Address = f.Address.Street, City = f.Address.City, StateName = f.Address.State ?? "CA", Zip = f.Address.ZipCode, Country = f.Address.Country, Latitude = f.Address.Latitude, Longitude = f.Address.Longitude, FacebookId = f.Address.FacebookId, PlaceType = FacebookHelper.ParsePlaceType(f.Address.Categories), Public = true, Website = f.Address.WebsiteUrl, FacebookLink = f.Address.FacebookUrl, Filename = f.Address.CoverPhotoUrl, ThumbnailFilename = f.Address.ThumbnailUrl, GooglePlaceId = f.Address.GooglePlaceId } };
+                model.Event = new Event() { Description = f.Description, Name = f.Name, StartDate = Convert.ToDateTime(f.StartTime.ToShortDateString()), StartTime = f.StartTime, EndDate = f.EndTime != null ? (DateTime?)Convert.ToDateTime(((DateTime)f.EndTime).ToShortDateString()) : Convert.ToDateTime(f.StartTime.ToShortDateString()), EndTime = f.EndTime, FacebookId = f.Id, FacebookLink = f.EventLink, PhotoUrl = f.CoverPhoto.LargeSource, Place = new Place() { Name = f.Address.Location, Address = f.Address.Street, City = f.Address.City, StateName = f.Address.State ?? "CA", Zip = f.Address.ZipCode, Country = f.Address.Country, Latitude = f.Address.Latitude, Longitude = f.Address.Longitude, FacebookId = f.Address.FacebookId, PlaceType = FacebookHelper.ParsePlaceType(f.Address.Categories), Public = true, Website = Uri.IsWellFormedUriString(f.Address.WebsiteUrl, UriKind.RelativeOrAbsolute) ? f.Address.WebsiteUrl : null, FacebookLink = f.Address.FacebookUrl, Filename = f.Address.CoverPhotoUrl, ThumbnailFilename = f.Address.ThumbnailUrl, GooglePlaceId = f.Address.GooglePlaceId } };
                 model.FacebookId = null;
 
                 ModelState.Clear();
@@ -2018,11 +2015,14 @@ namespace EDR.Controllers
                     //  Add Dance Styles
 
                     //  Add Tickets
-                    if (!model.UseSchoolTickets)
+                    if (!model.FreeEvent)
                     {
-                        evnt.Tickets = new List<Ticket>();
-                        evnt.Tickets.Add(new Ticket() { Price = (decimal)model.TicketPrice, Quantity = (decimal)model.TicketQuantity });
-                        //  DataContext.SaveChanges();
+                        if (!model.UseSchoolTickets)
+                        {
+                            evnt.Tickets = new List<Ticket>();
+                            evnt.Tickets.Add(new Ticket() { Price = (decimal)model.TicketPrice, Quantity = (decimal)model.TicketQuantity });
+                            //  DataContext.SaveChanges();
+                        }
                     }
                     //  Add Tickets
 
@@ -2930,6 +2930,9 @@ namespace EDR.Controllers
         [Authorize]
         public ActionResult Delete(int id)
         {
+            var userid = User.Identity.GetUserId();
+            var user = UserManager.FindById(userid);
+
             var evt = DataContext.Events.Where(e => e.Id == id)
                     .Include("Videos")
                     .Include("Pictures")
@@ -2942,6 +2945,16 @@ namespace EDR.Controllers
                     .Include("Tickets")
                     .Include("EventInstances")
                     .FirstOrDefault();
+
+            var returnAction = "";
+            if (evt is Class)
+            {
+                returnAction = Url.Action("Manage", "School", new { id = DataContext.Schools.Where(s => s.Classes.Any(c => c.Id == id)).FirstOrDefault().Id });
+            }
+            else
+            {
+                returnAction = Url.Action("Manage", "Promoter", new { username = User.Identity.Name });
+            }
 
             evt.Videos.Clear();
             evt.Pictures.Clear();
@@ -2956,34 +2969,7 @@ namespace EDR.Controllers
             DataContext.Events.Remove(evt);
             DataContext.SaveChanges();
 
-            var userid = User.Identity.GetUserId();
-            var user = UserManager.FindById(userid);
-
-            //  Set Return
-            if (user.CurrentRole != null)
-            {
-                if (user.CurrentRole.Name == "Owner")
-                {
-                    return Redirect(Url.Action("Home", "Owner", new { username = User.Identity.Name }));
-                }
-                else if (user.CurrentRole.Name == "Promoter")
-                {
-                    return Redirect(Url.Action("Home", "Promoter", new { username = User.Identity.Name }));
-                }
-                else if (user.CurrentRole.Name == "Teacher")
-                {
-                    return Redirect(Url.Action("Home", "Teacher", new { username = User.Identity.Name }));
-                }
-                else
-                {
-                    return Redirect(Url.Action("Home", "Dancer", new { username = User.Identity.Name }));
-                }
-            }
-            else
-            {
-                return Redirect(Url.Action("Home", "Dancer", new { username = User.Identity.Name }));
-            }
-            //  Set Return
+            return Redirect(returnAction);
         }
 
         [Authorize]
@@ -4210,102 +4196,102 @@ namespace EDR.Controllers
             //  Get Events
         }
 
-        [Authorize]
-        public ActionResult AddTeacher(int id)
-        {
-            var model = new AddTeacherViewModel();
-            var clss = DataContext.Events.OfType<Class>().Where(e => e.Id == id).FirstOrDefault();
-            model.Class = clss;
+        //[Authorize]
+        //public ActionResult AddTeacher(int id)
+        //{
+        //    var model = new AddTeacherViewModel();
+        //    var clss = DataContext.Events.OfType<Class>().Where(e => e.Id == id).FirstOrDefault();
+        //    model.Class = clss;
 
-            //  Load Dance Styles
-            var styles = new List<DanceStyleListItem>();
-            foreach (DanceStyle s in DataContext.DanceStyles)
-            {
-                styles.Add(new DanceStyleListItem { Id = s.Id, Name = s.Name });
-            }
-            model.AvailableStyles = styles.OrderBy(x => x.Name);
-            //  Load Dance Styles
+        //    //  Load Dance Styles
+        //    var styles = new List<DanceStyleListItem>();
+        //    foreach (DanceStyle s in DataContext.DanceStyles)
+        //    {
+        //        styles.Add(new DanceStyleListItem { Id = s.Id, Name = s.Name });
+        //    }
+        //    model.AvailableStyles = styles.OrderBy(x => x.Name);
+        //    //  Load Dance Styles
 
-            model.Teachers = DataContext.Teachers.Include("ApplicationUser").Where(t => !t.Classes.Any(c => c.Id == model.Class.Id)).ToList();
+        //    model.Teachers = DataContext.Teachers.Include("ApplicationUser").Where(t => !t.Classes.Any(c => c.Id == model.Class.Id)).ToList();
 
-            //  Search based on location
-            if (model.Location != null)
-            {
-                var address = Geolocation.ParseAddress(model.Location);
-                var NELat = address.Latitude + .5;
-                var SWLat = address.Latitude - .5;
-                var NELng = address.Longitude + .5;
-                var SWLng = address.Longitude - .5;
-                model.Teachers = model.Teachers.Where(t => t.ApplicationUser.Longitude >= SWLng && t.ApplicationUser.Longitude <= NELng && t.ApplicationUser.Latitude >= SWLat && t.ApplicationUser.Latitude <= NELat).ToList();
-            }
+        //    //  Search based on location
+        //    if (model.Location != null)
+        //    {
+        //        var address = Geolocation.ParseAddress(model.Location);
+        //        var NELat = address.Latitude + .5;
+        //        var SWLat = address.Latitude - .5;
+        //        var NELng = address.Longitude + .5;
+        //        var SWLng = address.Longitude - .5;
+        //        model.Teachers = model.Teachers.Where(t => t.ApplicationUser.Longitude >= SWLng && t.ApplicationUser.Longitude <= NELng && t.ApplicationUser.Latitude >= SWLat && t.ApplicationUser.Latitude <= NELat).ToList();
+        //    }
 
-            //  Search By Last Name
-            if (model.LastName != null)
-            {
-                model.Teachers = model.Teachers.Where(t => t.ApplicationUser.LastName.Contains(model.LastName)).ToList();
-            }
+        //    //  Search By Last Name
+        //    if (model.LastName != null)
+        //    {
+        //        model.Teachers = model.Teachers.Where(t => t.ApplicationUser.LastName.Contains(model.LastName)).ToList();
+        //    }
 
-            //  Search By First Name
-            if (model.LastName != null)
-            {
-                model.Teachers = model.Teachers.Where(t => t.ApplicationUser.FirstName.Contains(model.FirstName)).ToList();
-            }
+        //    //  Search By First Name
+        //    if (model.LastName != null)
+        //    {
+        //        model.Teachers = model.Teachers.Where(t => t.ApplicationUser.FirstName.Contains(model.FirstName)).ToList();
+        //    }
 
-            return View(model);
-        }
+        //    return View(model);
+        //}
 
-        [Authorize]
-        [HttpPost]
-        public ActionResult AddTeacher(AddTeacherViewModel model)
-        {
-            var clss = DataContext.Events.OfType<Class>().Where(e => e.Id == model.Class.Id).FirstOrDefault();
-            model.Class = clss;
-            //  Load Dance Styles
-            var styles = new List<DanceStyleListItem>();
-            foreach (DanceStyle s in DataContext.DanceStyles)
-            {
-                styles.Add(new DanceStyleListItem { Id = s.Id, Name = s.Name });
-            }
-            model.AvailableStyles = styles.OrderBy(x => x.Name);
-            if (model.PostedStyles != null)
-            {
-                model.SelectedStyles = model.AvailableStyles.Where(s => model.PostedStyles.DanceStyleIds.Contains(s.Id.ToString()));
-            }
-            //  Load Dance Styles
+        //[Authorize]
+        //[HttpPost]
+        //public ActionResult AddTeacher(AddTeacherViewModel model)
+        //{
+        //    var clss = DataContext.Events.OfType<Class>().Where(e => e.Id == model.Class.Id).FirstOrDefault();
+        //    model.Class = clss;
+        //    //  Load Dance Styles
+        //    var styles = new List<DanceStyleListItem>();
+        //    foreach (DanceStyle s in DataContext.DanceStyles)
+        //    {
+        //        styles.Add(new DanceStyleListItem { Id = s.Id, Name = s.Name });
+        //    }
+        //    model.AvailableStyles = styles.OrderBy(x => x.Name);
+        //    if (model.PostedStyles != null)
+        //    {
+        //        model.SelectedStyles = model.AvailableStyles.Where(s => model.PostedStyles.DanceStyleIds.Contains(s.Id.ToString()));
+        //    }
+        //    //  Load Dance Styles
 
-            model.Teachers = DataContext.Teachers.Include("ApplicationUser").Where(t => !t.Classes.Any(c => c.Id == model.Class.Id)).ToList();
+        //    model.Teachers = DataContext.Teachers.Include("ApplicationUser").Where(t => !t.Classes.Any(c => c.Id == model.Class.Id)).ToList();
 
-            //  Search based on location
-            if (model.Location != null)
-            {
-                var address = Geolocation.ParseAddress(model.Location);
-                var NELat = address.Latitude + .5;
-                var SWLat = address.Latitude - .5;
-                var NELng = address.Longitude + .5;
-                var SWLng = address.Longitude - .5;
-                model.Teachers = model.Teachers.Where(t => t.ApplicationUser.Longitude >= SWLng && t.ApplicationUser.Longitude <= NELng && t.ApplicationUser.Latitude >= SWLat && t.ApplicationUser.Latitude <= NELat).ToList();
-            }
+        //    //  Search based on location
+        //    if (model.Location != null)
+        //    {
+        //        var address = Geolocation.ParseAddress(model.Location);
+        //        var NELat = address.Latitude + .5;
+        //        var SWLat = address.Latitude - .5;
+        //        var NELng = address.Longitude + .5;
+        //        var SWLng = address.Longitude - .5;
+        //        model.Teachers = model.Teachers.Where(t => t.ApplicationUser.Longitude >= SWLng && t.ApplicationUser.Longitude <= NELng && t.ApplicationUser.Latitude >= SWLat && t.ApplicationUser.Latitude <= NELat).ToList();
+        //    }
 
-            //  Search By First Name
-            if (model.FirstName != null)
-            {
-                model.Teachers = model.Teachers.Where(t => t.ApplicationUser.FirstName.IndexOf(model.FirstName, StringComparison.CurrentCultureIgnoreCase) != -1).ToList();
-            }
+        //    //  Search By First Name
+        //    if (model.FirstName != null)
+        //    {
+        //        model.Teachers = model.Teachers.Where(t => t.ApplicationUser.FirstName.IndexOf(model.FirstName, StringComparison.CurrentCultureIgnoreCase) != -1).ToList();
+        //    }
 
-            //  Search By Last Name
-            if (model.LastName != null)
-            {
-                model.Teachers = model.Teachers.Where(t => t.ApplicationUser.LastName.IndexOf(model.LastName, StringComparison.CurrentCultureIgnoreCase) != -1).ToList();
-            }
+        //    //  Search By Last Name
+        //    if (model.LastName != null)
+        //    {
+        //        model.Teachers = model.Teachers.Where(t => t.ApplicationUser.LastName.IndexOf(model.LastName, StringComparison.CurrentCultureIgnoreCase) != -1).ToList();
+        //    }
 
-            //  Search By Dance Styles
-            if (model.PostedStyles != null)
-            {
-                model.Teachers = model.Teachers.Where(t => t.DanceStyles.Any(s => model.PostedStyles.DanceStyleIds.Contains(s.Id.ToString()))).ToList();
-            }
+        //    //  Search By Dance Styles
+        //    if (model.PostedStyles != null)
+        //    {
+        //        model.Teachers = model.Teachers.Where(t => t.DanceStyles.Any(s => model.PostedStyles.DanceStyleIds.Contains(s.Id.ToString()))).ToList();
+        //    }
 
-            return View(model);
-        }
+        //    return View(model);
+        //}
 
         [Authorize]
         public ActionResult SaveTeacher(int id, int teacherId)
@@ -4394,6 +4380,28 @@ namespace EDR.Controllers
             return RedirectToAction("View", "Event", new { id = evnt.Id, eventType = (evnt is Class ? EventType.Class : EventType.Social) });
         }
 
+        [Authorize(Roles = "Teacher,Owner")]
+        [HttpPost]
+        public ActionResult AddTeacher(FormCollection formCollection)
+        {
+            int id = Convert.ToInt32(formCollection["id"]);
+            string teacherid = formCollection["teacherid"];
+            if (DataContext.Classes.Where(c => c.Id == id && c.Teachers.Any(t => t.ApplicationUser.Id == teacherid)).Count() == 0)
+            {
+                DataContext.Classes.Single(s => s.Id == id).Teachers.Add(DataContext.Teachers.Single(t => t.ApplicationUser.Id == teacherid));
+                DataContext.SaveChanges();
+            }
+            return RedirectToAction("Manage", new { id = id });
+        }
+
+        [Authorize(Roles = "Teacher,Owner")]
+        public ActionResult RemoveTeacher(int id, int teacherid)
+        {
+            DataContext.Classes.Where(s => s.Id == id).Include("Teachers").FirstOrDefault().Teachers.Remove(DataContext.Teachers.Single(t => t.Id == teacherid));
+            DataContext.SaveChanges();
+            return RedirectToAction("Manage", new { id = id });
+        }
+
         ////
         //// POST: /Checkout/AddressAndPayment
         //[HttpPost]
@@ -4423,7 +4431,7 @@ namespace EDR.Controllers
         //        return View(ticket);
         //    }
         //}
-        
+
         //public Class ConvertToClass(Event event1)
         //{
         //    var class1 = new Class()

@@ -22,6 +22,7 @@ namespace EDR.Models.ViewModels
         [Display(Name = "Skill Level:")]
         public int[] SkillLevel { get; set; }
         public DayOfWeek[] Days { get; set; }
+        public int? SchoolId { get; set; }
 
         //  Map Settings
         public double? NELat { get; set; }

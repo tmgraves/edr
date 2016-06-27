@@ -417,10 +417,12 @@ namespace EDR.Controllers
 
         }
 
-        public ActionResult GetFacebookEvents(string username, EventType? eventType)
+        public ActionResult GetFacebookEvents(string username, EventType? eventType, int? schoolId, RoleName role)
         {
             var model = new FacebookEventsViewModel();
             model.Type = eventType;
+            model.SchoolId = schoolId;
+            model.Role = role;
 
             //  Load Facebook Events
             if (User.Identity.IsAuthenticated)

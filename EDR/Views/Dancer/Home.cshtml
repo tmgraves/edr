@@ -32,45 +32,47 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-6">
-            <div class="col-lg-12 dancercontainer" style="background-color: #ddd; padding: 20px; border: 1px solid #aaa;">
-                @if (User.Identity.Name == Model.Dancer.UserName)
+            <div class="panel panel-default">
+                <div class="panel-body buttoncontainer bg-info">
+                    @if (User.Identity.Name == Model.Dancer.UserName)
             {
-                    @Html.ActionLink("Edit", "Manage", "Dancer", null, new { @class = "btn btn-warning editbutton" })
-                }
-                <div class="col-lg-4 nospace">
-                    <div id="img_container">
-                        <img id="profilepic" style="max-width: 100%; max-height: 100%;" src="@Url.Content(Model.Dancer.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
+                        @Html.ActionLink("Edit", "Manage", "Dancer", null, new { @class = "btn btn-warning editbutton" })
+                    }
+                    <div class="col-lg-4 nospace">
+                        <div id="img_container">
+                            <img id="profilepic" style="max-width: 100%; max-height: 100%;" src="@Url.Content(Model.Dancer.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
+                        </div>
                     </div>
-                </div>
-                <div class="col-lg-8">
-                    <h2>@Model.Dancer.FirstName</h2>
-                    <p>
-                        @Model.Dancer.Location
-                    </p>
-                    <div>
-                        @if (Model.Dancer.FacebookUsername != null)
+                    <div class="col-lg-8">
+                        <h2>@Model.Dancer.FirstName</h2>
+                        <p>
+                            @Model.Dancer.Location
+                        </p>
+                        <div>
+                            @if (Model.Dancer.FacebookUsername != null)
             {
-                            <a class="img-thumbnail" href='https://www.facebook.com/@Model.Dancer.FacebookUsername' target="_blank" title="Visit Me On Facebook">
-                                <img class="img-rounded" src="@Url.Content("~/Content/images/facebookSmall.png")" style="height: 30px;" />
-                            </a>
-                        }
-                        @if (Model.Dancer.InstagramUsername != null)
+                                <a class="img-thumbnail" href='https://www.facebook.com/@Model.Dancer.FacebookUsername' target="_blank" title="Visit Me On Facebook">
+                                    <img class="img-rounded" src="@Url.Content("~/Content/images/facebookSmall.png")" style="height: 30px;" />
+                                </a>
+                            }
+                            @if (Model.Dancer.InstagramUsername != null)
             {
-                            <a class="img-thumbnail" href='https://www.instagram.com/@Model.Dancer.InstagramUsername' target="_blank" title="Link to your Instagram">
-                                <img class="img-rounded" style="height: 30px;" src="@Url.Content("~/Content/images/instagram.png")" />
-                            </a>
-                        }
+                                <a class="img-thumbnail" href='https://www.instagram.com/@Model.Dancer.InstagramUsername' target="_blank" title="Link to your Instagram">
+                                    <img class="img-rounded" style="height: 30px;" src="@Url.Content("~/Content/images/instagram.png")" />
+                                </a>
+                            }
+                        </div>
                     </div>
-                </div>
-                <div class="col-lg-12" style="background-color: #fff; margin-top: 20px;">
-                    <p style="margin-top: 20px;">
-                        @Html.Label("Experience:", new { @class = "form-label col-md-4" })
-                        @Model.Dancer.Experience year(s)
-                    </p>
-                    <p>
-                        @Html.Label("Dance Styles:", new { @class = "form-label col-md-4" })
-                        @Html.DisplayFor(m => Model.Dancer.DanceStyles, "DanceStyleLabels")
-                    </p>
+                    <div class="col-lg-12" style="background-color: #fff; margin-top: 20px;">
+                        <p style="margin-top: 20px;">
+                            @Html.Label("Experience:", new { @class = "form-label col-md-4" })
+                            @Model.Dancer.Experience year(s)
+                        </p>
+                        <p>
+                            @Html.Label("Dance Styles:", new { @class = "form-label col-md-4" })
+                            @Html.DisplayFor(m => Model.Dancer.DanceStyles, "DanceStyleLabels")
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -88,36 +90,36 @@
     </div>
     <div class="row" style="margin-top: 20px;">
         <div class="col-lg-6">
-            <div class="col-lg-12" style="padding-bottom: 20px; border: 1px solid #aaa;">
-                <h3>Teachers</h3>
-                @foreach (var t in Model.Teachers)
-                {
-                    <div class="col-lg-1 nospace" style="padding: 2px;">
-                        @Html.DisplayFor(m => t, "Teacher")
-                    </div>
-                }
+            <div class="panel panel-default">
+                <div class="panel-body buttoncontainer">
+                    <h3>Teachers</h3>
+                    @foreach (var t in Model.Teachers)
+                    {
+                        <div class="col-lg-2" style="padding: 5px !important;">
+                            @Html.DisplayFor(m => t, "Teacher")
+                        </div>
+                    }
+                </div>
             </div>
         </div>
         <div class="col-lg-6">
-            <div class="col-lg-12" style="padding-bottom: 20px; border: 1px solid #aaa;">
-                <h3>Friends</h3>
+            <div class="panel panel-default">
+                <div class="panel-body buttoncontainer">
+                    <h3>Friends</h3>
+                </div>
             </div>
         </div>
     </div>
     <div class="row" style="margin-top: 20px;">
         <div class="col-lg-6">
-            <div class="col-lg-12" style="border: 1px solid #aaa;">
-                <h3>Classes/Workshops</h3>
-                <div id="classes">
-                </div>
+            <h3>Classes/Workshops</h3>
+            <div id="classes">
             </div>
         </div>
 
         <div class="col-lg-6">
-            <div class="col-lg-12" style="border: 1px solid #aaa;">
-                <h3>Socials</h3>
-                <div id="socials">
-                </div>
+            <h3>Socials</h3>
+            <div id="socials">
             </div>
         </div>
     </div>

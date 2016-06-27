@@ -70,7 +70,9 @@ namespace EDR.Enums
         [Display(Name = "Studio")]
         Studio = 5,
         [Display(Name = "Theater")]
-        Theater = 6
+        Theater = 6,
+        [Display(Name = "Museum")]
+        Museum = 7
     }
 
     public enum RoleName

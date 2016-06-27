@@ -25,45 +25,74 @@
     <li>@Html.ActionLink("All Schools", "List", "School")</li>
     <li class="active">School Profile</li>
 </ol>
-
-<div class="container">
+@Html.HiddenFor(x => x.School.Id)
+<div class="container-fluid">
     <div class="row">
-        <div class="col-lg-6">
-            <div class="panel panel-default">
-                <div class="panel-body buttoncontainer bg-info">
+        <div class="col-lg-4">
+            <div class="row" style="padding-bottom: 10px;">
+                <div class="col-lg-12">
+                    <img style="max-width: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.School.PhotoUrl))" />
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="row" style="padding-bottom: 20px;">
+                <div class="col-lg-10">
+                    <h2 class="item-short" style="margin: 0px !important;">@Model.School.Name</h2>
+                </div>
+                <div class="col-lg-2 text-right">
                     @if (Model.Member != null && Model.Member.Admin)
                     {
-                        @Html.ActionLink("Manage", "Manage", "School", new { id = Model.School.Id }, new { @class = "btn btn-warning actionbutton" })
+                        <a class="btn btn-warning" title="Edit" href="@Url.Action("Manage", "School", new { id = Model.School.Id })">
+                            <i class="glyphicon glyphicon-edit"></i>
+                            <span class="sr-only">Edit</span>
+                        </a>
                     }
-                    <div class="row">
-                        <div class="col-lg-4">
-                            <div id="img_container">
-                                <img id="profilepic" style="max-width: 100%; max-height: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.School.PhotoUrl))"  />
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-body buttoncontainer bg-success">
+                    <div class="bg-warning text-center" style="padding: 5px; border: 1px solid #aaa;">
+                        <h4>You have <b>(@Convert.ToInt32(Model.UserTickets != null ? Model.UserTickets.Sum(t => t.Quantity * t.Ticket.Quantity) - Model.UserTickets.Sum(t => t.EventRegistrations.Count()) : 0))</b> Tickets Available to Use at this School</h4>
+                    </div>
+                    <h3>Avaiable Tickets for Purchase</h3>
+                    @foreach (var item in Model.School.Tickets.Where(t => t.EventId == null).OrderBy(t => t.Quantity))
+                    {
+                        <div class="row" style="padding: 5px;">
+                            <div class="col-lg-8">
+                                @Html.DisplayFor(member => item.Quantity) Class(es) for
+                                @Html.DisplayFor(member => item.Price)
+                            </div>
+                            <div class="col-lg-4">
+                                @Html.ActionLink("Purchase Ticket", "BuyTicket", "School", new { id = item.Id }, new { @class = "btn btn-primary" })
                             </div>
                         </div>
-                        <div class="col-lg-8 nospace">
-                            <h2>@Model.School.Name</h2>
-                            <p>
-                                @Model.School.City, @Model.School.State
-                            </p>
-                            <div>
-                                @if (Model.School.FacebookLink != null)
-                                {
-                                    <a class="img-thumbnail" href='@Model.School.FacebookLink' target="_blank" title="Visit Me On Facebook"><img src="@Url.Content("~/Content/images/facebookSmall.png")" /></a>
-                                }
-                                @*@if (Model.School.Website != null)
-                    {
-                        <a class="img-thumbnail" href='@Model.School.Website' target="_blank" title="Visit Me On the Web"><img src="@Url.Content("~/Content/images/web.png")" /></a>
-                    }*@
-                                @*@if (Model.School.ContactEmail != null)
-                    {
-                        <a class="img-thumbnail" href='mailto:@Model.Teacher.ContactEmail' title="Email Me"><img src="@Url.Content("~/Content/images/email.png")" /></a>
-                    }*@
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="panel panel-default">
+                <div class="panel-body nospace">
+                    <a target="_blank" href="https://maps.google.com/?q=@Model.School.Latitude,@Model.School.Longitude">
+                        <img style="width: 100%;" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.School.Latitude,@Model.School.Longitude&zoom=10&size=500x200&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.School.Latitude, @Model.School.Longitude" title="@Model.School.City, @Model.School.State">
+                    </a>
+                    <div class="row" style="padding: 5px;">
+                        <div class="col-lg-12">
+                            <div class="col-lg-3">
+                                @Html.Label("Where:")
+                            </div>
+                            <div class="col-lg-9">
+                                @Model.School.Address <br /> @Model.School.City, @Model.School.State @Model.School.Zip
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-lg-12" style="margin-top: 20px; padding-top: 20px;">
+                    <div class="row" style="padding: 5px;">
+                        <div class="col-lg-12">
                             <p>
                                 @Html.Label("Dance Styles:", new { @class = "form-label col-md-4" })
                                 @Html.DisplayFor(m => Model.School.DanceStyles, "DanceStyleLabels")
@@ -73,14 +102,21 @@
                             </div>
                         </div>
                     </div>
+                    <div class="text-center" style="padding: 5px !important;">
+                        @if (Model.School.FacebookLink != null)
+                        {
+                            <a class="img-rounded" href='@Model.School.FacebookLink' target="_blank" title="Visit Me On Facebook"><img src="@Url.Content("~/Content/images/facebookSmall.png")" /></a>
+                        }
+                    </div>
                 </div>
             </div>
+
             <div class="panel panel-default">
                 <div class="panel-body buttoncontainer">
                     <h3>Teachers</h3>
                     @foreach (var item in Model.School.Teachers)
                     {
-                        <div class="col-lg-2">
+                        <div class="col-lg-3">
                             @Html.DisplayFor(m => item, "Teacher")
                         </div>
                     }
@@ -105,41 +141,34 @@
                     <h3>Owners</h3>
                     @foreach (var item in Model.School.Owners)
                     {
-                        <div class="col-lg-2">
+                        <div class="col-lg-3">
                             @Html.DisplayFor(m => item, "Owner")
                         </div>
                     }
                 </div>
             </div>
         </div>
-        <div class="col-lg-6 col-md-6">
-            <div class="panel panel-default">
-                <div class="panel-body buttoncontainer bg-success">
-                    <div class="bg-warning text-center" style="padding: 5px; border: 1px solid #aaa;">
-                        <h4>You have <b>(@Convert.ToInt32(Model.UserTickets != null ? Model.UserTickets.Sum(t => t.Quantity * t.Ticket.Quantity) - Model.UserTickets.Sum(t => t.EventRegistrations.Count()) : 0))</b> Tickets Available to Use at this School</h4>
-                    </div>
-                    <h3>Avaiable Tickets for Purchase</h3>
-                    @foreach (var item in Model.School.Tickets.Where(t => t.EventId == null).OrderBy(t => t.Quantity))
-                    {
-                        <div class="row" style="padding: 5px;">
-                            <div class="col-lg-8">
-                                @Html.DisplayFor(member => item.Quantity) Class(es) for
-                                @Html.DisplayFor(member => item.Price)
-                            </div>
-                            <div class="col-lg-4">
-                                @Html.ActionLink("Purchase Ticket", "BuyTicket", "School", new { id = item.Id }, new { @class = "btn btn-primary" })
-                            </div>
-                        </div>
-                    }
+        <div class="col-lg-8 col-md-8">
+            <div class="row text-center" style="margin-bottom: 20px;">
+                <h3>Classes/Workshops</h3>
+                <div id="myButtons" class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-info btn-sm active">
+                        <input type="radio" name="options" id="listbtn" autocomplete="off" checked class="rbutton"> List View
+                    </label>
+                    <label class="btn btn-info btn-sm">
+                        <input type="radio" name="options" id="calendarbtn" autocomplete="off" class="rbutton"> Calendar View
+                    </label>
                 </div>
             </div>
-            <div class="panel panel-default">
-                <div class="panel-body buttoncontainer">
-                    <h3>Classes/Workshops</h3>
-                    <div id="classes">
-                    </div>
+            <div id="listdiv">
+                <div id="classes">
                 </div>
             </div>
+            <div id='script-warning'>
+                <code>php/get-events.php</code> must be running.
+            </div>
+            <div id='loading'>loading...</div>
+            <div id='calendar'></div>
         </div>
     </div>
 </div>
@@ -153,10 +182,61 @@
     <script src="~/Scripts/jquery.rateyo.js"></script>
     <script src="~/Scripts/jquery-simple-pagination-plugin.js"></script>
     @*<link href="~/Content/Simple-Pagination.css" rel="stylesheet" />*@
+<link href="~/Content/fullcalendar/fullcalendar.css" rel="stylesheet" />
+<link href="~/Content/fullcalendar/fullcalendar.print.css" rel="stylesheet" media="print" />
+<script src="~/Scripts/fullcalendar/moment.min.js"></script>
+@*<script src="~/Scripts/fullcalendar/jquery.min.js"></script>*@
+<script src="~/Scripts/fullcalendar/fullcalendar.js"></script>
 
 <script>
 $(document).ready(function () {
     LoadClasses(); //Loads events partial view
+
+    $("#calendar").css({ "visibility": "hidden" });
+    $('#listbtn').parent().on("click", function () {
+        $('#listdiv').show();
+        $("#calendar").css({ "visibility": "hidden" });
+    });
+
+    $('#calendarbtn').parent().on("click", function () {
+        $('#listdiv').hide();
+        $("#calendar").css({ "visibility": "visible" });
+    });
+
+    $('#calendar').fullCalendar({
+        header: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'basicWeek, month'
+        },
+        defaultDate: new Date(),
+        defaultView: 'basicWeek',
+        editable: false,
+        eventLimit: true, // allow "more" link when too many events
+        events: {
+            url: '../../Home/GetClasses',
+            traditional: true,
+            data: {
+                schoolId: $('#School_Id').val(),
+            },
+            error: function () {
+                $('#script-warning').show();
+            }
+        },
+        views: {
+            month: { // name of view
+                titleFormat: 'MMM YYYY'
+                // other view-specific options here
+            },
+            basicWeek: { // name of view
+                titleFormat: 'MMM DD'
+                // other view-specific options here
+            }
+        },
+        loading: function (bool) {
+            $('#loading').toggle(bool);
+        }
+    });
 });
 function BuildRatingStars() {
     $(".rateYo").rateYo({
@@ -181,7 +261,7 @@ function LoadClasses() {
 </script>
 }
 
-@if (Model.Member == null)
+@*@if (Model.Member == null)
 {
     <p>
         @Html.ActionLink("Join", "Join", "School", new { id = Model.School.Id }, new { @class = "btn btn-warning button" })
@@ -192,4 +272,4 @@ else
     <p>
         Member
     </p>
-}
+}*@
