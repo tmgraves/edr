@@ -207,7 +207,7 @@ namespace EDR.Controllers
                     .Include("DanceStyles")
                     .Include("Place")
                     .Include("LinkedMedia")
-                    .Single(e => e.Id == id);
+                    .SingleOrDefault(e => e.Id == id && (e.Teachers.Any(t => t.ApplicationUser.Id == userid) || e.Owners.Any(t => t.ApplicationUser.Id == userid)));
             }
             else
             {
@@ -222,9 +222,15 @@ namespace EDR.Controllers
                         .Include("DanceStyles")
                         .Include("Place")
                         .Include("LinkedMedia")
-                        .Single(e => e.Id == id);
+                        .SingleOrDefault(e => e.Id == id && (e.Promoters.Any(t => t.ApplicationUser.Id == userid) || e.Owners.Any(t => t.ApplicationUser.Id == userid)));
                 model.Event = soc;
                 model.MusicType = soc.MusicType;
+            }
+
+            if (model.Event == null)
+            {
+                ViewBag.errorMessage = "Not Authorized";
+                return View("Error");
             }
 
             model.NewPlace = new Place();

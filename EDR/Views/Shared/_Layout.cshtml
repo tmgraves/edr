@@ -57,28 +57,27 @@ window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]
                     @if (User.Identity.IsAuthenticated)
                     {
                         <li>@Html.ActionLink("Explore", "Explore", "Home")</li>
-                        <li class="mainnav dropdown">
+                        <li>@Html.ActionLink("Learn", "Learn", "Home")</li>
+                        <li>@Html.ActionLink("Dance", "Social", "Home")</li>
+                        @*<li class="mainnav dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Learn<span class="caret"></span></a>
                             <ul class="mainnav dropdown-menu" role="menu">
                                 <li>@Html.ActionLink("Classes", "Learn", "Home")</li>
-                                @*<li>@Html.ActionLink("+ Add a Class", "Create", "Event", new { eventType = EDR.Enums.EventType.Class })</li>*@
                                 <li role="separator" class="divider"></li>
                                 <li>@Html.ActionLink("Schools", "List", "School")</li>
-                                @*<li>@Html.ActionLink("+ Add a School", "Create", "School")</li>*@
                                 <li role="separator" class="divider"></li>
                                 <li>@Html.ActionLink("Studios", "List", "Place", new { TypeParam = EDR.Enums.PlaceType.Studio }, null)</li>
                             </ul>
-                        </li>
-                        <li class="mainnav dropdown">
+                        </li>*@
+                        @*<li class="mainnav dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dance<span class="caret"></span></a>
                             <ul class="mainnav dropdown-menu">
                                 <li>@Html.ActionLink("Socials", "Social", "Home")</li>
-                                @*<li>@Html.ActionLink("+ Add a Social", "Create", "Event", new { eventType = EDR.Enums.EventType.Social })</li>*@
                                 <li role="separator" class="divider"></li>
                                 <li>@Html.ActionLink("Dance Venues", "List", "Place")</li>
                             </ul>
-                        </li>
-                        <li class="mainnav dropdown">
+                        </li>*@
+                        @*<li class="mainnav dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">People<span class="caret"></span></a>
                             <ul class="mainnav dropdown-menu">
                                 <li>@Html.ActionLink("Teachers", "List", "Teacher")</li>
@@ -87,7 +86,7 @@ window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]
                                 <li role="separator" class="divider"></li>
                                 <li>@Html.ActionLink("Promoters", "List", "Promoter")</li>
                             </ul>
-                        </li>
+                        </li>*@
                         <li>@Html.ActionLink("Performance", "Index", "Team")</li>
                         @*<li class="mainnav dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Performance<span class="caret"></span></a>

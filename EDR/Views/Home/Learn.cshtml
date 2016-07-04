@@ -8,9 +8,13 @@
     <li class="active">All Classes</li>
 </ol>
 <h1 class="text-center">Find a Class/Workshop</h1>
-<p class="text-center">
-    @Html.ActionLink("Find a Teacher", "List", "Teacher", null, null)
-</p>
+<div class="text-center" style="padding: 10px;">
+    <div id="myButtons" class="btn-group">
+        @Html.ActionLink("Teachers", "List", "Teacher", null, new { @class = "btn btn-info" })
+        @Html.ActionLink("Schools", "List", "School", null, new { @class = "btn btn-info" })
+        @Html.ActionLink("Studios", "List", "Place", new { @TypeParam = "Studio" }, new { @class = "btn btn-info" })
+    </div>
+</div>
 
 @*<div id="bcalendar"></div>*@
 

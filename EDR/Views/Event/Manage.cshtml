@@ -104,7 +104,7 @@
                         <input id="btnEdit" type="button" class="btn btn-primary" value="Edit" />
                     </div>
                     <div>
-                        <div class="buttoncontainer col-lg-6 nospace">
+                        <div class="buttoncontainer nospace">
                             <img class="targetpic" style="max-width: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.Event.PhotoUrl))" />
                             <button type="button" class="btn btn-info actionbutton changepicbutton" data-toggle="modal" data-target="#modalPic">
                                 Change
@@ -590,78 +590,152 @@
         {
             <div class="panel panel-default">
                 <div class="panel-body ">
-                    <h3>Event Dates</h3>
-                    @using (Html.BeginForm("AddInstances", "Event", FormMethod.Post))
-                    {
-                        <input type="hidden" id="id" name="id" value="@Model.Event.Id" />
-                        <input id="eventCount" name="eventCount" value="1" placeholder="# of Dates to add" />
-                        <button type="submit" class="btn btn-primary btn-sm" value="Add Instances">Add Dates</button>
-                    }
-                    <div id="instances-container">
-                        <ul class="my-navigation pagination">
-                            <li class="simple-pagination-first"></li>
-                            <li class="simple-pagination-previous"></li>
-                            <li class="simple-pagination-page-numbers"></li>
-                            <li class="simple-pagination-next"></li>
-                            <li class="simple-pagination-last"></li>
-                        </ul>
-                        <table id="instances" class="table table-condensed table-striped">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        Date
-                                    </th>
-                                    <th>
-                                        Place
-                                    </th>
-                                    <th class="text-center">
-                                        Attendees
-                                    </th>
-                                    <th>
-                                    </th>
-                                </tr>
-                            </thead>
-                            @foreach (var i in Model.Event.EventInstances)
-                    {
-                                <tr>
-                                    <td>
-                                        <strong>@i.DateTime.ToLongDateString()</strong><br />
-                                    </td>
-                                    <td>
-                                        <a title="@i.Place.Name" href="@Url.Action("Details", "Place", new { id = i.PlaceId })">
-                                            <div class="item-short" style="width: 100px;">@i.Place.Name</div>
-                                        </a>
-                                        @*@Html.ActionLink(i.Place.Name, "Details", "Place", new { id = i.Place.Id }, new { @style = "white-space: pre-line; display: block; width: 150px;" })*@
-                                    </td>
-                                    <td class="text-center">
-                                        @i.EventRegistrations.Count()
-                                    </td>
-                                    <td>
-                                        <a class="btn text-info" title="Edit this Instance" href="@Url.Action("ManageInstance", "Event", new { id = i.Id })">
-                                            <i class="glyphicon glyphicon-edit"></i>
-                                        </a>
-                                        @if (i.EventRegistrations.Count() == 0)
-                                        {
-                                            @*@Html.ActionLink("Delete", "DeleteInstance", "Event", new { id = i.Id }, null)*@
-                                            <a class="btn text-danger" title="Delete" href="@Url.Action("DeleteInstance", "Event", new { id = i.Id })" onclick="return confirm('Are you sure you want to DELETE this Instance?')">
-                                                <i class="glyphicon glyphicon-remove-circle"></i>
+                    <h3>Event Dates <a id="instancestoggle" href="#" class="text-primary small">(Past/Present Dates)</a></h3>
+                    <div>
+                        @using (Html.BeginForm("AddInstances", "Event", FormMethod.Post))
+                        {
+                            <input type="hidden" id="id" name="id" value="@Model.Event.Id" />
+                            <input id="eventCount" name="eventCount" value="1" placeholder="# of Dates to add" />
+                            <button type="submit" class="btn btn-primary btn-sm" value="Add Instances">Add Dates</button>
+                        }
+                    </div>
+                    <div id="currentinstances">
+                        <div id="instances-container">
+                            <ul class="my-navigation pagination">
+                                <li class="simple-pagination-first"></li>
+                                <li class="simple-pagination-previous"></li>
+                                <li class="simple-pagination-page-numbers"></li>
+                                <li class="simple-pagination-next"></li>
+                                <li class="simple-pagination-last"></li>
+                            </ul>
+                            <table id="instances" class="table table-condensed table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Date
+                                        </th>
+                                        <th>
+                                            Place
+                                        </th>
+                                        <th class="text-center">
+                                            Attendees<br />
+                                            (Registered/CheckedIn)
+                                        </th>
+                                        <th>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                @foreach (var i in Model.Event.EventInstances.Where(i => i.DateTime >= DateTime.Today).OrderBy(i => i.DateTime))
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>@i.DateTime.ToString("ddd, M/d/yy")</strong><br />
+                                        </td>
+                                        <td>
+                                            <a title="@i.Place.Name" href="@Url.Action("Details", "Place", new { id = i.PlaceId })">
+                                                <div class="item-short" style="width: 100px;">@i.Place.Name</div>
                                             </a>
-                                        }
-                                        else
-                                        {
-                                            <a class="btn"><i title="Instance has Registrations and can't be Deleted'" class="glyphicon glyphicon-remove-circle"></i></a>
-                                        }
-                                    </td>
-                                </tr>
-                            }
-                        </table>
-                        <ul class="my-navigation pagination">
-                            <li class="simple-pagination-first"></li>
-                            <li class="simple-pagination-previous"></li>
-                            <li class="simple-pagination-page-numbers"></li>
-                            <li class="simple-pagination-next"></li>
-                            <li class="simple-pagination-last"></li>
-                        </ul>
+                                            @*@Html.ActionLink(i.Place.Name, "Details", "Place", new { id = i.Place.Id }, new { @style = "white-space: pre-line; display: block; width: 150px;" })*@
+                                        </td>
+                                        <td class="text-center">
+                                            @i.EventRegistrations.Count()/@i.EventRegistrations.Count(r => r.Checkedin != null ? true : false)
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-primary" title="Edit this Instance" href="@Url.Action("ManageInstance", "Event", new { id = i.Id })">
+                                                Manage
+                                            </a>
+                                            @if (i.EventRegistrations.Count() == 0)
+                                            {
+                                                @*@Html.ActionLink("Delete", "DeleteInstance", "Event", new { id = i.Id }, null)*@
+                                                <a class="btn btn-danger" title="Delete" href="@Url.Action("DeleteInstance", "Event", new { id = i.Id })" onclick="return confirm('Are you sure you want to DELETE this Instance?')">
+                                                    <i class="glyphicon glyphicon-remove-circle"></i>
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <a class="btn btn-info"><i title="Instance has Registrations and can't be Deleted'" class="glyphicon glyphicon-remove-circle"></i></a>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </table>
+                            <ul class="my-navigation pagination">
+                                <li class="simple-pagination-first"></li>
+                                <li class="simple-pagination-previous"></li>
+                                <li class="simple-pagination-page-numbers"></li>
+                                <li class="simple-pagination-next"></li>
+                                <li class="simple-pagination-last"></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div id="pastinstances" style="display: none;">
+                        <div id="instances-container">
+                            <ul class="my-navigation pagination">
+                                <li class="simple-pagination-first"></li>
+                                <li class="simple-pagination-previous"></li>
+                                <li class="simple-pagination-page-numbers"></li>
+                                <li class="simple-pagination-next"></li>
+                                <li class="simple-pagination-last"></li>
+                            </ul>
+                            <table id="instances" class="table table-condensed table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Date
+                                        </th>
+                                        <th>
+                                            Place
+                                        </th>
+                                        <th class="text-center">
+                                            Attendees<br />
+                                            (Registered/CheckedIn)
+                                        </th>
+                                        <th>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                @foreach (var i in Model.Event.EventInstances.Where(i => i.DateTime < DateTime.Today).OrderByDescending(i => i.DateTime))
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>@i.DateTime.ToString("ddd, M/d/yy")</strong><br />
+                                        </td>
+                                        <td>
+                                            <a title="@i.Place.Name" href="@Url.Action("Details", "Place", new { id = i.PlaceId })">
+                                                <div class="item-short" style="width: 100px;">@i.Place.Name</div>
+                                            </a>
+                                            @*@Html.ActionLink(i.Place.Name, "Details", "Place", new { id = i.Place.Id }, new { @style = "white-space: pre-line; display: block; width: 150px;" })*@
+                                        </td>
+                                        <td class="text-center">
+                                            @i.EventRegistrations.Count()/@i.EventRegistrations.Count(r => r.Checkedin != null ? true : false)
+                                        </td>
+                                        <td>
+                                            <a class="btn text-info" title="Edit this Instance" href="@Url.Action("ManageInstance", "Event", new { id = i.Id })">
+                                                <i class="glyphicon glyphicon-edit"></i>
+                                            </a>
+                                            @if (i.EventRegistrations.Count() == 0)
+                                            {
+                                                @*@Html.ActionLink("Delete", "DeleteInstance", "Event", new { id = i.Id }, null)*@
+                                                <a class="btn text-danger" title="Delete" href="@Url.Action("DeleteInstance", "Event", new { id = i.Id })" onclick="return confirm('Are you sure you want to DELETE this Instance?')">
+                                                    <i class="glyphicon glyphicon-remove-circle"></i>
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <a class="btn"><i title="Instance has Registrations and can't be Deleted'" class="glyphicon glyphicon-remove-circle"></i></a>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </table>
+                            <ul class="my-navigation pagination">
+                                <li class="simple-pagination-first"></li>
+                                <li class="simple-pagination-previous"></li>
+                                <li class="simple-pagination-page-numbers"></li>
+                                <li class="simple-pagination-next"></li>
+                                <li class="simple-pagination-last"></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -951,6 +1025,11 @@
         $('#NewLinkedMedia').prop('value', "");
     }
     $(function () {
+        $('#instancestoggle').parent().on("click", function () {
+            $('#currentinstances').toggle();
+            $('#pastinstances').toggle();
+        });
+
         pageInstances();
 
         $('.start').timepicker({
