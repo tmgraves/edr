@@ -24,19 +24,19 @@
 </style>
 <div class="row" style="padding: 5px !important; height: 180px;">
     <div class="box-default" style="padding: 5px; height: 100%;">
-        <div class="col-lg-4 nospace bg-success helper text-center" style="height: 100%;">
-            <div class="col-lg-2 nospace text-center" style="height: 100%;">
+        <div class="col-lg-4 col-xs-4 nospace bg-success helper text-center" style="height: 100%;">
+            <div class="col-lg-2 col-xs-2 nospace text-center" style="height: 100%;">
                 <div class="@(Model is EDR.Models.Class ? "bg-class" : "bg-social") text-center vertical-container">
                     <div style="font-weight: bolder;">
                         @(cls != null ? cls.ClassType.ToString().ToUpper() : soc.SocialType.ToString().ToUpper())
                     </div>
                 </div>
             </div>
-            <div class="col-lg-10 nospace text-left" style="height: 100%;">
+            <div class="col-lg-10 col-xs-10 nospace text-left" style="height: 100%;">
                 <span style="line-height: 100%; vertical-align: middle;"></span><img style="max-width: 100%; max-height: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.PhotoUrl))" />
             </div>
         </div>
-        <div class="col-lg-5 text-left" style="height: 100%;">
+        <div class="col-lg-5 col-xs-5 text-left" style="height: 100%;">
             <div id="parentc">
                 <input id="rv" type="hidden" value="@(Model.Reviews.Count() != 0 ? Model.Reviews.Average(r => r.Rating) : 0)" class="ratingval" />
                 <div id="cont" class="rateYo"></div>
@@ -81,7 +81,7 @@
                 </div>
             }
         </div>
-        <div class="col-lg-3 nospace">
+        <div class="col-lg-3 col-xs-3 nospace">
             <div class="bg-success text-right small" style="padding: 5px; height: 50%;">
                 @{
                     var instances = Model.EventInstances.Where(i => i.DateTime >= DateTime.Today);

@@ -110,7 +110,9 @@ namespace EDR.Enums
         [Display(Name = "OpenHouse")]
         OpenHouse,
         [Display(Name = "Party")]
-        Party
+        Party,
+        [Display(Name = "Festival")]
+        Festival
     }
 
     public enum State

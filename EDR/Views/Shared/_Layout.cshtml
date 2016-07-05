@@ -44,7 +44,7 @@ window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]
         <div class="container-fluid">
             <div class="navbar-header">
                 <a href="@Url.Action("Index", "Home")" class="navbar-brand">
-                    <img src="~/Content/images/eatdancerepeat.png" style="height: 100%;" />
+                    <img src="~/Content/images/eatdancerepeat.png" style="height: 100%;" alt="brand" />
                 </a>
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="icon-bar"></span>
@@ -56,7 +56,7 @@ window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]
                 <ul class="nav navbar-nav text-uppercase">
                     @if (User.Identity.IsAuthenticated)
                     {
-                        <li>@Html.ActionLink("Explore", "Explore", "Home")</li>
+                        @*<li>@Html.ActionLink("Explore", "Explore", "Home")</li>*@
                         <li>@Html.ActionLink("Learn", "Learn", "Home")</li>
                         <li>@Html.ActionLink("Dance", "Social", "Home")</li>
                         @*<li class="mainnav dropdown">
@@ -87,7 +87,7 @@ window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]
                                 <li>@Html.ActionLink("Promoters", "List", "Promoter")</li>
                             </ul>
                         </li>*@
-                        <li>@Html.ActionLink("Performance", "Index", "Team")</li>
+                        <li>@Html.ActionLink("Perform", "Index", "Team")</li>
                         @*<li class="mainnav dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Performance<span class="caret"></span></a>
                             <ul class="mainnav dropdown-menu">

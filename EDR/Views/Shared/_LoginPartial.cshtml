@@ -12,7 +12,7 @@
     //user = context.Users.Where(u => u.Id == userid).Include("CurrentRole").FirstOrDefault();
     var roles = context.Roles.Where(r => r.Users.Any(u => u.UserId == userid));
 
-    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
     {
     @Html.AntiForgeryToken()
 
