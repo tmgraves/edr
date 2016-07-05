@@ -949,6 +949,7 @@
     <Content Include="Views\Shared\_VideoPlayerPartial.cshtml" />
     <Content Include="Views\Home\Mobile\Index.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Owner.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Dancers.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

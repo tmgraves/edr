@@ -170,8 +170,8 @@ namespace EDR.Controllers
         public virtual ActionResult GetStudentsPartial(string id)
         {
             var start = DateTime.Today;
-            var students = DataContext.Classes.Where(c => c.Teachers.Any(t => t.ApplicationUser.Id == id)).SelectMany(c => c.EventInstances.SelectMany(i => i.EventRegistrations).Select(r => r.User)).Distinct();
-            return PartialView("~/Views/Shared/DisplayTemplates/Dancers.cshtml", students);
+            var students = DataContext.Classes.Where(c => c.Teachers.Any(t => t.ApplicationUser.Id == id)).SelectMany(c => c.EventInstances.SelectMany(i => i.EventRegistrations).Select(r => r.User)).Distinct().ToList();
+            return PartialView("~/Views/Shared/DisplayTemplates/DancerThumbLinks.cshtml", students);
         }
 
         //[Authorize]
