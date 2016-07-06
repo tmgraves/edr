@@ -42,7 +42,7 @@ namespace EDR.Models
         public ICollection<Teacher> Teachers { get; set; }
         public ICollection<Studio> Studios { get; set; }
         public ICollection<Class> Classes { get; set; }
-        public ICollection<Ticket> Tickets { get; set; }
+        public virtual ICollection<Ticket> Tickets { get; set; }
         public ICollection<Owner> Owners { get; set; }
         public ICollection<Team> Teams { get; set; }
 

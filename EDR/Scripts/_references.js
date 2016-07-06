@@ -120,6 +120,7 @@
 /// <reference path="respond.js" />
 /// <reference path="respond.matchmedia.addlistener.js" />
 /// <reference path="searchhelper.js" />
+/// <reference path="spotify_resize.js" />
 /// <reference path="testscript.js" />
 /// <reference path="timepicker/bootstrap-datepicker.js" />
 /// <reference path="timepicker/datepair.js" />

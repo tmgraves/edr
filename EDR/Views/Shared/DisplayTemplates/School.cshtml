@@ -1,17 +1,15 @@
 ﻿@model EDR.Models.School
 
 <div class="row" style="padding-bottom: 10px;">
-    <div class="col-lg-12 col-md-6">
-        <div class="col-lg-3" style="background-color: #eee;">
-            <img style="max-height: 100%; max-width: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.PhotoUrl))" title="@Model.Name" />
+    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-4">
+        <img style="max-height: 100%; max-width: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.PhotoUrl))" title="@Model.Name" />
+    </div>
+    <div class="col-lg-9 col-md-9 col-sm-9 col-xs-8">
+        <div class="row">
+            @Html.ActionLink(Model.Name, "View", "School", new { id = Model.Id }, new { @class = "lead text-warning" })
         </div>
-        <div class="col-lg-9">
-            <div class="col-lg-12 nospace">
-                @Html.ActionLink(Model.Name, "View", "School", new { id = Model.Id }, new { @class = "lead text-warning" })
-            </div>
-            <div class="col-lg-12 nospace">
-                @Model.City, @Model.State
-            </div>
+        <div class="row">
+            @Model.City, @Model.State
         </div>
     </div>
 </div>

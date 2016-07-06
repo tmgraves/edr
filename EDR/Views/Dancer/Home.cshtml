@@ -38,12 +38,10 @@
             {
                         @Html.ActionLink("Edit", "Manage", "Dancer", null, new { @class = "btn btn-warning editbutton" })
                     }
-                    <div class="col-lg-4 nospace">
-                        <div id="img_container">
-                            <img id="profilepic" style="max-width: 100%; max-height: 100%;" src="@Url.Content(Model.Dancer.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
-                        </div>
+                    <div class="col-lg-4 col-xs-4 col-sm-4 col-md-4 nospace">
+                        <img style="max-width: 100%; max-height: 100%;" src="@Url.Content(Model.Dancer.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
                     </div>
-                    <div class="col-lg-8">
+                    <div class="col-lg-8 col-xs-8 col-sm-8 col-md-8">
                         <h2>@Model.Dancer.FirstName</h2>
                         <p>
                             @Model.Dancer.Location
@@ -79,7 +77,7 @@
         <div class="col-lg-6">
             @if (Model.Dancer.SpotifyUri != null)
             {
-                <iframe src="https://embed.spotify.com/?uri=@Model.Dancer.SpotifyUri" width="500" height="320" frameborder="0" allowtransparency="true"></iframe>
+                <iframe class="spotifyplayer" src="https://embed.spotify.com/?uri=@Model.Dancer.SpotifyUri" width="500" height="320" frameborder="0" allowtransparency="true"></iframe>
                 @*<p>
                         <a class="btn-link" href=@Url.Action("ChangeSpotifyPlaylist", "Dancer", new { username = Model.Dancer.UserName }) title="Add Your Playlist">
                             Change Your Playlist

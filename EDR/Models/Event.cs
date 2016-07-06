@@ -169,7 +169,7 @@ namespace EDR.Models
         //public ICollection<Event> ChildEvents { get; set; }
         //  public ICollection<EventTicket> EventTickets { get; set; }
         public ICollection<EventInstance> EventInstances { get; set; }
-        public ICollection<Ticket> Tickets { get; set; }
+        public virtual ICollection<Ticket> Tickets { get; set; }
         public ICollection<Performance> Performances { get; set; }
     }
 

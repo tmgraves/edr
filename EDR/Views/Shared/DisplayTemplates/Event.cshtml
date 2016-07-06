@@ -17,90 +17,131 @@
         width: 100px;
         text-align: center;
         position: absolute;
-        top: 70px;
-        left: -35px;
+        top: 55px;
+        left: -30px;
         transform: rotate(-90deg);
     }
 </style>
-<div class="row" style="padding: 5px !important; height: 180px;">
+@{
+    var instance = Model.EventInstances.Where(i => i.DateTime >= DateTime.Today).OrderBy(i => i.DateTime).FirstOrDefault();
+}
+<div class="row" style="padding: 5px !important; height: 150px;">
     <div class="box-default" style="padding: 5px; height: 100%;">
-        <div class="col-lg-4 col-xs-4 nospace bg-success helper text-center" style="height: 100%;">
-            <div class="col-lg-2 col-xs-2 nospace text-center" style="height: 100%;">
+        <div class="col-lg-4 col-xs-4 nospace helper text-center" style="height: 100%; background-color: #000;">
+            <div class="col-lg-2 col-xs-3 nospace text-center" style="height: 100%;">
                 <div class="@(Model is EDR.Models.Class ? "bg-class" : "bg-social") text-center vertical-container">
                     <div style="font-weight: bolder;">
                         @(cls != null ? cls.ClassType.ToString().ToUpper() : soc.SocialType.ToString().ToUpper())
                     </div>
                 </div>
             </div>
-            <div class="col-lg-10 col-xs-10 nospace text-left" style="height: 100%;">
-                <span style="line-height: 100%; vertical-align: middle;"></span><img style="max-width: 100%; max-height: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.PhotoUrl))" />
+            <div class="col-lg-10 col-xs-9 nospace text-left textoverlaycontainer" style="height: 100%;">
+                <div style="opacity:0.7;filter:alpha(opacity=70); height: 100%;">
+                    <span style="line-height: 100%; vertical-align: middle;"></span><img style="max-width: 100%; max-height: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.PhotoUrl))" />
+                </div>
+                <div class="textoverlay topleft text-center">
+                    <h3 class="nospace" style="color: #fff;">
+                        @if (instance != null)
+                        {
+                            @instance.DateTime.ToString("MMM\nd")
+                        }
+                        else
+                        {
+                            <text>Past Event</text>
+                        }
+                    </h3>
+                </div>
+                <div class="textoverlay bottomright">
+                    <h3 class="nospace" style="color: #fff;">
+                        @if (Model.Tickets.Count() != 0)
+                        {
+                            @Model.Tickets.Where(t => t.Quantity == 1).Min(t => t.Price).ToString("C0")
+                        }
+                        else if (Model is EDR.Models.Class)
+                        {
+                            @(((EDR.Models.Class)Model).School.Tickets.Where(t => t.Quantity == 1).Min(t => t.Price).ToString("C0"))
+                        }
+                        else
+                        {
+                            @:Free
+                        }
+                    </h3>
+                </div>
             </div>
         </div>
-        <div class="col-lg-5 col-xs-5 text-left" style="height: 100%;">
-            <div id="parentc">
-                <input id="rv" type="hidden" value="@(Model.Reviews.Count() != 0 ? Model.Reviews.Average(r => r.Rating) : 0)" class="ratingval" />
-                <div id="cont" class="rateYo"></div>
+        <div class="col-lg-8 col-xs-8 text-left" style="height: 100%;">
+            <div class="row">
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" id="parentc">
+                    <input id="rv" type="hidden" value="@(Model.Reviews.Count() != 0 ? Model.Reviews.Average(r => r.Rating) : 0)" class="ratingval" />
+                    <div id="cont" class="rateYo"></div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 nospace text-right">
+                    @if (cls != null)
+            {
+                        <div>
+                            <span class="label label-success">
+                                @{
+                                    switch (cls.SkillLevel)
+                                    {
+                                        case 1:
+                                            <text>Beginner</text>;
+                                            break;
+                                        case 2:
+                                            <text>Beg/Int</text>;
+                                            break;
+                                        case 3:
+                                            <text>Intermediate</text>;
+                                            break;
+                                        case 4:
+                                            <text>Int/Adv</text>;
+                                            break;
+                                        case 5:
+                                            <text>Advanced</text>;
+                                            break;
+                                    }
+                                }
+                            </span>
+                        </div>
+                                    }
+                </div>
             </div>
             <div class="item-title text-primary">
                 <a href="@Url.Action("View", "Event", new { id = Model.Id, eventType = Model is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social })">
                     @Model.Name
                 </a>
             </div>
-            <div class="small" style="margin-top: 5px;">
-                @Html.DisplayFor(modelItem => Model.Place.Address)<br />
-                @Html.DisplayFor(modelItem => Model.Place.City), @Html.DisplayFor(modelItem => Model.Place.StateName) @Html.DisplayFor(modelItem => Model.Place.Zip)
-            </div>
-            @if (cls != null)
-            {
-                <div style="padding-top: 10px; padding-bottom: 10px;">
-                    Teacher(s): @Html.DisplayFor(m => cls.Teachers, "TeacherLinks")
-                </div>
-                <div>
-                    <span class="label label-success">
-                        @{
-                            switch (cls.SkillLevel)
-                            {
-                                case 1:
-                                    <text>Beginner</text>;
-                                    break;
-                                case 2:
-                                    <text>Beginner/Intermediate</text>;
-                                    break;
-                                case 3:
-                                    <text>Intermediate</text>;
-                                    break;
-                                case 4:
-                                    <text>Intermediate/Advanced</text>;
-                                    break;
-                                case 5:
-                                    <text>Advanced</text>;
-                                    break;
-                            }
-                        }
-                    </span>
-                </div>
-            }
-        </div>
-        <div class="col-lg-3 col-xs-3 nospace">
-            <div class="bg-success text-right small" style="padding: 5px; height: 50%;">
-                @{
-                    var instances = Model.EventInstances.Where(i => i.DateTime >= DateTime.Today);
-                }
-                @if (instances.Count() != 0)
+            <div>
+                @if (instance != null)
                 {
-                    <strong>@Model.EventInstances.Where(i => i.DateTime >= DateTime.Today).Min(i => i.DateTime).DayOfWeek</strong><br />
-                    <strong>@Model.EventInstances.Where(i => i.DateTime >= DateTime.Today).Min(i => i.DateTime).ToString("MMMM dd, yyyy")</strong><br />
+                    <strong>
+                        @instance.DateTime.DayOfWeek
+                    @*<strong>@instance.DateTime.ToString("MMMM dd, yyyy")</strong>*@
+                    <text>@@</text>
                     @Convert.ToDateTime(Model.StartTime).ToShortTimeString()
+                </strong>
                 }
                 else
                 {
                     <text>Past Event</text>
                 }
             </div>
-            <div class="text-right" style="padding: 0px !important; margin-top: 2px; white-space: normal; vertical-align: bottom; background-color: red;">
+            <div class="small">
+                @*@Html.DisplayFor(modelItem => Model.Place.Address)<br />*@
+                @Html.DisplayFor(modelItem => Model.Place.City), @Html.DisplayFor(modelItem => Model.Place.StateName)
+                @*@Html.DisplayFor(modelItem => Model.Place.Zip)*@
+            </div>
+            <div class="small">
+                @if (cls != null)
+                {
+                    <text>
+                        Teacher(s): @Html.DisplayFor(m => cls.Teachers, "TeacherLinks")
+                    </text>
+                }
+            </div>
+            <div style="padding: 0px !important; margin-top: 2px; white-space: normal; vertical-align: bottom;">
                 @foreach (var s in Model.DanceStyles)
             {
-                    <span class="label label-default pull-right" style="margin: 1px;">@s.Name</span><text> </text>
+                    <span class="label label-warning" style="margin: 1px;">@s.Name</span><text> </text>
                 }
             </div>
         </div>

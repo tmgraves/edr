@@ -306,17 +306,17 @@ namespace EDR.Utilities
                     }
                     catch
                     {
-                        return "~/Content/images/NoImage.png";
+                        return "~/Content/images/coming-soon.png";
                     }
                 }
                 else
                 {
-                    return File.Exists(HttpContext.Current.Server.MapPath(imageLink)) ? imageLink : "~/Content/images/NoImage.png";
+                    return File.Exists(HttpContext.Current.Server.MapPath(imageLink)) ? imageLink : "~/Content/images/coming-soon.png";
                 }
             }
             else
             {
-                return "~/Content/images/NoImage.png";
+                return "~/Content/images/coming-soon.png";
             }
         }
 

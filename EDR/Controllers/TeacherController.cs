@@ -100,16 +100,18 @@ namespace EDR.Controllers
                                     .FirstOrDefault();
             viewModel.Events = new EventListViewModel();
 
-            if (viewModel.Teacher.ApplicationUser.ZipCode != null)
-            {
-                viewModel.Address = Geolocation.ParseAddress(viewModel.Teacher.ApplicationUser.ZipCode);
-                viewModel.Events.Location = viewModel.Address;
-            }
-            else
-            {
-                viewModel.Address = Geolocation.ParseAddress("90065");
-                viewModel.Events.Location = viewModel.Address;
-            }
+            //  DON'T NEED THIS
+            //if (viewModel.Teacher.ApplicationUser.ZipCode != null)
+            //{
+            //    viewModel.Address = Geolocation.ParseAddress(viewModel.Teacher.ApplicationUser.ZipCode);
+            //    viewModel.Events.Location = viewModel.Address;
+            //}
+            //else
+            //{
+            //    viewModel.Address = Geolocation.ParseAddress("90065");
+            //    viewModel.Events.Location = viewModel.Address;
+            //}
+            //  DON'T NEED THIS
 
             // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE PromoterViewModel)
             viewModel.Events.EventType = Enums.EventType.Class;
@@ -291,20 +293,22 @@ namespace EDR.Controllers
             var classArray = viewModel.Teacher.Classes.Select(c => c.Id).ToArray();
             viewModel.NewStudents = DataContext.Users.Include("Events").Where(u => u.Events.Any(e => classArray.Contains(e.Id)));
 
-            //  Load Facebook Events
-            if (User.Identity.IsAuthenticated)
-            {
-                var userid = User.Identity.GetUserId();
-                var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+            //  DON'T NEED FACEBOOK EVENTS
+            ////  Load Facebook Events
+            //if (User.Identity.IsAuthenticated)
+            //{
+            //    var userid = User.Identity.GetUserId();
+            //    var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
 
-                if (user.FacebookToken != null)
-                {
-                    viewModel.FacebookEvents = FacebookHelper.GetEvents(user.FacebookToken, DateTime.Now).Where(fe => !DataContext.Events.Select(e => e.FacebookId).Contains(fe.Id)).ToList();
-                }
-                //  Load Facebook Events
-            }
+            //    if (user.FacebookToken != null)
+            //    {
+            //        viewModel.FacebookEvents = FacebookHelper.GetEvents(user.FacebookToken, DateTime.Now).Where(fe => !DataContext.Events.Select(e => e.FacebookId).Contains(fe.Id)).ToList();
+            //    }
+            //    //  Load Facebook Events
+            //}
+            //  DON'T NEED FACEBOOK EVENTS
 
-            Session["ReturnUrl"] = Url.Action("Home", "Teacher", new { username = User.Identity.Name });
+            //Session["ReturnUrl"] = Url.Action("Home", "Teacher", new { username = User.Identity.Name });
 
             return View(viewModel);
         }
@@ -533,6 +537,23 @@ namespace EDR.Controllers
             {
                 return View(model);
             }
+        }
+
+        [HttpGet]
+        public virtual ActionResult GetClassesPartial(string id)
+        {
+            var start = DateTime.Today;
+            var classes = DataContext.Classes
+                                .Include("DanceStyles")
+                                .Include("Place")
+                                .Include("Tickets")
+                                .Include("School.Tickets")
+                                .Include("EventInstances.EventRegistrations")
+                                .Include("Reviews")
+                                .Include("Teachers.ApplicationUser")
+                                .Where(c => c.Teachers.Any(t => t.ApplicationUser.Id == id))
+                                .Where(c => c.EventInstances.Where(i => i.DateTime >= DateTime.Today).Count() != 0);
+            return PartialView("~/Views/Shared/_EventsPartial.cshtml", classes);
         }
 
         #region JSON

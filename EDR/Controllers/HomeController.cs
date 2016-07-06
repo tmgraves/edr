@@ -450,15 +450,28 @@ namespace EDR.Controllers
         {
             var start = DateTime.Today;
             var end = start.AddDays(1);
-            var events = DataContext.Events
+            var events = new List<Event>();
+            
+            events.AddRange(DataContext.Classes
                                 .Include("DanceStyles")
                                 .Include("Place")
+                                .Include("Tickets")
+                                .Include("School.Tickets")
                                 .Include("EventInstances")
                                 .Include("Reviews")
                                 .Where(e => (e.Place.Longitude >= lng - .5 && e.Place.Longitude <= lng + .5) && (e.Place.Latitude >= lat - 5 && e.Place.Latitude <= lat + 5)
                                         && e.EventInstances.Any(i => i.DateTime >= start)
-                                        );
+                                        ).AsEnumerable());
 
+            events.AddRange(DataContext.Socials
+                                .Include("DanceStyles")
+                                .Include("Place")
+                                .Include("Tickets")
+                                .Include("EventInstances")
+                                .Include("Reviews")
+                                .Where(e => (e.Place.Longitude >= lng - .5 && e.Place.Longitude <= lng + .5) && (e.Place.Latitude >= lat - 5 && e.Place.Latitude <= lat + 5)
+                                        && e.EventInstances.Any(i => i.DateTime >= start)
+                                        ).AsEnumerable());
             return PartialView("~/Views/Shared/Home/_IndexEventsPartial.cshtml", events);
         }
 

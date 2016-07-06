@@ -510,3 +510,21 @@ input[type="file"] {
   text-overflow: ellipsis;
 
 }
+
+.textoverlaycontainer {
+    position: relative;
+}
+
+.textoverlay.topleft {
+    z-index: 10;
+    position: absolute;
+    left: 5px;
+    top: 5px;
+}
+
+.textoverlay.bottomright {
+    z-index: 10;
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+}
