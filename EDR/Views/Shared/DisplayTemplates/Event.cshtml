@@ -55,11 +55,11 @@
                     <h3 class="nospace" style="color: #fff;">
                         @if (Model.Tickets.Count() != 0)
                         {
-                            @Model.Tickets.Where(t => t.Quantity == 1).Min(t => t.Price).ToString("C0")
+                            @Model.Tickets.Min(t => t.Price).ToString("C0")
                         }
                         else if (Model is EDR.Models.Class)
                         {
-                            @(((EDR.Models.Class)Model).School.Tickets.Where(t => t.Quantity == 1).Min(t => t.Price).ToString("C0"))
+                            @(((EDR.Models.Class)Model).School.Tickets.Min(t => t.Price).ToString("C0"))
                         }
                         else
                         {
