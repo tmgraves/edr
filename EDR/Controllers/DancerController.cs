@@ -998,6 +998,23 @@ namespace EDR.Controllers
             }
         }
 
+        public JsonResult GetEvents(string id, DateTime start, DateTime end)
+        {
+            var instances = DataContext.Events.Where(e => e.EventInstances.Any(i => i.EventRegistrations.Any(r => r.UserId == id))).SelectMany(c => c.EventInstances).Where(i => i.DateTime >= start && i.DateTime <= end).ToList();
+
+            return Json(instances.AsEnumerable().Select(s =>
+                        new {
+                            id = s.EventId,
+                            title = s.Event.Name,
+                            start = s.StartTime.Value.ToString("o"),
+                            end = s.EndTime.Value.ToString("o"),
+                            lat = s.Event.Place.Latitude,
+                            lng = s.Event.Place.Longitude,
+                            color = s.Event is Class ? "#65AE25" : "#006A90",
+                            url = Url.Action("View", "Event", new { id = s.EventId, eventType = s.Event is Class ? EventType.Class : EventType.Social })
+                        }), JsonRequestBehavior.AllowGet);
+        }
+
         [Authorize]
         public ActionResult ChangePicture(string message)
         {

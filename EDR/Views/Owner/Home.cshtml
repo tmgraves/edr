@@ -13,71 +13,75 @@
 </ol>
 
 <div class="container-fluid">
-    <div class="row">
+    <div class="row" style="margin-top: 20px; margin-bottom: 20px;">
         <div class="col-lg-6">
-            <div class="col-lg-12 buttoncontainer" style="background-color: #ddd; padding: 20px; border: 1px solid #aaa;">
-                @if (User.Identity.Name == Model.Owner.ApplicationUser.UserName)
-                {
-                    @Html.ActionLink("Edit", "Manage", "Owner", null, new { @class = "btn btn-warning actionbutton" })
-                }
-                <div class="col-lg-4 nospace">
-                    <div id="img_container">
-                        <img id="profilepic" style="max-width: 100%; max-height: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.Owner.ApplicationUser.PhotoUrl))" />
-                    </div>
-                </div>
-                <div class="col-lg-8">
-                    <h2>@Model.Owner.ApplicationUser.FullName</h2>
-                    <p>
-                        @Model.Owner.ApplicationUser.Location
-                    </p>
-                    <div>
-                        @if (Model.Owner.Facebook != null)
-                        {
-                            <a class="img-thumbnail" href='@Model.Owner.Facebook' target="_blank" title="Visit Me On Facebook">
-                                <img class="img-rounded" src="@Url.Content("~/Content/images/facebookSmall.png")" style="height: 30px;" />
-                            </a>
-                        }
-                        @if (Model.Owner.Website != null)
-                        {
-                            <a class="img-thumbnail" href='@Model.Owner.Website' target="_blank" title="Visit Me On the Web"><img src="@Url.Content("~/Content/images/web.png")" /></a>
-                        }
-                        @if (Model.Owner.ContactEmail != null)
-                        {
-                            <a class="img-thumbnail" href='mailto:@Model.Owner.ContactEmail' title="Email Me"><img src="@Url.Content("~/Content/images/email.png")" /></a>
-                        }
+            <div class="panel panel-default">
+                <div class="panel-body bg-info buttoncontainer">
+                    @if (User.Identity.Name == Model.Owner.ApplicationUser.UserName)
+                    {
+                        @Html.ActionLink("Edit", "Manage", "Owner", null, new { @class = "btn btn-warning actionbutton" })
+                    }
+                    <div class="row">
+                        <div class="col-lg-4 col-xs-4 col-sm-4 col-md-4">
+                            <img style="max-width: 100%; max-height: 100%;" src="@Url.Content(Model.Owner.ApplicationUser.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
+                        </div>
+                        <div class="col-lg-8 col-xs-8 col-sm-8 col-md-8">
+                            <h2 class="nospace">@Model.Owner.ApplicationUser.FullName</h2>
+                            <p>
+                                @Model.Owner.ApplicationUser.Location
+                            </p>
+                            <div>
+                                @if (Model.Owner.Facebook != null)
+                                {
+                                    <a class="img-thumbnail" href='@Model.Owner.Facebook' target="_blank" title="Visit Me On Facebook">
+                                        <img class="img-rounded" src="@Url.Content("~/Content/images/facebookSmall.png")" style="height: 30px;" />
+                                    </a>
+                                }
+                                @if (Model.Owner.Website != null)
+                                {
+                                    <a class="img-thumbnail" href='@Model.Owner.Website' target="_blank" title="Visit Me On the Web"><img src="@Url.Content("~/Content/images/web.png")" /></a>
+                                }
+                                @if (Model.Owner.ContactEmail != null)
+                                {
+                                    <a class="img-thumbnail" href='mailto:@Model.Owner.ContactEmail' title="Email Me"><img src="@Url.Content("~/Content/images/email.png")" /></a>
+                                }
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-12 buttoncontainer" style="border: 1px solid #aaa; margin-top: 20px; padding-bottom: 20px;">
-                <h3>My Schools</h3>
-                @if (Model.Owner.ApplicationUser.UserName == User.Identity.Name)
-                {
-                    @Html.ActionLink("Add School", "Create", "School", null, new { @class = "btn btn-warning actionbutton" })
-                }
-                @if (Model.Owner.Schools != null && Model.Owner.Schools.Count() > 0)
-                {
-                    foreach (var sch in Model.Owner.Schools.OrderBy(s => s.Name))
+
+            <div class="panel panel-default">
+                <div class="panel-body buttoncontainer">
+                    <h3>My Schools</h3>
+                    @if (Model.Owner.ApplicationUser.UserName == User.Identity.Name)
                     {
-                        @Html.DisplayFor(m => sch, "School")
-                        <hr />
+                        @Html.ActionLink("Add School", "Create", "School", null, new { @class = "btn btn-warning actionbutton" })
                     }
+                    @if (Model.Owner.Schools != null && Model.Owner.Schools.Count() > 0)
+                    {
+                        foreach (var sch in Model.Owner.Schools.OrderBy(s => s.Name))
+                        {
+                            @Html.DisplayFor(m => sch, "School")
+                            <hr />
+                        }
+                    }
+                    else
+                    {
+                        @: No Schools
                 }
-                else
-                {
-                    @: No Schools
-                }
+                </div>
             </div>
         </div>
         <div class="col-lg-6">
-            @if (Model.Owner.ApplicationUser.SpotifyUri != null)
-            {
-                <iframe src="https://embed.spotify.com/?uri=@Model.Owner.ApplicationUser.SpotifyUri" width="500" height="320" frameborder="0" allowtransparency="true"></iframe>
-                @*<p>
-                        <a class="btn-link" href=@Url.Action("ChangeSpotifyPlaylist", "Dancer", new { username = Model.Owner.ApplicationUser.UserName }) title="Add Your Playlist">
-                            Change Your Playlist
-                        </a>
-                    </p>*@
-            }
+            <div class="row">
+                <div class="col-lg-12">
+                    @if (Model.Owner.ApplicationUser.SpotifyUri != null)
+                    {
+                        <iframe class="spotifyplayer" src="https://embed.spotify.com/?uri=@Model.Owner.ApplicationUser.SpotifyUri" width="500" height="280" frameborder="0" allowtransparency="true"></iframe>
+                    }
+                </div>
+            </div>
         </div>
     </div>
 </div>

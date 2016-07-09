@@ -90,7 +90,6 @@ namespace EDR.Models.ViewModels
         [DefaultValue(1)]
         [Range(1, 100)]
         public int EventCount { get; set; }
-        public bool FreeEvent { get; set; }
 
         //[Range(1, 12)]
         //public int StartHour { get; set; }

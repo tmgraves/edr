@@ -261,6 +261,23 @@ namespace EDR.Controllers
             return View(viewModel);
         }
 
+        public JsonResult GetSocialInstances(int promoterId, DateTime start, DateTime end)
+        {
+            var instances = DataContext.Socials.Where(c => c.Promoters.Any(t => t.Id == promoterId)).SelectMany(c => c.EventInstances).Where(i => i.DateTime >= start && i.DateTime <= end).ToList();
+
+            return Json(instances.AsEnumerable().Select(s =>
+                        new {
+                            id = s.EventId,
+                            title = s.Event.Name,
+                            start = s.StartTime.Value.ToString("o"),
+                            end = s.EndTime.Value.ToString("o"),
+                            lat = s.Event.Place.Latitude,
+                            lng = s.Event.Place.Longitude,
+                            color = "#006A90",
+                            url = Url.Action("View", "Event", new { id = s.EventId, eventType = EventType.Social })
+                        }), JsonRequestBehavior.AllowGet);
+        }
+
         [Authorize]
         public ActionResult MySocials(string username)
         {

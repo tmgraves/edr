@@ -90,6 +90,7 @@ namespace EDR.Models
         [DisplayFormat(DataFormatString = "{0:C}")]
         [DataType(DataType.Currency)]
         public Nullable<decimal> Price { get; set; }
+        public bool Free { get; set; }
 
         public bool IsAvailable { get; set; }
 
@@ -274,8 +275,7 @@ namespace EDR.Models
             get { return _date; }
             set { _date = value; }
         }
-        [Required]
-        public int UserTicketId { get; set; }
+        public int? UserTicketId { get; set; }
         [ForeignKey("UserTicketId")]
         public UserTicket UserTicket { get; set; }
         public DateTime? Checkedin { get; set; }

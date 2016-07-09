@@ -296,7 +296,7 @@
                                                                 @Html.Label("Free Event?", htmlAttributes: new { @class = "text-danger text-uppercase control-label" })
                                                             </div>
                                                             <div class="col-lg-4 pull-right text-right">
-                                                                @Html.CheckBoxFor(m => m.FreeEvent, new { @class = "freeevent", @data_toggle = "toggle", @data_on = "Yes", @data_off = "No" })
+                                                                @Html.CheckBoxFor(m => m.Event.Free, new { @class = "freeevent", @data_toggle = "toggle", @data_on = "Yes", @data_off = "No" })
                                                             </div>
                                                         </div>
                                                     }

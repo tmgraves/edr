@@ -588,6 +588,22 @@ namespace EDR.Controllers
                 return null;
             }
         }
+        public JsonResult GetClasses(int teacherId, DateTime start, DateTime end)
+        {
+            var instances = DataContext.Classes.Where(c => c.Teachers.Any(t => t.Id == teacherId)).SelectMany(c => c.EventInstances).Where(i => i.DateTime >= start && i.DateTime <= end).ToList();
+
+            return Json(instances.AsEnumerable().Select(s =>
+                        new {
+                            id = s.EventId,
+                            title = s.Event.Name,
+                            start = s.StartTime.Value.ToString("o"),
+                            end = s.EndTime.Value.ToString("o"),
+                            lat = s.Event.Place.Latitude,
+                            lng = s.Event.Place.Longitude,
+                            color = "#65AE25",
+                            url = Url.Action("View", "Event", new { id = s.EventId, eventType = EventType.Class })
+                        }), JsonRequestBehavior.AllowGet);
+        }
         #endregion
 
         //[Authorize]

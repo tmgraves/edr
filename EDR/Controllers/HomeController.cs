@@ -247,7 +247,14 @@ namespace EDR.Controllers
         public ActionResult Learn(LearnViewModel model)
         {
             SearchClasses(model);
-            return View(model);
+            if (HttpContext.Request.Browser.IsMobileDevice)
+            {
+                return View("Mobile/Learn", model);
+            }
+            else
+            {
+                return View(model);
+            }
         }
 
         private void SearchClasses(LearnViewModel model)
@@ -293,7 +300,14 @@ namespace EDR.Controllers
         public ActionResult Social(SocialViewModel model)
         {
             SearchSocials(model);
-            return View(model);
+            if (HttpContext.Request.Browser.IsMobileDevice)
+            {
+                return View("Mobile/Social", model);
+            }
+            else
+            {
+                return View(model);
+            }
         }
 
         private void SearchSocials(SocialViewModel model)

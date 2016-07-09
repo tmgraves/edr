@@ -14,65 +14,90 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-6">
-            <div class="col-lg-12 buttoncontainer" style="background-color: #ddd; padding: 20px; border: 1px solid #aaa;">
-                @if (User.Identity.Name == Model.Promoter.ApplicationUser.UserName)
-                {
-                    @Html.ActionLink("Edit", "Manage", "Promoter", null, new { @class = "btn btn-warning actionbutton" })
-                }
-                <div class="col-lg-4 nospace">
-                    <div id="img_container">
-                        <img id="profilepic" style="max-width: 100%; max-height: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.Promoter.ApplicationUser.PhotoUrl))" />
-                    </div>
-                </div>
-                <div class="col-lg-8">
-                    <h2>@Model.Promoter.ApplicationUser.FullName</h2>
-                    <p>
-                        @Model.Promoter.ApplicationUser.Location
-                    </p>
-                    <div>
-                        @if (Model.Promoter.Facebook != null)
-                        {
-                            <a class="img-thumbnail" href='@Model.Promoter.Facebook' target="_blank" title="Visit Me On Facebook"><img src="@Url.Content("~/Content/images/facebookSmall.png")" /></a>
-                        }
-                        @if (Model.Promoter.Website != null)
-                        {
-                            <a class="img-thumbnail" href='@Model.Promoter.Website' target="_blank" title="Visit Me On the Web"><img src="@Url.Content("~/Content/images/web.png")" /></a>
-                        }
-                        @if (Model.Promoter.ContactEmail != null)
-                        {
-                            <a class="img-thumbnail" href='mailto:@Model.Promoter.ContactEmail' title="Email Me"><img src="@Url.Content("~/Content/images/email.png")" /></a>
-                        }
+            <div class="panel panel-default" style="margin-top: 20px; margin-bottom: 20px;">
+                <div class="panel-body bg-info buttoncontainer">
+                    @if (User.Identity.Name == Model.Promoter.ApplicationUser.UserName)
+                    {
+                        @Html.ActionLink("Edit", "Manage", "Promoter", null, new { @class = "btn btn-warning actionbutton" })
+                    }
+                    <div class="row">
+                        <div class="col-lg-4 col-xs-4 col-sm-4 col-md-4">
+                            <img style="max-width: 100%; max-height: 100%;" src="@Url.Content(Model.Promoter.ApplicationUser.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
+                        </div>
+                        <div class="col-lg-8 col-xs-8 col-sm-8 col-md-8">
+                            <h2 class="nospace">@Model.Promoter.ApplicationUser.FullName</h2>
+                            <p>
+                                @Model.Promoter.ApplicationUser.Location
+                            </p>
+                            <div>
+                                @if (Model.Promoter.Facebook != null)
+                                {
+                                    <a class="img-thumbnail" href='@Model.Promoter.Facebook' target="_blank" title="Visit Me On Facebook"><img src="@Url.Content("~/Content/images/facebookSmall.png")" /></a>
+                                }
+                                @if (Model.Promoter.Website != null)
+                                {
+                                    <a class="img-thumbnail" href='@Model.Promoter.Website' target="_blank" title="Visit Me On the Web"><img src="@Url.Content("~/Content/images/web.png")" /></a>
+                                }
+                                @if (Model.Promoter.ContactEmail != null)
+                                {
+                                    <a class="img-thumbnail" href='mailto:@Model.Promoter.ContactEmail' title="Email Me"><img src="@Url.Content("~/Content/images/email.png")" /></a>
+                                }
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-12" style="border: 1px solid #aaa; margin-top: 20px;">
-                <h3>My Places</h3>
-                @if (Model.Promoter.Places != null && Model.Promoter.Places.Count() > 0)
-                {
-                    foreach (var pl in Model.Promoter.Places.OrderBy(s => s.Name))
+            
+            <div class="panel panel-default" style="margin-top: 20px; margin-bottom: 20px;">
+                <div class="panel-body buttoncontainer">
+                    <h3>My Places</h3>
+                    @if (Model.Promoter.Places != null && Model.Promoter.Places.Count() > 0)
                     {
-                        @Html.DisplayFor(m => pl, "Place")
-                        <hr />
+                        foreach (var pl in Model.Promoter.Places.OrderBy(s => s.Name))
+                        {
+                            @Html.DisplayFor(m => pl, "Place")
+                            <hr />
+                        }
                     }
+                    else
+                    {
+                        @: No Places
                 }
-                else
-                {
-                    @: No Places
-                }
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    @if (Model.Promoter.ApplicationUser.SpotifyUri != null)
+            {
+                        <iframe class="spotifyplayer" src="https://embed.spotify.com/?uri=@Model.Promoter.ApplicationUser.SpotifyUri" width="500" height="280" frameborder="0" allowtransparency="true"></iframe>
+                    }
+                </div>
             </div>
         </div>
-        <div class="col-lg-6">
-            <div class="col-lg-12 nospace">
-                @if (Model.Promoter.ApplicationUser.SpotifyUri != null)
-                {
-                    <iframe src="https://embed.spotify.com/?uri=@Model.Promoter.ApplicationUser.SpotifyUri" width="500" height="280" frameborder="0" allowtransparency="true"></iframe>
-                }
-            </div>
-            <div class="col-lg-12" style="border: 1px solid #aaa; margin-top: 20px;">
-                <h3>Socials</h3>
-                <div id="socials">
+        <div class="col-lg-6 col-md-6">
+            <h3 class="text-center">Socials</h3>
+            <div class="text-center">
+                <div id="classbuttons" class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-warning btn-sm active">
+                        <input type="radio" name="options" id="listbtn" autocomplete="off" checked class="rbutton"> List
+                    </label>
+                    <label class="btn btn-warning btn-sm">
+                        <input type="radio" name="options" id="calendarbtn" autocomplete="off" class="rbutton"> Calendar
+                    </label>
                 </div>
             </div>
+            <div id="listdiv">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div id="socials">
+                    </div>
+                </div>
+            </div>
+            <div id='script-warning'>
+                <code>php/get-events.php</code> must be running.
+            </div>
+            <div id='loading'>loading...</div>
+            <div id='calendar'></div>
         </div>
     </div>
 </div>
@@ -86,11 +111,62 @@
     <script src="~/Scripts/jquery.rateyo.js"></script>
     <script src="~/Scripts/jquery-simple-pagination-plugin.js"></script>
     @*<link href="~/Content/Simple-Pagination.css" rel="stylesheet" />*@
+<link href="~/Content/fullcalendar/fullcalendar.css" rel="stylesheet" />
+<link href="~/Content/fullcalendar/fullcalendar.print.css" rel="stylesheet" media="print" />
+<script src="~/Scripts/fullcalendar/moment.min.js"></script>
+<script src="~/Scripts/fullcalendar/fullcalendar.js"></script>
 
     <script>
     $(document).ready(function () {
         LoadSocials(); //Loads events partial view
         BuildRatingStars();
+
+        $("#calendar").hide();
+        $('#listbtn').parent().on("click", function () {
+            $('#listdiv').show();
+            $("#calendar").hide();
+        });
+
+        $('#calendarbtn').parent().on("click", function () {
+            $('#listdiv').hide();
+            $("#calendar").show();
+            $('#calendar').fullCalendar('render');
+        });
+
+        $('#calendar').fullCalendar({
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'basicWeek, month'
+            },
+            defaultDate: new Date(),
+            defaultView: 'basicWeek',
+            editable: false,
+            eventLimit: true, // allow "more" link when too many events
+            events: {
+                url: '@Url.Action("GetSocialInstances", "Promoter")',
+                traditional: true,
+                data: {
+                    promoterId: '@Model.Promoter.Id',
+                },
+                error: function () {
+                    $('#script-warning').show();
+                },
+            },
+            views: {
+                month: { // name of view
+                    titleFormat: 'MMM YYYY'
+                    // other view-specific options here
+                },
+                basicWeek: { // name of view
+                    titleFormat: 'MMM DD'
+                    // other view-specific options here
+                }
+            },
+            loading: function (bool) {
+                $('#loading').toggle(bool);
+            },
+        });
     });
 
     function LoadSocials() {

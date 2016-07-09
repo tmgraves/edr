@@ -952,6 +952,8 @@
     <Content Include="Views\Home\Mobile\Index.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Owner.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Dancers.cshtml" />
+    <Content Include="Views\Home\Mobile\Learn.cshtml" />
+    <Content Include="Views\Home\Mobile\Social.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

@@ -136,9 +136,12 @@
                     <div style="width: 100%;">
                         <div class="col-lg-8">
                             <h3>Next Date: <span class="text-info">@instance.DateTime.ToString("ddd, MMM d, yyyy") at @Convert.ToDateTime(instance.StartTime).ToShortTimeString()</span></h3>
-                            <p class="text-center" style="background-color: lemonchiffon;">
-                                <span class="text-success">You have (<strong>@Model.AvailableTickets</strong>) Available Tickets for this Event</span>
-                            </p>
+                            @if (!Model.Event.Free)
+                            {
+                                <p class="text-center" style="background-color: lemonchiffon;">
+                                    <span class="text-success">You have (<strong>@Model.AvailableTickets</strong>) Available Tickets for this Event</span>
+                                </p>
+                            }
                         </div>
                         <div class="col-lg-4 text-center verticalcenter">
                             <div class="text-center">
@@ -150,13 +153,20 @@
                                     }
                                     else
                                     {
-                                        if (reg.UserTicket.Ticket.EventId == null && reg.Checkedin == null)
+                                        if (!Model.Event.Free)
                                         {
-                                            @Html.ActionLink("Un-Register", "UnRegister", new { id = instance.Id }, new { @class = "btn btn-danger btn-lg" });
+                                            if (reg.UserTicket.Ticket.EventId == null && reg.Checkedin == null)
+                                            {
+                                                @Html.ActionLink("Un-Register", "UnRegister", new { id = instance.Id }, new { @class = "btn btn-danger btn-lg" });
+                                            }
+                                            else
+                                            {
+                                                <a class="btn btn-default btn-lg">Registered</a>
+                                            }
                                         }
                                         else
                                         {
-                                            <a class="btn btn-default btn-lg">Registered</a>
+                                            @Html.ActionLink("Un-Register", "UnRegister", new { id = instance.Id }, new { @class = "btn btn-danger btn-lg" });
                                         }
                                     }
                                 }

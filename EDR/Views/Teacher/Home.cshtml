@@ -40,10 +40,8 @@
                         @Html.ActionLink("Edit", "Manage", "Teacher", null, new { @class = "btn btn-warning actionbutton" })
                     }
                     <div class="row">
-                        <div class="col-lg-4 col-xs-4">
-                            <div id="img_container">
-                                <img id="profilepic" style="max-width: 100%; max-height: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.Teacher.ApplicationUser.PhotoUrl))" />
-                            </div>
+                        <div class="col-lg-4 col-xs-4 col-sm-4 col-md-4">
+                            <img style="max-width: 100%; max-height: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.Teacher.ApplicationUser.PhotoUrl))" />
                         </div>
                         <div class="col-lg-8 col-xs-8">
                             <h2 class="nospace">@Model.Teacher.ApplicationUser.FullName</h2>
@@ -71,39 +69,37 @@
                             @Html.Label("Experience:", new { @class = "form-label col-md-4 col-lg-4 col-sm-4 col-xs-5" })
                             @(DateTime.Today.Year - ((DateTime)(Model.Teacher.StartDate ?? DateTime.Today)).Year) years
                         </div>
-                        <div class="row" style="margin-bottom: 20px;">
+                        <div class="row">
                             @Html.Label("Dance Styles:", new { @class = "form-label col-md-4 col-sm-4 col-xs-5" })
                             <div class="col-lg-8 col-md-8 col-sm-8 col-xs-7 nospace">
                                 @Html.DisplayFor(m => Model.Teacher.ApplicationUser.DanceStyles, "DanceStyleLabels")
                             </div>
                         </div>
-                        <div class="row">
+                        @*<div class="row">
                             @Html.Label("About Me:", new { @class = "form-label col-lg-12" })
                         </div>
                         <div class="row">
                             <div class="col-lg-12">
                                 @Html.DisplayFor(m => m.Teacher.Resume)
                             </div>
-                        </div>
+                        </div>*@
                     </div>
                 </div>
             </div>
-            <div class="panel panel-default" style="margin-top: 20px; margin-bottom: 20px;">
-                <div class="panel-body">
-                    <h3>My Schools</h3>
-                    @if (Model.Teacher.Schools != null && Model.Teacher.Schools.Count() > 0)
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 20px; margin-bottom: 20px;">
+                <h3>My Schools</h3>
+                @if (Model.Teacher.Schools != null && Model.Teacher.Schools.Count() > 0)
+                {
+                    foreach (var sch in Model.Teacher.Schools.OrderBy(s => s.Name))
                     {
-                        foreach (var sch in Model.Teacher.Schools.OrderBy(s => s.Name))
-                        {
-                            @Html.DisplayFor(m => sch, "School")
-                            <hr />
-                        }
+                        @Html.DisplayFor(m => sch, "School")
+                        <hr />
                     }
-                    else
-                    {
-                        @: No Schools
                 }
-                </div>
+                else
+                {
+                    @: No Schools
+                }
             </div>
             <div class="row">
                 <div class="col-lg-12">
@@ -113,8 +109,8 @@
                     }
                 </div>
             </div>
-            <div class="panel panel-default" style="margin-top: 20px; margin-bottom: 20px;">
-                <div class="panel-body">
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 20px; margin-bottom: 20px;">
                     <h3>Students</h3>
                     <div id="students">
                     </div>
@@ -123,7 +119,31 @@
         </div>
         <div class="col-lg-6 col-md-6">
             <h3 class="text-center">Classes/Workshops</h3>
-            <div id="classes">
+            <div class="text-center">
+                <div id="classbuttons" class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-warning btn-sm active">
+                        <input type="radio" name="options" id="listbtn" autocomplete="off" checked class="rbutton"> List
+                    </label>
+                    <label class="btn btn-warning btn-sm">
+                        <input type="radio" name="options" id="calendarbtn" autocomplete="off" class="rbutton"> Calendar
+                    </label>
+                </div>
+            </div>
+            <div id="listdiv">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div id="classes">
+                    </div>
+                </div>
+            </div>
+            <div id='script-warning'>
+                <code>php/get-events.php</code> must be running.
+            </div>
+            <div id='loading'>loading...</div>
+            <div id='calendar'></div>
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="margin-top: 20px; margin-bottom: 20px;">
+                <h3>About me</h3>
+                <hr />
+                @Model.Teacher.Resume
             </div>
         </div>
     </div>
@@ -138,11 +158,66 @@
     <script src="~/Scripts/jquery.rateyo.js"></script>
     <script src="~/Scripts/jquery-simple-pagination-plugin.js"></script>
     @*<link href="~/Content/Simple-Pagination.css" rel="stylesheet" />*@
+    <link href="~/Content/fullcalendar/fullcalendar.css" rel="stylesheet" />
+    <link href="~/Content/fullcalendar/fullcalendar.print.css" rel="stylesheet" media="print" />
+    <script src="~/Scripts/fullcalendar/moment.min.js"></script>
+    <script src="~/Scripts/fullcalendar/fullcalendar.js"></script>
 
     <script>
     $(document).ready(function () {
         LoadClasses(); //Loads events partial view
         LoadStudents(); //Loads events partial view
+
+        $("#calendar").hide();
+        $('#listbtn').parent().on("click", function () {
+            $('#listdiv').show();
+            $("#calendar").hide();
+        });
+
+        $('#calendarbtn').parent().on("click", function () {
+            $('#listdiv').hide();
+            $("#calendar").show();
+            $('#calendar').fullCalendar('render');
+        });
+
+        $('#calendar').fullCalendar({
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'basicWeek, month'
+            },
+            defaultDate: new Date(),
+            defaultView: 'basicWeek',
+            editable: false,
+            eventLimit: true, // allow "more" link when too many events
+            events: {
+                url: '@Url.Action("GetClasses", "Teacher")',
+                traditional: true,
+                data: {
+                    teacherId: '@Model.Teacher.Id',
+                },
+                error: function () {
+                    $('#script-warning').show();
+                },
+            },
+            views: {
+                month: { // name of view
+                    titleFormat: 'MMM YYYY'
+                    // other view-specific options here
+                },
+                basicWeek: { // name of view
+                    titleFormat: 'MMM DD'
+                    // other view-specific options here
+                }
+            },
+            loading: function (bool) {
+                $('#loading').toggle(bool);
+            },
+            //eventAfterAllRender: function (view) {
+            //    $("#calendar").css({ "visibility": "hidden" });
+            //    $("#calendar").hide();
+            //}
+        });
     });
 
     function LoadClasses() {

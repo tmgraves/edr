@@ -29,7 +29,7 @@
     <div class="box-default" style="padding: 5px; height: 100%;">
         <div class="col-lg-4 col-xs-4 nospace helper text-center" style="height: 100%; background-color: #000;">
             <div class="col-lg-2 col-xs-3 nospace text-center" style="height: 100%;">
-                <div class="@(Model is EDR.Models.Class ? "bg-class" : "bg-social") text-center vertical-container">
+                <div class="@(Model is EDR.Models.Class ? "btn-success" : "btn-info") text-center vertical-container">
                     <div style="font-weight: bolder;">
                         @(cls != null ? cls.ClassType.ToString().ToUpper() : soc.SocialType.ToString().ToUpper())
                     </div>
@@ -106,7 +106,7 @@
                 </div>
             </div>
             <div class="item-title text-primary">
-                <a href="@Url.Action("View", "Event", new { id = Model.Id, eventType = Model is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social })">
+                <a href="@Url.Action("View", "Event", new { id = Model.Id, eventType = Model is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social })" onmouseover="openEvent(@Model.Id, @Model.Place.Latitude, @Model.Place.Longitude); return false;">
                     @Model.Name
                 </a>
             </div>

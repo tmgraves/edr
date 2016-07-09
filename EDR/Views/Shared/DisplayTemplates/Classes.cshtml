@@ -1,12 +1,14 @@
 ﻿@model IEnumerable<EDR.Models.Class>
 
-<div class="container">
     @{
         int rowNo = 0;
     }
     @foreach (var item in Model.OrderBy(c => c.NextDate))
     {
-            <text>
+        <div class="col-lg-6">
+            @Html.DisplayFor(m => item, "Event")
+        </div>
+            @*<text>
             <div class="col-lg-6" style="padding: 5px !important;">
                 <div class="box-default col-lg-12 nospace" style="padding: 5px !important;">
                     <div class="col-lg-3 bg-success helper">
@@ -41,6 +43,5 @@
                 </div>
             </div>
         </text>
-        rowNo++;
+        rowNo++;*@
     }
-</div>

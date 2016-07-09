@@ -76,25 +76,27 @@
     </div>
 }
 
-<div class="col-lg-12 text-center" style="padding: 10px;">
-    <div id="myButtons" class="btn-group" data-toggle="buttons">
-        <label class="btn btn-info active">
-            <input type="radio" name="options" id="listbtn" autocomplete="off" checked class="rbutton"> List View
-        </label>
-        <label class="btn btn-info">
-            <input type="radio" name="options" id="calendarbtn" autocomplete="off" class="rbutton"> Calendar View
-        </label>
+<div class="container">
+    <div class="col-lg-12 text-center" style="padding: 10px;">
+        <div id="myButtons" class="btn-group" data-toggle="buttons">
+            <label class="btn btn-warning btn-sm active">
+                <input type="radio" name="options" id="listbtn" autocomplete="off" checked class="rbutton"> List View
+            </label>
+            <label class="btn btn-warning btn-sm">
+                <input type="radio" name="options" id="calendarbtn" autocomplete="off" class="rbutton"> Calendar View
+            </label>
+        </div>
     </div>
-</div>
 
-<div id="listdiv">
-    @Html.DisplayFor(m => m.Socials, "Socials")
+    <div id="listdiv">
+        @Html.DisplayFor(m => m.Socials, "Socials")
+    </div>
+    <div id='script-warning'>
+        <code>php/get-events.php</code> must be running.
+    </div>
+    <div id='loading'>loading...</div>
+    <div id='calendar'></div>
 </div>
-<div id='script-warning'>
-    <code>php/get-events.php</code> must be running.
-</div>
-<div id='loading'>loading...</div>
-<div id='calendar'></div>
 
 @section Scripts
 {
@@ -240,7 +242,7 @@
                     swLat: $('.swlatfield').val(),
                     swLng: $('.swlngfield').val(),
                     styleId: $('.stylesearchid').val(),
-                    days: $('#Days').val(),
+                    days: $('#Days').val() == null ? new Array() : $('#Days').val(),
                 },
                 error: function() {
                     $('#script-warning').show();
