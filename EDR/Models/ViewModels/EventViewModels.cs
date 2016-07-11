@@ -48,6 +48,7 @@ namespace EDR.Models.ViewModels
     public class EventCreateViewModel : EventBaseViewModel
     {
         public int? SchoolId { get; set; }
+        public School School { get; set; }
         public RoleName Role { get; set; }
         public ClassType ClassType { get; set; }
         public SocialType SocialType { get; set; }
@@ -64,11 +65,10 @@ namespace EDR.Models.ViewModels
         [Display(Name = "Enter Facebook Url")]
         public string FacebookLink { get; set; }
         [Display(Name = "Skill Level")]
-        [DefaultValue(1)]
-        [Range(1, 100)]
-        public int SkillLevel { get; set; }
+        public SkillLevel? SkillLevel { get; set; }
         public bool AddtoMyPlaces { get; set; }
         public string CreateAction { get; set; }
+        [Display(Name = "Use Existing School Tickets?")]
         public bool UseSchoolTickets { get; set; }
         //  [RequiredIf("UseSchoolTickets", Operator.EqualTo, false)]
         //  public Ticket EventTicket { get; set; }
@@ -77,9 +77,9 @@ namespace EDR.Models.ViewModels
         [RequiredIf("UseSchoolTickets", Operator.EqualTo, "false", ErrorMessage = "Enter a Ticket Quantity")]
         [DisplayFormat(DataFormatString = "{0:G0}")]
         [Display(Name = "Quantity")]
-        [DefaultValue(1)]
         [Range(1, 1000)]
         public int? TicketQuantity { get; set; }
+        [Range(1, 5000)]
         [RequiredIf("UseSchoolTickets", Operator.EqualTo, "false", ErrorMessage = "Enter a Ticket Price")]
         [DisplayFormat(DataFormatString = "{0:C}")]
         [Display(Name = "Price")]
@@ -109,7 +109,6 @@ namespace EDR.Models.ViewModels
             Places = new List<PlaceItem>();
             MonthDays = new MultiCheckBox();
             StylesCheckboxList = new MultiCheckBox();
-            UseSchoolTickets = true;
             //  Tickets = new List<Ticket>();
         }
         public EventCreateViewModel(EventType eventType, int? schoolId, RoleName role)
@@ -119,7 +118,6 @@ namespace EDR.Models.ViewModels
             Places = new List<PlaceItem>();
             MonthDays = new MultiCheckBox();
             StylesCheckboxList = new MultiCheckBox();
-            UseSchoolTickets = true;
             TicketQuantity = 1;
             TicketPrice = 5;
             //  Tickets = new List<Ticket>();

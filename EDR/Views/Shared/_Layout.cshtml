@@ -53,7 +53,7 @@ window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]
                 </button>
             </div>
             <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav text-uppercase">
+                <ul class="nav navbar-nav">
                     @if (User.Identity.IsAuthenticated)
                     {
                         @*<li>@Html.ActionLink("Explore", "Explore", "Home")</li>*@
@@ -98,9 +98,9 @@ window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]
                     }
                     else
                     {
-                        <li>@Html.ActionLink("Explore", "Explore", "Home")</li>
                         <li>@Html.ActionLink("Learn", "Learn", "Home")</li>
                         <li>@Html.ActionLink("Dance", "Social", "Home")</li>
+                        @*<li>@Html.ActionLink("Explore", "Explore", "Home")</li>*@
                     }
                 </ul>
                 <div style="margin-right: 50px;">

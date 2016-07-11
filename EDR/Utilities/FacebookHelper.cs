@@ -339,59 +339,59 @@ namespace EDR.Utilities
 
                 var address = new Address();
 
-                if (!rebuild)
-                {
-                    if (add.City == null || add.State == null)
-                    {
-                        if (eventdata.location != null)
-                        {
-                            address = Geolocation.ParseAddress(eventdata.location);
+                //if (!rebuild)
+                //{
+                //    if (add.City == null || add.State == null)
+                //    {
+                //        if (eventdata.location != null)
+                //        {
+                //            address = Geolocation.ParseAddress(eventdata.location);
 
-                            if (address != null)
-                            {
-                                add.City = address.City;
-                                add.Country = address.Country;
-                                add.Latitude = address.Latitude;
-                                add.Longitude = address.Longitude;
-                                add.State = address.State != null ? address.State.ToString() : null;
-                                add.Street = address.Street;
-                                add.ZipCode = address.ZipCode;
-                                add.Country = address.Country;
-                                add.GooglePlaceId = address.GooglePlaceId;
-                                add.GoogleUrl = address.GoogleUrl;
-                                add.GoogleRating = address.GoogleRating;
-                                if (add.Website == null)
-                                {
-                                    add.Website = address.Website;
-                                }
-                                if (add.Name == null)
-                                {
-                                    add.Name = address.Name;
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        address = Geolocation.ParseAddress(add.Street + " " + add.City + " " + add.State + " " + add.ZipCode);
-                    }
-                }
+                //            if (address != null)
+                //            {
+                //                add.City = address.City;
+                //                add.Country = address.Country;
+                //                add.Latitude = address.Latitude;
+                //                add.Longitude = address.Longitude;
+                //                add.State = address.State != null ? address.State.ToString() : null;
+                //                add.Street = address.Street;
+                //                add.ZipCode = address.ZipCode;
+                //                add.Country = address.Country;
+                //                add.GooglePlaceId = address.GooglePlaceId;
+                //                add.GoogleUrl = address.GoogleUrl;
+                //                add.GoogleRating = address.GoogleRating;
+                //                if (add.Website == null)
+                //                {
+                //                    add.Website = address.Website;
+                //                }
+                //                if (add.Name == null)
+                //                {
+                //                    add.Name = address.Name;
+                //                }
+                //            }
+                //        }
+                //    }
+                //    else
+                //    {
+                //        address = Geolocation.ParseAddress(add.Street + " " + add.City + " " + add.State + " " + add.ZipCode);
+                //    }
+                //}
 
-                if (address != null)
-                {
-                    add.Country = address.Country;
-                    add.GooglePlaceId = address.GooglePlaceId;
-                    add.GoogleUrl = address.GoogleUrl;
-                    add.GoogleRating = address.GoogleRating;
-                    if (add.Website == null)
-                    {
-                        add.Website = address.Website;
-                    }
-                    if (add.Name == null)
-                    {
-                        add.Name = address.Name;
-                    }
-                }
+                //if (address != null)
+                //{
+                //    add.Country = address.Country;
+                //    add.GooglePlaceId = address.GooglePlaceId;
+                //    add.GoogleUrl = address.GoogleUrl;
+                //    add.GoogleRating = address.GoogleRating;
+                //    if (add.Website == null)
+                //    {
+                //        add.Website = address.Website;
+                //    }
+                //    if (add.Name == null)
+                //    {
+                //        add.Name = address.Name;
+                //    }
+                //}
 
                 //  Get Place from Page
                 if (eventdata.venue.id != null)
@@ -402,42 +402,42 @@ namespace EDR.Utilities
                     add.FacebookUrl = place.link;
                     add.Location = place.name;
                 }
-                //  Place is not a Page
-                else
-                {
-                    if (!rebuild)
-                    {
-                        if (eventdata.venue.name != null)
-                        {
-                            add.Location = eventdata.venue.name;
-                            address = Geolocation.ParseAddress(eventdata.venue.name);
+                ////  Place is not a Page
+                //else
+                //{
+                //    if (!rebuild)
+                //    {
+                //        if (eventdata.venue.name != null)
+                //        {
+                //            add.Location = eventdata.venue.name;
+                //            address = Geolocation.ParseAddress(eventdata.venue.name);
 
-                            if (address != null)
-                            {
-                                add.City = address.City;
-                                add.Country = address.Country;
-                                add.Latitude = address.Latitude;
-                                add.Longitude = address.Longitude;
-                                add.State = address.State != null ? address.State.ToString() : null;
-                                add.Street = address.Street;
-                                add.ZipCode = address.ZipCode;
-                                add.Country = address.Country;
-                                add.GooglePlaceId = address.GooglePlaceId;
-                                add.GoogleUrl = address.GoogleUrl;
-                                add.GoogleRating = address.GoogleRating;
-                                if (add.Website == null)
-                                {
-                                    add.Website = address.Website;
-                                }
-                                if (add.Name == null)
-                                {
-                                    add.Name = address.Name;
-                                }
-                            }
-                        }
-                    }
-                }
-                //  Get Place
+                //            if (address != null)
+                //            {
+                //                add.City = address.City;
+                //                add.Country = address.Country;
+                //                add.Latitude = address.Latitude;
+                //                add.Longitude = address.Longitude;
+                //                add.State = address.State != null ? address.State.ToString() : null;
+                //                add.Street = address.Street;
+                //                add.ZipCode = address.ZipCode;
+                //                add.Country = address.Country;
+                //                add.GooglePlaceId = address.GooglePlaceId;
+                //                add.GoogleUrl = address.GoogleUrl;
+                //                add.GoogleRating = address.GoogleRating;
+                //                if (add.Website == null)
+                //                {
+                //                    add.Website = address.Website;
+                //                }
+                //                if (add.Name == null)
+                //                {
+                //                    add.Name = address.Name;
+                //                }
+                //            }
+                //        }
+                //    }
+                //}
+                ////  Get Place
             }
 
             var feed = new List<FacebookPost>();

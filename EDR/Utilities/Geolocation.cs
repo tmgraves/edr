@@ -56,7 +56,7 @@ namespace EDR.Utilities
                 var result = new System.Net.WebClient().DownloadString(googleStr);
                 var resObj = JsonConvert.DeserializeObject<GoogleGeoCodeResponse>(result);
 
-                if (resObj.status != "ZERO_RESULTS")
+                if (resObj.status != "ZERO_RESULTS" && resObj.status != "OVER_QUERY_LIMIT")
                 {
                     foreach (address_component comp in resObj.results[0].address_components)
                     {

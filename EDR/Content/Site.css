@@ -429,7 +429,7 @@ facebookvideoimage img
     top: 5px;
 }
 
-.centerform .center-block input{
+.centerform .center-block input:not([type='checkbox']){
     width: 100%;
     max-width: 100%;
 }

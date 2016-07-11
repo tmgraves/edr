@@ -1821,6 +1821,11 @@ namespace EDR.Controllers
             var model = new EventCreateViewModel(eventType, schoolId, role);
             var userid = User.Identity.GetUserId();
             var user = DataContext.Users.Single(u => u.Id == userid);
+
+            if (schoolId != null && eventType == EventType.Class)
+            {
+                model.School = DataContext.Schools.Single(s => s.Id == schoolId);
+            }
             //  Pick a Facebook Event
             if (fbId != null)
             {
@@ -1901,6 +1906,13 @@ namespace EDR.Controllers
             }
             //  Set Facebook List
 
+            //  Load School
+            if (model.SchoolId != null && model.EventType == EventType.Class)
+            {
+                model.School = DataContext.Schools.Single(s => s.Id == model.SchoolId);
+            }
+            //  Load School
+
             ////  Set Tikcets
             //model.Tickets = DataContext.Tickets.Where(t => t.SchoolId == model.SchoolId).ToList();
             ////  Set Tickets
@@ -1928,7 +1940,7 @@ namespace EDR.Controllers
             //  Pick a Facebook Event
 
             //  Create the Place
-            var place = DataContext.Places.Where(p => p.GooglePlaceId == model.Event.Place.GooglePlaceId).FirstOrDefault();
+            var place = DataContext.Places.Where(p => p.GooglePlaceId == model.Event.Place.GooglePlaceId && model.Event.Place.GooglePlaceId != null).FirstOrDefault();
             if (place == null)
             {
                 place = DataContext.Places.Add(model.Event.Place);
@@ -3174,100 +3186,100 @@ namespace EDR.Controllers
         //    }
         //}
 
-        [Authorize(Roles = "Teacher,Owner")]
-        public ActionResult CreateClass(int? placeId)
-        {
-            if (User.Identity.IsAuthenticated)
-            {
-                return RedirectToAction("Edit", new { eventType = EventType.Class, placeId = placeId });
-                //var userid = User.Identity.GetUserId();
-                //var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+        //[Authorize(Roles = "Teacher,Owner")]
+        //public ActionResult CreateClass(int? placeId)
+        //{
+        //    if (User.Identity.IsAuthenticated)
+        //    {
+        //        return RedirectToAction("Edit", new { eventType = EventType.Class, placeId = placeId });
+        //        //var userid = User.Identity.GetUserId();
+        //        //var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
 
-                //if (placeId != null)
-                //{
-                //    if (DataContext.Places.Where(p => p.Id == placeId).Where(p => p.Teachers.Any(t => t.ApplicationUser.Id == userid) || p.Owners.Any(o => o.ApplicationUser.Id == userid)).Count() == 0)
-                //    {
-                //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                //    }
-                //}
+        //        //if (placeId != null)
+        //        //{
+        //        //    if (DataContext.Places.Where(p => p.Id == placeId).Where(p => p.Teachers.Any(t => t.ApplicationUser.Id == userid) || p.Owners.Any(o => o.ApplicationUser.Id == userid)).Count() == 0)
+        //        //    {
+        //        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //        //    }
+        //        //}
                 
-                //var model = new EventCreateViewModel();
-                //model.EventType = EventType.Class;
+        //        //var model = new EventCreateViewModel();
+        //        //model.EventType = EventType.Class;
 
-                //LoadCreateModel(model);
+        //        //LoadCreateModel(model);
 
-                //if (placeId != null)
-                //{
-                //    model.PlaceId = (int)placeId;
-                //}
+        //        //if (placeId != null)
+        //        //{
+        //        //    model.PlaceId = (int)placeId;
+        //        //}
 
-                //if (user.FacebookToken != null)
-                //{
-                //    if (Session["FacebookEvents"] == null)
-                //    {
-                //        Session["FacebookEvents"] = FacebookHelper.GetEvents(user.FacebookToken);
-                //    }
-                //    if (Session["FacebookEvents"] != null)
-                //    {
-                //        model.FacebookEvents = (List<FacebookEvent>)Session["FacebookEvents"];
-                //    }
-                //}
+        //        //if (user.FacebookToken != null)
+        //        //{
+        //        //    if (Session["FacebookEvents"] == null)
+        //        //    {
+        //        //        Session["FacebookEvents"] = FacebookHelper.GetEvents(user.FacebookToken);
+        //        //    }
+        //        //    if (Session["FacebookEvents"] != null)
+        //        //    {
+        //        //        model.FacebookEvents = (List<FacebookEvent>)Session["FacebookEvents"];
+        //        //    }
+        //        //}
 
-                //return View("Create", model);
-            }
-            else
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-        }
+        //        //return View("Create", model);
+        //    }
+        //    else
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+        //}
 
-        [Authorize(Roles = "Owner,Promoter")]
-        public ActionResult CreateSocial(int? placeId)
-        {
-            if (User.Identity.IsAuthenticated)
-            {
-                return RedirectToAction("Edit", new { eventType = EventType.Social, placeId = placeId });
+        //[Authorize(Roles = "Owner,Promoter")]
+        //public ActionResult CreateSocial(int? placeId)
+        //{
+        //    if (User.Identity.IsAuthenticated)
+        //    {
+        //        return RedirectToAction("Edit", new { eventType = EventType.Social, placeId = placeId });
 
-                //var userid = User.Identity.GetUserId();
-                //var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+        //        //var userid = User.Identity.GetUserId();
+        //        //var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
 
-                //if (placeId != null)
-                //{
-                //    if (DataContext.Places.Where(p => p.Id == placeId).Where(p => p.Teachers.Any(t => t.ApplicationUser.Id == userid) || p.Owners.Any(o => o.ApplicationUser.Id == userid)).Count() == 0)
-                //    {
-                //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                //    }
-                //}
+        //        //if (placeId != null)
+        //        //{
+        //        //    if (DataContext.Places.Where(p => p.Id == placeId).Where(p => p.Teachers.Any(t => t.ApplicationUser.Id == userid) || p.Owners.Any(o => o.ApplicationUser.Id == userid)).Count() == 0)
+        //        //    {
+        //        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //        //    }
+        //        //}
 
-                //var model = new EventCreateViewModel();
-                //model.EventType = EventType.Social;
+        //        //var model = new EventCreateViewModel();
+        //        //model.EventType = EventType.Social;
 
-                //LoadCreateModel(model);
+        //        //LoadCreateModel(model);
 
-                //if (placeId != null)
-                //{
-                //    model.PlaceId = (int)placeId;
-                //}
+        //        //if (placeId != null)
+        //        //{
+        //        //    model.PlaceId = (int)placeId;
+        //        //}
 
-                //if (user.FacebookToken != null)
-                //{
-                //    if (Session["FacebookEvents"] == null)
-                //    {
-                //        Session["FacebookEvents"] = FacebookHelper.GetEvents(user.FacebookToken);
-                //    }
-                //    if (Session["FacebookEvents"] != null)
-                //    {
-                //        model.FacebookEvents = (List<FacebookEvent>)Session["FacebookEvents"];
-                //    }
-                //}
+        //        //if (user.FacebookToken != null)
+        //        //{
+        //        //    if (Session["FacebookEvents"] == null)
+        //        //    {
+        //        //        Session["FacebookEvents"] = FacebookHelper.GetEvents(user.FacebookToken);
+        //        //    }
+        //        //    if (Session["FacebookEvents"] != null)
+        //        //    {
+        //        //        model.FacebookEvents = (List<FacebookEvent>)Session["FacebookEvents"];
+        //        //    }
+        //        //}
 
-                //return View("Create", model);
-            }
-            else
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-        }
+        //        //return View("Create", model);
+        //    }
+        //    else
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+        //}
 
         //[Authorize]
         //public ActionResult Create(EventType eventType, int? placeId)

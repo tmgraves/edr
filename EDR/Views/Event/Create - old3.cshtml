@@ -1,0 +1,1267 @@
+﻿@model EDR.Models.ViewModels.EventCreateViewModel
+@using EDR.Enums
+@using MvcCheckBoxList.Model
+
+@{
+    ViewBag.Title = "New " + Model.EventType;
+}
+
+<ol class="breadcrumb">
+    @if (Model.EventType == EventType.Class)
+    {
+        <li>@Html.ActionLink("All Classes", "Learn", "Home")</li>
+        <li>@Html.ActionLink("School Page", "Manage", "School", new { id = Model.SchoolId }, null)</li>
+        <li class="active">New Class</li>
+    }
+</ol>
+
+<div class="container">
+    <div class="center-block col-md-6 text-center" style="float: none;">
+        <h1>New @Model.EventType</h1>
+        <div class="panel panel-default">
+            <div class="panel-body bg-info">
+                <div class="form-horizontal centerform">
+                    <div class="form-group">
+                        <div class="col-lg-8 center-block text-info">
+                            <div class="row" style="margin: 10px;">
+                                @Html.ValidationSummary("", new { @class = "text-danger" })
+                                <div id="createevent">
+                                    <div class="newevent">
+                                        <input type="button" class="newbtn btn btn-primary" value="Create a New Event" />
+                                        <h4 class="linebehind">OR</h4>
+                                        <input type="button" class="facebookbtn btn btn-primary" value="Import from Facebook" />
+                                    </div>
+                                    <div class="pickfacebook" style="display: none;">
+                                        @using (Html.BeginForm())
+            {
+                                            @Html.HiddenFor(x => x.Event.FacebookLink)
+                                            @Html.HiddenFor(x => x.FacebookEventName)
+                                            <h3>Pick a Facebook Event</h3>
+                                            <p>
+                                                @if (Model.FacebookEvents != null)
+                                                {
+                                                    @Html.DropDownListFor(model => model.FacebookId, Model.FacebookEvents.Select(e => new SelectListItem() { Text = e.Name, Value = e.Id }), null, new { @class = "form-control" })
+                                                }
+                                            </p>
+                                            <p>
+                                                <input type="submit" id="submit" value="Pick Event" class="btn btn-primary" />
+                                            </p>
+                                        }
+                                    </div>
+                                </div>
+                                @using (Html.BeginForm("Create", "Event", FormMethod.Post, new { @id = "createform", @class = "main" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    @Html.HiddenFor(m => m.CreateAction)
+                                    @Html.HiddenFor(m => m.Role)
+                                    @Html.HiddenFor(m => m.EventType)
+                                    @Html.HiddenFor(m => m.SchoolId)
+                                    @Html.HiddenFor(x => x.Event.PhotoUrl)
+                                    @Html.HiddenFor(x => x.Event.FacebookLink)
+                                    @Html.HiddenFor(x => x.Event.FacebookId)
+                                    @Html.HiddenFor(x => x.FacebookEventName)
+                                    @Html.HiddenFor(x => x.Event.Interval)
+                                    @Html.HiddenFor(x => x.Event.IsAvailable)
+                                    @Html.HiddenFor(x => x.Event.UpdatedDate)
+                                    <div id="wizard" class="wizard" style="display: none;">
+                                        <div id="wizeventtypediv" class="step active" title="New Event">
+                                            <div class="row">
+                                                <h3>Step: Type of Event</h3>
+                                                <p>
+                                                    @Html.EnumDropDownListFor(model => model.EventType, "-- Select a Event Type --", htmlAttributes: new { @class = "form-control", @id = "EventTypeDD" })
+                                                </p>
+                                                <p>
+                                                    <div id="classtype" hidden="hidden">
+                                                        @Html.EnumDropDownListFor(model => model.ClassType, "-- Select a Class Type --", htmlAttributes: new { @class = "form-control" })
+                                                        @Html.ValidationMessageFor(model => model.ClassType, "", new { @class = "text-danger" })
+                                                    </div>
+                                                    <div id="socialtype" hidden="hidden">
+                                                        @Html.EnumDropDownListFor(model => model.SocialType, "-- Select a Social Type --", htmlAttributes: new { @class = "form-control" })
+                                                        @Html.ValidationMessageFor(model => model.SocialType, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div id="wizdetaildiv" class="step" style="display:none">
+                                            <h3>Step: Details</h3>
+                                            <div class="row" style="margin-bottom: 5px;">
+                                                @Html.EditorFor(model => model.Event.Name, new { htmlAttributes = new { @class = "form-control", @placeholder = "Event Name" } })
+                                                @Html.ValidationMessageFor(model => model.Event.Name, "", new { @class = "text-danger" })
+                                            </div>
+                                            @if (Model.EventType == EventType.Class)
+                                            {
+                                                <div id="skilllevel" class="row" style="margin-bottom: 5px;">
+                                                    @Html.DropDownListFor(m => m.SkillLevel,
+                                                                            new SelectList(new List<SelectListItem> {
+                                                                                new SelectListItem() { Text = "-- Select a Skill Level --", Value = "" },
+                                                                                new SelectListItem() { Text = "Beginner", Value = "1" },
+                                                                                new SelectListItem() { Text = "Beginner/Intermediate", Value = "2" },
+                                                                                new SelectListItem() { Text = "Intermediate", Value = "3" },
+                                                                                new SelectListItem() { Text = "Intermediate/Advanced", Value = "4" },
+                                                                                new SelectListItem() { Text = "Advanced", Value = "5" },
+                                                                            }, "Value", "Text"), new { @class = "form-control" })
+                                                    @Html.ValidationMessageFor(m => m.SkillLevel, "", new { @class = "text-danger" })
+                                                </div>
+                                            }
+                                            <div class="row" style="margin-bottom: 5px;">
+                                                @Html.TextBox("Style", "", new { @class = "form-control stylesearch", @placeholder = "Add Dance Style(s) for this Event" })
+                                                <div id="stylesdiv" style="text-align: left; background-color: #fff;"></div>
+                                                @Html.HiddenFor(m => m.StyleIds)
+                                                @Html.ValidationMessageFor(m => m.StyleIds, "", new { @class = "text-danger" })
+
+                                                @*@Html.LabelFor(model => model.Event.Name, "Dance Styles", htmlAttributes: new { @class = "control-label col-lg-3 col-md-2" })
+                <div class="col-md-10 col-lg-9">
+                    @Html.CheckBoxListFor(model => model.StylesCheckboxList.PostedItems,
+                    model => model.StylesCheckboxList.AvailableItems,
+                    style => style.Value,
+                    style => style.Text,
+                    model => model.StylesCheckboxList.SelectedItems,
+                    new HtmlListInfo(HtmlTag.table, 2, new { @class = "checkboxlist" }, TextLayout.Default))
+                    <span id="validationMessage" class="text-danger" style="display: none;">Please choose at least one style</span>
+                </div>*@
+                                            </div>
+                                            <div class="row" style="margin-bottom: 5px;">
+                                                @Html.TextAreaFor(model => model.Event.Description, new { @class = "form-control", @rows = "10", @placeholder = "Enter a description for your event" })
+                                                @Html.ValidationMessageFor(model => model.Event.Description, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div id="wizdatetimediv" class="step" style="display:none">
+                                            <h3>Step: Date & Time</h3>
+                                            <div class="row" style="margin-bottom: 5px;">
+                                                @if (Model.Event.FacebookId != null)
+                                                {
+                                                    @Html.HiddenFor(m => m.Event.StartDate, new { Value = Model.Event.StartDate.ToString("yyyy-MM-dd") })
+                                                    @Html.TextBox("StartLabel", Model.Event.StartDate.ToString("yyyy-MM-dd"), htmlAttributes: new { @type = "date", @class = "form-control", @disabled = "disabled" })
+                                                    @Html.ValidationMessageFor(model => model.Event.StartDate, "", new { @class = "text-danger" })
+                                                }
+                                                else
+                                                {
+                                                    @Html.TextBoxFor(m => m.Event.StartDate, "{0:yyyy-MM-dd}", htmlAttributes: new { @type = "date", @class = "form-control", @placeholder = "Start Date" })
+                                                    @*@Html.EditorFor(model => model.Event.StartDate, new { htmlAttributes = new { @class = "form-control" } })*@
+                                                    @Html.ValidationMessageFor(model => model.Event.StartDate, "", new { @class = "text-danger" })
+                                                }
+                                            </div>
+                                            <div class="row" style="margin-bottom: 5px;">
+                                                @Html.TextBoxFor(m => m.Event.EndDate, "{0:yyyy-MM-dd}", htmlAttributes: new { @type = "date", @class = "form-control", @placeholder = "End Date" })
+                                                @*@Html.EditorFor(model => model.Event.EndDate, new { htmlAttributes = new { @class = "form-control" } })*@
+                                                @Html.ValidationMessageFor(model => model.Event.EndDate, "", new { @class = "text-danger" })
+                                            </div>
+                                            <div class="row" style="margin-bottom: 5px;">
+                                                <p><input id="start" type="text" class="start timepicker form-control" /></p>
+                                                @Html.HiddenFor(m => m.Event.StartTime, new { @class = "timeelement begintime" })
+                                                @Html.ValidationMessageFor(model => model.Event.StartTime, "", new { @class = "text-danger" })
+                                            </div>
+                                            <div class="row" style="margin-bottom: 5px;">
+                                                <p><input id="end" type="text" class="end timepicker form-control" /></p>
+                                                @Html.HiddenFor(m => m.Event.EndTime, new { @class = "timeelement endtime" })
+                                                @Html.ValidationMessageFor(model => model.Event.EndTime, "", new { @class = "text-danger" })
+                                            </div>
+
+                                            <div class="row text-left" style="margin-bottom: 5px;">
+                                                <div class="col-lg-8 nospace">
+                                                    @Html.LabelFor(model => model.Event.Recurring, htmlAttributes: new { @class = "text-danger text-uppercase control-label" })
+                                                </div>
+                                                <div class="col-lg-4 nospace pull-right text-right">
+                                                    @Html.CheckBoxFor(m => m.Event.Recurring, new { @class = "recurring", @data_toggle = "toggle", @data_on = "Yes", @data_off = "No" })
+                                                 </div>
+                                            </div>
+                                            <div class="row" id="recurring" style="margin-top: 5px;" @(Model.Event.Recurring ? "" : "hidden")>
+                                                <div style="margin-bottom: 10px;">
+                                                    <div class="col-lg-6 nospace text-left pull-left">
+                                                        @Html.Label("Repeats", htmlAttributes: new { @class = "text-danger text-uppercase control-label" })
+                                                    </div>
+                                                    <div class="col-lg-6 nospace">
+                                                        @Html.EnumDropDownListFor(model => model.Event.Frequency, htmlAttributes: new { @class = "form-control pull-right" })
+                                                        @Html.ValidationMessageFor(model => model.Event.Frequency, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                                <div class="row text-left" style="padding-top: 30px; margin-bottom: 10px;">
+                                                    <div class="col-lg-6 col-md-6">
+                                                        @Html.DropDownListFor(m => m.Event.Interval,
+                                                                            new SelectList(new List<SelectListItem> {
+                                                                                new SelectListItem { Text = "Every 1", Value = "1" },
+                                                                                new SelectListItem { Text = "Every 2", Value = "2" },
+                                                                                new SelectListItem { Text = "Every 3", Value = "3" },
+                                                                                new SelectListItem { Text = "Every 4", Value = "4" },
+                                                                                new SelectListItem { Text = "Every 5", Value = "5" },
+                                                                                new SelectListItem { Text = "Every 6", Value = "6" },
+                                                                                new SelectListItem { Text = "Every 7", Value = "7" },
+                                                                                new SelectListItem { Text = "Every 8", Value = "8" },
+                                                                                new SelectListItem { Text = "Every 9", Value = "9" },
+                                                                                new SelectListItem { Text = "Every 10", Value = "10" },
+                                                                            }, "Value", "Text"), new { @class = "form-control col-lg-6" })
+                                                        @Html.ValidationMessageFor(model => model.Event.Interval, "", new { @class = "text-danger" })
+                                                    </div>
+                                                    <div class="col-lg-6 col-md-6 text-right">
+                                                        <label class="text-warning control-label" id="frequency" style="font-weight: bold; height: 30px; vertical-align: bottom;">
+                                                            @if (Model.Event.Frequency == Frequency.Daily)
+                                                        {
+                                                                @: Day(s)
+                                                        }
+                                                            else if (Model.Event.Frequency == Frequency.Weekly)
+                                                            {
+                                                                @: Week(s)
+                                                        }
+                                                            else if (Model.Event.Frequency == Frequency.Monthly)
+                                                            {
+                                                                @: Month(s)
+                                                        }
+                                                            else if (Model.Event.Frequency == Frequency.Yearly)
+                                                            {
+                                                                @: Year(s)
+                                                        }
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                @*<div class="col-md-3 col-lg-3">
+                                                    @Html.TextBoxFor(model => model.Event.Interval, htmlAttributes: new { @class = "form-control", @type = "number", @min = "1", @max = "200" })
+                                                </div>*@
+                                                <div id="monthly" style="padding-top: 5px; margin-top: 5px;" @(Model.Event.Frequency == Frequency.Monthly ? "" : "hidden='hidden'")>
+                                                    <div class="panel panel-info">
+                                                        <div class="panel-body">
+                                                            <div class="text-center">
+                                                                <label class="control-label text-warning">On the</label>
+                                                            </div>
+
+                                                            <div class="text-center">
+                                                                <div>
+                                                                    @Html.CheckBoxListFor(model => model.MonthDays.PostedItems,
+                                                                    model => model.MonthDays.AvailableItems,
+                                                                    item => item.Value,
+                                                                    item => item.Text,
+                                                                    model => model.MonthDays.SelectedItems,
+                                                                    new HtmlListInfo(HtmlTag.table, 4, new { @class = "checkboxlist text-warning" }, TextLayout.Default))
+                                                                </div>
+                                                            </div>
+                                                            <div class="text-center">
+                                                                <label class="text-warning" id="dayofweek">@Model.Event.StartDate.DayOfWeek</label>
+                                                                @Html.HiddenFor(x => x.HiddenMonthDay)
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div style="margin-bottom: 20px !important; padding-bottom: 20px !important;">
+                                                    <div class="col-lg-8 nospace text-left pull-left">
+                                                        @Html.Label("# of Events:", htmlAttributes: new { @class = "text-danger text-uppercase control-label" })
+                                                    </div>
+                                                    <div class="col-lg-4 nospace">
+                                                        @Html.TextBoxFor(m => m.EventCount, htmlAttributes: new { @Value = "1" })
+                                                        @Html.ValidationMessageFor(model => model.Event.Frequency, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="wizlocationdiv" class="step" style="display:none">
+                                            <h3>Step: Location</h3>
+                                            <div class="row" style="margin-bottom: 5px;">
+                                                @Html.HiddenFor(model => model.Event.Place.Address)
+                                                @Html.HiddenFor(model => model.Event.Place.Address2)
+                                                @Html.HiddenFor(model => model.Event.Place.City)
+                                                @Html.HiddenFor(model => model.Event.Place.StateName)
+                                                @Html.HiddenFor(model => model.Event.Place.Zip)
+                                                @Html.HiddenFor(model => model.Event.Place.Country)
+                                                @Html.HiddenFor(model => model.Event.Place.Latitude)
+                                                @Html.HiddenFor(model => model.Event.Place.Longitude)
+                                                @Html.HiddenFor(model => model.Event.Place.GooglePlaceId)
+                                                @Html.HiddenFor(model => model.Event.Place.GoogleUrl)
+                                                @Html.HiddenFor(model => model.Event.Place.Website)
+                                                @Html.HiddenFor(model => model.Event.Place.GoogleRating)
+                                                @Html.HiddenFor(m => m.Event.Place.FacebookId)
+                                                @Html.HiddenFor(m => m.Event.Place.Public)
+                                                @Html.HiddenFor(m => m.Event.Place.Website)
+                                                @Html.HiddenFor(m => m.Event.Place.FacebookLink)
+                                                @Html.HiddenFor(m => m.Event.Place.Filename)
+                                                @Html.HiddenFor(m => m.Event.Place.ThumbnailFilename)
+                                                @*@Html.TextBoxFor(model => model.NewPlace.PlaceType, new { @Value = EDR.Enums.PlaceType.OtherPlace })*@
+                                                <div class="row" style="margin-bottom: 5px;">
+                                                    @Html.TextBoxFor(model => model.Event.Place.Name, new { @class = "form-control newplace", @placeholder = "Type the Event Location" })
+                                                    @Html.ValidationMessageFor(model => model.Event.Place.Name, "", new { @class = "text-danger" })
+                                                </div>
+                                                <div class="row" style="margin-bottom: 5px;">
+                                                    @Html.EnumDropDownListFor(model => model.Event.Place.PlaceType, new { @class = "form-control" })
+                                                    @Html.ValidationMessageFor(model => model.Event.Place.PlaceType, "", new { @class = "text-danger" })
+                                                </div>
+                                                <div class="row" style="margin-bottom: 5px;">
+                                                    @Html.TextArea("Location", Model.Event.Place.Address + "\n" + Model.Event.Place.City + ", " + Model.Event.Place.StateName + " " + Model.Event.Place.Zip + "\n" + Model.Event.Place.Country, 4, 50, new { @class = "form-control", Name = "formatted_address", @readonly = true })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="wizticketsdiv" class="step" style="display:none">
+                                            <h2>Step: Tickets</h2>
+                                            <div class="form-horizontal">
+                                                <div class="form-group">
+                                                    <div class="row text-left" style="margin-bottom: 5px;">
+                                                        <div class="col-lg-8">
+                                                            @Html.Label("Is this a Free/Pay " + Model.EventType + "?", htmlAttributes: new { @class = "text -danger control-label" })
+                                                        </div>
+                                                        <div class="col-lg-4 pull-right text-right">
+                                                            @Html.CheckBoxFor(m => m.Event.Free, new { @class = "freeevent", @data_toggle = "toggle", @data_on = "Free", @data_off = "Pay" })
+                                                        </div>
+                                                    </div>
+                                                    <div id="ticketsdiv">
+                                                        @if (Model.EventType == EventType.Class)
+                                                        {
+                                                            <div class="row text-left" style="margin-bottom: 5px;">
+                                                                <div class="col-lg-8">
+                                                                    @Html.LabelFor(m => m.UseSchoolTickets, new { @class = "left pull-left" })
+                                                                </div>
+                                                                <div class="col-lg-4 pull-right text-right">
+                                                                    @if (Model.School.Tickets.Count() != 0)
+                                                                    {
+                                                                        @Html.CheckBoxFor(m => m.UseSchoolTickets, new { @class = "pull-right right text-right", @data_toggle = "toggle", @data_on = "Yes", @data_off = "No" })
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        @:No
+                                                                }
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                        @*@Html.DropDownListFor(m => m.UseSchoolTickets, new SelectList(new List<SelectListItem>() { new SelectListItem() { Text = "Use Existing School Tickets", Value = "true" }, new SelectListItem() { Text = "Set up New Ticket for this Event", Value = "false" } }, "Value", "Text").AsEnumerable(), null, new { @class = "form-control" })*@
+                                                        <div id="newticketdiv" class="panel panel-success" style="margin-top: 20px;">
+                                                            <div class="panel-body">
+                                                                <div class="col-lg-12">
+                                                                    <h4>New Event Ticket</h4>
+                                                                    <div class="row">
+                                                                        <div class="col-lg-7 text-left">
+                                                                            @Html.Label("# of " + (Model.EventType == EventType.Class ? "classes" : "socials"), new { @class = "control-label" })
+                                                                        </div>
+                                                                        <div class="col-lg-5">
+                                                                            <div class="form-group">
+                                                                                @Html.EditorFor(model => model.TicketQuantity, new { htmlAttributes = new { @class = "form-control text-right", @placeholder = "Qty", min = "1", max = "100" } })
+                                                                                @Html.ValidationMessageFor(model => model.TicketQuantity, "", new { @class = "text-danger" })
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row">
+                                                                        <div class="col-lg-7 text-left">
+                                                                            @Html.Label("Ticket Price($)", new { @class = "control-label" })
+                                                                        </div>
+                                                                        <div class="col-lg-5">
+                                                                            <div class="form-group">
+                                                                                @Html.EditorFor(model => model.TicketPrice, new { htmlAttributes = new { @class = "form-control text-right", @placeholder = "$10", min = "1", max = "5000" } })
+                                                                                @Html.ValidationMessageFor(model => model.TicketPrice, "", new { @class = "text-danger" })
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        @if (Model.EventType == EventType.Class)
+                                                        {
+                                                            <div id="existingticketsdiv" class="panel panel-success" style="margin-top: 20px; display: none;">
+                                                                <div class="panel-body">
+                                                                    <div class="col-lg-12">
+                                                                        <h4>Available School Tickets</h4>
+                                                                        <table class="table table-striped table-condensed">
+                                                                            @foreach (var ticket in Model.School.Tickets)
+                                                                            {
+                                                                                <tr>
+                                                                                    <td align="left">
+                                                                                        @ticket.Quantity.ToString("N0") @(Model.EventType == EventType.Class ? "classes" : "socials")
+                                                                                    </td>
+                                                                                    <td align="right">
+                                                                                        @ticket.Price.ToString("C")
+                                                                                    </td>
+                                                                                </tr>
+                                                                            }
+                                                                        </table>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="navbuttons">
+                                            <div class="row">
+                                                <div class="col-lg-6 nospace pull-left text-left">
+                                                    <button type="button" class="prev btn btn-primary" style="display: none">Previous</button>
+                                                </div>
+                                                <div class="col-lg-6 nospace pull-right text-right">
+                                                    <button type="button" class="next btn btn-primary" style="display: none" disabled="disabled">Next</button>
+                                                    <button type="submit" id="finish" class="btn btn-primary" style="display: none;">Save Event</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    @if (Model.EventType == EventType.Class)
+                                                            {
+                        <a class="btn btn-warning" href="@Url.Action("Manage", "School", new { id = Model.SchoolId })" style="float: right;">Cancel</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-warning" href="@Url.Action("Manage", "Promoter", new { username = User.Identity.Name })" style="float: right;">Cancel</a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#createmain.main').submit(function () {
+        alert("submit");
+    });
+</script>
+@section Scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/foolproof")
+    @Scripts.Render("~/bundles/jqueryUI")
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    @Scripts.Render("~/bundles/GeoComplete")
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+    @Scripts.Render("~/bundles/TimePicker")
+    @Styles.Render("~/Content/TimePickercss")
+<script src="../../Scripts/bootstrap-toggle.js"></script>
+<link href="../../Content/bootstrap-toggle.css" rel="stylesheet">
+<script src="~/Scripts/jquery.mousewheel.js"></script>
+
+    <script type="text/javascript">
+    $.validator.setDefaults({
+        ignore: ""
+    })
+
+    $(function () {
+        $('#createmain.main').submit(function () {
+            alert("submit");
+            //alert($('#TicketPrice').val());
+            //$('#TicketPrice').val($('#TicketPrice').toNumber());
+            //if (!$('#createform.main').valid()) {
+            //    var val = $('#createform.main').validate();
+            //    for (var i = 0; i < val.errorList.length; i++) {
+            //        alert(val.errorList[i].message);
+            //    }
+            //}
+        });
+
+        $('#EventCount').spinner({
+            min: 1,
+            max: 20
+        });
+        //$('#TicketPrice').blur(function () {
+        //    alert("here");
+        //    $('#TicketPrice').formatCurrency();
+        //});
+
+        $('.start').timepicker({
+            'timeFormat': 'h:i A',
+            'step': function (i) {
+                return 15;
+            }
+        });
+        $('.end').timepicker({
+            'timeFormat': 'h:i A',
+            'step': function (i) {
+                return 15;
+            }
+        });
+
+        $('.start').timepicker('setTime', new Date($('.timeelement.begintime').val()));
+        $('.end').timepicker('setTime', new Date($('.timeelement.endtime').val()));
+    });
+
+    function SetDates() {
+        var start = new Date($('#Event_StartDate').val());
+        var end = new Date($('#Event_EndDate').val());
+        var startdt = new Date((start.getUTCMonth() + 1).toString() + "/" + start.getUTCDate().toString() + "/" + start.getUTCFullYear().toString() + " " + $('.timepicker.start').val());
+        var enddt = new Date((end.getUTCMonth() + 1).toString() + "/" + end.getUTCDate().toString() + "/" + end.getUTCFullYear().toString() + " " + $('.timepicker.end').val());
+        $('.timeelement.begintime').prop('value', startdt.toLocaleDateString() + " " + startdt.toLocaleTimeString());
+        $('.timeelement.endtime').prop('value', enddt.toLocaleDateString() + " " + enddt.toLocaleTimeString());
+        var val = $('#createform.main').valid();
+    }
+
+
+    $('.timepicker').change(function () {
+                                                                    SetDates();
+                                                                });
+
+    $('#Event_StartDate').change(function () {
+                                                                    SetDates();
+                                                                });
+
+    $('#Event_EndDate').change(function () {
+                                                                    SetDates();
+                                                                });
+
+    $('.stylesearch').autocomplete({
+                                                                source: function (request, response) {
+            $.ajax({
+                                                                        url: '../DanceStyle/Search',
+                data: { searchString: request.term },
+                dataType: 'json',
+                type: 'GET',
+                success: function (data) {
+                                                                                response($.map(data, function (item) {
+                                                                                    return {
+                                                                                    label: item.Name,
+                            value: item.Id
+                                                                                    }
+                                                                                }));
+                                                                            }
+                                                                        })
+        },
+        select: function (event, ui) {
+            $('#StyleIds').val($('#StyleIds').val() + '-' + ui.item.value);
+                                                                        var styles = $("#stylesdiv").html();
+                                                                        if ($("#stylesdiv").html() == "") {
+                                                                            styles = ui.item.label;
+                                                                        }
+            else {
+                                                                            if (styles.indexOf(ui.item.label) < 0) {
+                                                                                styles = styles + ", " + ui.item.label;
+                                                                            }
+                                                                        }
+            $("#stylesdiv").html(styles);
+            //  $('.stylesearch').val(ui.item.label);
+            //  $('.stylesearchid').val(ui.item.value);
+            $('.stylesearch').val('');
+            $('#StyleIds').valid()
+            return false;
+                                                                    },
+        minLength: 1
+    });
+
+    //  New Place AutoComplete
+    $(function () {
+        $(".newplace").geocomplete({
+                                                                    details: "form",
+            types: ["geocode", "establishment"],
+        })
+        .bind("geocode:result", function (event, result) {
+            $('#Event_Place_Latitude').prop("value", result.geometry.location.lat());
+            $('#Event_Place_Longitude').prop("value", result.geometry.location.lng());
+
+            $('#Event_Place_Name').prop("value", result.name);
+            $('#Event_Place_GooglePlaceId').prop("value", result.place_id);
+            $('#Event_Place_GoogleUrl').prop("value", result.url);
+            $('#Event_Place_Website').prop("value", result.website);
+            $('#Event_Place_GoogleRating').prop("value", result.rating);
+                                                                        //$.each(result.reviews, function (i, review) {
+                                                                        //    alert(review.text);
+                                                                        //});
+                                                                        var street_num;
+                                                                        var street_name;
+            $.each(result.address_components, function (i, address_component) {
+
+                                                                            //alert(address_component.types[0]);
+                                                                            //alert(address_component.long_name);
+                                                                            if (address_component.types[0] == "street_number") {
+                                                                                street_num = address_component.long_name;
+                                                                            }
+                                                                            else if (address_component.types[0] == "route") {
+                                                                                street_name = address_component.long_name;
+                                                                            }
+                                                                            else if (address_component.types[0] == "locality") {
+                    $('#Event_Place_City').prop("value", address_component.long_name);
+                                                                            }
+                                                                            else if (address_component.types[0] == "administrative_area_level_1") {
+                    $('#Event_Place_StateName').prop("value", address_component.long_name);
+                                                                            }
+                                                                            else if (address_component.types[0] == "postal_code") {
+                    $('#Event_Place_Zip').prop("value", address_component.long_name);
+                                                                            }
+                                                                            else if (address_component.types[0] == "country") {
+                    $('#Event_Place_Country').prop("value", address_component.long_name);
+                                                                            }
+                                                                        });
+            //alert(street_num + " " + street_name);
+            $('#Event_Place_Address').prop("value", street_num + " " + street_name);
+            //  console.log(result);
+            $('#Event_Place_Name').valid();
+                                                                    });
+                                                                });
+    //  New Place AutoComplete
+
+    $(function () {
+        //  Wizard Navigation
+        $('.wizard .prev').click(function () {
+            $('#finish').hide();
+            var wizard = $('.wizard');
+
+            $('.step.active', wizard).hide();
+            var currentStep = $('.step.active', wizard);
+            currentStep.hide();
+            currentStep.removeClass('active');
+            var newStep = currentStep.prev('.step', wizard);
+            newStep.addClass('active');
+            newStep.show();
+            if ($('.step:first', wizard)[0] == newStep[0]) {
+                $(this).hide();
+            }
+            $('.next', wizard).show();
+        });
+
+        $('.wizard .next').click(function () {
+            var wizard = $('.wizard');
+            var allinputs = $(":input", $('.step.active', wizard));
+            var valid = true;
+            allinputs.each(function (index, element) {
+                if (!$(this).valid())
+                {
+                    alert($(this).prop('name'));
+                    valid = false;
+                }
+            });
+
+            if (valid)
+            {
+                $('.step.active', wizard).hide();
+                var currentStep = $('.step.active', wizard);
+                currentStep.hide();
+                currentStep.removeClass('active');
+                var newStep = currentStep.next('.step', wizard);
+                newStep.addClass('active');
+                newStep.show();
+                if ($('.step:last', wizard)[0] == newStep[0]) {
+                    $(this).hide();
+                    $('#finish').show();
+                                                            }
+
+                $('.prev', wizard).show();
+            }
+            else {
+                var valerr = $('#createform.main').validate();
+                //  alert(valerr.errorList.length);
+                for (var i = 0; i < valerr.errorList.length; i++) {
+                    //  alert(valerr.errorList[i].message);
+                }
+            }
+        });
+        //  Wizard Navigation
+
+        function SetFirstScreen(action) {
+                                                                if (action == "New")
+                                                                {
+                $('#CreateAction').prop("value", "New");
+                                                                    var createevent = $('#createevent');
+                $('.step.active', createevent).hide();
+                                                                    var wizard = $('#wizard');
+                                                                    wizard.addClass('active');
+                                                                    wizard.show();
+                                                                    createevent.hide();
+                $('.next', wizard).show();
+                $('.prev', wizard).hide();
+                $('.finish', wizard).hide();
+                                                                }
+                                                                else
+                                                                {
+                $('#CreateAction').prop("value", "Facebook");
+                                                                    var createevent = $('#createevent');
+                $('.pickfacebook', createevent).addClass('active');
+                $('.pickfacebook', createevent).show();
+                $('.newevent', createevent).hide();
+                                                                }
+                                                            }
+        if ('@Model.CreateAction' == "New") {
+            SetFirstScreen("New");
+        }
+        else if ('@Model.CreateAction' == "Facebook") {
+            SetFirstScreen("Facebook");
+        }
+
+        $('#createevent .newbtn').click(function () {
+            SetFirstScreen("New");
+        });
+
+        $('#createevent .facebookbtn').click(function () {
+            SetFirstScreen("Facebook");
+        });
+    });
+
+    $(function () {
+        $("input[type='checkbox'][name='ProductCode']")
+        $('#EventTypeDD').change(function () {
+            var eventtype = $("#EventTypeDD option:selected").val();
+            SetEventType(eventType);
+        });
+        $('#FacebookId').change(function () {
+            $('#FacebookEventName').prop('value', $("#FacebookId option:selected").text());
+            $('#Event_FacebookLink').prop('value', "https://www.facebook.com/events/" + $("#FacebookId option:selected").val());
+        });
+    });
+    $(function () {
+        $('#ClassType').change(function () {
+            var classtype = $("#ClassType option:selected").val();
+            var btn = $('.wizard .next');
+            if (classtype != "") {
+                btn.prop('disabled', false);
+            }
+            else {
+                btn.prop('disabled', true);
+            }
+        });
+    });
+    $(function () {
+        $('#SocialType').change(function () {
+            var classtype = $("#SocialType option:selected").val();
+            var btn = $('.wizard .next');
+            if (classtype != "") {
+                btn.prop('disabled', false);
+            }
+            else {
+                btn.prop('disabled', true);
+            }
+        });
+    });
+
+    //$(function () {
+    //    $('#ExistingPlace').change(function () {
+    //        var placeid = $("#ExistingPlace option:selected").val();
+    //        if (placeid > 0) {
+    //            $('#newlocationdiv').hide();
+    //            $('#ordiv').hide();
+    //        }
+    //        else {
+    //            $('#newlocationdiv').show();
+    //            $('#ordiv').show();
+    //        }
+    //    });
+    //});
+
+    //$(function () {
+    //    $('#UseSchoolTickets').change(function () {
+    //        var form = $('#createform.main');
+    //        var valid = form.valid();
+    //        alert(valid);
+    //    });
+    //});
+
+    //$(function () {
+    //    $('#checkall').click(function () {
+    //        var status = $('#checkall').prop('checked');
+    //        $('input[name="TicketId"]').each(function () {
+    //            $(this).prop('checked', status);
+    //        });
+    //    });
+    //});
+
+    $(function () {
+        //$('#UseSchoolTickets').change(function () {
+        //    var use = $("#UseSchoolTickets option:selected").val();
+        //    if (use == "true")
+        //    {
+        //        $('#newticketdiv').hide();
+        //    }
+        //    else
+        //    {
+        //        $('#newticketdiv').show();
+        //    }
+        //});
+        $('#UseSchoolTickets').change(function () {
+            if ($(this).prop('checked')) {
+                $("#newticketdiv").hide();
+                $("#existingticketsdiv").show();
+            }
+            else {
+                $("#newticketdiv").show();
+                $("#existingticketsdiv").hide();
+            }
+        });
+    });
+    $(document).ready(function () {
+        function SetEventType(eventtype)
+        {
+            //  Class Type
+            if (eventtype == "1") {
+                $('#classtype').show();
+                $('#socialtype').hide();
+
+                var classtype = $("#ClassType option:selected").val();
+                var btn = $('.wizard .next');
+                if (classtype != "") {
+                    btn.prop('disabled', false);
+                }
+                else {
+                    btn.prop('disabled', true);
+                }
+
+                ////  Show Skill Level
+                //$('#skilllevel').show();
+            }
+            else if (eventtype == "0") {
+                $('#classtype').hide();
+                $('#socialtype').show();
+
+                var socialtype = $("#SocialType option:selected").val();
+                var btn = $('.wizard .next');
+                if (socialtype != "") {
+                    btn.prop('disabled', false);
+                }
+                else {
+                    btn.prop('disabled', true);
+                }
+                //$('#skilllevel').hide();
+            }
+            else {
+                $('#classtype').hide();
+                $('#socialtype').hide();
+                //$('#skilllevel').hide();
+            }
+        }
+
+        if ('@Model.Event.FacebookId' != "")
+        {
+            var createevent = $('#createevent');
+            $('.step.active', createevent).hide();
+
+            var wizard = $('#wizard');
+            wizard.addClass('active');
+            wizard.show();
+
+            createevent.hide();
+
+            $('.next', wizard).show();
+
+            $('#existinglocationdiv').hide();
+            $('#ordiv').hide();
+        }
+
+        var eventtype = $("#EventTypeDD option:selected").val();
+        //  Class Type
+        if (eventtype == "1") {
+            $('#classtype').show();
+            $('#socialtype').hide();
+            //$('#skilllevel').show();
+
+            var classtype = $("#ClassType option:selected").val();
+            var btn = $('.wizard .next');
+            if (classtype != "") {
+                btn.prop('disabled', false);
+            }
+            else {
+                btn.prop('disabled', true);
+            }
+        }
+        else if (eventtype == "0") {
+            $('#classtype').hide();
+            $('#socialtype').show();
+            //$('#skilllevel').hide();
+
+            var socialtype = $("#SocialType option:selected").val();
+            var btn = $('.wizard .next');
+            if (socialtype != "") {
+                btn.prop('disabled', false);
+            }
+            else {
+                btn.prop('disabled', true);
+            }
+        }
+        else {
+            $('#classtype').hide();
+            $('#socialtype').hide();
+            //$('#skilllevel').hide();
+        }
+
+        if ('@Model.EventType' != "")
+        {
+            var dd = $('#EventTypeDD');
+            var eventType = '@Model.EventType' == "Social" ? "0" : "1";
+            dd.prop("disabled", true);
+            if ('@Model.EventType' == "Social")
+            {
+                dd.prop('selectedIndex', 1);
+                $('#UseSchoolTickets').prop('disabled', true);
+                //  $('#UseSchoolTickets').prop('selectedIndex', 1);
+                $('#newticketdiv').show();
+            }
+            //else
+            //{
+            //    dd.prop('selectedIndex', 2);
+            //}
+            SetEventType(eventType);
+        }
+    });
+    </script>
+    <script type="text/javascript">
+
+    $(document).ready(function () {
+        var date = new Date('@Model.Event.StartDate');
+        setMonthDay(date);
+        //if (date != "")
+        //{
+        //    setDate(date);
+        //}
+
+        //function setDate(date) {
+        //    alert(date);
+        //    var res = date.split("-");
+        //    date = new Date(res[1] + "/" + res[2] + "/" + res[0]);
+        //};
+
+        function setMonthDay(date) {
+            var weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            var daysofmonth = ["blank", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th", "13th", "14th", "15th", "16th", "17th", "18th", "19th", "20th", "21st", "22nd", "23rd", "24th", "25th", "26th", "27th", "28th", "29th", "30th", "31st"];
+            $("#dayofweek").text(weekdays[date.getDay()]);
+            //  $("#eventday").text(daysofmonth[date.getDate()] + " of the Month");
+            //var nth = parseInt(date.getDate() / 7) + 1;
+            //alert(nth);
+            setMonthDaysCheck(date);
+            //var cb = $('input[type=checkbox][name="MonthDays.PostedItems"][value="' + nth.toString() + '"]');
+            ////  var test = $('input[type=checkbox][name="cbtest"]');
+            ////  alert(cb.attr("value").valueOf());
+            ////  alert(test.attr("value").valueOf());
+            //cb.prop("disabled", true);
+            //cb.prop("checked", "checked");
+            //var hcb = $('input[type=hidden][id="HiddenMonthDay"]');
+            //hcb.prop("value", cb.prop("value"));
+        }
+
+        function setMonthDaysCheck(date)
+        {
+            var nth = Math.ceil(date.getDate() / 7);
+            $('input[type=checkbox][name="MonthDays.PostedItems"]').prop('checked', "");
+            $('input[type=checkbox][name="MonthDays.PostedItems"]').prop('disabled', false);
+            var cb = $('input[type=checkbox][name="MonthDays.PostedItems"][value="' + nth.toString() + '"]');
+            cb.prop("disabled", true);
+            cb.prop("checked", "checked");
+            var hcb = $('input[type=hidden][id="HiddenMonthDay"]');
+            hcb.prop("value", cb.prop("value"));
+        }
+
+        //function setMonthDay(date) {
+        //    var weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        //    var daysofmonth = ["blank", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th", "10th", "11th", "12th", "13th", "14th", "15th", "16th", "17th", "18th", "19th", "20th", "21st", "22nd", "23rd", "24th", "25th", "26th", "27th", "28th", "29th", "30th", "31st"];
+        //    $("#dayofweek").text(weekdays[date.getDay()]);
+        //    //  $("#eventday").text(daysofmonth[date.getDate()] + " of the Month");
+        //    var nth = parseInt(date.getDate() / 7) + 1;
+        //    var cb1 = $('input[type=checkbox][name="MonthDays.PostedItems"][value="1"]');
+        //    cb1.prop("disabled", false);
+        //    var cb2 = $('input[type=checkbox][name="MonthDays.PostedItems"][value="2"]');
+        //    cb2.prop("disabled", false);
+        //    var cb3 = $('input[type=checkbox][name="MonthDays.PostedItems"][value="3"]');
+        //    cb3.prop("disabled", false);
+        //    var cb4 = $('input[type=checkbox][name="MonthDays.PostedItems"][value="4"]');
+        //    cb4.prop("disabled", false);
+        //    cb1.prop("checked", "");
+        //    cb2.prop("checked", "");
+        //    cb3.prop("checked", "");
+        //    cb4.prop("checked", "");
+
+        //    var cb = $('input[type=checkbox][name="MonthDays.PostedItems"][value="' + nth.toString() + '"]');
+        //    //  var test = $('input[type=checkbox][name="cbtest"]');
+        //    //  alert(cb.attr("value").valueOf());
+        //    //  alert(test.attr("value").valueOf());
+        //    cb.prop("checked", "checked");
+        //    cb.prop("disabled", true);
+        //    var hcb = $('input[type=hidden][id="HiddenMonthDay"]');
+        //    //  alert(cb.attr("value"));
+        //    hcb.prop("value", cb.prop("value"));
+
+        //    //  cb.prop("readonly", "readonly");
+        //    //  alert(cb.attr("readonly").valueOf());
+        //    //  alert(cb.promise("readonly").valueOf());
+
+        //    //  test.prop("checked", "checked");
+        //    //  .prop("checked",true);
+        //}
+
+        $('input[name="Event.StartDate"]').change(function () {
+            setDate($('input[name="Event.StartDate"]').val());
+        });
+
+        $('.recurring').change(function () {
+            if ($(this).prop('checked'))
+            {
+                $("#recurring").show();
+            }
+            else {
+                $("#recurring").hide();
+            }
+        });
+
+        //$('input[name="Event.Recurring"]').click(function () {
+        //    if ($(this).attr("value") == "True") {
+        //        $("#recurring").show();
+        //    }
+        //    if ($(this).attr("value") == "False") {
+        //        $("#recurring").hide();
+        //    }
+        //});
+
+        $('select[id="Event_Frequency"]').change(function () {
+            if ($('option:selected', $(this)).text() == "Daily") {
+                $('#frequency').text('Day(s)');
+                $("#monthly").hide();
+            }
+            if ($('option:selected', $(this)).text() == "Weekly") {
+                $('#frequency').text('Week(s)');
+                $("#monthly").hide();
+            }
+            if ($('option:selected', $(this)).text() == "Monthly") {
+                $('#frequency').text('Month(s)');
+                $("#monthly").show();
+                var date = $('#Event_StartDate').val();
+                var res = date.split("-");
+                date = new Date(res[1] + "/" + res[2] + "/" + res[0]);
+                //  setMonthDay(date);
+            }
+            if ($('option:selected', $(this)).text() == "Yearly") {
+                $('#frequency').text('Year(s)');
+                $("#monthly").hide();
+            }
+        });
+
+        $('.freeevent').change(function () {
+            if ($(this).prop('checked')) {
+                $("#ticketsdiv").hide();
+                if ($("#TicketQuantity").val() == "")
+                {
+                    $("#TicketQuantity").val("1");
+                }
+                if ($("#TicketPrice").val() == "") {
+                    $("#TicketPrice").val("1");
+                }
+            }
+            else {
+                $("#ticketsdiv").show();
+            }
+        });
+    });
+    </script>
+}
+
+@*<div class="row" style="margin-bottom: 5px;">
+        <label class="control-label col-lg-3 col-md-2">From</label>
+        <div class="col-lg-9 col-md-10">
+            @Html.HiddenFor(m => m.Event.StartTime)
+            @Html.DropDownListFor(m => m.StartHour, new SelectList(new List<SelectListItem>
+                                    {
+                                        new SelectListItem { Text = "01", Value = "1" },
+                                        new SelectListItem { Text = "02", Value = "2" },
+                                        new SelectListItem { Text = "03", Value = "3" },
+                                        new SelectListItem { Text = "04", Value = "4" },
+                                        new SelectListItem { Text = "05", Value = "5" },
+                                        new SelectListItem { Text = "06", Value = "6" },
+                                        new SelectListItem { Text = "07", Value = "7" },
+                                        new SelectListItem { Text = "08", Value = "8" },
+                                        new SelectListItem { Text = "09", Value = "9" },
+                                        new SelectListItem { Text = "10", Value = "10" },
+                                        new SelectListItem { Text = "11", Value = "11" },
+                                        new SelectListItem { Text = "12", Value = "12" }
+                                        }, "Value", "Text", null), new { @class = "form-control time", style = "width: 70px; display: inline;" })
+            @Html.DropDownListFor(m => m.StartMinute, new SelectList(new List<string> { "00", "15", "30", "45" }), new { @class = "form-control time", style = "width: 70px; display: inline;" })
+            @Html.DropDownListFor(m => m.StartAMPM, new SelectList(new List<string>() { "AM", "PM" }), new { @class = "form-control time", style = "width: 70px; display: inline;" })
+            @Html.ValidationMessageFor(model => model.Event.StartTime, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 5px;">
+        <label class="control-label col-lg-3 col-md-2">To</label>
+        <div class="col-lg-9 col-md-10">
+            @Html.HiddenFor(m => m.Event.EndTime)
+            @Html.DropDownListFor(m => m.EndHour, new SelectList(new List<SelectListItem>
+                                    {
+                                        new SelectListItem { Text = "01", Value = "1" },
+                                        new SelectListItem { Text = "02", Value = "2" },
+                                        new SelectListItem { Text = "03", Value = "3" },
+                                        new SelectListItem { Text = "04", Value = "4" },
+                                        new SelectListItem { Text = "05", Value = "5" },
+                                        new SelectListItem { Text = "06", Value = "6" },
+                                        new SelectListItem { Text = "07", Value = "7" },
+                                        new SelectListItem { Text = "08", Value = "8" },
+                                        new SelectListItem { Text = "09", Value = "9" },
+                                        new SelectListItem { Text = "10", Value = "10" },
+                                        new SelectListItem { Text = "11", Value = "11" },
+                                        new SelectListItem { Text = "12", Value = "12" }
+                                        }, "Value", "Text", null), new { @class = "form-control time", style = "width: 70px; display: inline;" })
+            @Html.DropDownListFor(m => m.EndMinute, new SelectList(new List<string> { "00", "15", "30", "45" }), new { @class = "form-control time", style = "width: 70px; display: inline;" })
+            @Html.DropDownListFor(m => m.EndAMPM, new SelectList(new List<string>() { "AM", "PM" }), new { @class = "form-control time", style = "width: 70px; display: inline;" })
+            @Html.ValidationMessageFor(model => model.Event.EndTime, "", new { @class = "text-danger" })
+            <p>
+                <span id="EndTimevalidationMessage" class="text-danger" style="display: none;">End Time Must Be After Start Time</span>
+            </p>
+        </div>
+    </div>*@
+
+
+@*<span class="col-lg-2">
+        @if (!Model.Event.Recurring)
+        {
+            @Html.RadioButtonFor(model => model.Event.Recurring, false, new { @checked = "checked", id = "recurring_no" })
+        }
+        else
+        {
+            @Html.RadioButtonFor(model => model.Event.Recurring, false, new { id = "recurring_no" })
+        }
+        <label for="recurring_no">NO</label>
+    </span>
+    <span class="col-lg-2">
+        @if (Model.Event.Recurring)
+        {
+            @Html.RadioButtonFor(model => model.Event.Recurring, true, new { @checked = "checked", id = "recurring_yes" })
+        }
+        else
+        {
+            @Html.RadioButtonFor(model => model.Event.Recurring, true, new { id = "recurring_yes" })
+        }
+        <label for="recurring_yes">YES</label>
+    </span>*@
+
+        @*//$('.wizard .prev').click(function () {
+        //    $('#finish').hide();
+        //    var wizard = $(this).parent('.wizard');
+
+        //    $('.step.active', wizard).hide();
+
+        //    var currentStep = $('.step.active', wizard);
+        //    currentStep.hide();
+        //    currentStep.removeClass('active');
+
+        //    var newStep = currentStep.prev('.step', wizard);
+        //    newStep.addClass('active');
+        //    newStep.show();
+
+        //    if ($('.step:first', wizard)[0] == newStep[0]) {
+        //        $(this).hide();
+        //    }
+
+        //    $('.next', wizard).show();
+        //});
+
+        //$('.wizard .next').click(function () {
+        //    var wizard = $(this).parent('.wizard');
+
+        //    $('.step.active', wizard).hide();
+
+        //    var currentStep = $('.step.active', wizard);
+        //    currentStep.hide();
+        //    currentStep.removeClass('active');
+
+        //    var newStep = currentStep.next('.step', wizard);
+        //    newStep.addClass('active');
+        //    newStep.show();
+
+        //    if ($('.step:last', wizard)[0] == newStep[0]) {
+        //        $(this).hide();
+        //        $('#finish').show();
+        //    }
+
+        //    $('.prev', wizard).show();
+        //});
+        //var form = $('#createform.main');
+        //alert(form.prop('id'));
+        //$('#btneventtypenext').click(function () {
+        //    $('#wizeventtypediv').hide();
+        //    $('#wizdatetimediv').show();
+        //});
+        //$('#btndatetimeprev').click(function () {
+        //    $('#wizeventtypediv').show();
+        //    $('#wizdatetimediv').hide();
+        //});
+        //$('#btndatetimenext').click(function () {
+        //    if ($('.timeelement.begintime').valid() && $('.timeelement.endtime').valid() && $('#Event_StartDate').valid() && $('#Event_EndDate').valid())
+        //    {
+        //        $('#wizdatetimediv').hide();
+        //        $('#wizdetaildiv').show();
+        //    }
+        //    else {
+        //        var val = $('#createform.main').validate();
+        //        for (var i = 0; i < val.errorList.length; i++) {
+        //            alert(val.errorList[i].message);
+        //        }
+        //    }
+
+        //    //var form = $('#createform.main');
+        //    //var val = form.validate();
+        //    //alert($('.timeelement.endtime').valid());
+        //    //if (form.valid()) {
+        //    //    $('#wizdatetimediv').hide();
+        //    //    $('#wizdetaildiv').show();
+        //    //}
+        //});
+        //$('#btndetailprev').click(function () {
+        //    $('#wizdatetimediv').show();
+        //    $('#wizdetaildiv').hide();
+        //});
+        //$('#btndetailnext').click(function () {
+        //    var form = $('#createform.main');
+        //    var nmval = $('#Event_Name').valid();
+        //    var skillval = $('#SkillLevel').valid();
+        //    var styleval = $('#StyleIds').valid();
+        //    if (nmval && skillval && styleval) {
+        //        $('#wizlocationdiv').show();
+        //        $('#wizdetaildiv').hide();
+        //    }
+
+        //    //for (var i = 0; i < val.errorList.length; i++) {
+        //    //    alert(val.errorList[i].message);
+        //    //}
+
+        //    //    var count = $('input[name="StylesCheckboxList.PostedItems"]:checked').length;
+        //    //var valid = true;
+
+        //    //if (count == 0)
+        //    //{
+        //    //    $('#validationMessage').show();
+        //    //    valid = false;
+        //    //}
+        //    //else
+        //    //{
+        //    //    $('#validationMessage').hide();
+        //    //}
+
+        //    //if (valid) {
+        //    //    if ($('#Event_Name').valid() && $('#SkillLevel').valid()) {
+        //    //        $('#validationMessage').hide();
+        //    //        $('#wizlocationdiv').show();
+        //    //        $('#wizdetaildiv').hide();
+        //    //    }
+        //    //    else {
+        //    //        var val = $('#createform.main').validate();
+        //    //        for (var i = 0; i < val.errorList.length; i++) {
+        //    //            alert(val.errorList[i].message);
+        //    //        }
+        //    //    }
+        //    //}
+        //});
+        //$('#btnlocationprev').click(function () {
+        //    $('#wizdetaildiv').show();
+        //    $('#wizlocationdiv').hide();
+        //});
+        //$('#btnlocationnext').click(function () {
+        //    if ($('#Event_Place_Name').valid()) {
+        //        $('#wizlocationdiv').hide();
+        //        $('#wizticketsdiv').show();
+        //    }
+        //});
+        //$('#btnticketsprev').click(function () {
+        //    $('#wizlocationdiv').show();
+        //    $('#wizticketsdiv').hide();
+        //});*@
+
+@*$('.time').change(function () {
+        CheckDates();
+    });
+
+    function CheckDates() {
+        var shour = $('#StartHour option:selected').val();
+        var smin = $('#StartMinute option:selected').val();
+        var sampm = $('#StartAMPM option:selected').val();
+        var ehour = $('#EndHour option:selected').val();
+        var emin = $('#EndMinute option:selected').val();
+        var eampm = $('#EndAMPM option:selected').val();
+
+        var start = new Date("@Model.Event.StartDate.ToShortDateString() " + shour + ":" + smin + " " + sampm);
+        $('#StartTime').prop("value", start)
+        var end = new Date("@Model.Event.StartDate.ToShortDateString() " + ehour + ":" + emin + " " + eampm);
+
+        $('#Event_StartTime').prop("value", "@Model.Event.StartDate.ToShortDateString() " + shour + ":" + smin + " " + sampm);
+        $('#Event_EndTime').prop("value", "@Model.Event.StartDate.ToShortDateString() " + ehour + ":" + emin + " " + eampm);
+
+        if (start > end) {
+            $('#EndTimevalidationMessage').show();
+            return false;
+        }
+        else {
+            $('#EndTimevalidationMessage').hide();
+            return true;
+        }
+    }*@

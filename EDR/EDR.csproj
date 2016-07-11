@@ -954,6 +954,7 @@
     <Content Include="Views\Shared\DisplayTemplates\Dancers.cshtml" />
     <Content Include="Views\Home\Mobile\Learn.cshtml" />
     <Content Include="Views\Home\Mobile\Social.cshtml" />
+    <Content Include="Views\Event\Create - old3.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>
