@@ -101,6 +101,7 @@
 /// <reference path="fullcalendar/jquery-ui.custom.min.js" />
 /// <reference path="fullcalendar/moment.min.js" />
 /// <reference path="jquery.form.js" />
+/// <reference path="jquery.formatcurrency-1.4.0.js" />
 /// <reference path="jquery.geocomplete.js" />
 /// <reference path="jquery.mousewheel.js" />
 /// <reference path="jquery.rateyo.js" />
