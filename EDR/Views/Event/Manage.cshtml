@@ -590,14 +590,19 @@
         {
             <div class="panel panel-default">
                 <div class="panel-body ">
-                    <h3>Event Dates <a id="instancestoggle" href="#" class="text-primary small">(Past/Present Dates)</a></h3>
+                    <h3>Event Dates</h3>
                     <div>
                         @using (Html.BeginForm("AddInstances", "Event", FormMethod.Post))
                         {
                             <input type="hidden" id="id" name="id" value="@Model.Event.Id" />
-                            <input id="eventCount" name="eventCount" value="1" placeholder="# of Dates to add" />
+                            <input class="text-right" id="eventCount" name="eventCount" value="1" placeholder="# of Dates to add" style="width: 75px;" />
                             <button type="submit" class="btn btn-primary btn-sm" value="Add Instances">Add Dates</button>
                         }
+                    </div>
+                    <div class="text-center">
+                        <p>
+                            <a id="instancestoggle" href="#" class="text-primary">Past/Present Dates</a>
+                        </p>
                     </div>
                     <div id="currentinstances">
                         <div id="instances-container">
@@ -770,7 +775,8 @@
                     {
                         <tr>
                             <td>
-                                @(String.Format("{0:N0}", i.Quantity) + " @ " + String.Format("{0:C}", i.Price))
+                                @(String.Format("{0:N0}", i.Quantity) + " @ " + String.Format("{0:C}", i.Price))<br />
+                                @i.Description
                             </td>
                             <td>
                                 @i.Limit
@@ -785,7 +791,7 @@
                                 @i.UserTickets.Sum(t => t.EventRegistrations.Count())
                             </td>
                             <td>
-                                @Html.ActionLink("Delete", "DeleteTicket", "Event", new { id = i.Id }, null)
+                                @Html.ActionLink("Delete", "DeleteTicket", "Event", new { ticketId = i.Id, id = i.EventId, eventType = Model.EventType }, null)
                             </td>
                         </tr>
                     }

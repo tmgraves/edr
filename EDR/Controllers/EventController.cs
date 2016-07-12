@@ -2110,6 +2110,19 @@ namespace EDR.Controllers
         }
 
         [Authorize(Roles = "Owner,Promoter,Teacher")]
+        public ActionResult DeleteTicket(int id, int ticketId, EventType eventType)
+        {
+            var ticket = DataContext.Tickets.Include("UserTickets").Where(t => t.Id == ticketId).FirstOrDefault();
+            if (ticket.UserTickets.Count() == 0)
+            {
+                DataContext.Tickets.Remove(ticket);
+                DataContext.SaveChanges();
+            }
+
+            return RedirectToAction("Manage", new { id = id, eventType = eventType });
+        }
+
+        [Authorize(Roles = "Owner,Promoter,Teacher")]
         [HttpPost]
         public ActionResult ImportFromFacebook(EventCreateViewModel model)
         {

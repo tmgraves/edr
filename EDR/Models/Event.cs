@@ -314,6 +314,7 @@ namespace EDR.Models
         public DateTime? Start { get; set; }
         [Display(Name = "Valid To")]
         public DateTime? End { get; set; }
+        public string Description { get; set; }
         public ICollection<UserTicket> UserTickets { get; set; }
         public ICollection<OrderDetail> OrderDetails { get; set; }
     }

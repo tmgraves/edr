@@ -166,6 +166,13 @@
 
     <div class="col-lg-6 col-md-6">
         <div class="panel panel-default">
+            <div class="panel-body bg-warning">
+                <h3>Import Facebook Events</h3>
+                <div id="importfbclasses">
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
             <div class="panel-body buttoncontainer">
                 <h3>Socials</h3>
                 @Html.ActionLink("Create Social", "Create", "Event", new { eventType = EDR.Enums.EventType.Social, role = EDR.Enums.RoleName.Promoter }, new { @class = "btn btn-warning actionbutton" })
@@ -197,8 +204,23 @@
     @Scripts.Render("~/bundles/jqueryUI")
     <script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
     <script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
+    <script src="~/Scripts/readmore.js"></script>
     <script>
     $(function () {
+        LoadClasses();
+
+        function LoadClasses() {
+            $.get('@Url.Action("GetFacebookEvents", "Dancer")', { 'username': '@User.Identity.Name', 'eventType': 'Social', 'role': 'promoter' }, function (data) {
+                $("#importfbclasses").empty();
+                $("#importfbclasses").html(data);
+                $('#importfbclasses').readmore({
+                    speed: 500,
+                    collapsedHeight: 100,
+                    moreLink: '<a href="#">View All Events</a>'
+                });
+            });
+        };
+
         $('#saveform.main').valid();
 
         $('#btnEdit').click(function () {

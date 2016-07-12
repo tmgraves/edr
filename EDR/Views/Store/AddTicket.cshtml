@@ -20,7 +20,7 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Quantity, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "text-right", @placeholder = "Qty" } })
                 @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -28,8 +28,16 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Price, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Price, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.EditorFor(model => model.Price, new { htmlAttributes = new { @class = "form-control text-right", @placeholder = "$10", min = "1", max = "5000" } })
                 @Html.ValidationMessageFor(model => model.Price, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
             </div>
         </div>
 
@@ -59,7 +67,7 @@
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+                <input type="submit" value="Create" class="btn btn-default" onclick="submitForm();"/>
             </div>
         </div>
     </div>
@@ -70,5 +78,32 @@
 </div>
 
 @section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
+@Scripts.Render("~/bundles/jqueryval")
+@Scripts.Render("~/bundles/foolproof")
+@Scripts.Render("~/bundles/jqueryUI")
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+@Scripts.Render("~/bundles/GeoComplete")
+<script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+@Scripts.Render("~/bundles/TimePicker")
+@Styles.Render("~/Content/TimePickercss")
+<script src="../../Scripts/bootstrap-toggle.js"></script>
+<link href="../../Content/bootstrap-toggle.css" rel="stylesheet">
+<script src="~/Scripts/jquery.mousewheel.js"></script>
+<script src="~/Scripts/jquery.formatCurrency-1.4.0.min.js"></script>
+
+    <script>
+        function submitForm() {
+            $('#Price').toNumber();
+        }
+
+        $(function () {
+            $('#Quantity').spinner({
+                min: 1,
+                max: 100,
+            });
+            $('#Price').blur(function () {
+                $('#Price').formatCurrency();
+            });
+        });
+    </script>
 }

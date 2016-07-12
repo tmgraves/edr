@@ -53,13 +53,17 @@
                 </div>
                 <div class="textoverlay bottomright">
                     <h3 class="nospace" style="color: #fff;">
-                        @if (Model.Tickets.Count() != 0)
+                        @if (Model.Free)
                         {
-                            @Model.Tickets.Min(t => t.Price).ToString("C0")
+                            @:Free
+                        }
+                        else if (Model.Tickets.Count() != 0)
+                        {
+                            @Model.Tickets.Where(t => (t.Start == null || t.Start <= DateTime.Today) && (t.End == null || t.End >= DateTime.Today)).Min(t => t.Price).ToString("C0")
                         }
                         else if (Model is EDR.Models.Class)
                         {
-                            @(((EDR.Models.Class)Model).School.Tickets.Min(t => t.Price).ToString("C0"))
+                            @(((EDR.Models.Class)Model).School.Tickets.Where(t => (t.Start == null || t.Start <= DateTime.Today) && (t.End == null || t.End >= DateTime.Today)).Min(t => t.Price).ToString("C0"))
                         }
                         else
                         {

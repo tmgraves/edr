@@ -654,6 +654,7 @@
         $("input[type='checkbox'][name='ProductCode']")
         $('#EventTypeDD').change(function () {
             var eventtype = $("#EventTypeDD option:selected").val();
+            alert(eventtype);
             SetEventType(eventType);
         });
         $('#FacebookId').change(function () {
@@ -794,6 +795,10 @@
                 dd.prop('selectedIndex', 1);
                 $('#UseSchoolTickets').prop('disabled', true);
                 $('#newticketdiv').show();
+            }
+            else
+            {
+                dd.prop('selectedIndex', 2);
             }
             SetEventType(eventType);
         }

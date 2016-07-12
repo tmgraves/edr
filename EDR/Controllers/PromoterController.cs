@@ -87,16 +87,16 @@ namespace EDR.Controllers
                                     .FirstOrDefault();
             viewModel.Events = new EventListViewModel();
 
-            if (viewModel.Promoter.ApplicationUser.ZipCode != null)
-            {
-                viewModel.Address = Geolocation.ParseAddress(viewModel.Promoter.ApplicationUser.ZipCode);
-                viewModel.Events.Location = viewModel.Address;
-            }
-            else
-            {
-                viewModel.Address = Geolocation.ParseAddress("90065");
-                viewModel.Events.Location = viewModel.Address;
-            }
+            //if (viewModel.Promoter.ApplicationUser.ZipCode != null && viewModel.Promoter.ApplicationUser.Location == null)
+            //{
+            //    viewModel.Address = Geolocation.ParseAddress(viewModel.Promoter.ApplicationUser.ZipCode);
+            //    viewModel.Events.Location = viewModel.Address;
+            //}
+            //else
+            //{
+            //    viewModel.Address = Geolocation.ParseAddress("90065");
+            //    viewModel.Events.Location = viewModel.Address;
+            //}
 
             //  Load Roles
             viewModel.Roles = new List<RoleName>();
