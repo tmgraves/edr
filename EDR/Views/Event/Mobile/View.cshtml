@@ -41,9 +41,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
-h1,h2,h3,h4,h5{
-    color: #fff;
-}
 </style>
 <div class="container-fluid">
     <div class="row">
@@ -53,7 +50,7 @@ h1,h2,h3,h4,h5{
                     <span style="line-height: 100%; vertical-align: middle;"></span><img style="max-width: 100%; max-height: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.Event.PhotoUrl))" />
                 </div>
                 <div class="textoverlay topleft text-left" style="width: 100%;">
-                    <h2 class="oneline">@Model.Event.Name</h2>
+                    <h2 class="oneline" style="color: #fff;">@Model.Event.Name</h2>
                     <h2 class="nospace" style="color: #fff;">
                         @if (instance != null)
                         {
@@ -64,6 +61,10 @@ h1,h2,h3,h4,h5{
                             <text>Past Event</text>
                         }
                     </h2>
+                    <div id='parentc' class='col-lg-4 nospace'>
+                        <input id='rv' type='hidden' value="@Model.Event.Reviews.Average(r => r.Rating)" class='ratingval' />
+                        <div id='cont' class='rateYo'></div>
+                    </div>
                 </div>
                 <div class="textoverlay bottomleft">
                     <h2 class="nospace" style="color: #fff;">
@@ -161,6 +162,7 @@ h1,h2,h3,h4,h5{
                     <ul class="nav nav-tabs nav-tabs-justified nospace">
                         <li class="nospace active"><a href="#videotab" data-toggle="tab">Videos</a></li>
                         <li class="nospace"><a href="#picturetab" data-toggle="tab">Pictures</a></li>
+                        <li class="nospace"><a id="btnreviewstab" href="#reviewstab" data-toggle="tab">Reviews</a></li>
                     </ul>
                 </div>
                 <div class="panel-body">
@@ -172,6 +174,32 @@ h1,h2,h3,h4,h5{
                         <div class="tab-pane fade" id="picturetab">
                             <div id="pictures">
                             </div>
+                        </div>
+                        <div class="tab-pane fade" id="reviewstab">
+                            <div class="text-right">
+                                <span style="line-height: 50px; vertical-align: bottom;"></span>
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    <button id="btnreview" type="button" class="btn btn-sm btn-info" data-toggle="modal" data-target="#modalReview">Post Review</button>
+                                }
+                            </div>
+                            <div id="reviews-container">
+                                <ul class="my-navigation pagination" style="display: none;">
+                                    <li class="simple-pagination-first"></li>
+                                    <li class="simple-pagination-previous"></li>
+                                    <li class="simple-pagination-next"></li>
+                                    <li class="simple-pagination-last"></li>
+                                </ul>
+                                <div id="reviews">
+                                </div>
+                            </div>
+                            @if (Model.Event.Reviews.Count() != 0)
+                            {
+                            }
+                            else
+                            {
+                                <h5>No Reviews have been posted for this Event</h5>
+                            }
                         </div>
                     </div>
                 </div>
@@ -205,6 +233,7 @@ h1,h2,h3,h4,h5{
                 speed: 500,
                 collapsedHeight: 100,
             });
+            loadReviews();
         });
 
         //  Load Videos via JSON
@@ -264,5 +293,74 @@ h1,h2,h3,h4,h5{
             })
         })
         //  Load Pictures via JSON
+
+        //  Load Reviews via JSON
+        function loadReviews() {
+            $.ajax({
+                url: '@Url.Action("GetReviewsJSON", "Event")',
+                data: { id: '@Model.Event.Id.ToString()' },
+                dataType: 'json',
+                type: 'GET',
+                success: function (data) {
+                    var row = "";
+                    $('#btnreviewstab').text('Reviews(' + data.length + ')');
+                    $.each(data, function (index, item) {
+                        row +=
+                            "<div>" +
+                                "<div id='parentc' class='col-lg-4 nospace'>" +
+                                    "<input id='rv' type='hidden' value=" + item.Rating + " class='ratingval' />" +
+                                    "<div id='cont' class='rateYo'></div>" +
+                                "</div>" +
+                                "<h4 class='oneline'>" + item.ReviewText + "</h4>" +
+                                "<div>" +
+                                    item.ReviewText +
+                                "</div>" +
+                                "<div style='padding-top: 10px;'>" +
+                                    "<span class='small'>" +
+                                        "from <span class='text-info'>" + item.FirstName + "</span> - " + item.ReviewDate +
+                                    "</span>" +
+                                "</div>" +
+                                "<hr/>" +
+                            "</div>"
+
+                            //"<tr>" +
+                            //    "<td>" +
+                            //        "<div style='border-bottom: 1px dashed #bbb; margin-bottom: 10px; width: 100%;'>" +
+                            //            "<div id='parentc' class='col-lg-4 nospace'>" +
+                            //                "<input id='rv' type='hidden' value=" + item.Rating + " class='ratingval' />" +
+                            //                "<div id='cont' class='rateYo'></div>" +
+                            //            "</div>" +
+                            //            "<div class='oneline'><strong>" + item.ReviewText + "</strong></div>" +
+                            //            "<div style='padding-top: 10px;'>" +
+                            //                "<span class='small'>" +
+                            //                    "from <span class='text-info'>" + item.FirstName + "</span> - " + item.ReviewDate +
+                            //                "</span>" +
+                            //            "</div>" +
+                            //            "<div class='row' style='padding-top: 10px; padding-bottom: 10px;'>" +
+                            //                "<div class='col-lg-12'>" +
+                            //                    item.ReviewText +
+                            //                "</div>" +
+                            //            "</div>" +
+                            //        "</div>" +
+                            //    "</td>" +
+                            //"</tr>";
+                    });
+                    //  row = "<table style='border-collapse: collapse; width: 100%;' cellpadding='0' cellspacing='0'>" + row + "</table>";
+                    $("#reviews").html(row);
+                    $(".rateYo").rateYo({
+                        starWidth: "18px",
+                        ratedFill: "#FFD700",
+                        normalFill: "#ccc",
+                        onInit: function (rating, rateYoInstance) {
+                            var t = $(this);
+                            $(this).rateYo("option", "rating", t.parent('div').find('.ratingval').prop('value'));
+                            $(this).rateYo("option", "readOnly", true);
+                        }
+                    });
+                    //  pageReviews();
+                }
+            })
+        }
+        //  Load Reviews via JSON
     </script>
 }
