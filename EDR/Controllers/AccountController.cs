@@ -33,6 +33,10 @@ namespace EDR.Controllers
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
+            if (returnUrl == null)
+            {
+                returnUrl = Request.UrlReferrer.PathAndQuery.ToString();
+            }
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
@@ -614,7 +618,15 @@ namespace EDR.Controllers
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut();
-            return RedirectToAction("Index", "Home");
+            var returnUrl = Request.UrlReferrer.PathAndQuery.ToString();
+            if (returnUrl != null)
+            {
+                return RedirectToLocal(returnUrl);
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         //

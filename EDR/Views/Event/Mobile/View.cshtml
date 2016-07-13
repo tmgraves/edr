@@ -1,0 +1,268 @@
+﻿@model EDR.Models.ViewModels.EventViewModel
+@using EDR.Utilities
+@using EDR.Models
+@using EDR.Enums
+@using Microsoft.AspNet.Identity
+
+@{
+    ViewBag.Title = Model.Event.Name;
+    var userid = User.Identity.GetUserId();
+}
+
+@{
+    var eventType = Model.Event is Class ? "Class" : "Social";
+    var instance = Model.Event.EventInstances.Where(e => e.DateTime >= DateTime.Today).OrderBy(c => c.DateTime).FirstOrDefault();
+    if (instance == null)
+    {
+        instance = Model.Event.EventInstances.OrderByDescending(c => c.DateTime).FirstOrDefault();
+    }
+    var reg = instance.EventRegistrations.Where(r => r.UserId == userid).FirstOrDefault();
+}
+
+<ol class="breadcrumb">
+    @if (Model.Event is Class)
+    {
+        <li>@Html.ActionLink("All Classes", "Learn", "Home")</li>
+    }
+    else
+    {
+        <li>@Html.ActionLink("All Socials", "Social", "Home")</li>
+    }
+    <li class="active">View @Model.EventType</li>
+</ol>
+
+<style>
+.oneline {
+    display: inline-block;
+    vertical-align: middle;
+    max-width: 100%;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+h1,h2,h3,h4,h5{
+    color: #fff;
+}
+</style>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12 verticaljustify nospace">
+            <div class="text-left textoverlaycontainer" style="height: 100%;">
+                <div style="opacity:0.7;filter:alpha(opacity=70); height: 100%;">
+                    <span style="line-height: 100%; vertical-align: middle;"></span><img style="max-width: 100%; max-height: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.Event.PhotoUrl))" />
+                </div>
+                <div class="textoverlay topleft text-left" style="width: 100%;">
+                    <h2 class="oneline">@Model.Event.Name</h2>
+                    <h2 class="nospace" style="color: #fff;">
+                        @if (instance != null)
+                        {
+                            @instance.DateTime.ToString("ddd, MMM\nd") @:@@ @(((DateTime)instance.StartTime).ToShortTimeString())
+                        }
+                        else
+                        {
+                            <text>Past Event</text>
+                        }
+                    </h2>
+                </div>
+                <div class="textoverlay bottomleft">
+                    <h2 class="nospace" style="color: #fff;">
+                        @if (Model.Event.Free)
+                        {
+                            @:Free
+                        }
+                        else if (Model.Event.Tickets.Count() != 0)
+                        {
+                            @Model.Event.Tickets.Where(t => (t.Start == null || t.Start <= DateTime.Today) && (t.End == null || t.End >= DateTime.Today)).Min(t => t.Price).ToString("C0")
+                        }
+                        else if (Model.Event is Class)
+                        {
+                            @(((Class)Model.Event).School.Tickets.Where(t => (t.Start == null || t.Start <= DateTime.Today) && (t.End == null || t.End >= DateTime.Today)).Min(t => t.Price).ToString("C0"))
+                        }
+                        else
+                        {
+                            @:Free
+                        }
+                    </h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 verticaljustify nospace">
+            <p>
+                <div style="border: 1px solid #ddd;">
+                    <a target="_blank" href="https://maps.google.com/?q=@Model.Event.Place.Latitude,@Model.Event.Place.Longitude">
+                        <img style="width: 100%;" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Event.Place.Latitude,@Model.Event.Place.Longitude&zoom=10&size=500x200&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Event.Place.Latitude, @Model.Event.Place.Longitude" title="@Model.Event.Place.City, @Model.Event.Place.StateName">
+                    </a>
+                </div>
+            </p>
+        </div>
+        <div class="col-xs-12">
+            <div class="description">
+                <div style="white-space: pre-line;">
+                    @Html.Raw(EDR.Utilities.ApplicationUtility.WithActiveLinks(Model.Event.Description))
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 verticaljustify nospace">
+            @{
+                <div>
+                    @if (!Model.Event.Free)
+                    {
+                        <p class="text-center" style="background-color: lemonchiffon;">
+                            <span class="text-success">You have (<strong>@Model.AvailableTickets</strong>) Available Tickets for this Event</span>
+                        </p>
+                    }
+                </div>
+                <div class="text-center verticalcenter">
+                    <div class="text-center">
+                        @if (instance.DateTime >= DateTime.Today)
+                        {
+                            if (instance.EventRegistrations.Where(r => r.UserId == userid).Count() == 0)
+                            {
+                                @Html.ActionLink("Register", "Register", new { id = instance.Id }, new { @class = "btn btn-primary btn-lg", @style = "width: 100%;" })
+                            }
+                            else
+                            {
+                                if (!Model.Event.Free)
+                                {
+                                    if (reg.UserTicket.Ticket.EventId == null && reg.Checkedin == null)
+                                    {
+                                        @Html.ActionLink("Un-Register", "UnRegister", new { id = instance.Id }, new { @class = "btn btn-danger btn-lg", @style = "width: 100%;" });
+                                    }
+                                    else
+                                    {
+                                        <a class="btn btn-default btn-lg">Registered</a>
+                                    }
+                                }
+                                else
+                                {
+                                    @Html.ActionLink("Un-Register", "UnRegister", new { id = instance.Id }, new { @class = "btn btn-danger btn-lg", @style = "width: 100%;" });
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <h4>Event has Ended</h4>
+                        }
+                    </div>
+                </div>
+                if (reg != null)
+                    {
+                        <div class="text-center">
+                            <h3>Your Registration Code</h3>
+                            <div class="barcode" style="display: inline-block; text-align: center;"><input class="regid" type="hidden" value="@reg.Id" /></div>
+                        </div>
+                    }
+            }
+        </div>
+        <div class="col-xs-12 nospace" style="margin-top: 20px !important;">
+            <div class="panel with-nav-tabs panel-default">
+                <div class="panel-heading nospace" style="border-bottom: none !important;">
+                    <ul class="nav nav-tabs nav-tabs-justified nospace">
+                        <li class="nospace active"><a href="#videotab" data-toggle="tab">Videos</a></li>
+                        <li class="nospace"><a href="#picturetab" data-toggle="tab">Pictures</a></li>
+                    </ul>
+                </div>
+                <div class="panel-body">
+                    <div class="tab-content">
+                        <div class="tab-pane fade in active" id="videotab">
+                            <div id="videos">
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="picturetab">
+                            <div id="pictures">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jqueryUI")
+    <link rel="stylesheet" href="~/Content/jquery.rateyo.css" />
+    <script src="~/Scripts/jquery.rateyo.js"></script>
+    <script src="~/Scripts/jquery-simple-pagination-plugin.js"></script>
+    @*<link href="~/Content/Simple-Pagination.css" rel="stylesheet" />*@
+    <script src="~/Scripts/readmore.js"></script>
+    <script src="~/Scripts/jquery-qrcode-0.14.0.js"></script>
+
+    <script>
+        $(function () {
+            $('.barcode').qrcode({
+                "render": "div",
+                "size": 200,
+                "color": "#3a3",
+                "text": $('.regid', this).val()
+            });
+
+            $('.description').readmore({
+                speed: 500,
+                collapsedHeight: 100,
+            });
+        });
+
+        //  Load Videos via JSON
+        $(function () {
+            $.ajax({
+                url: '@Url.Action("GetVideosJSON", "Event")',
+                data: { id: '@Model.Event.Id.ToString()' },
+                dataType: 'json',
+                type: 'GET',
+                success: function (data) {
+                    var row = ""
+                    $.each(data, function (index, item) {
+                        row +=
+                            "<div class='col-xs-6'>" +
+                                "<div class='buttonoverlay_container'>" +
+                                    "<img class='img-rounded' src='http://img.youtube.com/vi/" + item.Id + "/0.jpg' />" +
+                                    "<a class='btn btn-danger videoplayer' target='_blank' href='" + item.VideoUrl + "' title='" + item.Title + "'>" +
+                                        "<i class='glyphicon glyphicon-play'></i>" +
+                                    "</a>" +
+                                    "<div class='item-short'><b>" + item.Title + "</b></div>" +
+                                "</div>" +
+                            "</div>"
+                    });
+                    //  alert(row);
+                    $("#videos").html(row);
+                    //  $("a.videoplayer").YouTubePopUp();
+                    //$(row).find('.pickfbpic').click(function () {
+                    //    alert("here");
+                    //}).end();
+                }
+            })
+        })
+        //  Load Videos via JSON
+
+        //  Load Pictures via JSON
+        $(function () {
+            $.ajax({
+                url: '@Url.Action("GetPicturesJSON", "Event")',
+                data: { id: '@Model.Event.Id.ToString()' },
+                dataType: 'json',
+                type: 'GET',
+                success: function (data) {
+                    var row = ""
+                    $.each(data, function (index, item) {
+                        row +=
+                            "<div class='col-xs-6'>" +
+                                "<a target='_blank' href='" + item.FileName + "' style='text-align: left;' title='" + item.Title + "'>" +
+                                    "<div class='croppedpic' style='height: 100px;'>" +
+                                        "<img style='max-height: 100%; max-width:100%;' src='" + item.ThumbnailFilename + "' alt='" + item.Title + "' />" +
+                                    "</div>" +
+                                "</a>" +
+                                "<div class='item-short small'><b>" + item.Title + "</b></div>" +
+                            "</div>"
+                    });
+                    $("#pictures").html(row);
+                }
+            })
+        })
+        //  Load Pictures via JSON
+    </script>
+}

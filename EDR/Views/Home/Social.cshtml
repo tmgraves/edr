@@ -11,14 +11,12 @@
 <h1 class="text-center">Social Dance Events</h1>
 
 <div class="text-center" style="padding: 10px;">
-    <div id="myButtons" class="btn-group">
-        @Html.ActionLink("Venues", "List", "Place", new { }, new { @class = "btn btn-info" })
-        @Html.ActionLink("Promoters", "List", "Promoter", null, new { @class = "btn btn-info" })
-        @if (User.IsInRole("Promoter"))
-        {
-            @Html.ActionLink("Add a Social", "Create", "Event", new { role = "Promoter", eventType = EDR.Enums.EventType.Social }, new { @class = "btn btn-warning" })
-        }
-    </div>
+    @Html.ActionLink("Venues", "List", "Place", new { }, new { @class = "btn btn-primary" })
+    @Html.ActionLink("Promoters", "List", "Promoter", null, new { @class = "btn btn-primary" })
+    @if (User.IsInRole("Promoter"))
+    {
+        @Html.ActionLink("Add a Social", "Create", "Event", new { role = "Promoter", eventType = EDR.Enums.EventType.Social }, new { @class = "btn btn-warning" })
+    }
 </div>
 
 @using (Html.BeginForm("Social", "Home", FormMethod.Post, new { @class = "formmain" }))

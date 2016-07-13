@@ -512,6 +512,7 @@ input[type="file"] {
 }
 
 .textoverlaycontainer {
+    background-color: #000;
     position: relative;
 }
 
@@ -526,5 +527,11 @@ input[type="file"] {
     z-index: 10;
     position: absolute;
     right: 5px;
+    bottom: 5px;
+}
+.textoverlay.bottomleft {
+    z-index: 10;
+    position: absolute;
+    left: 5px;
     bottom: 5px;
 }

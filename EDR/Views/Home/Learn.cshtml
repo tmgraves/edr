@@ -9,11 +9,9 @@
 </ol>
 <h1 class="text-center">Find a Class/Workshop</h1>
 <div class="text-center" style="padding: 10px;">
-    <div id="myButtons" class="btn-group">
-        @Html.ActionLink("Teachers", "List", "Teacher", null, new { @class = "btn btn-info" })
-        @Html.ActionLink("Schools", "List", "School", null, new { @class = "btn btn-info" })
-        @Html.ActionLink("Studios", "List", "Place", new { @TypeParam = "Studio" }, new { @class = "btn btn-info" })
-    </div>
+    @Html.ActionLink("Teachers", "List", "Teacher", null, new { @class = "btn btn-primary" })
+    @Html.ActionLink("Schools", "List", "School", null, new { @class = "btn btn-primary" })
+    @Html.ActionLink("Studios", "List", "Place", new { @TypeParam = "Studio" }, new { @class = "btn btn-primary" })
 </div>
 
 @*<div id="bcalendar"></div>*@

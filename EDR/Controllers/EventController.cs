@@ -179,7 +179,14 @@ namespace EDR.Controllers
                 return HttpNotFound();
             }
 
-            return View(model);
+            if (HttpContext.Request.Browser.IsMobileDevice)
+            {
+                return View("Mobile/View", model);
+            }
+            else
+            {
+                return View(model);
+            }
         }
 
         [Authorize(Roles = "Owner,Promoter,Teacher")]
