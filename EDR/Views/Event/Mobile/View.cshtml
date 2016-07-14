@@ -50,8 +50,8 @@
                     <span style="line-height: 100%; vertical-align: middle;"></span><img style="max-width: 100%; max-height: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.Event.PhotoUrl))" />
                 </div>
                 <div class="textoverlay topleft text-left" style="width: 100%;">
-                    <h2 class="oneline" style="color: #fff;">@Model.Event.Name</h2>
-                    <h2 class="nospace" style="color: #fff;">
+                    <h3 class="oneline" style="color: #fff;">@Model.Event.Name</h3>
+                    <h3 class="nospace" style="color: #fff;">
                         @if (instance != null)
                         {
                             @instance.DateTime.ToString("ddd, MMM\nd") @:@@ @(((DateTime)instance.StartTime).ToShortTimeString())
@@ -60,9 +60,9 @@
                         {
                             <text>Past Event</text>
                         }
-                    </h2>
+                    </h3>
                     <div id='parentc' class='col-lg-4 nospace'>
-                        <input id='rv' type='hidden' value="@Model.Event.Reviews.Average(r => r.Rating)" class='ratingval' />
+                        <input id='eventrating' type='hidden' class='ratingval' />
                         <div id='cont' class='rateYo'></div>
                     </div>
                 </div>
@@ -176,30 +176,44 @@
                             </div>
                         </div>
                         <div class="tab-pane fade" id="reviewstab">
-                            <div class="text-right">
+                            <div class="text-left">
                                 <span style="line-height: 50px; vertical-align: bottom;"></span>
-                                @if (User.Identity.IsAuthenticated)
+                                @if (User.Identity.IsAuthenticated && Model.Event.EventInstances.Where(i => i.EventRegistrations.Any(r => r.UserId == User.Identity.GetUserId())).Count() > 0)
                                 {
-                                    <button id="btnreview" type="button" class="btn btn-sm btn-info" data-toggle="modal" data-target="#modalReview">Post Review</button>
+                                    <button id="btnreview" type="button" class="btn btn-sm btn-primary" data-toggle="collapse" data-target="#postreview">Write a Review</button>
                                 }
                             </div>
                             <div id="reviews-container">
+                                <div id="postreview" class="collapse">
+                                    @Html.AntiForgeryToken()
+                                    @Html.ValidationSummary(true)
+                                    @Html.HiddenFor(m => m.Review.Id)
+                                    @Html.HiddenFor(m => m.Review.ReviewDate)
+                                    @Html.HiddenFor(m => m.Review.Author.Id)
+                                    @Html.HiddenFor(m => m.Event.Id)
+                                    <p>
+                                        <div id="parentc">
+                                            @Html.HiddenFor(m => m.Review.Rating, new { @class = "ratingval" })
+                                            <div id="cont" class="postrating"></div>
+                                        </div>
+                                    </p>
+                                    <p>
+                                        @Html.TextAreaFor(m => m.Review.ReviewText, htmlAttributes: new { @class = "form-control", @style = "width: 100%; max-width: 100%; resize: none;", @rows = "10" })
+                                    </p>
+                                    <div class="text-right">
+                                        <button id="btnpostreview" class="btn btn-danger" data-dismiss="modal">Post Review</button>
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                    </div>
+                                </div>
                                 <ul class="my-navigation pagination" style="display: none;">
                                     <li class="simple-pagination-first"></li>
                                     <li class="simple-pagination-previous"></li>
                                     <li class="simple-pagination-next"></li>
                                     <li class="simple-pagination-last"></li>
                                 </ul>
-                                <div id="reviews">
+                                <div id="reviews" style="padding-top: 10px;">
                                 </div>
                             </div>
-                            @if (Model.Event.Reviews.Count() != 0)
-                            {
-                            }
-                            else
-                            {
-                                <h5>No Reviews have been posted for this Event</h5>
-                            }
                         </div>
                     </div>
                 </div>
@@ -234,6 +248,56 @@
                 collapsedHeight: 100,
             });
             loadReviews();
+
+            $(".postrating").rateYo({
+                starWidth: "18px",
+                ratedFill: "#FFD700",
+                normalFill: "#ccc",
+                fullStar: true,
+                onInit: function (rating, rateYoInstance) {
+                    var t = $(this);
+                    var rating = t.parent('div').find('.ratingval').prop('value');
+                    if (rating >= 1 && rating <= 5) {
+                        $(this).rateYo("option", "rating", rating);
+                    }
+                    else {
+                        $(this).rateYo("option", "rating", 5);
+                    }
+                }
+            });
+        });
+
+        $('#btnpostreview').click(function () {
+            try {
+                var id = $("#Review_Id").prop('value');
+                if (id == null || id == "") {
+                    id = 0;
+                }
+                var eventId = $("#Event_Id").prop('value');
+                var rating = $(".postrating").rateYo("rating");
+                var review = $("#Review_ReviewText").prop('value');
+                $.ajax({
+                    url: '@Url.Action("PostReviewAsync", "Event")',
+                    type: 'POST',
+                    data: { 'id': id, 'eventId': eventId, 'rating': rating, 'review': review },
+                    dataType: 'json',
+                    success: function (data) {
+                        $("#Review_Id").prop('value', data.Id);
+                        loadReviews();
+                    }
+                    //success: function (result) {
+                    //    alert(JSON.stringify(result));
+                    //    alert(result.id);
+                    //    $("#Review_Id").prop('value', result.id);
+                    //    alert($("#Review_Id").prop('value'));
+                    //    loadReviews();
+                    //}
+                });
+                $('#postreview.collapse').collapse('hide');
+            }
+            catch (err) {
+                alert(err.message);
+            }
         });
 
         //  Load Videos via JSON
@@ -304,6 +368,11 @@
                 success: function (data) {
                     var row = "";
                     $('#btnreviewstab').text('Reviews(' + data.length + ')');
+                    var total = 0;
+                    for (i = 0; i < data.length; i++) {  //loop through the array
+                        total += data[i].Rating;  //Do the math!
+                    }
+                    $('#eventrating').val(total/data.length);
                     $.each(data, function (index, item) {
                         row +=
                             "<div>" +

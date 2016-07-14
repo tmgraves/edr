@@ -1,0 +1,681 @@
+﻿
+@{
+    ViewBag.Title = "Frequently Asked Questions";
+}
+
+<h2>Frequently Asked Questions</h2>
+
+<div class="col-lg-6">
+    <h3>User Accounts</h3>
+    <div class="panel-group" id="account">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#account" href="#createaccount">How do I create an account?</a>
+                </h4>
+            </div>
+            <div id="createaccount" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            Click the Register button on the top right screen
+                        </li>
+                        <li>
+                            Fill in the form and submit.
+                        </li>
+                        <li>
+                            You’ll receive an email with instructions to verify your account (this email may end up in your spam folder).
+                        </li>
+                        <li>
+                            Click the link to verify your account and you’re all set to use the site.
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#account" href="#register">How do I login using Facebook?</a>
+                </h4>
+            </div>
+            <div id="register" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            Yes.  Click the Register link on the upper right of the screen.
+                        </li>
+                        <li>
+                            Click the Facebook button
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h3>Teachers</h3>
+    <div class="panel-group" id="teachers">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#teachers" href="#createteacher">How do I set up a Teacher profile?</a>
+                </h4>
+            </div>
+            <div id="createteacher" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            Login or Register @Html.ActionLink("here", "Login", "Account")
+                        </li>
+                        <li>
+                            Click your name in the upper right and click the ‘My Teacher Profile’
+                        </li>
+                        <li>
+                            Fill in the Teacher application and click submit (be sure to agree to the Teacher terms and conditions).  Submit your application.
+                        </li>
+                        <li>
+                            After your application has been reviewed and approved, you’ll have a Teacher profile and be able to add Classes and Performance Teams
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h3>Promoters</h3>
+    <div class="panel-group" id="promoters">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#promoters" href="#createpromoter">How do I set up a Promoter profile?</a>
+                </h4>
+            </div>
+            <div id="createpromoter" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            Login or Register @Html.ActionLink("here", "Login", "Account")
+                        </li>
+                        <li>
+                            Click your name in the upper right and click the ‘My Promoter Profile’
+                        </li>
+                        <li>
+                            Fill in the Promoter application and click submit (be sure to agree to the Promoter terms and conditions).  Submit your application.
+                        </li>
+                        <li>
+                            After your application has been reviewed and approved, you’ll have a Promoter profile and be able to add Socials
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h3>Owners</h3>
+    <div class="panel-group" id="owners">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#owners" href="#createowner">How do I set up an Owner profile?</a>
+                </h4>
+            </div>
+            <div id="createowner" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            Login or Register @Html.ActionLink("here", "Login", "Account")
+                        </li>
+                        <li>
+                            Click your name in the upper right and click the ‘My Owner Profile’
+                        </li>
+                        <li>
+                            Fill in the Owner application and click submit (be sure to agree to the Promoter terms and conditions).  Submit your application.
+                        </li>
+                        <li>
+                            After your application has been reviewed and approved, you’ll have a Owner profile and be able to add Socials
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h3>Performance Teams</h3>
+    <div class="panel-group" id="perform">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#perform" href="#addteam">How do I add a Team?</a>
+                </h4>
+            </div>
+            <div id="addteam" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            Click the school link in the upper right menu (you must have a school set up to add a team)
+                        </li>
+                        <li>
+                            Click the Add Team button in the Team section
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#perform" href="#addaudition">How do I add Team Auditions?</a>
+                </h4>
+            </div>
+            <div id="addaudition" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            Click the school link in the upper right menu (you must have a school set up to add a team)
+                        </li>
+                        <li>
+                            Go to the Team page and enter Audtions in the auditions section
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#perform" href="#addperformance">How do I add Team Performances?</a>
+                </h4>
+            </div>
+            <div id="addperformance" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            Click the school link in the upper right menu (you must have a school set up to add a team)
+                        </li>
+                        <li>
+                            Go to the Team page and enter Performances in the performances section
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#perform" href="#addteammembers">How do I add Team members?</a>
+                </h4>
+            </div>
+            <div id="addteammembers" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            Click the school link in the upper right menu (you must have a school set up to add a team)
+                        </li>
+                        <li>
+                            Go to the Manage Team page and enter members
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h3>Schools</h3>
+    <div class="panel-group" id="schools">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#schools" href="#createschool">How do I set up a School?</a>
+                </h4>
+            </div>
+            <div id="createschool" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            Go to '@Html.ActionLink("My Teacher Profile", "Manage", "Teacher")' link in the upper right (you must be a Teacher or Owner to add a School)
+                        </li>
+                        <li>
+                            Click Add School in the school section
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-lg-6">
+    <h3>Classes</h3>
+    <div class="panel-group" id="classes">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#classes" href="#addclass">How do I add a Class?</a>
+                </h4>
+            </div>
+            <div id="addclass" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            Go to the Manage School page under My Teacher Profile in the upper right (you must be a Teacher or Owner to add classes and you must first have a School set up)
+                        </li>
+                        <li>
+                            On the Class panel, click the Add Class link
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#classes" href="#importclass">How do import classes from Facebook?</a>
+                </h4>
+            </div>
+            <div id="importclass" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            First, you must be logged in through Facebook, not email registration.
+                        </li>
+                        <li>
+                            Click on a school under My Teacher Profile
+                        </li>
+                        <li>
+                            In the classes section, click the Add Class button
+                        </li>
+                        <li>
+                            On the first screen, pick Import from Facebook button
+                        </li>
+                        <li>
+                            The wizard will walk you through importing the event.  You’ll have to verify the information, name, date/time, etc.  And you’ll have to specify additional information – skill level, dance styles, location, etc.
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#classes" href="#addclassstyles">How do I add dance styles for my Class?</a>
+                </h4>
+            </div>
+            <div id="addclassstyles" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            If you need to add/change the dance styles for your event, go to your School page under My Teacher Profile
+                        </li>
+                        <li>
+                            Then, select the Class in the Classes section
+                        </li>
+                        <li>
+                            Go to the Dance Styles section and either add or delete Styles
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#classes" href="#addclassplaylist">How do I add YouTube playlists to my Class?</a>
+                </h4>
+            </div>
+            <div id="addclassplaylist" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            You’ll need a YouTube account and can either import single YouTube videos or full YouTube playlists
+                        </li>
+                        <li>
+                            Add a Playlist in YouTube (be sure to set the default upload as “unlisted” in the YouTube settings).
+                        </li>
+                        <li>
+                            Copy the “share link” from the YouTube playlist.
+                        </li>
+                        <li>
+                            Go to the Manage Class page under your Manage School page
+                        </li>
+                        <li>
+                            Go to the Videos section and paste the YouTube playlist link and click import
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#classes" href="#addclassvideo">How do I add YouTube videos to my Class?</a>
+                </h4>
+            </div>
+            <div id="addclassvideo" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            You’ll need a YouTube account and can either import single YouTube videos or full YouTube playlists
+                        </li>
+                        <li>
+                            Add a Video in YouTube (be sure to set the default upload as “unlisted” in the YouTube settings).
+                        </li>
+                        <li>
+                            Copy the “share link” from the YouTube video.
+                        </li>
+                        <li>
+                            Go to the Manage Class page under your Manage School page
+                        </li>
+                        <li>
+                            Go to the Videos section and paste the YouTube video link and click import
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#classes" href="#addclassalbum">How do I import a Facebook Album to my Class?</a>
+                </h4>
+            </div>
+            <div id="addclassalbum" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            Go to the Manage Class page
+                        </li>
+                        <li>
+                            Go to the Pictures section
+                        </li>
+                        <li>
+                            Either click the Add Facebook Album button to select one of your albums or copy and paste the album url link in the Add Album box and import
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#classes" href="#addclasspicture">How do I import a Facebook Picture to my Class?</a>
+                </h4>
+            </div>
+            <div id="addclasspicture" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            Go to the Manage Class page
+                        </li>
+                        <li>
+                            Go to the Pictures section
+                        </li>
+                        <li>
+                            Copy and paste the picture url link in the Add Picture box and import
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#classes" href="#addclassfacebookobject">How do I attach Facebook Pages/Groups/Events to my Class?</a>
+                </h4>
+            </div>
+            <div id="addclassfacebookobject" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            Go to the Manage Class page
+                        </li>
+                        <li>
+                            Scroll down to the “Connect” section
+                        </li>
+                        <li>
+                            Copy and paste the url link of your Facebook Page/Group/Event and click the Add Linked Media button.
+                        </li>
+                        <li>
+                            All status updates to your Facebook object will now show in your Class
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#socials" href="#addclassteachers">How do I add Teachers for my Class?</a>
+                </h4>
+            </div>
+            <div id="addclassteachers" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            Click the School in the upper right menu
+                        </li>
+                        <li>
+                            Find the Class in the Classes section and click the link
+                        </li>
+                        <li>
+                            Scroll down to the "Teachers" section
+                        </li>
+                        <li>
+                            Type in the name of the Teacher, click the matching name and click Add
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h3>Socials</h3>
+    <div class="panel-group" id="socials">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#socials" href="#addsocial">How do I add a Social?</a>
+                </h4>
+            </div>
+            <div id="addsocial" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            Go to the Manage School page (you must be a Promoter or Owner to add socials)
+                        </li>
+                        <li>
+                            Go to the Manage Promoter Profile
+                        </li>
+                        <li>
+                            In the Socials panel, click the Add Socials link
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#socials" href="#importsocial">How do import Socials from Facebook?</a>
+                </h4>
+            </div>
+            <div id="importsocial" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            First, you must be logged in through Facebook, not email registration.
+                        </li>
+                        <li>
+                            Go to My Promoter Profile link, click the Add Social button in the Socials section
+                        </li>
+                        <li>
+                            On the first screen, pick Import from Facebook button
+                        </li>
+                        <li>
+                            The wizard will walk you through importing the event.  You’ll have to verify the information, name, date/time, etc.  And you’ll have to specify additional information – dance styles, location, etc.
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#socials" href="#addsocialstyles">How do I add dance styles for my Social?</a>
+                </h4>
+            </div>
+            <div id="addsocialstyles" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            If you need to add/change the dance styles for your event, go to your Manage Social page in the upper right
+                        </li>
+                        <li>
+                            Go to the Dance Styles section and either add or delete Styles
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#socials" href="#addsocialplaylist">How do I add YouTube playlists to my Social?</a>
+                </h4>
+            </div>
+            <div id="addsocialplaylist" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            You’ll need a YouTube account and can either import single YouTube videos or full YouTube playlists
+                        </li>
+                        <li>
+                            Add a Playlist in YouTube (be sure to set the default upload as “unlisted” in the YouTube settings).
+                        </li>
+                        <li>
+                            Copy the “share link” from the YouTube playlist.
+                        </li>
+                        <li>
+                            Click the Social name in the upper right menu
+                        </li>
+                        <li>
+                            Go to the Videos section and paste the YouTube playlist link and click import
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#socials" href="#addsocialvideo">How do I add YouTube videos to my Social?</a>
+                </h4>
+            </div>
+            <div id="addsocialvideo" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            You’ll need a YouTube account and can either import single YouTube videos or full YouTube playlists
+                        </li>
+                        <li>
+                            Add a Video in YouTube (be sure to set the default upload as “unlisted” in the YouTube settings).
+                        </li>
+                        <li>
+                            Copy the “share link” from the YouTube video.
+                        </li>
+                        <li>
+                            Click the social in the upper right menu
+                        </li>
+                        <li>
+                            Go to the Videos section and paste the YouTube video link and click import
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#socials" href="#addsocialalbum">How do I import a Facebook Album to my Social?</a>
+                </h4>
+            </div>
+            <div id="addsocialalbum" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            Click the Social in the upper right menu
+                        </li>
+                        <li>
+                            Go to the Pictures section
+                        </li>
+                        <li>
+                            Either click the Add Facebook Album button to select one of your albums or copy and paste the album url link in the Add Album box and import
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#socials" href="#addsocialpicture">How do I import a Facebook Picture to my Social?</a>
+                </h4>
+            </div>
+            <div id="addsocialpicture" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            Click the Social in the upper right menu
+                        </li>
+                        <li>
+                            Go to the Pictures section
+                        </li>
+                        <li>
+                            Copy and paste the picture url link in the Add Picture box and import
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#socials" href="#addsocialfacebookobject">How do I attach Facebook Pages/Groups/Events to my Social?</a>
+                </h4>
+            </div>
+            <div id="addsocialfacebookobject" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            Click the Social in the upper right menu
+                        </li>
+                        <li>
+                            Scroll down to the “Connect” section
+                        </li>
+                        <li>
+                            Copy and paste the url link of your Facebook Page/Group/Event and click the Add Linked Media button.
+                        </li>
+                        <li>
+                            All status updates to your Facebook object will now show in your Social
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#socials" href="#addsocialpromoter">How do I add Promoters for my Social?</a>
+                </h4>
+            </div>
+            <div id="addsocialpromoter" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <ol>
+                        <li>
+                            Click the Social in the upper right menu
+                        </li>
+                        <li>
+                            Scroll down to the "Promoters" section
+                        </li>
+                        <li>
+                            Type in the name of the Promoter and click the matching name and click Add
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
