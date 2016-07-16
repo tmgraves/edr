@@ -395,7 +395,8 @@
                                     @r.Day
                                 </td>
                                 <td>
-                                    @r.Time.ToShortTimeString()
+                                    @(((DateTime)r.StartTime).ToShortTimeString()) to<br />
+                                    @(((DateTime)r.EndTime).ToShortTimeString())
                                 </td>
                                 <td>
                                     @r.Place.Name<br />
@@ -416,43 +417,39 @@
                     @using (Html.BeginForm("AddRehearsal", "Team", FormMethod.Post, new { @id = "addrehearsalform", @class = "main" }))
                     {
                         @Html.HiddenFor(x => x.NewRehearsal.TeamId, new { @Value = Model.Team.Id })
+                        @Html.HiddenFor(x => x.NewRehearsal.Name, new { @Value = "Rehearsal" })
                         <div class="text-right" style="padding-bottom: 10px;">
                             <input type="submit" id="btnsaverehearsal" value="Save" class="btn btn-primary" />
                             <input id="btncancelrehearsal" type="button" class="btn btn-primary" value="Cancel" />
                         </div>
                         <dl class="dl-horizontal">
                             <dt>
-                                @Html.LabelFor(model => model.NewRehearsal.Day, htmlAttributes: new { @class = "control-label col-md-2" })
+                                @Html.LabelFor(model => model.NewRehearsal.StartDate, htmlAttributes: new { @class = "control-label col-md-2" })
                             </dt>
                             <dd>
-                                @Html.EnumDropDownListFor(m => m.NewRehearsal.Day, null, new { @class = "form-control"})
-                                @Html.ValidationMessageFor(model => model.NewRehearsal.Day, "", new { @class = "text-danger" })
+                                @Html.TextBoxFor(m => m.NewRehearsal.StartDate, "{0:yyyy-MM-dd}", htmlAttributes: new { @type = "date", @class = "form-control rehearsal_event_form startdate", @placeholder = "End Date" })
+                                @Html.ValidationMessageFor(model => model.NewRehearsal.StartDate, "", new { @class = "text-danger" })
+                                @Html.HiddenFor(x => x.NewRehearsal.EndDate, new { @class = "enddate rehearsal_event_form" })
                             </dd>
                         </dl>
                         <dl class="dl-horizontal">
                             <dt>
-                                @Html.LabelFor(model => model.NewRehearsal.Time, htmlAttributes: new { @class = "control-label col-md-2" })
+                                @Html.LabelFor(model => model.NewRehearsal.StartTime, htmlAttributes: new { @class = "control-label col-md-2" })
                             </dt>
-                            <dd class="timepicker" id="tpdd">
-                                @Html.DropDownList("RehearsalHour", new SelectList(new List<SelectListItem>
-                                                {
-                                                    new SelectListItem { Text = "01", Value = "1" },
-                                                    new SelectListItem { Text = "02", Value = "2" },
-                                                    new SelectListItem { Text = "03", Value = "3" },
-                                                    new SelectListItem { Text = "04", Value = "4" },
-                                                    new SelectListItem { Text = "05", Value = "5" },
-                                                    new SelectListItem { Text = "06", Value = "6" },
-                                                    new SelectListItem { Text = "07", Value = "7" },
-                                                    new SelectListItem { Text = "08", Value = "8" },
-                                                    new SelectListItem { Text = "09", Value = "9" },
-                                                    new SelectListItem { Text = "10", Value = "10" },
-                                                    new SelectListItem { Text = "11", Value = "11" },
-                                                    new SelectListItem { Text = "12", Value = "12" }
-                                                    }, "Value", "Text", null), new { @class = "form-control time hour", style = "width: 70px; display: inline;" })
-                                @Html.DropDownList("RehearsalMinute", new SelectList(new List<string> { "00", "15", "30", "45" }), new { @class = "form-control time minute", style = "width: 70px; display: inline;" })
-                                @Html.DropDownList("RehearsalAMPM", new SelectList(new List<string>() { "AM", "PM" }), new { @class = "form-control time ampm", style = "width: 70px; display: inline;" })
-                                @Html.HiddenFor(m => m.NewRehearsal.Time, new { @class = "timeelement" })
-                                @Html.ValidationMessageFor(model => model.NewRehearsal.Time, "", new { @class = "text-danger" })
+                            <dd id="tpdd">
+                                <p><input id="start" type="text" class="start timepicker form-control rehearsal_event_form" /></p>
+                                @Html.HiddenFor(m => m.NewRehearsal.StartTime, new { @class = "timeelement begintime rehearsal_event_form" })
+                                @Html.ValidationMessageFor(model => model.NewRehearsal.StartTime, "", new { @class = "text-danger" })
+                            </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.LabelFor(model => model.NewRehearsal.EndTime, htmlAttributes: new { @class = "control-label col-md-2" })
+                            </dt>
+                            <dd id="tpdd">
+                                <p><input id="end" type="text" class="end timepicker form-control rehearsal_event_form" /></p>
+                                @Html.HiddenFor(m => m.NewRehearsal.EndTime, new { @class = "timeelement endtime rehearsal_event_form" })
+                                @Html.ValidationMessageFor(model => model.NewRehearsal.EndTime, "", new { @class = "text-danger" })
                             </dd>
                         </dl>
                         <dl class="dl-horizontal">
@@ -524,42 +521,28 @@
                     @using (Html.BeginForm("AddAudition", "Team", FormMethod.Post, new { @id = "addauditionform", @class = "main" }))
                     {
                         @Html.HiddenFor(x => x.NewAudition.TeamId, new { @Value = Model.Team.Id })
+                        @Html.HiddenFor(x => x.NewAudition.Name, new { @Value = "Audition" })
                         <div class="text-right" style="padding-bottom: 10px;">
-                            <input type="submit" value="Save" class="btn btn-primary" />
-                            <input id="btncancelaudition" type="button" class="btn btn-primary" value="Cancel" />
+                            <input type="submit" id="btnsaverehearsal" value="Save" class="btn btn-primary" />
+                            <input id="btncancelrehearsal" type="button" class="btn btn-primary" value="Cancel" />
                         </div>
                         <dl class="dl-horizontal">
                             <dt>
                                 @Html.LabelFor(model => model.NewAudition.StartDate, htmlAttributes: new { @class = "control-label col-md-2" })
                             </dt>
                             <dd>
-                                @Html.TextBoxFor(m => m.NewAudition.StartDate, "{0:yyyy-MM-dd}", htmlAttributes: new { @type = "date", @class = "form-control" })
+                                @Html.TextBoxFor(m => m.NewAudition.StartDate, "{0:yyyy-MM-dd}", htmlAttributes: new { @type = "date", @class = "form-control audition_event_form startdate", @placeholder = "End Date" })
                                 @Html.ValidationMessageFor(model => model.NewAudition.StartDate, "", new { @class = "text-danger" })
+                                @Html.HiddenFor(x => x.NewAudition.EndDate, new { @class = "enddate audition_event_form" })
                             </dd>
                         </dl>
                         <dl class="dl-horizontal">
                             <dt>
                                 @Html.LabelFor(model => model.NewAudition.StartTime, htmlAttributes: new { @class = "control-label col-md-2" })
                             </dt>
-                            <dd class="timepicker" id="tpdd">
-                                @Html.DropDownList("AuditionHour", new SelectList(new List<SelectListItem>
-                                                {
-                                                    new SelectListItem { Text = "01", Value = "1" },
-                                                    new SelectListItem { Text = "02", Value = "2" },
-                                                    new SelectListItem { Text = "03", Value = "3" },
-                                                    new SelectListItem { Text = "04", Value = "4" },
-                                                    new SelectListItem { Text = "05", Value = "5" },
-                                                    new SelectListItem { Text = "06", Value = "6" },
-                                                    new SelectListItem { Text = "07", Value = "7" },
-                                                    new SelectListItem { Text = "08", Value = "8" },
-                                                    new SelectListItem { Text = "09", Value = "9" },
-                                                    new SelectListItem { Text = "10", Value = "10" },
-                                                    new SelectListItem { Text = "11", Value = "11" },
-                                                    new SelectListItem { Text = "12", Value = "12" }
-                                                    }, "Value", "Text", null), new { @class = "form-control time hour", style = "width: 70px; display: inline;" })
-                                @Html.DropDownList("AuditionMinute", new SelectList(new List<string> { "00", "15", "30", "45" }), new { @class = "form-control time minute", style = "width: 70px; display: inline;" })
-                                @Html.DropDownList("AuditionAMPM", new SelectList(new List<string>() { "AM", "PM" }), new { @class = "form-control time ampm", style = "width: 70px; display: inline;" })
-                                @Html.HiddenFor(m => m.NewAudition.StartTime, new { @class = "timeelement", @Value = "1/1/2000 1:00 AM" })
+                            <dd id="tpdd">
+                                <p><input id="start" type="text" class="start timepicker form-control audition_event_form" /></p>
+                                @Html.HiddenFor(m => m.NewAudition.StartTime, new { @class = "timeelement begintime audition_event_form" })
                                 @Html.ValidationMessageFor(model => model.NewAudition.StartTime, "", new { @class = "text-danger" })
                             </dd>
                         </dl>
@@ -567,25 +550,9 @@
                             <dt>
                                 @Html.LabelFor(model => model.NewAudition.EndTime, htmlAttributes: new { @class = "control-label col-md-2" })
                             </dt>
-                            <dd class="timepicker" id="tpdd">
-                                @Html.DropDownList("AuditionEndHour", new SelectList(new List<SelectListItem>
-                                                {
-                                                    new SelectListItem { Text = "01", Value = "1" },
-                                                    new SelectListItem { Text = "02", Value = "2" },
-                                                    new SelectListItem { Text = "03", Value = "3" },
-                                                    new SelectListItem { Text = "04", Value = "4" },
-                                                    new SelectListItem { Text = "05", Value = "5" },
-                                                    new SelectListItem { Text = "06", Value = "6" },
-                                                    new SelectListItem { Text = "07", Value = "7" },
-                                                    new SelectListItem { Text = "08", Value = "8" },
-                                                    new SelectListItem { Text = "09", Value = "9" },
-                                                    new SelectListItem { Text = "10", Value = "10" },
-                                                    new SelectListItem { Text = "11", Value = "11" },
-                                                    new SelectListItem { Text = "12", Value = "12" }
-                                                    }, "Value", "Text", null), new { @class = "form-control time hour", style = "width: 70px; display: inline;" })
-                                @Html.DropDownList("AuditionEndMinute", new SelectList(new List<string> { "00", "15", "30", "45" }), new { @class = "form-control time minute", style = "width: 70px; display: inline;" })
-                                @Html.DropDownList("AuditionEndAMPM", new SelectList(new List<string>() { "AM", "PM" }), new { @class = "form-control time ampm", style = "width: 70px; display: inline;" })
-                                @Html.HiddenFor(m => m.NewAudition.EndTime, new { @class = "timeelement", @Value = "1/1/2000 1:00 AM" })
+                            <dd id="tpdd">
+                                <p><input id="end" type="text" class="end timepicker form-control audition_event_form" /></p>
+                                @Html.HiddenFor(m => m.NewAudition.EndTime, new { @class = "timeelement endtime audition_event_form" })
                                 @Html.ValidationMessageFor(model => model.NewAudition.EndTime, "", new { @class = "text-danger" })
                             </dd>
                         </dl>
@@ -656,6 +623,7 @@
                     @using (Html.BeginForm("AddPerformance", "Team", FormMethod.Post, new { @id = "addperformanceform", @class = "main" }))
                     {
                         @Html.HiddenFor(x => x.NewPerformance.TeamId, new { @Value = Model.Team.Id })
+                        @Html.HiddenFor(x => x.NewPerformance.Name, new { @Value = "Performance" })
                         <div class="text-right" style="padding-bottom: 10px;">
                             <input type="submit" value="Save" class="btn btn-primary" />
                             <input id="btncancelperformance" type="button" class="btn btn-primary" value="Cancel" />
@@ -665,34 +633,29 @@
                                 @Html.LabelFor(model => model.NewPerformance.StartDate, htmlAttributes: new { @class = "control-label col-md-2" })
                             </dt>
                             <dd>
-                                @Html.TextBoxFor(m => m.NewPerformance.StartDate, "{0:yyyy-MM-dd}", htmlAttributes: new { @type = "date", @class = "form-control" })
+                                @Html.TextBoxFor(m => m.NewPerformance.StartDate, "{0:yyyy-MM-dd}", htmlAttributes: new { @type = "date", @class = "form-control startdate performance_event_form" })
                                 @Html.ValidationMessageFor(model => model.NewPerformance.StartDate, "", new { @class = "text-danger" })
+                                @Html.TextBoxFor(x => x.NewPerformance.EndDate, new { @class = "enddate performance_event_form" })
                             </dd>
                         </dl>
                         <dl class="dl-horizontal">
                             <dt>
                                 @Html.LabelFor(model => model.NewPerformance.StartTime, htmlAttributes: new { @class = "control-label col-md-2" })
                             </dt>
-                            <dd class="timepicker" id="tpdd">
-                                @Html.DropDownList("PerformanceHour", new SelectList(new List<SelectListItem>
-                                                {
-                                                    new SelectListItem { Text = "01", Value = "1" },
-                                                    new SelectListItem { Text = "02", Value = "2" },
-                                                    new SelectListItem { Text = "03", Value = "3" },
-                                                    new SelectListItem { Text = "04", Value = "4" },
-                                                    new SelectListItem { Text = "05", Value = "5" },
-                                                    new SelectListItem { Text = "06", Value = "6" },
-                                                    new SelectListItem { Text = "07", Value = "7" },
-                                                    new SelectListItem { Text = "08", Value = "8" },
-                                                    new SelectListItem { Text = "09", Value = "9" },
-                                                    new SelectListItem { Text = "10", Value = "10" },
-                                                    new SelectListItem { Text = "11", Value = "11" },
-                                                    new SelectListItem { Text = "12", Value = "12" }
-                                                    }, "Value", "Text", null), new { @class = "form-control time hour", style = "width: 70px; display: inline;" })
-                                @Html.DropDownList("PerformanceMinute", new SelectList(new List<string> { "00", "15", "30", "45" }), new { @class = "form-control time minute", style = "width: 70px; display: inline;" })
-                                @Html.DropDownList("PerformanceAMPM", new SelectList(new List<string>() { "AM", "PM" }), new { @class = "form-control time ampm", style = "width: 70px; display: inline;" })
-                                @Html.HiddenFor(m => m.NewPerformance.StartTime, new { @class = "timeelement", @Value = "1/1/2000 1:00 AM" })
+                            <dd id="tpdd">
+                                <p><input id="start" type="text" class="start timepicker form-control performance_event_form" /></p>
+                                @Html.TextBoxFor(m => m.NewPerformance.StartTime, new { @class = "timeelement begintime performance_event_form" })
                                 @Html.ValidationMessageFor(model => model.NewPerformance.StartTime, "", new { @class = "text-danger" })
+                            </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.LabelFor(model => model.NewPerformance.EndTime, htmlAttributes: new { @class = "control-label col-md-2" })
+                            </dt>
+                            <dd id="tpdd">
+                                <p><input id="end" type="text" class="end timepicker form-control performance_event_form" /></p>
+                                @Html.TextBoxFor(m => m.NewPerformance.EndTime, new { @class = "timeelement endtime performance_event_form" })
+                                @Html.ValidationMessageFor(model => model.NewPerformance.EndTime, "", new { @class = "text-danger" })
                             </dd>
                         </dl>
                         <dl class="dl-horizontal">
@@ -703,13 +666,6 @@
                                 @Html.HiddenFor(m => m.NewPerformance.PlaceId)
                                 <input type="text" id="performanceplace" placeholder="Search for a Place" required class="form-control" />
                                 @Html.ValidationMessageFor(model => model.NewPerformance.PlaceId, "", new { @class = "text-danger" })
-                            </dd>
-                        </dl>
-                        <dl class="dl-horizontal">
-                            <dt>
-                                OR
-                            </dt>
-                            <dd>
                             </dd>
                         </dl>
                         <dl class="dl-horizontal">
@@ -785,6 +741,8 @@
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/foolproof")
     @Scripts.Render("~/bundles/jqueryUI")
+    @Scripts.Render("~/bundles/TimePicker")
+    @Styles.Render("~/Content/TimePickercss")
     <script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
     <script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
     @Scripts.Render("~/bundles/GeoComplete")
@@ -799,6 +757,59 @@
     $.validator.setDefaults({
         ignore: ""
     })
+
+    $('.start').timepicker({
+        'timeFormat': 'h:i A',
+        'step': function (i) {
+            return 15;
+        }
+    });
+    $('.end').timepicker({
+        'timeFormat': 'h:i A',
+        'step': function (i) {
+            return 15;
+        }
+    });
+
+    $('.startdate').change(function () {
+        SetDates(this);
+    });
+
+    function SetDates(object) {
+        var classes = $(object).prop('class').split(' ');
+        var clsname = "";
+        $.each(classes, function (i, val) {
+            if (classes[i].indexOf("_event_form") >= 0) {
+                clsname = classes[i];
+            }
+        });
+        var startfield = $('.' + clsname + '.startdate');
+        var endfield = $('.' + clsname + '.enddate');
+        var stime = $('.' + clsname + '.begintime');
+        var etime = $('.' + clsname + '.endtime');
+
+        endfield.val(startfield.val());
+
+        var start = new Date(startfield.val());
+        var end = new Date(endfield.val());
+        var startdt = new Date((start.getUTCMonth() + 1).toString() + "/" + start.getUTCDate().toString() + "/" + start.getUTCFullYear().toString() + " " + $('.' + clsname + '.timepicker.start').val());
+        var enddt = new Date((end.getUTCMonth() + 1).toString() + "/" + end.getUTCDate().toString() + "/" + end.getUTCFullYear().toString() + " " + $('.' + clsname + '.timepicker.end').val());
+        $('.' + clsname + '.timeelement.begintime').prop('value', startdt.toLocaleDateString() + " " + startdt.toLocaleTimeString());
+        $('.' + clsname + '.timeelement.endtime').prop('value', enddt.toLocaleDateString() + " " + enddt.toLocaleTimeString());
+
+        //var start = new Date($(object).parent().parent().parent().parent().find('.startdate').val());
+        //var end = new Date($(object).parent().parent().parent().parent().find('.enddate').val());
+        //var startdt = new Date((start.getUTCMonth() + 1).toString() + "/" + start.getUTCDate().toString() + "/" + start.getUTCFullYear().toString() + " " + $('.timepicker.start').val());
+        //var enddt = new Date((end.getUTCMonth() + 1).toString() + "/" + end.getUTCDate().toString() + "/" + end.getUTCFullYear().toString() + " " + $('.timepicker.end').val());
+        //$('.timeelement.begintime').prop('value', startdt.toLocaleDateString() + " " + startdt.toLocaleTimeString());
+        //$('.timeelement.endtime').prop('value', enddt.toLocaleDateString() + " " + enddt.toLocaleTimeString());
+        //var val = $('#createform.main').valid();
+    }
+
+
+    $('.timepicker').change(function () {
+        SetDates(this);
+    });
 
     $('#stylesearch').autocomplete({
         source: function (request, response) {

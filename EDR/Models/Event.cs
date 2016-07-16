@@ -91,7 +91,6 @@ namespace EDR.Models
         [DataType(DataType.Currency)]
         public Nullable<decimal> Price { get; set; }
         public bool Free { get; set; }
-
         public bool IsAvailable { get; set; }
 
         [Required]
@@ -145,6 +144,7 @@ namespace EDR.Models
         }
 
         [Required]
+        [Display(Name = "Place")]
         public int PlaceId { get; set; }
         [ForeignKey("PlaceId")]
         public virtual Place Place { get; set; }
@@ -171,7 +171,7 @@ namespace EDR.Models
         //  public ICollection<EventTicket> EventTickets { get; set; }
         public ICollection<EventInstance> EventInstances { get; set; }
         public virtual ICollection<Ticket> Tickets { get; set; }
-        public ICollection<Performance> Performances { get; set; }
+        //public ICollection<Performance> Performances { get; set; }
     }
 
     public class EventInstance : Entity

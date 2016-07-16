@@ -83,51 +83,16 @@ namespace EDR.Models
         public bool Admin { get; set; }
     }
 
-    public class Audition : Entity
+    public class Audition : Event
     {
-        [Required]
-        [DataType(DataType.Date)]
-        [Display(Name = "Audition Date")]
-        [DisplayFormat(DataFormatString = "{0:MM-dd-yyyy}")]
-        public DateTime StartDate { get; set; }
-        [Required]
-        [DataType(DataType.Time)]
-        [Display(Name = "Start Time")]
-        [DisplayFormat(DataFormatString = "{0:hh:mm tt}", ApplyFormatInEditMode = false)]
-        public DateTime StartTime { get; set; }
-        [Required]
-        [DataType(DataType.Time)]
-        [Display(Name = "End Time")]
-        [DisplayFormat(DataFormatString = "{0:hh:mm tt}", ApplyFormatInEditMode = false)]
-        [GreaterThan("StartTime")]
-        public DateTime EndTime { get; set; }
         [Required]
         public int TeamId { get; set; }
         [ForeignKey("TeamId")]
         public Team Team { get; set; }
-        [Required]
-        public int PlaceId { get; set; }
-        [ForeignKey("PlaceId")]
-        public Place Place { get; set; }
     }
 
-    public class Performance : Entity
+    public class Performance : Event
     {
-        [Required]
-        [DataType(DataType.Date)]
-        [Display(Name = "Performance Date")]
-        [DisplayFormat(DataFormatString = "{0:MM-dd-yyyy}")]
-        public DateTime StartDate { get; set; }
-        [Required]
-        [DataType(DataType.Time)]
-        [Display(Name = "Start Time")]
-        [DisplayFormat(DataFormatString = "{0:hh:mm tt}", ApplyFormatInEditMode = false)]
-        public DateTime StartTime { get; set; }
-        [Required]
-        [Display(Name = "Place")]
-        public int PlaceId { get; set; }
-        [ForeignKey("PlaceId")]
-        public Place Place { get; set; }
         public int? TeamId { get; set; }
         [ForeignKey("TeamId")]
         public Team Team { get; set; }

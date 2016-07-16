@@ -72,8 +72,14 @@ namespace EDR.Controllers
         }
 
         [Authorize(Roles = "Teacher")]
-        public ActionResult Manage(int id)
+        public ActionResult Manage(int? id)
         {
+            if (!id.HasValue)
+            {
+                ViewBag.errorMessage = "Invalid Id";
+                return View("Error");
+            }
+
             var model = new TeamManageViewModel();
             model.Team = DataContext.Teams
                             .Include("Members.User")

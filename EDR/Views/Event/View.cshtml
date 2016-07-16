@@ -405,12 +405,26 @@
                     <div class="panel-body">
                         <div class="tab-content">
                             <div class="tab-pane fade in active" id="videotab">
-                                <div id="videos">
-                                </div>
+                                @if (Model.Event.EventInstances.Where(i => i.EventRegistrations.Any(r => r.UserId == User.Identity.GetUserId())).Count() > 0)
+                                {
+                                    <div id="videos">
+                                    </div>
+                                }
+                                else
+                                {
+                                    <h4>You must be registered for this event to view Videos</h4>
+                                }
                             </div>
                             <div class="tab-pane fade" id="picturetab">
-                                <div id="pictures">
-                                </div>
+                                @if (Model.Event.EventInstances.Where(i => i.EventRegistrations.Any(r => r.UserId == User.Identity.GetUserId())).Count() > 0)
+                                {
+                                    <div id="pictures">
+                                    </div>
+                                }
+                                else
+                                {
+                                    <h4>You must be registered for this event to view Pictures</h4>
+                                }
                             </div>
                         </div>
                     </div>
@@ -474,7 +488,19 @@
         //  $("a.bla-2").YouTubePopUp({ autoplay: 0 }); // Disable autoplay
     });
 
-    loadReviews();
+    if ($("#reviews") != null) {
+        loadReviews();
+    }
+
+    if ($("#feeddiv") != null) {
+        loadFeed();
+    }
+    if ($("#videos") != null) {
+        loadVideos();
+    }
+    if ($("#pictures") != null) {
+        loadPictures();
+    }
     pageUpdates();
     $('.description').readmore({ speed: 500 });
 
@@ -620,7 +646,7 @@
     //});
 
     //  Load Feed via JSON
-    $(function () {
+    function loadFeed() {
         $.ajax({
             url: '@Url.Action("GetFeedJSON", "Event")',
             data: { id: '@Model.Event.Id.ToString()' },
@@ -675,11 +701,11 @@
                 pageUpdates();
             }
         })
-    })
+    }
     //  Load Feed via JSON
 
     //  Load Videos via JSON
-    $(function () {
+    function loadVideos() {
         $.ajax({
             url: '@Url.Action("GetVideosJSON", "Event")',
             data: { id: '@Model.Event.Id.ToString()' },
@@ -707,11 +733,11 @@
                 //}).end();
             }
         })
-    })
+    }
     //  Load Videos via JSON
 
     //  Load Pictures via JSON
-    $(function () {
+    function loadPictures() {
         $.ajax({
             url: '@Url.Action("GetPicturesJSON", "Event")',
             data: { id: '@Model.Event.Id.ToString()' },
@@ -736,7 +762,7 @@
                 //}).end();
             }
         })
-    })
+    }
     //  Load Videos via JSON
 </script>
 }
