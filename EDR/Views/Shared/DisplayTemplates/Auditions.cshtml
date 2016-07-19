@@ -15,8 +15,8 @@
             <b>Time:</b>
         </div>
         <div class="col-lg-10">
-            @p.StartTime.ToString("hh:mm tt") to
-            @p.EndTime.ToString("hh:mm tt")
+            @(Convert.ToDateTime(p.StartTime).ToString("hh:mm tt")) to
+            @(Convert.ToDateTime(p.EndTime).ToString("hh:mm tt"))
         </div>
     </div>
     <div class="row">

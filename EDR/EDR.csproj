@@ -448,6 +448,7 @@
     <Content Include="Content\fullcalendar\fullcalendar.min.css" />
     <Content Include="Content\fullcalendar\fullcalendar.print.css" />
     <Content Include="Content\images\album.png" />
+    <Content Include="Content\images\audition.jpg" />
     <Content Include="Content\images\camera.png" />
     <Content Include="Content\images\class.jpg" />
     <Content Include="Content\images\coming-soon.png" />
@@ -521,6 +522,7 @@
     <Content Include="Content\images\NoPicThumb.gif" />
     <Content Include="Content\images\NoPicTiny.png" />
     <Content Include="Content\images\NoProfilePic.gif" />
+    <Content Include="Content\images\performance.jpg" />
     <Content Include="Content\images\Play1Hot.png" />
     <Content Include="Content\images\Play1HotSmall.png" />
     <Content Include="Content\images\Play1Normal.png" />
@@ -529,6 +531,7 @@
     <Content Include="Content\images\NoPic.png" />
     <Content Include="Content\images\Play1PressedSmall.png" />
     <Content Include="Content\images\promoter.png" />
+    <Content Include="Content\images\rehearsal.jpg" />
     <Content Include="Content\images\Share.png" />
     <Content Include="Content\images\social.jpg" />
     <Content Include="Content\images\socialdance.jpg" />

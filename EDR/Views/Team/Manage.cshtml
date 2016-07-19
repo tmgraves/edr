@@ -10,6 +10,12 @@
     ViewBag.Title = "Manage " + Model.Team.Name;
 }
 
+<style>
+.ui-autocomplete {
+    z-index: 5000;
+}
+</style>
+
 <h2>Manage: <span class="text-info">@Model.Team.Name</span></h2>
 <hr />
 
@@ -368,10 +374,62 @@
             </div>
         </div>
         <div class="panel panel-default">
-            <div class="panel-body ">
+            <div class="panel-body buttoncontainer">
+                <button id="btnAddAudition" type="button" class="actionbutton btn btn-warning" data-toggle="modal" data-target="#modalAudition">Add Audition</button>
+                <h3>Auditions</h3>
+                <div id="auditionsdiv" class="">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Day
+                                </th>
+                                <th>
+                                    Start Time
+                                </th>
+                                <th>
+                                    End Time
+                                </th>
+                                <th>
+                                    Location
+                                </th>
+                                <th>
+                                </th>
+                            </tr>
+                        </thead>
+                        @foreach (var r in Model.Team.Auditions)
+                        {
+                            <tr>
+                                <td>
+                                    @r.Day
+                                </td>
+                                <td>
+                                    @(((DateTime)r.StartTime).ToShortTimeString())
+                                </td>
+                                <td>
+                                    @(((DateTime)r.EndTime).ToShortTimeString())
+                                </td>
+                                <td>
+                                    @r.Place.Name<br />
+                                    @r.Place.Address<br />
+                                    @r.Place.City, @r.Place.State @r.Place.Zip
+                                </td>
+                                <td>
+                                    <a class="btn btn btn-danger" title="Delete" href="@Url.Action("DeleteAudition", "Team", new { id = r.Id })" onclick="return confirm('Are you sure you want to DELETE this Audition?')">
+                                        <i class="glyphicon glyphicon-remove"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body buttoncontainer">
+                <input id="btnAddRehearsal" type="button" class="btn btn-warning actionbutton" value="Add Rehearsal" />
                 <h3>Rehearsal Schedule</h3>
                 <div id="rehearsalsdiv">
-                    <input id="btnAddRehearsal" type="button" class="btn btn-link" value="Add Rehearsal" />
                     <table class="table table-bordered">
                         <thead>
                             <tr>
@@ -467,114 +525,10 @@
             </div>
         </div>
         <div class="panel panel-default">
-            <div class="panel-body ">
-                <h3>Auditions</h3>
-                <div id="auditionsdiv">
-                    <input id="btnAddAudition" type="button" class="btn btn-link" value="Add Audition" />
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>
-                                    Date
-                                </th>
-                                <th>
-                                    Start Time
-                                </th>
-                                <th>
-                                    End Time
-                                </th>
-                                <th>
-                                    Location
-                                </th>
-                                <th>
-                                </th>
-                            </tr>
-                        </thead>
-                        @foreach (var r in Model.Team.Auditions)
-                        {
-                            <tr>
-                                <td>
-                                    @r.StartDate.ToShortDateString()
-                                </td>
-                                <td>
-                                    @(((DateTime)r.StartTime).ToShortTimeString())
-                                </td>
-                                <td>
-                                    @(((DateTime)r.EndTime).ToShortTimeString())
-                                </td>
-                                <td>
-                                    @r.Place.Name<br />
-                                    @r.Place.Address<br />
-                                    @r.Place.City, @r.Place.State @r.Place.Zip
-                                </td>
-                                <td>
-                                    <a class="btn btn btn-danger" title="Delete" href="@Url.Action("DeleteAudition", "Team", new { id = r.Id })" onclick="return confirm('Are you sure you want to DELETE this Audition?')">
-                                        <i class="glyphicon glyphicon-remove"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                        }
-                    </table>
-                </div>
-                <div id="addauditiondiv" style="display: none;">
-                    @Html.ValidationSummary("", new { @class = "text-danger" })
-                    @using (Html.BeginForm("AddAudition", "Team", FormMethod.Post, new { @id = "addauditionform", @class = "main" }))
-                    {
-                        @Html.HiddenFor(x => x.NewAudition.TeamId, new { @Value = Model.Team.Id })
-                        @Html.HiddenFor(x => x.NewAudition.Name, new { @Value = "Audition" })
-                        <div class="text-right" style="padding-bottom: 10px;">
-                            <input type="submit" id="btnsaverehearsal" value="Save" class="btn btn-primary" />
-                            <input id="btncancelrehearsal" type="button" class="btn btn-primary" value="Cancel" />
-                        </div>
-                        <dl class="dl-horizontal">
-                            <dt>
-                                @Html.LabelFor(model => model.NewAudition.StartDate, htmlAttributes: new { @class = "control-label col-md-2" })
-                            </dt>
-                            <dd>
-                                @Html.TextBoxFor(m => m.NewAudition.StartDate, "{0:yyyy-MM-dd}", htmlAttributes: new { @type = "date", @class = "form-control audition_event_form startdate", @placeholder = "End Date" })
-                                @Html.ValidationMessageFor(model => model.NewAudition.StartDate, "", new { @class = "text-danger" })
-                                @Html.HiddenFor(x => x.NewAudition.EndDate, new { @class = "enddate audition_event_form" })
-                            </dd>
-                        </dl>
-                        <dl class="dl-horizontal">
-                            <dt>
-                                @Html.LabelFor(model => model.NewAudition.StartTime, htmlAttributes: new { @class = "control-label col-md-2" })
-                            </dt>
-                            <dd id="tpdd">
-                                <p><input id="start" type="text" class="start timepicker form-control audition_event_form" /></p>
-                                @Html.HiddenFor(m => m.NewAudition.StartTime, new { @class = "timeelement begintime audition_event_form" })
-                                @Html.ValidationMessageFor(model => model.NewAudition.StartTime, "", new { @class = "text-danger" })
-                            </dd>
-                        </dl>
-                        <dl class="dl-horizontal">
-                            <dt>
-                                @Html.LabelFor(model => model.NewAudition.EndTime, htmlAttributes: new { @class = "control-label col-md-2" })
-                            </dt>
-                            <dd id="tpdd">
-                                <p><input id="end" type="text" class="end timepicker form-control audition_event_form" /></p>
-                                @Html.HiddenFor(m => m.NewAudition.EndTime, new { @class = "timeelement endtime audition_event_form" })
-                                @Html.ValidationMessageFor(model => model.NewAudition.EndTime, "", new { @class = "text-danger" })
-                            </dd>
-                        </dl>
-                        <dl class="dl-horizontal">
-                            <dt>
-                                @Html.LabelFor(model => model.NewAudition.PlaceId, htmlAttributes: new { @class = "control-label col-md-2" })
-                            </dt>
-                            <dd>
-                                @Html.HiddenFor(m => m.NewAudition.PlaceId)
-                                <input type="text" id="auditionplace" placeholder="Type in a Place" required class="form-control" />
-                                @Html.ValidationMessageFor(model => model.NewAudition.PlaceId, "", new { @class = "text-danger" })
-                            </dd>
-                        </dl>
-                    }
-                </div>
-            </div>
-        </div>
-        <div class="panel panel-default">
-            <div class="panel-body ">
+            <div class="panel-body buttoncontainer">
+                <input id="btnAddPerformance" type="button" class="btn btn-warning actionbutton" value="Add Performance" />
                 <h3>Performances</h3>
                 <div id="performancesdiv">
-                    <input id="btnAddPerformance" type="button" class="btn btn-link" value="Add Performance" />
                     <table class="table table-bordered">
                         <thead>
                             <tr>
@@ -635,7 +589,7 @@
                             <dd>
                                 @Html.TextBoxFor(m => m.NewPerformance.StartDate, "{0:yyyy-MM-dd}", htmlAttributes: new { @type = "date", @class = "form-control startdate performance_event_form" })
                                 @Html.ValidationMessageFor(model => model.NewPerformance.StartDate, "", new { @class = "text-danger" })
-                                @Html.TextBoxFor(x => x.NewPerformance.EndDate, new { @class = "enddate performance_event_form" })
+                                @Html.HiddenFor(x => x.NewPerformance.EndDate, new { @class = "enddate performance_event_form" })
                             </dd>
                         </dl>
                         <dl class="dl-horizontal">
@@ -644,7 +598,7 @@
                             </dt>
                             <dd id="tpdd">
                                 <p><input id="start" type="text" class="start timepicker form-control performance_event_form" /></p>
-                                @Html.TextBoxFor(m => m.NewPerformance.StartTime, new { @class = "timeelement begintime performance_event_form" })
+                                @Html.HiddenFor(m => m.NewPerformance.StartTime, new { @class = "timeelement begintime performance_event_form" })
                                 @Html.ValidationMessageFor(model => model.NewPerformance.StartTime, "", new { @class = "text-danger" })
                             </dd>
                         </dl>
@@ -654,7 +608,7 @@
                             </dt>
                             <dd id="tpdd">
                                 <p><input id="end" type="text" class="end timepicker form-control performance_event_form" /></p>
-                                @Html.TextBoxFor(m => m.NewPerformance.EndTime, new { @class = "timeelement endtime performance_event_form" })
+                                @Html.HiddenFor(m => m.NewPerformance.EndTime, new { @class = "timeelement endtime performance_event_form" })
                                 @Html.ValidationMessageFor(model => model.NewPerformance.EndTime, "", new { @class = "text-danger" })
                             </dd>
                         </dl>
@@ -684,6 +638,95 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Add Audition -->
+<div class="modal fade" id="modalAudition" tabindex="-1" role="dialog" aria-labelledby="myAudition">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Add Audtion</h4>
+            </div>
+            <div class="modal-body">
+                <div id="newaudition" class="text-center">
+                    <input id="btnnewaudition" type="button" class="newbtn btn btn-primary" value="Create a New Audition" />
+                    <h4 class="linebehind">OR</h4>
+                    <input id="btnimportaudition" type="button" class="facebookbtn btn btn-primary" value="Import Audtion from Facebook" />
+                </div>
+                <div id="importaudition" class="pickfacebook text-center" style="display: none;">
+                    <div class="row">
+                        <h4>Pick a Facebook Event</h4>
+                        @using (Html.BeginForm("ImportAudition", "Team", FormMethod.Post, new { @id = "importauditionform", @class = "main" }))
+                        {
+                            @Html.HiddenFor(m => m.Team.Id)
+                            <div class="center-block col-md-6 text-center" style="float: none; padding: 10px;">
+                                <select class="form-control" id="NewFacebookEventId" name="NewFacebookEventId"></select>
+                            </div>
+                            <div class="center-block col-md-6 text-center" style="float: none;">
+                                <input type="submit" id="submit" value="Import Audition" class="btn btn-primary col-lg-12" />
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div id="addaudition" style="display: none;">
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                    @using (Html.BeginForm("AddAudition", "Team", FormMethod.Post, new { @id = "addauditionform", @class = "main" }))
+                    {
+                        @Html.HiddenFor(x => x.NewAudition.TeamId, new { @Value = Model.Team.Id })
+                        @Html.HiddenFor(x => x.NewAudition.Name, new { @Value = "Audition" })
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.LabelFor(model => model.NewAudition.StartDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                            </dt>
+                            <dd>
+                                @Html.TextBoxFor(m => m.NewAudition.StartDate, "{0:yyyy-MM-dd}", htmlAttributes: new { @type = "date", @class = "form-control audition_event_form startdate", @placeholder = "End Date" })
+                                @Html.ValidationMessageFor(model => model.NewAudition.StartDate, "", new { @class = "text-danger" })
+                                @Html.HiddenFor(x => x.NewAudition.EndDate, new { @class = "enddate audition_event_form" })
+                            </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.LabelFor(model => model.NewAudition.StartTime, htmlAttributes: new { @class = "control-label col-md-2" })
+                            </dt>
+                            <dd id="tpdd">
+                                <p><input id="start" type="text" class="start timepicker form-control audition_event_form" /></p>
+                                @Html.HiddenFor(m => m.NewAudition.StartTime, new { @class = "timeelement begintime audition_event_form" })
+                                @Html.ValidationMessageFor(model => model.NewAudition.StartTime, "", new { @class = "text-danger" })
+                            </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.LabelFor(model => model.NewAudition.EndTime, htmlAttributes: new { @class = "control-label col-md-2" })
+                            </dt>
+                            <dd id="tpdd">
+                                <p><input id="end" type="text" class="end timepicker form-control audition_event_form" /></p>
+                                @Html.HiddenFor(m => m.NewAudition.EndTime, new { @class = "timeelement endtime audition_event_form" })
+                                @Html.ValidationMessageFor(model => model.NewAudition.EndTime, "", new { @class = "text-danger" })
+                            </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                @Html.LabelFor(model => model.NewAudition.PlaceId, htmlAttributes: new { @class = "control-label col-md-2" })
+                            </dt>
+                            <dd class="ui-front">
+                                @Html.HiddenFor(m => m.NewAudition.PlaceId)
+                                <input type="text" id="auditionplace" placeholder="Type in a Place" required class="form-control" />
+                                @Html.ValidationMessageFor(model => model.NewAudition.PlaceId, "", new { @class = "text-danger" })
+                            </dd>
+                        </dl>
+                        <div class="text-right" style="padding-bottom: 10px;">
+                            <input type="submit" id="btnsaveaudition" value="Save" class="btn btn-primary" />
+                            <input id="btncancelaudition" type="button" class="btn btn-primary" value="Cancel" data-dismiss="modal" />
+                        </div>
+                    }
+                </div>
+            </div>
+        <div class="modal-footer">
+        </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!-- Modal Add Audition -->
 
 <!-- Modal Picture Upload -->
 <div class="modal fade" id="modalPic" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -735,6 +778,12 @@
 </div>
 <!-- Modal Picture Upload -->
 
+<style>
+#fbEvents option {
+    width: 50px;
+}
+</style>
+
 @section Scripts
 {
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
@@ -771,9 +820,42 @@
         }
     });
 
+    $('#modalAudition').on('shown.bs.modal', function () {
+        $('#newaudition').show();
+        $('#importaudition').hide();
+        $('#addaudition').hide();
+    })
+
+    $('#btnnewaudition').click(function () {
+        $('#newaudition').hide();
+        $('#importaudition').hide();
+        $('#addaudition').show();
+    });
+    $('#btnimportaudition').click(function () {
+        $('#newaudition').hide();
+        $('#importaudition').show();
+        $('#addaudition').hide();
+    });
+
     $('.startdate').change(function () {
         SetDates(this);
     });
+
+    LoadFacebookEvents();
+
+    function LoadFacebookEvents() {
+        $.get('@Url.Action("GetFacebookEvents", "Dancer")', {
+        }, function (data) {
+            $.each(data, function (index, item) {
+                var date = new Date(parseInt(item.StartTime.substr(6)));
+                var str = date.toLocaleDateString() + " - " + item.Name;
+                if (str.length > 40) str = str.substring(0, 37) + "...";
+                $('#NewFacebookEventId').append(
+                $('<option></option>').val(item.Id).html(str)
+                );
+            });
+        });
+    };
 
     function SetDates(object) {
         var classes = $(object).prop('class').split(' ');
@@ -788,7 +870,9 @@
         var stime = $('.' + clsname + '.begintime');
         var etime = $('.' + clsname + '.endtime');
 
-        endfield.val(startfield.val());
+        var st = new Date(startfield.val());
+        st.setDate(st.getDate() + 1);
+        endfield.val((st.getUTCMonth() + 1).toString() + "/" + st.getUTCDate().toString() + "/" + st.getUTCFullYear().toString());
 
         var start = new Date(startfield.val());
         var end = new Date(endfield.val());
@@ -901,14 +985,14 @@
             $('#addrehearsalform.main').valid();
         });
 
-        $('#btnAddAudition').click(function () {
-            $('#auditionsdiv').hide();
-            $('#addauditiondiv').show();
-        });
-        $('#btncancelaudition').click(function () {
-            $('#auditionsdiv').show();
-            $('#addauditiondiv').hide();
-        });
+        //$('#btnAddAudition').click(function () {
+        //    $('#auditionsdiv').hide();
+        //    $('#addauditiondiv').show();
+        //});
+        //$('#btncancelaudition').click(function () {
+        //    $('#auditionsdiv').show();
+        //    $('#addauditiondiv').hide();
+        //});
         $('#addauditionform.main').submit(function () {
             $('#addauditionform.main').valid();
         });

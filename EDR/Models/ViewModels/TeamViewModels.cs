@@ -51,6 +51,7 @@ namespace EDR.Models.ViewModels
         public Performance NewPerformance { get; set; }
         public int NewStyleId { get; set; }
         public string NewMemberId { get; set; }
+        public string NewFacebookEventId { get; set; }
     }
 
     public class TeamCreateViewModel : TeamBaseViewModel

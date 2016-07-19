@@ -28,14 +28,14 @@
 @Html.HiddenFor(x => x.School.Id)
 <div class="container-fluid">
     <div class="row">
-        <div class="col-lg-4">
+        <div class="col-lg-6">
             <div class="row" style="padding-bottom: 10px;">
                 <div class="col-lg-12">
                     <img style="max-width: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.School.PhotoUrl))" />
                 </div>
             </div>
         </div>
-        <div class="col-lg-8">
+        <div class="col-lg-6">
             <div class="row" style="padding-bottom: 20px;">
                 <div class="col-lg-10">
                     <h2 class="item-short" style="margin: 0px !important;">@Model.School.Name</h2>
@@ -75,7 +75,7 @@
     </div>
     <hr />
     <div class="row">
-        <div class="col-lg-4">
+        <div class="col-lg-6">
             <div class="panel panel-default">
                 <div class="panel-body nospace">
                     <a target="_blank" href="https://maps.google.com/?q=@Model.School.Latitude,@Model.School.Longitude">
@@ -116,7 +116,7 @@
                     <h3>Teachers</h3>
                     @foreach (var item in Model.School.Teachers)
                     {
-                        <div class="col-lg-3">
+                        <div class="col-lg-2">
                             @Html.DisplayFor(m => item, "Teacher")
                         </div>
                     }
@@ -141,21 +141,21 @@
                     <h3>Owners</h3>
                     @foreach (var item in Model.School.Owners)
                     {
-                        <div class="col-lg-3">
+                        <div class="col-lg-2">
                             @Html.DisplayFor(m => item, "Owner")
                         </div>
                     }
                 </div>
             </div>
         </div>
-        <div class="col-lg-8 col-md-8">
+        <div class="col-lg-6 col-md-6">
             <div class="row text-center" style="margin-bottom: 20px;">
                 <h3>Classes/Workshops</h3>
                 <div id="myButtons" class="btn-group" data-toggle="buttons">
-                    <label class="btn btn-info btn-sm active">
+                    <label class="btn btn-primary btn-sm active">
                         <input type="radio" name="options" id="listbtn" autocomplete="off" checked class="rbutton"> List View
                     </label>
-                    <label class="btn btn-info btn-sm">
+                    <label class="btn btn-primary btn-sm">
                         <input type="radio" name="options" id="calendarbtn" autocomplete="off" class="rbutton"> Calendar View
                     </label>
                 </div>

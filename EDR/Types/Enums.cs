@@ -34,7 +34,13 @@ namespace EDR.Enums
         [Display(Name = "Social")]
         Social,
         [Display(Name = "Class")]
-        Class
+        Class,
+        [Display(Name = "Audition")]
+        Audition,
+        [Display(Name = "Performance")]
+        Performance,
+        [Display(Name = "Rehearsal")]
+        Rehearsal
     }
 
     public enum MediaSource

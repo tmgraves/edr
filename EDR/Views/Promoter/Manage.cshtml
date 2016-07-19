@@ -210,7 +210,7 @@
         LoadClasses();
 
         function LoadClasses() {
-            $.get('@Url.Action("GetFacebookEvents", "Dancer")', { 'username': '@User.Identity.Name', 'eventType': 'Social', 'role': 'promoter' }, function (data) {
+            $.get('@Url.Action("FacebookEventsPartial", "Dancer")', { 'username': '@User.Identity.Name', 'eventType': 'Social', 'role': 'promoter' }, function (data) {
                 $("#importfbclasses").empty();
                 $("#importfbclasses").html(data);
                 $('#importfbclasses').readmore({

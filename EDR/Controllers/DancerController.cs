@@ -417,7 +417,7 @@ namespace EDR.Controllers
 
         }
 
-        public ActionResult GetFacebookEvents(string username, EventType? eventType, int? schoolId, RoleName role)
+        public ActionResult FacebookEventsPartial(string username, EventType? eventType, int? schoolId, RoleName role)
         {
             var model = new FacebookEventsViewModel();
             model.Type = eventType;
@@ -440,6 +440,29 @@ namespace EDR.Controllers
             return PartialView("~/Views/Shared/_ImportFacebookEventsPartial.cshtml", model);
             //  Media Updates
 
+        }
+
+        public JsonResult GetFacebookEvents()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                var userid = User.Identity.GetUserId();
+                var token = DataContext.Users.Single(u => u.Id == userid).FacebookToken;
+
+                if (token != null)
+                {
+                    var evnts = FacebookHelper.GetEvents(token, DateTime.Now).Where(fe => !DataContext.Events.Select(e => e.FacebookId).Contains(fe.Id)).OrderBy(f => f.StartTime).ToList();
+                    return Json(evnts, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                return null;
+            }
         }
 
         [Authorize]

@@ -623,7 +623,7 @@
     LoadClasses();
 
     function LoadClasses() {
-        $.get('@Url.Action("GetFacebookEvents", "Dancer")', { 'username': '@User.Identity.Name', 'eventType' : 'Class', 'schoolId' : '@Model.School.Id', 'role' : '@(Model.School.Teachers.Where(t => t.ApplicationUser.Id == User.Identity.GetUserId()).Count() == 1 ? "teacher" : "owner")' }, function (data) {
+        $.get('@Url.Action("FacebookEventsPartial", "Dancer")', { 'username': '@User.Identity.Name', 'eventType' : 'Class', 'schoolId' : '@Model.School.Id', 'role' : '@(Model.School.Teachers.Where(t => t.ApplicationUser.Id == User.Identity.GetUserId()).Count() == 1 ? "teacher" : "owner")' }, function (data) {
             $("#importfbclasses").empty();
             $("#importfbclasses").html(data);
             $('#importfbclasses').readmore({

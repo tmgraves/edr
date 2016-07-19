@@ -253,6 +253,8 @@ namespace EDR.Controllers
         {
             if (ModelState.IsValidField("NewRehearsal"))
             {
+                model.NewRehearsal.EventInstances = new List<EventInstance>();
+                model.NewRehearsal.EventInstances.Add(new EventInstance() { DateTime = model.NewRehearsal.StartDate, EndDate = Convert.ToDateTime(model.NewRehearsal.EndDate), StartTime = model.NewRehearsal.StartTime, EndTime = model.NewRehearsal.EndTime, PlaceId = model.NewRehearsal.PlaceId });
                 DataContext.Rehearsals.Add(model.NewRehearsal);
                 DataContext.SaveChanges();
                 return RedirectToAction("Manage", new { id = model.NewRehearsal.TeamId });
@@ -266,8 +268,12 @@ namespace EDR.Controllers
         [Authorize(Roles = "Teacher")]
         public ActionResult DeleteRehearsal(int id)
         {
-            var rehearsal = DataContext.Rehearsals.Single(s => s.Id == id);
+            var rehearsal = DataContext.Rehearsals.Include("EventInstances").Single(s => s.Id == id);
             var teamId = rehearsal.TeamId;
+            if (rehearsal.EventInstances != null)
+            {
+                DataContext.EventInstances.RemoveRange(rehearsal.EventInstances);
+            }
             DataContext.Rehearsals.Remove(rehearsal);
             DataContext.SaveChanges();
             return RedirectToAction("Manage", new { id = teamId });
@@ -279,6 +285,8 @@ namespace EDR.Controllers
         {
             try
             {
+                model.NewAudition.EventInstances = new List<EventInstance>();
+                model.NewAudition.EventInstances.Add(new EventInstance() { DateTime = model.NewAudition.StartDate, EndDate = Convert.ToDateTime(model.NewAudition.EndDate), StartTime = model.NewAudition.StartTime, EndTime = model.NewAudition.EndTime, PlaceId = model.NewAudition.PlaceId });
                 DataContext.Auditions.Add(model.NewAudition);
                 DataContext.SaveChanges();
                 return RedirectToAction("Manage", new { id = model.NewAudition.TeamId });
@@ -313,10 +321,86 @@ namespace EDR.Controllers
         }
 
         [Authorize(Roles = "Teacher")]
+        [HttpPost]
+        public ActionResult ImportAudition(TeamManageViewModel model)
+        {
+            try
+            {
+                var userid = User.Identity.GetUserId();
+                var token = DataContext.Users.Single(u => u.Id == userid).FacebookToken;
+
+                if (token != null)
+                {
+                    var fb = Utilities.FacebookHelper.GetEvent(model.NewFacebookEventId, token);
+                    var gadd = Utilities.Geolocation.ParseAddress(fb.Address.Street + " " + fb.Address.City + ", " + fb.Address.State + " " + fb.Address.ZipCode);
+                    fb.Address.GooglePlaceId = gadd.GooglePlaceId;
+                    fb.Address.Street = gadd.Street;
+                    fb.Address.City = gadd.City;
+                    fb.Address.State = gadd.State;
+                    fb.Address.ZipCode = gadd.ZipCode;
+
+                    var pl = DataContext.Places.Where(p => p.GooglePlaceId == fb.Address.GooglePlaceId).FirstOrDefault();
+                    if (pl == null)
+                    {
+                        var Place = new Place() { Name = fb.Address.Location, Address = fb.Address.Street, City = fb.Address.City, StateName = fb.Address.State ?? "CA", Zip = fb.Address.ZipCode, Country = fb.Address.Country, Latitude = fb.Address.Latitude, Longitude = fb.Address.Longitude, FacebookId = fb.Address.FacebookId, PlaceType = Utilities.FacebookHelper.ParsePlaceType(fb.Address.Categories), Public = true, Website = Uri.IsWellFormedUriString(fb.Address.WebsiteUrl, UriKind.RelativeOrAbsolute) ? fb.Address.WebsiteUrl : null, FacebookLink = fb.Address.FacebookUrl, Filename = fb.Address.CoverPhotoUrl, ThumbnailFilename = fb.Address.ThumbnailUrl, GooglePlaceId = fb.Address.GooglePlaceId };
+                        pl = DataContext.Places.Add(Place);
+                        DataContext.SaveChanges();
+                    }
+                    var audition = new Audition()
+                    {
+                        TeamId = model.Team.Id,
+                        Name = fb.Name,
+                        StartDate = fb.StartTime,
+                        StartTime = fb.StartTime,
+                        EndDate = fb.EndTime != null ? fb.EndTime : fb.StartTime,
+                        EndTime = fb.EndTime != null ? fb.EndTime : fb.StartTime,
+                        FacebookId = fb.Id,
+                        PlaceId = pl.Id,
+                        EventInstances = new List<EventInstance>() { new EventInstance() { DateTime = fb.StartTime, StartTime = fb.StartTime, EndDate = fb.EndTime != null ? Convert.ToDateTime(fb.EndTime) : fb.StartTime, EndTime = fb.EndTime, PlaceId = pl.Id } }
+                    };
+                    DataContext.Auditions.Add(audition);
+                    DataContext.SaveChanges();
+                }
+                return RedirectToAction("Manage", new { id = model.Team.Id });
+            }
+            catch (DbEntityValidationException e)
+            {
+                foreach (var eve in e.EntityValidationErrors)
+                {
+                    Console.WriteLine("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                        eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                    foreach (var ve in eve.ValidationErrors)
+                    {
+                        Console.WriteLine("- Property: \"{0}\", Error: \"{1}\"",
+                            ve.PropertyName, ve.ErrorMessage);
+                    }
+                }
+                throw;
+            }
+            //if (ModelState.IsValidField("NewAudition"))
+            //{
+            //    DataContext.Auditions.Add(model.NewAudition);
+            //    DataContext.SaveChanges();
+            //    return RedirectToAction("Manage", new { id = model.NewAudition.TeamId });
+            //}
+            //else
+            //{
+            //    return View(model);
+            //}
+            //if (TryValidateModel(audition))
+            //{
+            //}
+        }
+
+        [Authorize(Roles = "Teacher")]
         public ActionResult DeleteAudition(int id)
         {
-            var audition = DataContext.Auditions.Single(s => s.Id == id);
+            var audition = DataContext.Auditions.Include("EventInstances").Single(s => s.Id == id);
             var teamId = audition.TeamId;
+            if(audition.EventInstances != null)
+            {
+                DataContext.EventInstances.RemoveRange(audition.EventInstances);
+            }
             DataContext.Auditions.Remove(audition);
             DataContext.SaveChanges();
             return RedirectToAction("Manage", new { id = teamId });
@@ -328,6 +412,8 @@ namespace EDR.Controllers
         {
             try
             {
+                model.NewPerformance.EventInstances = new List<EventInstance>();
+                model.NewPerformance.EventInstances.Add(new EventInstance() { DateTime = model.NewPerformance.StartDate, EndDate = Convert.ToDateTime(model.NewPerformance.EndDate), StartTime = model.NewPerformance.StartTime, EndTime = model.NewPerformance.EndTime, PlaceId = model.NewPerformance.PlaceId });
                 DataContext.Performances.Add(model.NewPerformance);
                 DataContext.SaveChanges();
                 return RedirectToAction("Manage", new { id = model.NewPerformance.TeamId });
@@ -351,8 +437,12 @@ namespace EDR.Controllers
         [Authorize(Roles = "Teacher")]
         public ActionResult DeletePerformance(int id)
         {
-            var performance = DataContext.Performances.Single(s => s.Id == id);
+            var performance = DataContext.Performances.Include("EventInstances").Single(s => s.Id == id);
             var teamId = performance.TeamId;
+            if (performance.EventInstances != null)
+            {
+                DataContext.EventInstances.RemoveRange(performance.EventInstances);
+            }
             DataContext.Performances.Remove(performance);
             DataContext.SaveChanges();
             return RedirectToAction("Manage", new { id = teamId });
@@ -384,8 +474,10 @@ namespace EDR.Controllers
             var start = DateTime.Today;
             var auditions = DataContext.Auditions
                                 .Include("Place")
+                                .Include("EventInstances")
                                 .Where(a => a.StartDate >= start && a.TeamId == id);
-            return PartialView("~/Views/Shared/DisplayTemplates/Auditions.cshtml", auditions);
+            //  return PartialView("~/Views/Shared/DisplayTemplates/Auditions.cshtml", auditions);
+            return PartialView("~/Views/Shared/_EventsPartial.cshtml", auditions);
         }
 
         [HttpGet]
@@ -394,8 +486,41 @@ namespace EDR.Controllers
             var start = DateTime.Today;
             var performances = DataContext.Performances
                                 .Include("Place")
+                                .Include("EventInstances")
                                 .Where(p => p.TeamId == id);
-            return PartialView("~/Views/Shared/DisplayTemplates/Performances.cshtml", performances);
+            //  return PartialView("~/Views/Shared/DisplayTemplates/Performances.cshtml", performances);
+            return PartialView("~/Views/Shared/_EventsPartial.cshtml", performances);
+        }
+
+        [HttpGet]
+        public virtual ActionResult GetRehearsalsPartial(int id)
+        {
+            var start = DateTime.Today;
+            var rehearsals = DataContext.Rehearsals
+                                .Include("Place")
+                                .Include("EventInstances")
+                                .Where(a => a.StartDate >= start && a.TeamId == id);
+            return PartialView("~/Views/Shared/_EventsPartial.cshtml", rehearsals);
+        }
+
+        public JsonResult GetEventInstances(DateTime start, DateTime end, int teamId)
+        {
+            var instances = new List<EventInstance>();
+            instances = DataContext.Auditions.Where(a => a.TeamId == teamId).FirstOrDefault().EventInstances.ToList();
+            instances.AddRange(DataContext.Performances.Where(a => a.TeamId == teamId).FirstOrDefault().EventInstances.ToList());
+            instances.AddRange(DataContext.Rehearsals.Where(a => a.TeamId == teamId).FirstOrDefault().EventInstances.ToList());
+
+            return Json(instances.AsEnumerable().Select(s =>
+                        new {
+                            id = s.EventId,
+                            title = s.Event.Name,
+                            start = s.StartTime.Value.ToString("o"),
+                            end = s.EndTime.Value.ToString("o"),
+                            lat = s.Event.Place.Latitude,
+                            lng = s.Event.Place.Longitude,
+                            color = s.Event is Class ? "#65AE25" : s.Event is Social ? "#006A90" : s.Event is Performance ? "#f0ad4e" : s.Event is Rehearsal ? "#d9534f" : "#428bca",
+                            url = Url.Action("View", "Team", new { id = teamId })
+                        }), JsonRequestBehavior.AllowGet);
         }
 
         // POST: Team

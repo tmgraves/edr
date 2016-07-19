@@ -3,8 +3,38 @@
 @{
     var cls = Model is EDR.Models.Class ? (EDR.Models.Class)Model : null;
     var soc = Model is EDR.Models.Social ? (EDR.Models.Social)Model : null;
-}
+    var aud = Model is EDR.Models.Audition ? (EDR.Models.Audition)Model : null;
+    var per = Model is EDR.Models.Performance ? (EDR.Models.Performance)Model : null;
+    var reh = Model is EDR.Models.Rehearsal ? (EDR.Models.Rehearsal)Model : null;
+    EDR.Enums.EventType eventtype = new EDR.Enums.EventType();
 
+    var imgsrc = "";
+    if (Model is EDR.Models.Class)
+    {
+        imgsrc = Model.PhotoUrl;
+        eventtype = EDR.Enums.EventType.Class;
+    }
+    else if (Model is EDR.Models.Social)
+    {
+        imgsrc = Model.PhotoUrl;
+        eventtype = EDR.Enums.EventType.Social;
+    }
+    else if (Model is EDR.Models.Audition)
+    {
+        imgsrc = "~/Content/images/audition.jpg";
+        eventtype = EDR.Enums.EventType.Audition;
+    }
+    else if (Model is EDR.Models.Performance)
+    {
+        imgsrc = "~/Content/images/performance.jpg";
+        eventtype = EDR.Enums.EventType.Performance;
+    }
+    else if (Model is EDR.Models.Rehearsal)
+    {
+        imgsrc = "~/Content/images/rehearsal.jpg";
+        eventtype = EDR.Enums.EventType.Rehearsal;
+    }
+}
 <style>
     .vertical-container {
         width: 100%;
@@ -29,15 +59,22 @@
     <div class="box-default" style="padding: 5px; height: 100%;">
         <div class="col-lg-4 col-xs-4 nospace helper text-center" style="height: 100%; background-color: #000;">
             <div class="col-lg-2 col-xs-3 nospace text-center" style="height: 100%;">
-                <div class="@(Model is EDR.Models.Class ? "btn-success" : "btn-info") text-center vertical-container">
+                <div class="@(Model is EDR.Models.Class ? "btn-success" : Model is EDR.Models.Social ? "btn-info" : Model is EDR.Models.Performance ? "btn-warning" : Model is EDR.Models.Rehearsal ? "btn-danger" : "btn-primary") text-center vertical-container">
                     <div style="font-weight: bolder;">
-                        @(cls != null ? cls.ClassType.ToString().ToUpper() : soc.SocialType.ToString().ToUpper())
+                        @if (cls != null || soc != null)
+                        {
+                            @(cls != null ? cls.ClassType.ToString().ToUpper() : soc.SocialType.ToString().ToUpper())
+                        }
+                        else
+                        {
+                            @eventtype.ToString()
+                        }
                     </div>
                 </div>
             </div>
             <div class="col-lg-10 col-xs-9 nospace text-left textoverlaycontainer" style="height: 100%;">
                 <div style="opacity:0.7;filter:alpha(opacity=70); height: 100%;">
-                    <span style="line-height: 100%; vertical-align: middle;"></span><img style="max-width: 100%; max-height: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.PhotoUrl))" />
+                    <span style="line-height: 100%; vertical-align: middle;"></span><img style="max-width: 100%; max-height: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(imgsrc))" />
                 </div>
                 <div class="textoverlay topleft text-center">
                     <h3 class="nospace" style="color: #fff;">
@@ -52,33 +89,39 @@
                     </h3>
                 </div>
                 <div class="textoverlay bottomright">
-                    <h3 class="nospace" style="color: #fff;">
-                        @if (Model.Free)
-                        {
+                    @if (cls != null || soc != null)
+                    {
+                        <h3 class="nospace" style="color: #fff;">
+                            @if (Model.Free)
+                            {
                             @:Free
-                        }
-                        else if (Model.Tickets.Count() != 0)
-                        {
+                            }
+                            else if (Model.Tickets.Count() != 0)
+                            {
                             @Model.Tickets.Where(t => (t.Start == null || t.Start <= DateTime.Today) && (t.End == null || t.End >= DateTime.Today)).Min(t => t.Price).ToString("C0")
-                        }
-                        else if (Model is EDR.Models.Class)
-                        {
+                            }
+                            else if (Model is EDR.Models.Class)
+                            {
                             @(((EDR.Models.Class)Model).School.Tickets.Where(t => (t.Start == null || t.Start <= DateTime.Today) && (t.End == null || t.End >= DateTime.Today)).Min(t => t.Price).ToString("C0"))
-                        }
-                        else
-                        {
+                            }
+                            else
+                            {
                             @:Free
-                        }
-                    </h3>
+                            }
+                        </h3>
+                    }
                 </div>
             </div>
         </div>
         <div class="col-lg-8 col-xs-8 text-left" style="height: 100%;">
             <div class="row">
-                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" id="parentc">
-                    <input id="rv" type="hidden" value="@(Model.Reviews.Count() != 0 ? Model.Reviews.Average(r => r.Rating) : 0)" class="ratingval" />
-                    <div id="cont" class="rateYo"></div>
-                </div>
+                @if (cls != null || soc != null)
+                {
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" id="parentc">
+                        <input id="rv" type="hidden" value="@(Model.Reviews.Count() != 0 ? Model.Reviews.Average(r => r.Rating) : 0)" class="ratingval" />
+                        <div id="cont" class="rateYo"></div>
+                    </div>
+                }
                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 nospace text-right">
                     @if (cls != null)
             {
@@ -131,7 +174,7 @@
             </div>
             <div class="small">
                 @*@Html.DisplayFor(modelItem => Model.Place.Address)<br />*@
-                @Html.DisplayFor(modelItem => Model.Place.City), @Html.DisplayFor(modelItem => Model.Place.StateName)
+                @Html.DisplayFor(modelItem => Model.Place.City), @(Model.Place.State != null ? Model.Place.State.ToString() : Model.Place.StateName)
                 @*@Html.DisplayFor(modelItem => Model.Place.Zip)*@
             </div>
             <div class="small">
