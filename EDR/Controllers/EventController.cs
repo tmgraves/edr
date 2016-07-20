@@ -4401,7 +4401,7 @@ namespace EDR.Controllers
         }
 
         [Authorize(Roles = "Owner,Promoter,Teacher")]
-        public ActionResult DeleteInstance(int id)
+        public ActionResult DeleteInstance(int id, string returnUrl)
         {
             var instance = DataContext.EventInstances.Include("EventRegistrations").Where(i => i.Id == id).FirstOrDefault();
             var eventid = instance.EventId;
@@ -4412,7 +4412,14 @@ namespace EDR.Controllers
                 DataContext.SaveChanges();
             }
 
-            return RedirectToAction("Manage", new { id = eventid });
+            if (returnUrl != null)
+            {
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                return RedirectToAction("Manage", new { id = eventid });
+            }
         }
 
         [Authorize(Roles = "Owner,Promoter,Teacher")]

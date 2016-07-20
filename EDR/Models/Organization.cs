@@ -65,9 +65,9 @@ namespace EDR.Models
         [ForeignKey("SchoolId")]
         public School School { get; set; }
         public virtual ICollection<Teacher> Teachers { get; set; }
-        public ICollection<Rehearsal> Rehearsals { get; set; }
-        public ICollection<Performance> Performances { get; set; }
-        public ICollection<Audition> Auditions { get; set; }
+        public virtual ICollection<Rehearsal> Rehearsals { get; set; }
+        public virtual ICollection<Performance> Performances { get; set; }
+        public virtual ICollection<Audition> Auditions { get; set; }
     }
 
     public class OrganizationMember : Entity

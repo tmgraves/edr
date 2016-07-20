@@ -466,6 +466,7 @@
     <Content Include="Content\images\facebookSmall.png" />
     <Content Include="Content\images\indicator.white.gif" />
     <Content Include="Content\images\instagram.png" />
+    <Content Include="Content\images\loadingspinner.gif" />
     <Content Include="Content\images\MapMarker.png" />
     <Content Include="Content\images\MissingImage.jpg" />
     <Content Include="Content\images\MissingImageThumbnail.jpg" />
@@ -963,6 +964,7 @@
     <Content Include="Views\Event\Mobile\View.cshtml" />
     <Content Include="Views\Home\FAQ.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
+    <Content Include="Views\Shared\_EventInstancesPartial.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

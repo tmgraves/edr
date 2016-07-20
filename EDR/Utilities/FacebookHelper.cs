@@ -86,37 +86,45 @@ namespace EDR.Utilities
 
         public static List<FacebookPhoto> GetPhotos(string token)
         {
-            var fb = new FacebookClient(token);
-            ArrayList imageSize;
-            //Get the album data
-            var photoList = new List<FacebookPhoto>();
-            dynamic albums = fb.Get("me/albums");
-            foreach (dynamic albumInfo in albums.data)
+            try
             {
-                //Get the Pictures inside the album this gives JASON objects list that has photo attributes 
-                // described here http://developers.facebook.com/docs/reference/api/photo/
-                dynamic albumsPhotos = fb.Get(albumInfo.id + "/photos");
-
-                foreach (dynamic pictures in albumsPhotos.data)
+                var fb = new FacebookClient(token);
+                ArrayList imageSize;
+                //Get the album data
+                var photoList = new List<FacebookPhoto>();
+                dynamic albums = fb.Get("me/albums");
+                foreach (dynamic albumInfo in albums.data)
                 {
-                    imageSize = new ArrayList();
-                    foreach (dynamic rsa in pictures.images)
+                    //Get the Pictures inside the album this gives JASON objects list that has photo attributes 
+                    // described here http://developers.facebook.com/docs/reference/api/photo/
+                    dynamic albumsPhotos = fb.Get(albumInfo.id + "/photos");
+
+                    foreach (dynamic pictures in albumsPhotos.data)
                     {
-                        imageSize.Add(rsa.height);
+                        imageSize = new ArrayList();
+                        foreach (dynamic rsa in pictures.images)
+                        {
+                            imageSize.Add(rsa.height);
+                        }
+                        photoList.Add(new FacebookPhoto()
+                        {
+                            Album = albumInfo.name,
+                            Id = pictures.id,
+                            Name = pictures.name,
+                            Link = pictures.link,
+                            Source = pictures.picture,
+                            LargeSource = pictures.source,
+                            PhotoDate = DateTime.Parse(pictures.created_time)
+                        });
                     }
-                    photoList.Add(new FacebookPhoto()
-                    {
-                        Album = albumInfo.name,
-                        Id = pictures.id,
-                        Name = pictures.name,
-                        Link = pictures.link,
-                        Source = pictures.picture,
-                        LargeSource = pictures.source,
-                        PhotoDate = DateTime.Parse(pictures.created_time)
-                    });
                 }
+                return (photoList);
             }
-            return(photoList);
+            catch (Exception ex)
+            {
+                return null;
+            }
+
         }
 
         public static List<FacebookPhoto> GetAlbumPhotos(string token, string albumid)

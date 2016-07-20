@@ -176,6 +176,11 @@
                 @*@Html.DisplayFor(modelItem => Model.Place.Address)<br />*@
                 @Html.DisplayFor(modelItem => Model.Place.City), @(Model.Place.State != null ? Model.Place.State.ToString() : Model.Place.StateName)
                 @*@Html.DisplayFor(modelItem => Model.Place.Zip)*@
+                <a target="_blank" href="https://www.google.com/maps/place/@Model.Place.Name+@Model.Place.Address,+@Model.Place.City,+@Model.Place.State+@Model.Place.Zip">
+                    @*https://maps.google.com/?q=@Model.Place.Latitude,@Model.Place.Longitude*@
+                    <i class="glyphicon glyphicon-map-marker"></i>
+                    View Map
+                </a>
             </div>
             <div class="small">
                 @if (cls != null)

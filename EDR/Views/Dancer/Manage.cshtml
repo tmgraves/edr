@@ -317,6 +317,21 @@
                 </div>
             </div>
         </div>
+        <div class="panel panel-default">
+            <div class="panel-body buttoncontainer">
+                <h3>Performance Teams</h3>
+                <table class="table">
+                    @foreach (var item in Model.Dancer.OrganizationMembers.Select(m => m.Organization).OfType<EDR.Models.Team>())
+                    {
+                        <tr>
+                            <td>
+                                @Html.ActionLink(item.Name, "View", "Team", new { id = item.Id }, new { @class = "text-primary text-left", @style = "text-align: left !important; width: 100% !important; max-width: 100% !important;" })
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
     </div>
     <div class="col-lg-6 col-md-6">
         <div class="panel panel-default">
@@ -591,14 +606,14 @@
         minLength: 1
     });
 
-    //var obj = {
+        //var obj = {
     //    "flammable": "inflammable",
     //    "duh": "no duh"
     //};
     //$.each(obj, function (key, value) {
     //    alert(key + ": " + value);
     //});
-    
+
     //    $.ajax({
     //    url: '../DanceStyle/Search',
     //    type: "GET",

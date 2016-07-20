@@ -95,5 +95,6 @@ namespace EDR.Models
         public ICollection<Order> Orders { get; set; }
         public ICollection<UserTicket> Tickets { get; set; }
         public ICollection<EventRegistration> EventRegistrations { get; set; }
+        public ICollection<OrganizationMember> OrganizationMembers { get; set; }
     }
 }

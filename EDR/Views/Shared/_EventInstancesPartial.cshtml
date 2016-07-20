@@ -1,0 +1,64 @@
+﻿@model IEnumerable<EDR.Models.EventInstance>
+
+@if (Model.Count() != 0)
+{
+    var eventtype = Model.FirstOrDefault().Event is EDR.Models.Class ? EDR.Enums.EventType.Class : Model.FirstOrDefault().Event is EDR.Models.Social ? EDR.Enums.EventType.Social : Model.FirstOrDefault().Event is EDR.Models.Audition ? EDR.Enums.EventType.Audition : Model.FirstOrDefault().Event is EDR.Models.Rehearsal ? EDR.Enums.EventType.Rehearsal : EDR.Enums.EventType.Performance;
+    var teamId = 0;
+    if (eventtype == EDR.Enums.EventType.Audition)
+    {
+        teamId = ((EDR.Models.Audition)Model.FirstOrDefault().Event).TeamId;
+    }
+    else if (eventtype == EDR.Enums.EventType.Rehearsal)
+    {
+        teamId = ((EDR.Models.Rehearsal)Model.FirstOrDefault().Event).TeamId;
+    }
+    else if (eventtype == EDR.Enums.EventType.Performance)
+    {
+        teamId = (int)((EDR.Models.Performance)Model.FirstOrDefault().Event).TeamId;
+    }
+
+    var returnUrl = "";
+    if (Model.FirstOrDefault().Event is EDR.Models.Class || Model.FirstOrDefault().Event is EDR.Models.Social)
+    {
+        returnUrl = Url.Action("Manage", "Event", new { id = Model.FirstOrDefault().EventId, eventType = eventtype });
+    }
+    else
+    {
+        returnUrl = Url.Action("Manage", "Team", new { id = teamId });
+    }
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>
+                    Date
+                </th>
+                @*<th>
+                    Place
+                </th>*@
+                <th>
+                </th>
+            </tr>
+        </thead>
+        @foreach (var m in Model)
+        {
+            <tr>
+                <td>
+                    @(((DateTime)m.StartTime).ToString("ddd M/dd/yy @h:mm tt"))
+                </td>
+                @*<td>
+                    @m.Place.Name
+                    <a target="_blank" href="https://www.google.com/maps/place/@m.Place.Name+@m.Place.Address,+@m.Place.City,+@m.Place.State+@m.Place.Zip">
+                        <i class="glyphicon glyphicon-map-marker"></i>
+                        View Map
+                    </a>
+                </td>*@
+                <td>
+                    <a class="btn btn-sm btn-danger" title="Delete" href="@Url.Action("DeleteInstance", "Event", new { id = m.Id, returnUrl = returnUrl })" onclick="return confirm('Are you sure you want to DELETE this date?')">
+                        <i class="glyphicon glyphicon-remove"></i>
+                    </a>
+                </td>
+            </tr>
+        }
+    </table>
+}

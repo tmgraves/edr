@@ -36,6 +36,7 @@ namespace EDR.Controllers
 {
     public class DancerController : BaseController
     {
+        [Authorize]
         public ActionResult Manage()
         {
             var userid = User.Identity.GetUserId();
@@ -48,6 +49,7 @@ namespace EDR.Controllers
                             .Include("EventRegistrations")
                             .Include("EventRegistrations.Instance")
                             .Include("EventRegistrations.Instance.Event")
+                            .Include("OrganizationMembers.Organization")
                             .Single(s => s.Id == userid);
 
             if (model.Dancer.FacebookToken != null)
@@ -510,6 +512,14 @@ namespace EDR.Controllers
             //viewModel.Scheduler = scheduler;
 
             return View(viewModel);
+        }
+
+        [HttpGet]
+        public virtual ActionResult GetTeamsPartial()
+        {
+            var userid = User.Identity.GetUserId();
+            var teams = DataContext.Teams.Where(t => t.Members.Any(m => m.UserId == userid));
+            return PartialView("~/Views/Shared/DisplayTemplates/Teams.cshtml", teams);
         }
 
         [Authorize]

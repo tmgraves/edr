@@ -12,6 +12,7 @@ using EDR.Models.ViewModels;
 using System.Data.Entity.Validation;
 using Microsoft.AspNet.Identity;
 using System.Text.RegularExpressions;
+using EDR.Utilities;
 
 namespace EDR.Controllers
 {
@@ -503,12 +504,47 @@ namespace EDR.Controllers
             return PartialView("~/Views/Shared/_EventsPartial.cshtml", rehearsals);
         }
 
+        [HttpGet]
+        public virtual ActionResult GetRehearsalDatesPartial(int id)
+        {
+            var start = DateTime.Today;
+            var instances = DataContext.Rehearsals
+                                .Include("Place")
+                                .Include("EventInstances")
+                                .Where(r => r.EventInstances.Any(i => i.DateTime >= start) && r.Id == id).FirstOrDefault().EventInstances;
+            return PartialView("~/Views/Shared/_EventInstancesPartial.cshtml", instances);
+        }
+
+        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        [HttpPost]
+        public virtual ActionResult AddRehearsalDates(int rehearsalId, int eventCount)
+        {
+            var reh = DataContext.Rehearsals.Include("EventInstances").Single(e => e.Id == rehearsalId);
+
+            if (DataContext.EventInstances.Where(i => i.EventId == rehearsalId && i.DateTime >= DateTime.Today).Count() < 20)
+            {
+                var sdate = DataContext.EventInstances.Where(i => i.EventId == rehearsalId).Max(i => i.DateTime).AddDays(1);
+                var daylength = (Convert.ToDateTime(reh.EndDate) - reh.StartDate).TotalDays;
+                sdate = ApplicationUtility.GetNextDate(reh.StartDate, Enums.Frequency.Weekly, 1, reh.Day, sdate, null);
+
+                for (int i = 1; i <= eventCount; i++)
+                {
+                    reh.EventInstances.Add(new EventInstance() { DateTime = sdate, EndDate = sdate.AddDays(daylength), PlaceId = reh.PlaceId, StartTime = Convert.ToDateTime(sdate.ToShortDateString() + " " + ((DateTime)reh.StartTime).ToShortTimeString()), EndTime = Convert.ToDateTime(sdate.AddDays(daylength).ToShortDateString() + " " + ((DateTime)reh.EndTime).ToShortTimeString()) });
+                    sdate = ApplicationUtility.GetNextDate(sdate, Enums.Frequency.Weekly, 1, reh.Day, sdate.AddDays(1), null);
+                }
+                DataContext.SaveChanges();
+            }
+
+            return RedirectToAction("Manage", new { id = reh.TeamId });
+        }
+
         public JsonResult GetEventInstances(DateTime start, DateTime end, int teamId)
         {
             var instances = new List<EventInstance>();
-            instances = DataContext.Auditions.Where(a => a.TeamId == teamId).FirstOrDefault().EventInstances.ToList();
-            instances.AddRange(DataContext.Performances.Where(a => a.TeamId == teamId).FirstOrDefault().EventInstances.ToList());
-            instances.AddRange(DataContext.Rehearsals.Where(a => a.TeamId == teamId).FirstOrDefault().EventInstances.ToList());
+            var team = DataContext.Teams.Where(t => t.Id == teamId).FirstOrDefault();
+            instances.AddRange(team.Auditions.SelectMany(a => a.EventInstances).ToList());
+            instances.AddRange(team.Performances.SelectMany(a => a.EventInstances).ToList());
+            instances.AddRange(team.Rehearsals.SelectMany(a => a.EventInstances).ToList());
 
             return Json(instances.AsEnumerable().Select(s =>
                         new {

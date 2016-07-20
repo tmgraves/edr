@@ -450,7 +450,10 @@
                         {
                             <tr>
                                 <td>
-                                    @r.Day
+                                    <p>
+                                        @r.Day
+                                    </p>
+                                    <button id="btnRehearsalDates" type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalRehearsalDates" value="@r.Id">Rehearsal Dates</button>
                                 </td>
                                 <td>
                                     @(((DateTime)r.StartTime).ToShortTimeString()) to<br />
@@ -778,6 +781,34 @@
 </div>
 <!-- Modal Picture Upload -->
 
+<!-- Modal Rehearsal Dates -->
+<div class="modal fade" id="modalRehearsalDates" tabindex="-1" role="dialog" aria-labelledby="myRehearsalDates">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Rehearsal Dates</h4>
+            </div>
+            <div class="modal-body">
+                <div style="padding: 5px;">
+                    @using (Html.BeginForm("AddRehearsalDates", "Team", FormMethod.Post))
+                    {
+                        <input type="hidden" id="rehearsalId" name="rehearsalId" />
+                        <input class="text-right" id="eventCount" name="eventCount" value="1" placeholder="# of Dates to add" style="width: 75px;" />
+                        <button id="btnaddrehearsaldates" type="submit" class="btn btn-primary" value="Add Instances">Add Dates</button>
+                    }
+                </div>
+                <div id="rehearsaldatesdiv">
+                    <img src="~/Content/images/loadingspinner.gif" />
+                </div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!-- Modal Add Audition -->
+
 <style>
 #fbEvents option {
     width: 50px;
@@ -801,11 +832,17 @@
 <script src="../../Scripts/bootstrap-toggle.js"></script>
 <link href="../../Content/bootstrap-toggle.css" rel="stylesheet">
 <script src="~/Scripts/searchhelper.js"></script>
+<script src="~/Scripts/jquery.mousewheel.js"></script>
 
     <script type="text/javascript">
     $.validator.setDefaults({
         ignore: ""
     })
+
+    $('#eventCount').spinner({
+        min: 1,
+        max: 10
+    });
 
     $('.start').timepicker({
         'timeFormat': 'h:i A',
@@ -841,6 +878,18 @@
         SetDates(this);
     });
 
+    $('#modalRehearsalDates').on('show.bs.modal', function (e) {
+        var rehearsalid = $(e.relatedTarget).prop('value');
+        LoadRehearsalDates(rehearsalid);
+        $('#rehearsalId').val(rehearsalid);
+    })
+
+    function LoadRehearsalDates(id) {
+        $.get('@Url.Action("GetRehearsalDatesPartial", "Team")', { 'id': id }, function (data) {
+            $("#rehearsaldatesdiv").empty();
+            $("#rehearsaldatesdiv").html(data);
+        });
+    }
     LoadFacebookEvents();
 
     function LoadFacebookEvents() {
@@ -926,12 +975,10 @@
         $('#btnEdit').click(function () {
             $('#viewdiv').hide();
             $('#editdiv').show();
-            try
-            {
+            try {
                 var valid = $('#saveform.main').valid();
             }
-            catch(err)
-            {
+            catch (err) {
                 document.getElementById("demo").innerHTML = err.message;
             }
         });
