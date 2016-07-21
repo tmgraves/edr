@@ -1,0 +1,14 @@
+﻿@model ICollection<EDR.Models.Team>
+
+<table class="table">
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.ActionLink(item.Name, "Manage", "Team", new { id = item.Id }, new { @class = "text-primary text-left", @style = "text-align: left !important; width: 100% !important; max-width: 100% !important;" })
+            </td>
+        </tr>
+    }
+</table>
+
+

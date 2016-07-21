@@ -86,6 +86,36 @@
                         }
                     </h2>
                 </div>
+
+                @if (Model.EventType == EventType.Class)
+                {
+                    <div class="textoverlay bottomright">
+                        <h3>
+                            <span class="label label-success">
+                                @{
+                                    switch (((Class)Model.Event).SkillLevel)
+                                    {
+                                        case 1:
+                                            <text>Beginner</text>;
+                                            break;
+                                        case 2:
+                                            <text>Beginner/Intermediate</text>;
+                                            break;
+                                        case 3:
+                                            <text>Intermediate</text>;
+                                            break;
+                                        case 4:
+                                            <text>Intermediate/Advanced</text>;
+                                            break;
+                                        case 5:
+                                            <text>Advanced</text>;
+                                            break;
+                                    }
+                                }
+                            </span>
+                        </h3>
+                    </div>
+                                }
             </div>
         </div>
         <div class="col-xs-12 verticaljustify nospace">
@@ -96,6 +126,9 @@
                     </a>
                 </div>
             </p>
+        </div>
+        <div class="col-xs-12">
+            @Html.DisplayFor(m => Model.Event.DanceStyles, "DanceStyleLabels")
         </div>
         <div class="col-xs-12">
             <div class="description">

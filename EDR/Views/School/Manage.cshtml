@@ -419,22 +419,21 @@
         <div class="panel panel-default">
             <div class="panel-body buttoncontainer">
                 <h3>Performance Teams</h3>
-                @Html.ActionLink("Add a Team", "Create", "Team", new { schoolId = Model.School.Id }, new { @class = "btn btn-warning actionbutton"} )
-                <table class="table">
-                    @foreach (var item in Model.School.Teams)
-                        {
-                        <tr>
-                            <td>
-                                @Html.ActionLink(item.Name, "Manage", "Team", new { id = item.Id }, new { @class = "text-primary text-left", @style = "text-align: left !important; width: 100% !important; max-width: 100% !important;" })
-                            </td>
-                        </tr>
-                    }
-                </table>
+                <button id="btnChangePicture" type="button" class="btn btn-warning actionbutton" data-toggle="modal" data-target="#modalAddTeam">
+                    Add a Team
+                </button>
+                <div id="teamscontainer">
+                    @Html.Partial("~/Views/Shared/_SchoolTeamsPartial.cshtml", Model.School.Teams)
+                </div>
+                @*@Html.ActionLink("Add a Team", "Create", "Team", new { schoolId = Model.School.Id }, new { @class = "btn btn-warning actionbutton"} )*@
             </div>
         </div>
     </div>
 </div>
 
+@Html.Partial("~/Views/Shared/_AddTeamPartial.cshtml", new EDR.Models.Team())
+
+<input id="testaddress" />
 <!-- Modal Picture Upload -->
 <div class="modal fade" id="modalPic" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog modal-lg" role="document">
@@ -484,6 +483,9 @@
     </div>
 </div>
 <!-- Modal Picture Upload -->
+
+<style>
+</style>
 
 @section Scripts
                         {

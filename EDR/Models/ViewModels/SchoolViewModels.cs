@@ -61,6 +61,7 @@ namespace EDR.Models.ViewModels
     {
         public School School { get; set; }
         public string NewMemberId { get; set; }
+        public Team NewTeam { get; set; }
 
         public ManageSchoolViewModel()
         {

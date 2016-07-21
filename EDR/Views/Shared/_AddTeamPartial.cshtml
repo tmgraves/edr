@@ -1,0 +1,216 @@
+﻿@model EDR.Models.Team
+
+<!-- Modal Add Team -->
+<div class="modal fade" id="modalAddTeam" tabindex="-1" role="dialog" aria-labelledby="myTeamModal">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="picheader">Add a Team</h3>
+            </div>
+            <div class="modal-body">
+                <div id="newteamdiv" class="text-center">
+                    <input id="btnaddteam" type="button" class="newbtn btn btn-primary" value="Create a New Team" />
+                    <h4 class="linebehind">OR</h4>
+                    <input id="btnimportteam" type="button" class="facebookbtn btn btn-primary" value="Import Team from Facebook" />
+                </div>
+                <div id="addteamdiv" style="display: none;">
+                    <div class="center-block col-md-6 text-center" style="float: none;">
+                        <div class="panel panel-default">
+                            <div class="panel-body bg-info">
+                            @using (Ajax.BeginForm("AddTeamAJAX",
+                                        "Event",
+                                        new AjaxOptions()
+                                        {
+                                            UpdateTargetId = "playlistsdiv",
+                                            OnSuccess = "done(this)"
+                                        },
+                                        new { @id = "addytplaylistform" }
+                                        ))
+                            {
+                                    @Html.AntiForgeryToken()
+                                    @Html.HiddenFor(x => x.SchoolId)
+                                    @Html.HiddenFor(model => model.Latitude)
+                                    @Html.HiddenFor(model => model.Longitude)
+                                    @Html.HiddenFor(model => model.Public, new { @Value = "true" })
+                                    <div class="form-horizontal centerform">
+                                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                        <div class="form-group">
+                                            <div class="col-lg-8 center-block">
+                                                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", @placeholder = "Team Name" } })
+                                                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-lg-8 center-block">
+                                                @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control", @placeholder = "Description" } })
+                                                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-lg-8 center-block">
+                                                @Html.EditorFor(model => model.FacebookLink, new { htmlAttributes = new { @class = "form-control", @placeholder = "Facebook Page" } })
+                                                @Html.ValidationMessageFor(model => model.FacebookLink, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-lg-8 center-block">
+                                                @Html.EditorFor(model => model.Address, new { htmlAttributes = new { @class = "form-control", @placeholder = "Address" } })
+                                                @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        @*<div class="form-group">
+                                    <div class="col-lg-8 center-block">
+                                        @Html.EditorFor(model => model.Address2, new { htmlAttributes = new { @class = "form-control", @placeholder = "Address2" } })
+                                        @Html.ValidationMessageFor(model => model.Address2, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>*@
+                                        <div class="form-group">
+                                            <div class="col-lg-8 center-block">
+                                                @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control", @placeholder = "City" } })
+                                                @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-lg-8 center-block">
+                                                @Html.EditorFor(model => model.State, new { htmlAttributes = new { @class = "form-control", @placeholder = "State" } })
+                                                @Html.ValidationMessageFor(model => model.State, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-lg-8 center-block">
+                                                @Html.EditorFor(model => model.Zip, new { htmlAttributes = new { @class = "form-control", @placeholder = "Zipcode" } })
+                                                @Html.ValidationMessageFor(model => model.Zip, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-lg-8 center-block">
+                                                @Html.EditorFor(model => model.Country, new { htmlAttributes = new { @class = "form-control", @placeholder = "Country" } })
+                                                @Html.ValidationMessageFor(model => model.Country, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-lg-8 center-block">
+                                                @Html.DropDownListFor(m => m.SkillLevel,
+                                                    new SelectList(new List<SelectListItem> {
+                                                        new SelectListItem { Text = "Beginner", Value = "1" },
+                                                        new SelectListItem { Text = "Beginner/Intermediate", Value = "2" },
+                                                        new SelectListItem { Text = "Intermediate", Value = "3" },
+                                                        new SelectListItem { Text = "Intermediate/Advanced", Value = "4" },
+                                                        new SelectListItem { Text = "Advanced", Value = "5" },
+                                                    }, "Value", "Text"),
+                                                "-- Select a Skill Level --", new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.SkillLevel, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-lg-8 center-block">
+                                                <input type="submit" value="Create Team" class="btn btn-primary" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="importteamdiv" class="pickfacebook text-center" style="display: none;">
+                    <div class="center-block col-md-6 text-center" style="float: none;">
+                        <div class="panel panel-default">
+                            <div class="panel-body bg-info">
+                                <h4>Pick a Facebook Event</h4>
+                                @using (Html.BeginForm("ImportTeam", "Team", FormMethod.Post, new { @id = "importteamform", @class = "main" }))
+                                {
+                                    @Html.HiddenFor(m => m.SchoolId)
+                                    <div class="center-block col-md-12 text-center" style="padding: 10px;">
+                                        <select class="form-control" id="NewFacebookEventId" name="NewFacebookEventId"></select>
+                                    </div>
+                                    <div class="center-block col-md-12 text-center" style="padding: 10px;">
+                                        <input type="submit" id="submit" value="Import Team" class="btn btn-primary" />
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Add Team -->
+
+<script type="text/javascript">
+    $(function () {
+        $('#modalAddTeam').on('shown.bs.modal', function () {
+            $('#newteamdiv').show();
+            $('#addteamdiv').hide();
+            $('#importteamdiv').hide();
+        })
+        $('#btnaddteam').click(function () {
+            $('#newteamdiv').hide();
+            $('#importteamdiv').hide();
+            $('#addteamdiv').show();
+        });
+        $('#btnimportteam').click(function () {
+            $('#newteamdiv').hide();
+            $('#importteamdiv').show();
+            $('#addteamdiv').hide();
+        });
+
+        LoadFacebookEvents();
+
+        $("#Address").geocomplete({
+            details: "form",
+            types: ["geocode", "establishment"],
+        })
+        .bind("geocode:result", function (event, result) {
+            $('#Latitude').prop("value", result.geometry.location.lat());
+            $('#Longitude').prop("value", result.geometry.location.lng());
+            var street_num;
+            var street_name;
+            $.each(result.address_components, function (i, address_component) {
+                //alert(address_component.types[0]);
+                //alert(address_component.long_name);
+                if (address_component.types[0] == "street_number") {
+                    street_num = address_component.long_name;
+                }
+                else if (address_component.types[0] == "route") {
+                    street_name = address_component.long_name;
+                }
+                else if (address_component.types[0] == "locality") {
+                    $('#City').prop("value", address_component.long_name);
+                }
+                else if (address_component.types[0] == "administrative_area_level_1") {
+                    $('#State').prop("value", address_component.long_name);
+                }
+                else if (address_component.types[0] == "postal_code") {
+                    $('#Zip').prop("value", address_component.long_name);
+                }
+                else if (address_component.types[0] == "country") {
+                    $('#Country').prop("value", address_component.short_name);
+                }
+            });
+            //alert(street_num + " " + street_name);
+            $('#Address').prop("value", street_num + " " + street_name);
+            //  console.log(result);
+        });
+
+        function LoadFacebookEvents() {
+            $.get('@Url.Action("GetFacebookEvents", "Dancer")', {
+            }, function (data) {
+                $.each(data, function (index, item) {
+                    var date = new Date(parseInt(item.StartTime.substr(6)));
+                    var str = date.toLocaleDateString() + " - " + item.Name;
+                    if (str.length > 40) str = str.substring(0, 37) + "...";
+                    $('#NewFacebookEventId').append(
+                    $('<option></option>').val(item.Id).html(str)
+                    );
+                });
+            });
+        };
+    });
+</script>
+
