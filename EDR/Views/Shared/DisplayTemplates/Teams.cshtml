@@ -28,31 +28,33 @@
                                 @Html.DisplayFor(modelItem => item.Address)<br />
                                 @Html.DisplayFor(modelItem => item.City), @Html.DisplayFor(modelItem => item.State) @Html.DisplayFor(modelItem => item.Zip)
                             </div>
-                            <span class="label label-success">
-                                @{
-            switch (item.SkillLevel)
-            {
-                case 1:
-                    <text>Beginner</text>;
-                    break;
-                case 2:
-                <text>Beginner/Intermediate</text>;
-                break;
-                case 3:
-                <text>Intermediate</text>;
-                break;
-                case 4:
-                <text>Intermediate/Advanced</text>;
-                break;
-                case 5:
-                <text>Advanced</text>;
-                break;
-                default:
-                <text>Beginner</text>
-                break;
-            }
-                                }
-                            </span>
+                            <h4>
+                                <span class="label label-success">
+                                    @{
+                                        switch (item.SkillLevel)
+                                        {
+                                            case 1:
+                                                <text>Beginner</text>;
+                                                break;
+                                            case 2:
+                                                <text>Beginner/Intermediate</text>;
+                                                break;
+                                            case 3:
+                                                <text>Intermediate</text>;
+                                                break;
+                                            case 4:
+                                                <text>Intermediate/Advanced</text>;
+                                                break;
+                                            case 5:
+                                                <text>Advanced</text>;
+                                                break;
+                                            default:
+                                                <text>Beginner</text>
+                                                break;
+                                        }
+                                    }
+                                </span>
+                            </h4>
                         </div>
                         <div class="text-right col-lg-3" style="padding: 0px !important; margin-top: 2px; white-space: normal;">
                             @foreach (var s in item.DanceStyles)

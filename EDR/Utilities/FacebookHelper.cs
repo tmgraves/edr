@@ -846,6 +846,36 @@ namespace EDR.Utilities
             }
         }
 
+        public static dynamic Search(string token, string query, string type)
+        {
+            try
+            {
+                var fb = new Facebook.FacebookClient(FacebookHelper.GetGlobalToken());
+                var obj = fb.Get("/search?q=" + query + "&type=" + type + "&fields=cover,name,id");
+
+                return obj;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public static dynamic Get(string token, string id)
+        {
+            try
+            {
+                var fb = new Facebook.FacebookClient(FacebookHelper.GetGlobalToken());
+                var obj = fb.Get(id);
+
+                return obj;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
         public static PlaceType ParsePlaceType(List<FacebookCategory> list)
         {
             var type = new PlaceType();

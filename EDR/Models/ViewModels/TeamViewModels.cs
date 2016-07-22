@@ -56,6 +56,13 @@ namespace EDR.Models.ViewModels
 
     public class TeamCreateViewModel : TeamBaseViewModel
     {
+        public int TeacherId { get; set; }
+        public int? SchoolId { get; set; }
+        [Display(Name = "Facebook Page")]
+        [RegularExpression("http[s]?://(www.facebook.com)/?[a-zA-Z0-9/\\-\\.]*", ErrorMessage = "Please enter a valid facebook page.")]
+        public Uri FacebookLink { get; set; }
+        public string FacebookId { get; set; }
+        public string[] DanceStyleId { get; set; }
         public TeamCreateViewModel()
         {
             Team = new Team();

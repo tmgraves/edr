@@ -449,7 +449,7 @@ namespace EDR.Controllers
             return RedirectToAction("Manage", new { id = teamId });
         }
 
-        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        [Authorize(Roles = "Owner,Teacher")]
         public PartialViewResult AddStyle(TeamManageViewModel model)
         {
             var team = DataContext.Teams.Include("DanceStyles").Single(e => e.Id == model.Team.Id);
@@ -515,7 +515,7 @@ namespace EDR.Controllers
             return PartialView("~/Views/Shared/_EventInstancesPartial.cshtml", instances);
         }
 
-        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        [Authorize(Roles = "Owner,Teacher")]
         [HttpPost]
         public virtual ActionResult AddRehearsalDates(int rehearsalId, int eventCount)
         {
@@ -537,6 +537,98 @@ namespace EDR.Controllers
 
             return RedirectToAction("Manage", new { id = reh.TeamId });
         }
+
+        [Authorize(Roles = "Owner,Teacher")]
+        [HttpPost]
+        public ActionResult AddTeamAJAX(TeamCreateViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                model.Team.DanceStyles = DataContext.DanceStyles.Where(s => model.DanceStyleId.Contains(s.Id.ToString())).ToList();
+                DataContext.Teams.Add(model.Team);
+                DataContext.SaveChanges();
+
+                var teams = new List<Team>();
+                if (model.SchoolId != null)
+                {
+                    teams = DataContext.Teams.Where(t => t.SchoolId == model.SchoolId).ToList();
+                }
+                else
+                {
+                    teams = DataContext.Teams.Where(t => t.Teachers.Any(te => te.Id == model.TeacherId)).ToList();
+                }
+
+                return PartialView("~/Views/Shared/_TeamsPartial.cshtml", teams);
+            }
+            else
+            {
+                return null;
+            }
+
+        }
+
+        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        public JsonResult SearchGroupJSON(Uri search)
+        {
+            if (search.Host.Contains("facebook.com"))
+            {
+                var type = search.Segments[1].Replace("/", "");
+                var id = search.Segments[2].Replace("/", "");
+                long fbid;
+                dynamic obj;
+
+                if (long.TryParse(id, out fbid))
+                {
+                    obj = FacebookHelper.Get(FacebookHelper.GetToken(), fbid.ToString());
+                }
+                else
+                {
+                    obj = FacebookHelper.Search(FacebookHelper.GetToken(), id, "group");
+                }
+                return Json(obj, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        [Authorize]
+        public JsonResult Search(string searchString)
+        {
+            var users = DataContext.Users.Where(u => (u.FirstName + " " + u.LastName).Contains(searchString)).Select(s => new { Id = s.Id, Name = s.FirstName + " " + s.LastName }).ToList();
+            return Json(users, JsonRequestBehavior.AllowGet);
+        }
+
+        //[Authorize(Roles = "Owner,Teacher")]
+        //[HttpPost]
+        //public ActionResult ImportTeamAJAX(TeamCreateViewModel model)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        var fbgroup = FacebookHelper.GetGroup()
+        //        model.Team.DanceStyles = DataContext.DanceStyles.Where(s => model.DanceStyleId.Contains(s.Id.ToString())).ToList();
+        //        DataContext.Teams.Add(model.Team);
+        //        DataContext.SaveChanges();
+
+        //        var teams = new List<Team>();
+        //        if (model.SchoolId != null)
+        //        {
+        //            teams = DataContext.Teams.Where(t => t.SchoolId == model.SchoolId).ToList();
+        //        }
+        //        else
+        //        {
+        //            teams = DataContext.Teams.Where(t => t.Teachers.Any(te => te.Id == model.TeacherId)).ToList();
+        //        }
+
+        //        return PartialView("~/Views/Shared/_TeamsPartial.cshtml", teams);
+        //    }
+        //    else
+        //    {
+        //        return null;
+        //    }
+
+        //}
 
         public JsonResult GetEventInstances(DateTime start, DateTime end, int teamId)
         {

@@ -16,11 +16,18 @@ namespace EDR.Models
         public string Description { get; set; }
         public string FacebookLink { get; set; }
         public string PhotoUrl { get; set; }
+        public int ImageOffsetX { get; set; }
+        public int ImageOffsetY { get; set; }
         public bool Public { get; set; }
         [DataType(DataType.Date)]
         [Display(Name = "Date Started")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        public DateTime DateStarted { get; set; }
+        private DateTime _datestarted = DateTime.Now;
+        public DateTime DateStarted
+        {
+            get { return _datestarted; }
+            set { _datestarted = value; }
+        }
         public string Address { get; set; }
         public string Address2 { get; set; }
         public string City { get; set; }
@@ -31,6 +38,7 @@ namespace EDR.Models
         public double Latitude { get; set; }
         [ScaffoldColumn(false)]
         public double Longitude { get; set; }
+        public string FacebookId { get; set; }
         public ICollection<OrganizationMember> Members { get; set; }
         public virtual ICollection<DanceStyle> DanceStyles { get; set; }
         public ICollection<Review> Reviews { get; set; }

@@ -966,7 +966,7 @@
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Shared\_EventInstancesPartial.cshtml" />
     <Content Include="Views\Shared\_AddTeamPartial.cshtml" />
-    <Content Include="Views\Shared\_SchoolTeamsPartial.cshtml" />
+    <Content Include="Views\Shared\_TeamsPartial.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

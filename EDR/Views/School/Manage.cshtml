@@ -422,8 +422,8 @@
                 <button id="btnChangePicture" type="button" class="btn btn-warning actionbutton" data-toggle="modal" data-target="#modalAddTeam">
                     Add a Team
                 </button>
-                <div id="teamscontainer">
-                    @Html.Partial("~/Views/Shared/_SchoolTeamsPartial.cshtml", Model.School.Teams)
+                <div id="teamsdiv">
+                    @Html.Partial("~/Views/Shared/_TeamsPartial.cshtml", Model.School.Teams)
                 </div>
                 @*@Html.ActionLink("Add a Team", "Create", "Team", new { schoolId = Model.School.Id }, new { @class = "btn btn-warning actionbutton"} )*@
             </div>
@@ -431,9 +431,8 @@
     </div>
 </div>
 
-@Html.Partial("~/Views/Shared/_AddTeamPartial.cshtml", new EDR.Models.Team())
+@Html.Partial("~/Views/Shared/_AddTeamPartial.cshtml", new EDR.Models.ViewModels.TeamCreateViewModel() { SchoolId = Model.School.Id })
 
-<input id="testaddress" />
 <!-- Modal Picture Upload -->
 <div class="modal fade" id="modalPic" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog modal-lg" role="document">
@@ -488,12 +487,14 @@
 </style>
 
 @section Scripts
-                        {
+{
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/foolproof")
     @Scripts.Render("~/bundles/jqueryUI")
     @Scripts.Render("~/bundles/GeoComplete")
+
+<script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
 
     <script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
     <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
