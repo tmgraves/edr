@@ -18,11 +18,13 @@ namespace EDR.Areas.Admin.Controllers
     {
         // GET: Admin/Roles
         [Authorize(Roles = "Admin")]
-        public ActionResult Index()
+        public ActionResult Index(string message)
         {
             var model = new RolesViewModel();
             model.Role = new IdentityRole();
             model.Roles = DataContext.Roles.ToList();
+
+            ViewBag.Message = message;
 
             return View(model);
         }
@@ -33,21 +35,27 @@ namespace EDR.Areas.Admin.Controllers
         {
             model.Roles = DataContext.Roles.ToList();
 
-            model.FirstName = model.FirstName == null ? "" : model.FirstName;
-            model.LastName = model.LastName == null ? "" : model.LastName;
-
             if (model.Role != null)
             {
-                model.Users = DataContext.Users.Include("UserPictures").Where(u => u.Roles.Any(r => r.RoleId == model.Role.Id) && u.FirstName.Contains(model.FirstName) && u.LastName.Contains(model.LastName));
+                model.Users = DataContext.Users.Where(u => u.Roles.Any(r => r.RoleId == model.Role.Id));
+
+                if (model.UserId != null)
+                {
+                    model.Users = model.Users.Where(u => u.Id == model.UserId);
+                }
             }
+            model.UserId = null;
+            ModelState.Clear();
             return View(model);
         }
 
         [Authorize(Roles = "Admin")]
-        public ActionResult AddUser(string roleId)
+        public ActionResult AddUser(string roleId, string message)
         {
             var model = new AddUserViewModel();
             model.Roles = DataContext.Roles.ToList();
+
+            ViewBag.Message = message;
             return View(model);
         }
 
@@ -56,13 +64,7 @@ namespace EDR.Areas.Admin.Controllers
         public ActionResult AddUser(AddUserViewModel model)
         {
             model.Roles = DataContext.Roles.ToList();
-            model.FirstName = model.FirstName == null ? "" : model.FirstName;
-            model.LastName = model.LastName == null ? "" : model.LastName;
-
-            if (model.FirstName != "" || model.LastName != "")
-            {
-                model.SearchUsers = DataContext.Users.Include("UserPictures").Where(u => u.FirstName.Contains(model.FirstName) && u.LastName.Contains(model.LastName));
-            }
+            model.SearchUsers = DataContext.Users.Include("UserPictures").Where(u => u.Id == model.UserId);
 
             return View(model);
         }
@@ -80,7 +82,7 @@ namespace EDR.Areas.Admin.Controllers
                     {
                         if (DataContext.Teachers.Where(t => t.ApplicationUser.Id == id).Count() == 0)
                         {
-                            DataContext.Teachers.Add(new Teacher() { ApplicationUser = user, Approved = true, ApproveDate = DateTime.Today });
+                            DataContext.Teachers.Add(new Teacher() { ApplicationUser = user, Approved = true, ApproveDate = DateTime.Today, ContactEmail = user.Email, Phone = user.PhoneNumber ?? "9999999999" });
                             DataContext.SaveChanges();
                         }
 
@@ -88,13 +90,13 @@ namespace EDR.Areas.Admin.Controllers
                         {
                             UserManager.AddToRole(id, "Teacher");
                         }
-                        return RedirectToAction("Index");
+                        return RedirectToAction("Index", new { message = user.FullName + " was added to Teacher Role" });
                     }
                     else if (role == "Promoter")
                     {
                         if (DataContext.Promoters.Where(t => t.ApplicationUser.Id == id).Count() == 0)
                         {
-                            DataContext.Promoters.Add(new Promoter() { ApplicationUser = user, Approved = true, ApproveDate = DateTime.Today });
+                            DataContext.Promoters.Add(new Promoter() { ApplicationUser = user, Approved = true, ApproveDate = DateTime.Today, ContactEmail = user.Email, Phone = user.PhoneNumber ?? "9999999999" });
                             DataContext.SaveChanges();
                         }
 
@@ -102,13 +104,13 @@ namespace EDR.Areas.Admin.Controllers
                         {
                             UserManager.AddToRole(id, "Promoter");
                         }
-                        return RedirectToAction("Index");
+                        return RedirectToAction("Index", new { message = user.FullName + " was added to Promoter Role" });
                     }
                     else if (role == "Owner")
                     {
                         if (DataContext.Owners.Where(t => t.ApplicationUser.Id == id).Count() == 0)
                         {
-                            DataContext.Owners.Add(new Owner() { ApplicationUser = user, Approved = true, ApproveDate = DateTime.Today });
+                            DataContext.Owners.Add(new Owner() { ApplicationUser = user, Approved = true, ApproveDate = DateTime.Today, ContactEmail = user.Email, Phone = user.PhoneNumber ?? "9999999999" });
                             DataContext.SaveChanges();
                         }
 
@@ -116,7 +118,7 @@ namespace EDR.Areas.Admin.Controllers
                         {
                             UserManager.AddToRole(id, "Owner");
                         }
-                        return RedirectToAction("Index");
+                        return RedirectToAction("Index", new { message = user.FullName + " was added to Owner Role" });
                     }
                     else if (role == "Admin")
                     {
@@ -124,17 +126,26 @@ namespace EDR.Areas.Admin.Controllers
                         {
                             UserManager.AddToRole(id, "Admin");
                         }
-                        return RedirectToAction("Index");
+                        return RedirectToAction("Index", new { message = user.FullName + " was added to Admin Role" });
                     }
                 }
             }
-            catch (DbEntityValidationException ex)
+            catch (DbEntityValidationException e)
             {
-                return View();
+                var msg = "";
+                foreach (var eve in e.EntityValidationErrors)
+                {
+                    msg = eve.Entry.Entity.GetType().Name + " " + eve.Entry.State;
+                    foreach (var ve in eve.ValidationErrors)
+                    {
+                        msg = ve.PropertyName + " " + ve.ErrorMessage;
+                    }
+                }
+
+                return RedirectToAction("Index", new { message = msg });
             }
 
-
-            return View();
+            return RedirectToAction("AddUser");
         }
 
         [Authorize(Roles = "Admin")]

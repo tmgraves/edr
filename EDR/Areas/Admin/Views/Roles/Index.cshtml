@@ -2,27 +2,27 @@
 @{
     ViewBag.Title = "Roles";
 }
+<ol class="breadcrumb">
+    <li>All Users</li>
+</ol>
 
 <h2>All Roles <a class="btn btn-primary" href="@Url.Action("AddUser")">Add a User</a> </h2>
+@if (ViewBag.Message != null)
+{
+    <h4 class="text-danger">@ViewBag.Message</h4>
+}
 <div class="container">
     @using (Html.BeginForm("Index"))
     {
         <div class="row">
             <div class="form-group">
-                @Html.Label("Role", htmlAttributes: new { @class = "control-label input-lg col-lg-2 col-md-2 col-sm-2 col-xs-2" })
                 @Html.DropDownListFor(m => m.Role.Id, new SelectList(Model.Roles, "Id", "Name", Model.Role.Id), "-- Select a Role --", new { @class = "form-control", @onchange = "this.form.submit();" })
             </div>
         </div>
         <div class="row">
             <div class="form-group">
-                @Html.LabelFor(m => m.FirstName, htmlAttributes: new { @class = "control-label col-md-2 col-lg-2" })
-                @Html.TextBoxFor(m => m.FirstName, null, new { @class = "form-control", @placeholder = "Joe" })
-            </div>
-        </div>
-        <div class="row">
-            <div class="form-group">
-                @Html.LabelFor(m => m.LastName, htmlAttributes: new { @class = "control-label col-md-2 col-lg-2" })
-                @Html.TextBoxFor(m => m.LastName, null, new { @class = "form-control", @placeholder = "Smith" })
+                <input type="text" id="newuser" placeholder="Type in User Name" class="form-control" style="display: inline-block;" />
+                @Html.HiddenFor(x => x.UserId)
             </div>
         </div>
         <div class="row">
@@ -40,14 +40,7 @@
             <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12" title="@u.Id">
                 <div class="col-lg-6 col-md-6">
                     <div class="captionpic" style="display: inline-block;">
-                        @if (u.UserPictures != null && u.UserPictures.Count > 0)
-                        {
-                            <img class="pull-left" src="@Url.Content(u.UserPictures.First().ThumbnailFilename)" />
-                        }
-                        else
-                        {
-                            <img class="pull-left" style="width: 40px;" src="@Url.Content("~/Content/images/NoPic.png")" />
-                        }
+                        <img id="profilepic" src="@Url.Content(u.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
                     </div>
                     <div style="display: inline-block; vertical-align: top;">
                         <span class="text-primary" style="vertical-align: top;">@u.FullName</span>
@@ -61,3 +54,36 @@
     }
 </div>
 
+@section Scripts
+{
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jqueryUI")
+
+    <script>
+        $('#newuser').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '@Url.Action("Search", "Dancer", new { Area = "" })',
+                    data: { searchString: request.term },
+                    dataType: 'json',
+                    type: 'GET',
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return {
+                                label: item.Name,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+            select: function (event, ui) {
+                $('#newuser').val(ui.item.label);
+                $('#UserId').val(ui.item.value);
+                return false;
+            },
+            minLength: 1
+        });
+    </script>
+}

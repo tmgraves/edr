@@ -12,10 +12,7 @@ namespace EDR.Areas.Admin.Models.ViewModels
     {
         [Display(Name = "Role")]
         public IdentityRole Role { get; set; }
-        [Display(Name = "First Name")]
-        public string FirstName { get; set; }
-        [Display(Name = "Last Name")]
-        public string LastName { get; set; }
+        public string UserId { get; set; }
         public List<IdentityRole> Roles { get; set; }
         public IEnumerable<ApplicationUser> Users { get; set; }
     }
@@ -23,10 +20,7 @@ namespace EDR.Areas.Admin.Models.ViewModels
     public class AddUserViewModel
     {
         public string RoleId { get; set; }
-        [Display(Name = "First Name")]
-        public string FirstName { get; set; }
-        [Display(Name = "Last Name")]
-        public string LastName { get; set; }
+        public string UserId { get; set; }
         public List<IdentityRole> Roles { get; set; }
         public IEnumerable<ApplicationUser> SearchUsers { get; set; }
     }

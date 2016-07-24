@@ -4,7 +4,16 @@
     ViewBag.Title = "AddUser";
 }
 
+<ol class="breadcrumb">
+    <li>@Html.ActionLink("All Users", "Index")</li>
+    <li class="active">Add Role User</li>
+</ol>
+
 <h2>Add User</h2>
+@if (ViewBag.Message != null)
+{
+    @ViewBag.Message
+}
 
         @using (Html.BeginForm("AddUser"))
         {
@@ -12,27 +21,16 @@
                 <div class="col-lg-12 col-md-12" style="margin-bottom: 5px;">
                     <div class="row">
                         <div class="form-group">
-                            @Html.LabelFor(m => m.FirstName, htmlAttributes: new { @class = "control-label col-md-2 col-lg-2" })
-                            <div class="col-md-10 col-lg-10">
-                                @Html.TextBoxFor(m => m.FirstName, null, new { @class = "form-control" })
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-12 col-md-12" style="margin-bottom: 5px;">
-                    <div class="row">
-                        <div class="form-group">
-                            @Html.LabelFor(m => m.LastName, htmlAttributes: new { @class = "control-label col-md-2 col-lg-2" })
-                            <div class="col-md-10 col-lg-10">
-                                @Html.TextBoxFor(m => m.LastName, null, new { @class = "form-control" })
+                            <div class="col-md-10 col-lg-10 input-group">
+                                <input type="text" id="newuser" placeholder="Type in User Name" required class="form-control" style="display: inline-block;" />
+                                @Html.HiddenFor(x => x.UserId)
+                                <input type="submit" value="Search" class="btn btn-primary" />
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="row col-lg-12 col-md-12" style="margin: 5px;">
-                <input type="submit" value="Search" class="btn btn-warning" />
-                <a class="btn btn-info" href="@Url.Action("Index")">Back to Roles</a>
             </div>
         }
 
@@ -55,14 +53,7 @@
                         <tr>
                             <td>
                                 <div class="captionpic" style="display: inline-block;">
-                                    @if (u.UserPictures != null && u.UserPictures.Count > 0)
-                                    {
-                                        <img class="pull-left" src="@Url.Content(u.UserPictures.First().ThumbnailFilename)" />
-                                    }
-                                    else
-                                    {
-                                        <img class="pull-left" style="width: 40px;" src="@Url.Content("~/Content/images/NoPic.png")" />
-                                    }
+                                    <img id="profilepic" src="@Url.Content(u.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
                                 </div>
                             </td>
                             <td>
@@ -90,3 +81,49 @@
                 </table>
             }
         </div>
+@Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-warning" })
+
+
+@section Scripts
+{
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/foolproof")
+    @Scripts.Render("~/bundles/jqueryUI")
+    @Scripts.Render("~/bundles/GeoComplete")
+
+    <script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
+
+    <script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+    <script src="~/Scripts/searchhelper.js"></script>
+    <script src="~/Scripts/changepicture.js"></script>
+    <script src="~/Scripts/readmore.js"></script>
+
+    <script>
+        $('#newuser').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '@Url.Action("Search", "Dancer", new { Area = "" })',
+                    data: { searchString: request.term },
+                    dataType: 'json',
+                    type: 'GET',
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return {
+                                label: item.Name,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+            select: function (event, ui) {
+                $('#newuser').val(ui.item.label);
+                $('#UserId').val(ui.item.value);
+                return false;
+            },
+            minLength: 1
+        });
+    </script>
+}

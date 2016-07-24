@@ -466,6 +466,7 @@
     <Content Include="Content\images\facebookSmall.png" />
     <Content Include="Content\images\indicator.white.gif" />
     <Content Include="Content\images\instagram.png" />
+    <Content Include="Content\images\loadinggears.gif" />
     <Content Include="Content\images\loadingspinner.gif" />
     <Content Include="Content\images\MapMarker.png" />
     <Content Include="Content\images\MissingImage.jpg" />
