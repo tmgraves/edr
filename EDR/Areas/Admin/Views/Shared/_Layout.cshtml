@@ -9,7 +9,31 @@
     @Scripts.Render("~/bundles/jquery")
 </head>
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a href="@Url.Action("Index", "Home", new { Area = "" })" class="navbar-brand">
+                    <img src="~/Content/images/eatdancerepeat.png" style="height: 100%;" alt="brand" />
+                </a>
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Roles", "Index", "Roles")</li>
+                    <li>@Html.ActionLink("Dance Styles", "Index", "DanceStyle")</li>
+                </ul>
+                <div style="margin-right: 50px;">
+                    @Html.Partial("_LoginPartial")
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    @*<div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -24,7 +48,7 @@
                 </ul>
             </div>
         </div>
-    </div>
+    </div>*@
 
     <div class="container body-content">
         @RenderBody()

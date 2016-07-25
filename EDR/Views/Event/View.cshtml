@@ -59,11 +59,11 @@
 <ol class="breadcrumb">
     @if (Model.Event is Class)
     {
-        <li>@Html.ActionLink("All Classes", "Learn", "Home")</li>
+        <li>@Html.ActionLink("Search Classes/Workshops", "Learn", "Home")</li>
     }
     else
     {
-        <li>@Html.ActionLink("All Socials", "Social", "Home")</li>
+        <li>@Html.ActionLink("Search Dance Events", "Social", "Home")</li>
     }
     <li class="active">View @Model.EventType</li>
 </ol>
@@ -105,7 +105,7 @@
                 </div>
                 @if (Model.EventType == EventType.Class)
                 {
-                    <p>
+                    <h3>
                         <span class="label label-success">
                             @{
                                 switch (((Class)Model.Event).SkillLevel)
@@ -128,6 +128,8 @@
                                 }
                             }
                         </span>
+                    </h3>
+                    <p>
                     </p>
                     }
             </div>

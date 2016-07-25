@@ -1,4 +1,5 @@
 ﻿@model EDR.Models.Event
+@using Microsoft.AspNet.Identity
 
 @{
     var cls = Model is EDR.Models.Class ? (EDR.Models.Class)Model : null;
@@ -54,6 +55,7 @@
 </style>
 @{
     var instance = Model.EventInstances.Where(i => i.DateTime >= DateTime.Today).OrderBy(i => i.DateTime).FirstOrDefault();
+    var reg = (instance != null && instance.EventRegistrations != null) ? instance.EventRegistrations.Where(r => r.UserId == User.Identity.GetUserId()).FirstOrDefault() : null;
 }
 <div class="row" style="padding: 5px !important; height: 150px;">
     <div class="box-default" style="padding: 5px; height: 100%;">
@@ -124,7 +126,7 @@
                 }
                 <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 nospace text-right">
                     @if (cls != null)
-            {
+                    {
                         <div>
                             <span class="label label-success">
                                 @{
@@ -153,9 +155,18 @@
                 </div>
             </div>
             <div class="item-title text-primary">
-                <a href="@Url.Action("View", "Event", new { id = Model.Id, eventType = Model is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social })" onmouseover="openEvent(@Model.Id, @Model.Place.Latitude, @Model.Place.Longitude); return false;">
-                    @Model.Name
-                </a>
+                @if (Model is EDR.Models.Class || Model is EDR.Models.Social)
+                {
+                    <a href="@Url.Action("View", "Event", new { id = Model.Id, eventType = Model is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social })" onmouseover="openEvent(@Model.Id, @Model.Place.Latitude, @Model.Place.Longitude); return false;">
+                        @Model.Name
+                    </a>
+                }
+                else
+                {
+                    <a class="btnevent" href="#" data-toggle="modal" data-target='#@Model.Id' >
+                        @Model.Name
+                    </a>
+                }
             </div>
             <div>
                 @if (instance != null)
@@ -199,3 +210,94 @@
         </div>
     </div>
 </div>
+
+@if (!(Model is EDR.Models.Class) && !(Model is EDR.Models.Social))
+{
+<!-- Modal Details -->
+<div class="modal fade" id='@Model.Id' tabindex="-1" role="dialog" aria-labelledby="myDetails">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 id="regtitle" class="nospace">@Model.Name</h4>
+            </div>
+            <div class="modal-body">
+                <div class="text-center">
+                    <div>
+                        @if (instance != null)
+                        {
+                            <strong>
+                                @instance.DateTime.ToLongDateString()<br />
+                                @Convert.ToDateTime(Model.StartTime).ToShortTimeString() to @Convert.ToDateTime(Model.EndTime).ToShortTimeString()
+                            </strong>
+                        }
+                        else
+                        {
+                            <text>Past Event</text>
+                        }
+                    </div>
+                    <div class="small">
+                        @Html.DisplayFor(modelItem => Model.Place.Address)<br />
+                        @Html.DisplayFor(modelItem => Model.Place.City), @(Model.Place.State != null ? Model.Place.State.ToString() : Model.Place.StateName)
+                        <div style="border: 1px solid #ddd;">
+                            <a target="_blank" href="https://www.google.com/maps/place/@Model.Place.Name+@Model.Place.Address,+@Model.Place.City,+@Model.Place.State+@Model.Place.Zip">
+                                <img style="width: 100%;" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Place.Latitude,@Model.Place.Longitude&zoom=10&size=300x150&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Place.Latitude, @Model.Place.Longitude&key=AIzaSyCQZYhgRAjXZdBM2qCEYbZ9vO0T9eyyfjc" title="@Model.Place.City, @Model.Place.StateName">
+                            </a>
+                        </div>
+                    </div>
+                    <div style="padding: 10px;" class="text-center">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <div id="@("divRegister" + instance.Id)" style="@(reg == null ? "display:block" : "display:none")">
+                                <button id="@("btnRegister" + instance.Id)" class="register btn btn-primary" value="@instance.Id">
+                                    Add to Calendar
+                                </button>
+                            </div>
+                            <div id="@("divUnregister" + instance.Id)" style="@(reg != null ? "display:block" : "display:none")">
+                                <button id="@("btnUnregister" + instance.Id)" class="unregister btn btn-danger" value="@instance.Id">
+                                    Remove from Calendar
+                                </button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Details -->
+}
+
+<script>
+    $(function () {
+        $('#@("btnRegister" + instance.Id)').click(function (e) {
+            var id = $(e.target).prop('value'); // $(this) refers to button that was clicked
+            $.ajax({
+                url: '@Url.Action("RegisterJSON", "Event", new { Area = "" })',
+                data: { 'id': id },
+                dataType: 'json',
+                type: 'GET',
+                success: function (data) {
+                    $('#@("divRegister" + instance.Id)').hide();
+                    $('#@("divUnregister" + instance.Id)').show();
+                }
+            })
+        });
+        $('#@("btnUnregister" + instance.Id)').click(function (e) {
+            var id = $(e.target).prop('value'); // $(this) refers to button that was clicked
+            $.ajax({
+                url: '@Url.Action("UnRegisterJSON", "Event", new { Area = "" })',
+                data: { 'id': id },
+                dataType: 'json',
+                type: 'GET',
+                success: function (data) {
+                    $('#@("divRegister" + instance.Id)').show();
+                    $('#@("divUnregister" + instance.Id)').hide();
+                }
+            })
+        });
+    });
+</script>

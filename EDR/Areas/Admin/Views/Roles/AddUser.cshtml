@@ -118,6 +118,14 @@
                     }
                 })
             },
+            response: function (event, ui) {
+                // ui.content is the array that's about to be sent to the response callback.
+                if (ui.content.length === 0) {
+                    $("#empty-message").text("No results found");
+                } else {
+                    $("#empty-message").empty();
+                }
+            },
             select: function (event, ui) {
                 $('#newuser').val(ui.item.label);
                 $('#UserId').val(ui.item.value);

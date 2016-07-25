@@ -4,77 +4,76 @@
     ViewBag.Title = "Find a Dance Social";
 }
 
-<ol class="breadcrumb">
-    <li class="active">All Socials</li>
-</ol>
+<div class="container-fluid" style="position: fixed; background-color: #fff; z-index: 1000;">
+    <ol class="breadcrumb">
+        <li class="active">Search Dance Events</li>
+    </ol>
 
-<h1 class="text-center">Social Dance Events</h1>
+    @*<h1 class="text-center">Social Dance Events</h1>*@
 
-<div class="text-center" style="padding: 10px;">
-    @Html.ActionLink("Venues", "List", "Place", new { }, new { @class = "btn btn-primary" })
-    @Html.ActionLink("Promoters", "List", "Promoter", null, new { @class = "btn btn-primary" })
-    @if (User.IsInRole("Promoter"))
+    @*<div class="text-center" style="padding: 10px;">
+        @Html.ActionLink("Venues", "List", "Place", new { }, new { @class = "btn btn-primary" })
+        @Html.ActionLink("Promoters", "List", "Promoter", null, new { @class = "btn btn-primary" })
+        @if (User.IsInRole("Promoter"))
+        {
+            @Html.ActionLink("Add a Social", "Create", "Event", new { role = "Promoter", eventType = EDR.Enums.EventType.Social }, new { @class = "btn btn-warning" })
+        }
+    </div>*@
+
+    @using (Html.BeginForm("Social", "Home", FormMethod.Post, new { @class = "formmain" }))
     {
-        @Html.ActionLink("Add a Social", "Create", "Event", new { role = "Promoter", eventType = EDR.Enums.EventType.Social }, new { @class = "btn btn-warning" })
-    }
-</div>
-
-@using (Html.BeginForm("Social", "Home", FormMethod.Post, new { @class = "formmain" }))
-{
-    @Html.HiddenFor(m => m.SearchAddress.Latitude, new { Name = "lat", @class = "latfield" })
-    @Html.HiddenFor(m => m.SearchAddress.Longitude, new { Name = "lng", @class = "lngfield" })
-    @Html.HiddenFor(m => m.NELat, new { @class = "nelatfield" })
-    @Html.HiddenFor(m => m.NELng, new { @class = "nelngfield" })
-    @Html.HiddenFor(m => m.SWLat, new { @class = "swlatfield" })
-    @Html.HiddenFor(m => m.SWLng, new { @class = "swlngfield" })
-    @Html.HiddenFor(m => m.CenterLat, new { @class = "clatfield" })
-    @Html.HiddenFor(m => m.CenterLng, new { @class = "clngfield" })
-    @Html.HiddenFor(m => m.Zoom, new { @class = "czoomfield" })
-    <div class="container bg-info text-center" style="padding: 0px !important;">
-        <div class="form-inline">
-            <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
-                <div class="form-group">
-                    @Html.TextBoxFor(m => m.Location, new { placeholder = "Location", @class = "form-control locationsearch" })
-                </div>
-                <div class="form-group">
-                    @Html.HiddenFor(m => m.DanceStyleId, new { @class = "stylesearchid" })
-                    @Html.TextBoxFor(m => m.Style, new { placeholder = "Dance Style", @class = "form-control stylesearch" })
-                </div>
-                <div class="form-group">
-                    @Html.ListBoxFor(m => m.Days,
-                                        (Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>().Select(enu => new SelectListItem() { Text = enu.ToString(), Value = enu.ToString() })).ToList(), new { multiple = "multiple", @class = "form-control", @style = "display: none;" })
-                </div>
-                @*<select id="Days" name="Days" multiple="multiple">
-                    <option value="Monday">Monday</option>
-                    <option value="Tuesday">Tuesday</option>
-                    <option value="Wednesday">Wednesday</option>
-                    <option value="Thursday">Thursday</option>
-                    <option value="Friday">Friday</option>
-                    <option value="Saturday">Saturday</option>
-                    <option value="Sunday">Sunday</option>
-                </select>*@
-
-                @*<div class="form-group">
-                    <a href="#days" class="toggle btn btn-default">Day of Week <span class="caret"></span></a>
-                    <div id="daysdiv" class="well text-left" style="display: none;">
-                        @Html.CheckBoxListFor(model => model.Days,
-                                                    model => (Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>().Select(enu => new SelectListItem() { Text = enu.ToString(), Value = enu.ToString() })).ToList(),
-                                                    item => item.Value,
-                                                    item => item.Text,
-                                                    model => (Model.Days != null ? (Model.Days.Select(d => new SelectListItem() { Text = d.ToString(), Value = d.ToString() })) : null),
-                                                    new MvcCheckBoxList.Model.HtmlListInfo(MvcCheckBoxList.Model.HtmlTag.table, 1, new { @class = "checkboxlist text-warning" }, MvcCheckBoxList.Model.TextLayout.Default))
+        @Html.HiddenFor(m => m.SearchAddress.Latitude, new { Name = "lat", @class = "latfield" })
+        @Html.HiddenFor(m => m.SearchAddress.Longitude, new { Name = "lng", @class = "lngfield" })
+        @Html.HiddenFor(m => m.NELat, new { @class = "nelatfield" })
+        @Html.HiddenFor(m => m.NELng, new { @class = "nelngfield" })
+        @Html.HiddenFor(m => m.SWLat, new { @class = "swlatfield" })
+        @Html.HiddenFor(m => m.SWLng, new { @class = "swlngfield" })
+        @Html.HiddenFor(m => m.CenterLat, new { @class = "clatfield" })
+        @Html.HiddenFor(m => m.CenterLng, new { @class = "clngfield" })
+        @Html.HiddenFor(m => m.Zoom, new { @class = "czoomfield" })
+        <div class="container bg-info text-center" style="padding: 0px !important;">
+            <div class="form-inline">
+                <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.Location, new { placeholder = "Location", @class = "form-control locationsearch" })
                     </div>
-                </div>*@
-                <div class="form-group">
-                    <input type="submit" value="Search Socials" class="btn btn-warning" />
+                    <div class="form-group">
+                        @Html.HiddenFor(m => m.DanceStyleId, new { @class = "stylesearchid" })
+                        @Html.TextBoxFor(m => m.Style, new { placeholder = "Dance Style", @class = "form-control stylesearch" })
+                    </div>
+                    <div class="form-group">
+                        @Html.ListBoxFor(m => m.Days,
+                                            (Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>().Select(enu => new SelectListItem() { Text = enu.ToString(), Value = enu.ToString() })).ToList(), new { multiple = "multiple", @class = "form-control", @style = "display: none;" })
+                    </div>
+                    @*<select id="Days" name="Days" multiple="multiple">
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                        <option value="Sunday">Sunday</option>
+                    </select>*@
+
+                    @*<div class="form-group">
+                        <a href="#days" class="toggle btn btn-default">Day of Week <span class="caret"></span></a>
+                        <div id="daysdiv" class="well text-left" style="display: none;">
+                            @Html.CheckBoxListFor(model => model.Days,
+                                                        model => (Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>().Select(enu => new SelectListItem() { Text = enu.ToString(), Value = enu.ToString() })).ToList(),
+                                                        item => item.Value,
+                                                        item => item.Text,
+                                                        model => (Model.Days != null ? (Model.Days.Select(d => new SelectListItem() { Text = d.ToString(), Value = d.ToString() })) : null),
+                                                        new MvcCheckBoxList.Model.HtmlListInfo(MvcCheckBoxList.Model.HtmlTag.table, 1, new { @class = "checkboxlist text-warning" }, MvcCheckBoxList.Model.TextLayout.Default))
+                        </div>
+                    </div>*@
+                    <div class="form-group">
+                        <input type="submit" value="Search Socials" class="btn btn-warning" />
+                    </div>
                 </div>
             </div>
+            <div class="map_canvas"></div>
         </div>
-        <div class="map_canvas"></div>
-    </div>
-}
-
-<div class="container">
+    }
     <div class="col-lg-12 text-center" style="padding: 10px;">
         <div id="myButtons" class="btn-group" data-toggle="buttons">
             <label class="btn btn-warning btn-sm active">
@@ -85,7 +84,9 @@
             </label>
         </div>
     </div>
+</div>
 
+<div class="container" style="padding-top: 360px;">
     <div id="listdiv">
         @Html.DisplayFor(m => m.Socials, "Socials")
     </div>

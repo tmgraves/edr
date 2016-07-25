@@ -19,21 +19,26 @@
         <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-user"></i> @User.Identity.Name<span class="caret"></span></a>
-                <ul class="dropdown-menu">
-                    <li><a href="@Url.Action("Manage", "Dancer")"><i class="glyphicon glyphicon-user"></i> <b>@User.Identity.Name</b></a></li>
+                <ul class="dropdown-menu" style="width: 200px !important;">
+                    <li><a href="@Url.Action("Manage", "Dancer", new { Area = "" })"><b>My Account</b> <i class="glyphicon glyphicon-cog"></i></a></li>
                     <li role="separator" class="divider"></li>
-                    <li id="teachernav">@Html.ActionLink("My Teacher Profile", "Manage", "Teacher", null, new { @style = "font-weight: bold;" })</li>
+                    <li id="teachernav">@Html.ActionLink("My Teacher Profile", "Manage", "Teacher", new { Area = "" }, new { @style = "font-weight: bold;" })</li>
                     <li id="schoolsnav" style="padding-left: 2px; display: none"><a><i>Schools</i></a></li>
                     <li id="teamsnav" style="padding-left: 2px; display: none"><a><i>Teams</i></a></li>
                     @*<li style="padding-left: 5px;" class="small">@Html.ActionLink("School 1", "Manage", "Teacher")</li>
         <li style="padding-left: 5px;"  class="small">@Html.ActionLink("School 2", "Manage", "Teacher")</li>
         <li style="padding-left: 5px;"  class="small">@Html.ActionLink("School 3", "Manage", "Teacher")</li>*@
                     <li role="separator" class="divider"></li>
-                    <li id="promoternav">@Html.ActionLink("My Promoter Profile", "Manage", "Promoter", null, new { @style = "font-weight: bold;" })</li>
+                    <li id="promoternav">@Html.ActionLink("My Promoter Profile", "Manage", "Promoter", new { Area = "" }, new { @style = "font-weight: bold;" })</li>
                     <li id="socialsnav" style="padding-left: 2px; display: none;"><a><i>Socials</i></a></li>
                     <li role="separator" class="divider"></li>
-                    <li>@Html.ActionLink("My Owner Profile", "Manage", "Owner", null, new { @style = "font-weight: bold;" })</li>
+                    <li>@Html.ActionLink("My Owner Profile", "Manage", "Owner", new { Area = "" }, new { @style = "font-weight: bold;" })</li>
                     <li role="separator" class="divider"></li>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li>@Html.ActionLink("Admin Page", "Index", "Roles", new { Area = "Admin" }, new { @style = "font-weight: bold;" })</li>
+                        <li role="separator" class="divider"></li>
+                    }
                     <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
                 </ul>
             </li>
@@ -86,7 +91,7 @@ else
             if (data.length > 0) {
                 $.each(data, function (index, item) {
                     row +=
-                        '<li class="small item-short" style="max-width: 150px !important; padding-left: 4px;"><a href="../../School/Manage/' + item.Id + '">' + item.Name + '</a></li>';
+                        '<li class="small" style="max-width: 100% !important; padding-left: 4px;"><a class="oneline" href="../../School/Manage/' + item.Id + '">' + item.Name + '</a></li>';
                 });
                 $("#schoolsnav").after(row);
                 $("#schoolsnav").show();
@@ -105,7 +110,7 @@ else
             {
                 $.each(data, function (index, item) {
                     row +=
-                        '<li class="small item-short" style="max-width: 150px !important; padding-left: 4px;"><a href="../../Team/Manage/' + item.Id + '">' + item.Name + '</a></li>';
+                        '<li class="small" style="max-width: 100% !important; padding-left: 4px;"><a class="oneline" href="../../Team/Manage/' + item.Id + '">' + item.Name + '</a></li>';
                 });
                 $("#teamsnav").after(row);
                 $("#teamsnav").show();
@@ -123,7 +128,7 @@ else
             {
                 $.each(data, function (index, item) {
                     row +=
-                        '<li class="small item-short" style="max-width: 150px !important; padding-left: 4px;"><a href="../../Social/View/' + item.Id + '">' + item.Name + '</a></li>';
+                        '<li class="small" style="max-width: 100% !important; padding-left: 4px;"><a class="oneline" href="../../Social/View/' + item.Id + '">' + item.Name + '</a></li>';
                 });
                 $("#socialsnav").after(row);
                 $("#socialsnav").show();

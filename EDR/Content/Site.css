@@ -539,3 +539,12 @@ input[type="file"] {
     /* put Google geocomplete list on top of Bootstrap modal */
     z-index: 9999;
 }
+.oneline {
+    display: inline-block;
+    vertical-align: middle;
+    max-width: 100%;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

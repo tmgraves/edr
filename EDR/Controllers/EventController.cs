@@ -1690,6 +1690,74 @@ namespace EDR.Controllers
         }
 
         [Authorize]
+        public JsonResult RegisterJSON(int id)
+        {
+            var userid = User.Identity.GetUserId();
+            var einstance = DataContext.EventInstances.Where(i => i.Id == id).FirstOrDefault();
+
+            //  Event Tickets
+            if (einstance.Event.Free)
+            {
+                try
+                {
+                    DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = id });
+                    DataContext.SaveChanges();
+                }
+                catch (DbEntityValidationException e)
+                {
+                    var msg = "";
+                    foreach (var eve in e.EntityValidationErrors)
+                    {
+                        msg = eve.Entry.Entity.GetType().Name + " " + eve.Entry.State;
+                        foreach (var ve in eve.ValidationErrors)
+                        {
+                            msg = ve.PropertyName + " " + ve.ErrorMessage;
+                        }
+                    }
+                }
+                return Json("sucess", JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json("failure", JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [Authorize]
+        public JsonResult UnRegisterJSON(int id)
+        {
+            var userid = User.Identity.GetUserId();
+            var reg = DataContext.EventRegistrations.Include("Instance.Event").Where(r => r.EventInstanceId == id && r.UserId == userid).FirstOrDefault();
+
+            //  Event Tickets
+            if (reg.Instance.Event.Free)
+            {
+                try
+                {
+                    DataContext.EventRegistrations.Remove(reg);
+                    DataContext.SaveChanges();
+                }
+                catch (DbEntityValidationException e)
+                {
+                    var msg = "";
+                    foreach (var eve in e.EntityValidationErrors)
+                    {
+                        msg = eve.Entry.Entity.GetType().Name + " " + eve.Entry.State;
+                        foreach (var ve in eve.ValidationErrors)
+                        {
+                            msg = ve.PropertyName + " " + ve.ErrorMessage;
+                        }
+                    }
+                }
+                return Json("sucess", JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json("failure", JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [Authorize]
         public ActionResult Register(int id)
         {
             var userid = User.Identity.GetUserId();

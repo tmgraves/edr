@@ -15,42 +15,54 @@
     @using (Html.BeginForm("Index"))
     {
         <div class="row">
-            <div class="form-group">
-                @Html.DropDownListFor(m => m.Role.Id, new SelectList(Model.Roles, "Id", "Name", Model.Role.Id), "-- Select a Role --", new { @class = "form-control", @onchange = "this.form.submit();" })
+            <div class="form-inline">
+                <div class="form-group">
+                    @Html.DropDownListFor(m => m.Role.Id, new SelectList(Model.Roles, "Id", "Name", Model.Role.Id), "-- Select a Role --", new { @class = "form-control", @onchange = "this.form.submit();" })
+                    <input type="text" id="newuser" placeholder="Type in User Name" class="form-control" style="display: inline-block;" />
+                    @Html.HiddenFor(x => x.UserId)
+                    <input type="submit" value="Search" class="btn btn-warning" />
+                </div>
             </div>
         </div>
         <div class="row">
-            <div class="form-group">
-                <input type="text" id="newuser" placeholder="Type in User Name" class="form-control" style="display: inline-block;" />
-                @Html.HiddenFor(x => x.UserId)
-            </div>
         </div>
         <div class="row">
             <div class="form-group">
-                <input type="submit" value="Search" class="btn btn-warning" />
             </div>
         </div>
     }
 
     @if (Model.Users != null && Model.Users.Count() != 0)
     {
-        <h4>Current Users</h4>
-        foreach (var u in Model.Users)
-        {
-            <div class="row col-lg-12 col-md-12 col-sm-12 col-xs-12" title="@u.Id">
-                <div class="col-lg-6 col-md-6">
-                    <div class="captionpic" style="display: inline-block;">
-                        <img id="profilepic" src="@Url.Content(u.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
-                    </div>
-                    <div style="display: inline-block; vertical-align: top;">
+        <table class="table table-striped">
+            <tr>
+                <th>
+                    User
+                </th>
+                <th>
+                    Location
+                </th>
+                <th>
+                </th>
+            </tr>
+            @foreach (var u in Model.Users)
+            {
+                <tr>
+                    <td>
+                        <div class="captionpic" style="display: inline-block;">
+                            <img id="profilepic" src="@Url.Content(u.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
+                        </div>
                         <span class="text-primary" style="vertical-align: top;">@u.FullName</span>
-                    </div>
-                </div>
-                <div class="col-lg-6 col-md-6">
-                    <a class="btn btn-primary" href="@Url.Action("RemoveRoleUser", new { id = u.Id, role = Model.Roles.Where(r => r.Id == Model.Role.Id).FirstOrDefault().Name })">Remove User</a>
-                </div>
-            </div>
-        }
+                    </td>
+                    <td>
+                        @u.Address @u.City, @u.State @u.ZipCode
+                    </td>
+                    <td>
+                        <a class="btn btn-primary" href="@Url.Action("RemoveRoleUser", new { id = u.Id, role = Model.Roles.Where(r => r.Id == Model.Role.Id).FirstOrDefault().Name })">Remove User</a>
+                    </td>
+                </tr>
+            }
+        </table>
     }
 </div>
 

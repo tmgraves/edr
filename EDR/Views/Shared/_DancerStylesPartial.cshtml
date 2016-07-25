@@ -2,7 +2,7 @@
 
 @if (Model.Styles != null && Model.Styles.Count() > 0)
 {
-    <table class="table table-condensed">
+    <table class="table table-condensed table-striped">
         <thead>
             <tr>
                 <th>
@@ -16,7 +16,7 @@
         {
             <tr>
                 <td>
-                    @s.Name
+                    @Html.ActionLink(s.Name, "Details", "DanceStyle", new { @styleName = s.Name }, null)
                 </td>
                 <td class="col-lg-1">
                     @Ajax.ActionLink("Delete", "DeleteStyle", Model.Controller, new { id = Model.Id, styleId = s.Id },

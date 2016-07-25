@@ -39,6 +39,19 @@ namespace EDR.Controllers
         [Authorize]
         public ActionResult Manage()
         {
+            var model = LoadDancer();
+            if (HttpContext.Request.Browser.IsMobileDevice)
+            {
+                return View("Mobile/Manage", model);
+            }
+            else
+            {
+                return View(model);
+            }
+        }
+
+        private DancerManageViewModel LoadDancer()
+        {
             var userid = User.Identity.GetUserId();
             var model = new DancerManageViewModel();
             model.Dancer = DataContext.Users
@@ -78,8 +91,7 @@ namespace EDR.Controllers
             }
             //  Get Spotify Token for user
 
-
-            return View(model);
+            return model;
         }
 
         [HttpPost]
@@ -93,9 +105,26 @@ namespace EDR.Controllers
                 TryUpdateModel(dancer, "Dancer");
                 DataContext.Entry(dancer).State = EntityState.Modified;
                 DataContext.SaveChanges();
-                return RedirectToAction("Manage", "Dancer");
+
+                model = LoadDancer();
+
+                if (HttpContext.Request.Browser.IsMobileDevice)
+                {
+                    return View("Mobile/Manage", model);
+                }
+                else
+                {
+                    return View(model);
+                }
             }
-            return View(model);
+            if (HttpContext.Request.Browser.IsMobileDevice)
+            {
+                return View("Mobile/Manage", model);
+            }
+            else
+            {
+                return View(model);
+            }
         }
 
         public ActionResult List()
@@ -162,6 +191,11 @@ namespace EDR.Controllers
         public JsonResult Search(string searchString)
         {
             var users = DataContext.Users.Where(u => (u.FirstName + " " + u.LastName).Contains(searchString)).Select(s => new { Id = s.Id, Name = s.FirstName + " " + s.LastName }).ToList();
+
+            if (users.Count() == 0)
+            {
+                users.Add(new { Id = "", Name = "No results" });
+            }
             return Json(users, JsonRequestBehavior.AllowGet);
         }
 
@@ -1043,7 +1077,25 @@ namespace EDR.Controllers
                             end = s.EndTime.Value.ToString("o"),
                             lat = s.Event.Place.Latitude,
                             lng = s.Event.Place.Longitude,
-                            color = s.Event is Class ? "#65AE25" : "#006A90",
+                            color = s.Event is Class ? "#65AE25" : s.Event is Social ? "#006A90" : s.Event is Performance ? "#f0ad4e" : s.Event is Rehearsal ? "#d9534f" : "#428bca",
+                            url = Url.Action("View", "Event", new { id = s.EventId, eventType = s.Event is Class ? EventType.Class : EventType.Social })
+                        }), JsonRequestBehavior.AllowGet);
+        }
+
+        [Authorize]
+        public JsonResult GetEventRegitrations(string id, DateTime start, DateTime end)
+        {
+            var instances = DataContext.EventInstances.Where(i => i.EventRegistrations.Any(r => r.UserId == id)).Where(i => i.DateTime >= start && i.DateTime <= end).ToList();
+
+            return Json(instances.AsEnumerable().Select(s =>
+                        new {
+                            id = s.EventId,
+                            title = s.Event.Name,
+                            start = s.StartTime.Value.ToString("o"),
+                            end = s.EndTime.Value.ToString("o"),
+                            lat = s.Event.Place.Latitude,
+                            lng = s.Event.Place.Longitude,
+                            color = s.Event is Class ? "#65AE25" : s.Event is Social ? "#006A90" : s.Event is Performance ? "#f0ad4e" : s.Event is Rehearsal ? "#d9534f" : "#428bca",
                             url = Url.Action("View", "Event", new { id = s.EventId, eventType = s.Event is Class ? EventType.Class : EventType.Social })
                         }), JsonRequestBehavior.AllowGet);
         }

@@ -254,6 +254,7 @@ namespace EDR.Controllers
         {
             if (ModelState.IsValidField("NewRehearsal"))
             {
+                model.NewRehearsal.Free = true;
                 model.NewRehearsal.EventInstances = new List<EventInstance>();
                 model.NewRehearsal.EventInstances.Add(new EventInstance() { DateTime = model.NewRehearsal.StartDate, EndDate = Convert.ToDateTime(model.NewRehearsal.EndDate), StartTime = model.NewRehearsal.StartTime, EndTime = model.NewRehearsal.EndTime, PlaceId = model.NewRehearsal.PlaceId });
                 DataContext.Rehearsals.Add(model.NewRehearsal);
@@ -286,6 +287,7 @@ namespace EDR.Controllers
         {
             try
             {
+                model.NewAudition.Free = true;
                 model.NewAudition.EventInstances = new List<EventInstance>();
                 model.NewAudition.EventInstances.Add(new EventInstance() { DateTime = model.NewAudition.StartDate, EndDate = Convert.ToDateTime(model.NewAudition.EndDate), StartTime = model.NewAudition.StartTime, EndTime = model.NewAudition.EndTime, PlaceId = model.NewAudition.PlaceId });
                 DataContext.Auditions.Add(model.NewAudition);
@@ -413,6 +415,7 @@ namespace EDR.Controllers
         {
             try
             {
+                model.NewPerformance.Free = true;
                 model.NewPerformance.EventInstances = new List<EventInstance>();
                 model.NewPerformance.EventInstances.Add(new EventInstance() { DateTime = model.NewPerformance.StartDate, EndDate = Convert.ToDateTime(model.NewPerformance.EndDate), StartTime = model.NewPerformance.StartTime, EndTime = model.NewPerformance.EndTime, PlaceId = model.NewPerformance.PlaceId });
                 DataContext.Performances.Add(model.NewPerformance);
@@ -476,6 +479,7 @@ namespace EDR.Controllers
             var auditions = DataContext.Auditions
                                 .Include("Place")
                                 .Include("EventInstances")
+                                .Include("EventInstances.EventRegistrations")
                                 .Where(a => a.StartDate >= start && a.TeamId == id);
             //  return PartialView("~/Views/Shared/DisplayTemplates/Auditions.cshtml", auditions);
             return PartialView("~/Views/Shared/_EventsPartial.cshtml", auditions);
@@ -488,6 +492,7 @@ namespace EDR.Controllers
             var performances = DataContext.Performances
                                 .Include("Place")
                                 .Include("EventInstances")
+                                .Include("EventInstances.EventRegistrations")
                                 .Where(p => p.TeamId == id);
             //  return PartialView("~/Views/Shared/DisplayTemplates/Performances.cshtml", performances);
             return PartialView("~/Views/Shared/_EventsPartial.cshtml", performances);
@@ -500,7 +505,8 @@ namespace EDR.Controllers
             var rehearsals = DataContext.Rehearsals
                                 .Include("Place")
                                 .Include("EventInstances")
-                                .Where(a => a.StartDate >= start && a.TeamId == id);
+                                .Include("EventInstances.EventRegistrations")
+                                .Where(a => a.EventInstances.Any(i => i.DateTime >= start) && a.TeamId == id);
             return PartialView("~/Views/Shared/_EventsPartial.cshtml", rehearsals);
         }
 
