@@ -11,6 +11,7 @@ using Google.Apis.Upload;
 using Google.Apis.Util.Store;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
+using System.Configuration;
 
 namespace EDR.Utilities
 {
@@ -89,8 +90,8 @@ namespace EDR.Utilities
             {
                 var youtubeService = new YouTubeService(new BaseClientService.Initializer()
                 {
-                    ApiKey = "AIzaSyCQZYhgRAjXZdBM2qCEYbZ9vO0T9eyyfjc",
-                    ApplicationName = "EatDanceRepeat"
+                    ApiKey = ConfigurationManager.AppSettings["GoogleAPIKey"],
+                    ApplicationName = ConfigurationManager.AppSettings["GoogleAppName"] //  "EatDanceRepeat"
                 });
 
                 var listVideos = youtubeService.PlaylistItems.List("snippet");
@@ -145,8 +146,8 @@ namespace EDR.Utilities
 
                 var youtubeService = new YouTubeService(new BaseClientService.Initializer()
                 {
-                    ApiKey = "AIzaSyCQZYhgRAjXZdBM2qCEYbZ9vO0T9eyyfjc",
-                    ApplicationName = "EatDanceRepeat"
+                    ApiKey = ConfigurationManager.AppSettings["GoogleAPIKey"], // "AIzaSyCQZYhgRAjXZdBM2qCEYbZ9vO0T9eyyfjc",
+                    ApplicationName = ConfigurationManager.AppSettings["GoogleAppName"]//    "EatDanceRepeat"
                 });
 
                 var list = youtubeService.Playlists.List("snippet, contentDetails");

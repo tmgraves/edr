@@ -145,37 +145,91 @@
                                 </p>
                             }
                         </div>
-                        <div class="col-lg-4 text-center verticalcenter">
+                        <div class="col-lg-4 text-center">
                             <div class="text-center">
-                                @if (instance.DateTime >= DateTime.Today)
-                                {
-                                    if (instance.EventRegistrations.Where(r => r.UserId == userid).Count() == 0)
+                                <div class="btn-group" style="padding-top: 18px;">
+                                    @if (instance.DateTime >= DateTime.Today)
                                     {
-                                        @Html.ActionLink("Register", "Register", new { id = instance.Id }, new { @class = "btn btn-primary btn-lg", @style = "width: 100%;" })
-                                    }
-                                    else
-                                    {
-                                        if (!Model.Event.Free)
+                                        //  User is not registered
+                                        if (instance.EventRegistrations.Where(r => r.UserId == userid).Count() == 0)
                                         {
-                                            if (reg.UserTicket.Ticket.EventId == null && reg.Checkedin == null)
+                                            if (Model.AvailableTickets > 0)
                                             {
-                                                @Html.ActionLink("Un-Register", "UnRegister", new { id = instance.Id }, new { @class = "btn btn-danger btn-lg" });
+                                                <button type="button" class="btn btn-lg btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    Register Now <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu" role="menu">
+                                                    @for (int i = 1; i <= Model.AvailableTickets && i <= 10; i++)
+                                                    {
+                                                        <li><a href="@Url.Action("Attendees", "Store", new { instanceId = instance.Id, attendees = i })"><i class="text-info glyphicon glyphicon-plus-sign"></i> @(i) add'l Attendees</a></li>
+                                                    }
+                                                </ul>
                                             }
                                             else
                                             {
-                                                <a class="btn btn-default btn-lg">Registered</a>
+                                                if (instance.Event.Free)
+                                                {
+                                                    @Html.ActionLink("Register", "Register", new { id = instance.Id }, new { @class = "btn btn-primary btn-lg", @style = "width: 100%;" })
+                                                }
+                                                else
+                                                {
+                                                    @Html.ActionLink("Buy Credits", "Register", new { id = instance.Id }, new { @class = "btn btn-primary btn-lg", @style = "width: 100%;" })
+                                                }
                                             }
                                         }
                                         else
                                         {
-                                            @Html.ActionLink("Un-Register", "UnRegister", new { id = instance.Id }, new { @class = "btn btn-danger btn-lg" });
+                                            if (!Model.Event.Free)
+                                            {
+                                                //if (reg.UserTicket.Ticket.EventId == null && reg.Checkedin == null)
+                                                if (instance.EventRegistrations.Where(r => r.UserId == userid && r.Checkedin != null).Count() == 0)
+                                                {
+                                                    <div class="btn-group">
+                                                        <a class="btn btn-primary btn-lg">Registered (@instance.EventRegistrations.Where(r => r.UserId == userid).Count())</a>
+                                                        <button type="button" class="btn btn-primary btn-lg dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                                            <span class="caret"></span>
+                                                            <span class="sr-only">Toggle Dropdown</span>
+                                                        </button>
+                                                        <ul class="dropdown-menu" role="menu" style="width: 100%;">
+                                                            @*<li>@Html.ActionLink("Un-Register", "UnRegister", new { id = instance.Id }, new { @class = "btn btn-danger" })</li>*@
+                                                            @foreach (var er in instance.EventRegistrations.Where(r => r.UserId == userid))
+                                                            {
+                                                                <li class="col-lg-12" style="padding: 5px;">
+                                                                    <div class="row">
+                                                                        <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9 oneline" style="padding-top: 5px;">
+                                                                            @er.FirstName @er.LastName
+                                                                        </div>
+                                                                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 right nospace">
+                                                                            <a class="btn btn-danger btn-sm" title="Un-register" style="display: inline-block;" href="@Url.Action("UnRegister", "Event", new { id = instance.Id, regid = er.Id })">
+                                                                                <i class="glyphicon glyphicon glyphicon-remove-circle"></i>
+                                                                            </a>
+                                                                        </div>
+                                                                    </div>
+                                                                </li>
+                                                            }
+                                                            @for (int i = 1; i <= Model.AvailableTickets && i <= 10; i++)
+                                                            {
+                                                                <li><a style="padding: 10px" href="@Url.Action("Attendees", "Store", new { instanceId = instance.Id, attendees = i })"><i class="text-info glyphicon glyphicon-plus-sign"></i> @(i)  Add'l Attendees</a></li>
+                                                            }
+                                                        </ul>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <a class="btn btn-default btn-lg">Registered</a>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                @Html.ActionLink("Un-Register", "UnRegister", new { id = instance.Id }, new { @class = "btn btn-danger btn-lg" });
+                                            }
                                         }
                                     }
-                                }
-                                else
-                                {
-                                    <h4>Event has Ended</h4>
-                                }
+                                    else
+                                    {
+                                        <h4>Event has Ended</h4>
+                                    }
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -195,7 +249,7 @@
             }*@
             <div style="border: 1px solid #ddd;" >
                 <a target="_blank" href="https://maps.google.com/?q=@Model.Event.Place.Latitude,@Model.Event.Place.Longitude">
-                    <img style="width: 100%;" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Event.Place.Latitude,@Model.Event.Place.Longitude&zoom=10&size=500x200&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Event.Place.Latitude, @Model.Event.Place.Longitude" title="@Model.Event.Place.City, @Model.Event.Place.StateName">
+                    <img style="width: 100%;" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Event.Place.Latitude,@Model.Event.Place.Longitude&zoom=10&size=500x200&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Event.Place.Latitude, @Model.Event.Place.Longitude&key=@System.Configuration.ConfigurationManager.AppSettings["GoogleAPIKey"]" title="@Model.Event.Place.City, @Model.Event.Place.StateName">
                 </a>
             </div>
             <div style="border: 1px solid #ccc;">

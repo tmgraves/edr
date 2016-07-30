@@ -1764,87 +1764,55 @@ namespace EDR.Controllers
 
             var einstance = DataContext.EventInstances.Where(i => i.Id == id).FirstOrDefault();
 
-            //  Event Tickets
+            //  Pay Event
             if (!einstance.Event.Free)
             {
                 var instance =
                         (from i in DataContext.EventInstances
-                            join e in DataContext.Events
-                            on i.EventId equals e.Id
-                            join c in DataContext.Classes
-                    on i.EventId equals c.Id
-                            where i.Id == id
-                            select new { EventInstance = i, Class = c }).FirstOrDefault();
+                         join e in DataContext.Events
+                         on i.EventId equals e.Id
+                         join c in DataContext.Classes
+                         on i.EventId equals c.Id
+                         into res
+                         from cls in res.DefaultIfEmpty()
+                         join tix in DataContext.Tickets
+                         on e.Id equals tix.EventId
+                         into tickets
+                         from tics in tickets.DefaultIfEmpty()
+                         join stix in DataContext.Tickets
+                         on cls.SchoolId equals stix.SchoolId
+                         into stickets
+                         from stics in stickets.DefaultIfEmpty()
+                         where i.Id == id
+                         select new { EventInstance = i, Class = cls, Tickets = tics, SchoolTics = stics }).FirstOrDefault();
 
-                if (DataContext.Tickets.Where(t => t.EventId == instance.EventInstance.EventId).Count() != 0)
+                var utix = new List<UserTicket>();
+                //  Event Tickets
+                if (instance.Tickets != null)
                 {
-                    var credits = DataContext.UserTickets.Where(t => t.Ticket.EventId == instance.EventInstance.EventId && t.UserId == userid).Include("Ticket").Include("EventRegistrations").ToList();
-                    if (credits != null)
-                    {
-                        //  User Has Remaining Credit
-                        if (credits.Sum(c => c.Quantity * c.Ticket.Quantity) > credits.Sum(c => c.EventRegistrations.Count()))
-                        {
-                            //  Get Available Tickets
-                            var ticket =
-                                    (from ut in DataContext.UserTickets
-                                     join t in DataContext.Tickets
-                                     on ut.TicketId equals t.Id
-                                     where ut.UserId == userid
-                                     && t.EventId == instance.EventInstance.EventId
-                                     && ut.EventRegistrations.Count() < ut.Quantity * t.Quantity
-                                     select ut).FirstOrDefault();
-                            DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = id, UserTicketId = ticket.Id });
-                            DataContext.SaveChanges();
-                            return RedirectToAction("View", new { id = instance.EventInstance.EventId, eventType = instance.EventInstance.Event is Class ? EventType.Class : EventType.Social });
-                        }
-                        //  User needs to purchase tickets
-                        else
-                        {
-                            return RedirectToAction("BuyTicket", "Store", new { instanceId = id });
-                        }
-                    }
-                    else
-                    {
-                        return RedirectToAction("BuyTicket", "Store", new { instanceId = id });
-                    }
+                    utix = DataContext.UserTickets.Include("EventRegistrations").Where(t => t.UserId == userid && t.Ticket.EventId == instance.EventInstance.EventId && (t.Quantity * t.Ticket.Quantity) > t.EventRegistrations.Count()).ToList();
                 }
-                //Event Tickets
                 //  School Tickets
                 else
                 {
-                    var credits = DataContext.UserTickets.Where(t => t.Ticket.SchoolId == instance.Class.SchoolId && t.UserId == userid).Include("Ticket").Include("EventRegistrations").ToList();
+                    utix = DataContext.UserTickets.Include("EventRegistrations").Where(t => t.UserId == userid && t.Ticket.SchoolId == instance.Class.SchoolId && (t.Quantity * t.Ticket.Quantity) > t.EventRegistrations.Count()).ToList();
+                }
 
-                    if (credits != null)
-                    {
-                        //  User Has Remaining Credit
-                        if (credits.Sum(c => c.Quantity * c.Ticket.Quantity) > credits.Sum(c => c.EventRegistrations.Count()))
-                        {
-                            //  Get Available Tickets
-                            var ticket =
-                                    (from ut in DataContext.UserTickets
-                                     join t in DataContext.Tickets
-                                     on ut.TicketId equals t.Id
-                                     where ut.UserId == userid
-                                     && t.SchoolId == instance.Class.SchoolId
-                                     && ut.EventRegistrations.Count() < ut.Quantity * t.Quantity
-                                     select ut).FirstOrDefault();
-                            DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = id, UserTicketId = ticket.Id });
-                            DataContext.SaveChanges();
-                            return RedirectToAction("View", new { id = instance.EventInstance.EventId, eventType = instance.EventInstance.Event is Class ? EventType.Class : EventType.Social });
-                        }
-                        //  User needs to purchase tickets
-                        else
-                        {
-                            return RedirectToAction("BuyTicket", "Store", new { instanceId = id });
-                        }
-                    }
-                    //  User needs to purchase tickets
-                    else
-                    {
-                        return RedirectToAction("BuyTicket", "Store", new { instanceId = id });
-                    }
+                //  Does user have tickets?
+                if (utix.Count() != 0)
+                {
+                    DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = id, UserTicketId = utix.FirstOrDefault().Id });
+                    DataContext.SaveChanges();
+
+                    return RedirectToAction("View", new { id = instance.EventInstance.EventId, eventType = instance.EventInstance.Event is Class ? EventType.Class : EventType.Social });
+                }
+                //  User Needs to buy tickets
+                else
+                {
+                    return RedirectToAction("BuyTicket", "Store", new { instanceId = id });
                 }
             }
+            // Free Event
             else
             {
                 try
@@ -1868,12 +1836,70 @@ namespace EDR.Controllers
             }
         }
 
+                //else
+                //{
+                //    var credits = DataContext.UserTickets.Where(t => t.Ticket.SchoolId == instance.Class.SchoolId && t.UserId == userid).Include("Ticket").Include("EventRegistrations").ToList();
+
+                //    if (credits != null)
+                //    {
+                //        //  User Has Remaining Credit
+                //        if (credits.Sum(c => c.Quantity * c.Ticket.Quantity) > credits.Sum(c => c.EventRegistrations.Count()))
+                //        {
+                //            //  Get Available Tickets
+                //            var ticket =
+                //                    (from ut in DataContext.UserTickets
+                //                     join t in DataContext.Tickets
+                //                     on ut.TicketId equals t.Id
+                //                     where ut.UserId == userid
+                //                     && t.SchoolId == instance.Class.SchoolId
+                //                     && ut.EventRegistrations.Count() < ut.Quantity * t.Quantity
+                //                     select ut).FirstOrDefault();
+                //            DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = id, UserTicketId = ticket.Id });
+                //            DataContext.SaveChanges();
+                //            return RedirectToAction("View", new { id = instance.EventInstance.EventId, eventType = instance.EventInstance.Event is Class ? EventType.Class : EventType.Social });
+                //        }
+                //        //  User needs to purchase tickets
+                //        else
+                //        {
+                //            return RedirectToAction("BuyTicket", "Store", new { instanceId = id });
+                //        }
+                //    }
+                //var credits = DataContext.UserTickets.Where(t => t.Ticket.EventId == instance.EventInstance.EventId && t.UserId == userid).Include("Ticket").Include("EventRegistrations").ToList();
+        //if (credits != null)
+        //{
+        //    //  User Has Remaining Credit
+        //    if (credits.Sum(c => c.Quantity * c.Ticket.Quantity) > credits.Sum(c => c.EventRegistrations.Count()))
+        //    {
+        //        //  Get Available Tickets
+        //        var ticket =
+        //                (from ut in DataContext.UserTickets
+        //                 join t in DataContext.Tickets
+        //                 on ut.TicketId equals t.Id
+        //                 where ut.UserId == userid
+        //                 && t.EventId == instance.EventInstance.EventId
+        //                 && ut.EventRegistrations.Count() < ut.Quantity * t.Quantity
+        //                 select ut).FirstOrDefault();
+        //    }
+        //    //  User needs to purchase tickets
+        //    else
+        //    {
+        //        return RedirectToAction("BuyTicket", "Store", new { instanceId = id });
+        //    }
+        //}
+
         [Authorize]
-        public ActionResult UnRegister(int id)
+        public ActionResult UnRegister(int id, int? regId)
         {
             var userid = User.Identity.GetUserId();
             var instance = DataContext.EventInstances.Where(i => i.Id == id).Include("Event").FirstOrDefault();
-            DataContext.EventRegistrations.Remove(DataContext.EventRegistrations.Single(s => s.UserId == userid && s.EventInstanceId == id));
+            if (regId != null)
+            {
+                DataContext.EventRegistrations.RemoveRange(DataContext.EventRegistrations.Where(s => s.UserId == userid && s.EventInstanceId == id && s.Id == regId));
+            }
+            else
+            {
+                DataContext.EventRegistrations.RemoveRange(DataContext.EventRegistrations.Where(s => s.UserId == userid && s.EventInstanceId == id));
+            }
             DataContext.SaveChanges();
             return RedirectToAction("View", new { id = instance.EventId, eventType = instance.Event is Class ? EventType.Class : EventType.Social });
         }
@@ -2635,25 +2661,42 @@ namespace EDR.Controllers
         {
             var evnt = DataContext.Events.Include("EventInstances").Single(e => e.Id == id);
 
-            //  Add Recurring Events
-            if (evnt.Recurring)
+            try
             {
-                if (DataContext.EventInstances.Where(i => i.EventId == id && i.DateTime >= DateTime.Today).Count() < 20)
+                //  Add Recurring Events
+                if (evnt.Recurring)
                 {
-                    var sdate = DataContext.EventInstances.Where(i => i.EventId == id).Max(i => i.DateTime).AddDays(1);
-                    var daylength = (Convert.ToDateTime(evnt.EndDate) - evnt.StartDate).TotalDays;
-                    sdate = ApplicationUtility.GetNextDate(evnt.StartDate, evnt.Frequency, (int)evnt.Interval, evnt.Day, sdate, evnt.MonthDays);
-
-                    for (int i = 1; i <= eventCount; i++)
+                    if (DataContext.EventInstances.Where(i => i.EventId == id && i.DateTime >= DateTime.Today).Count() < 20)
                     {
-                        evnt.EventInstances.Add(new EventInstance() { DateTime = sdate, EndDate = sdate.AddDays(daylength), PlaceId = evnt.PlaceId, StartTime = Convert.ToDateTime(sdate.ToShortDateString() + " " + ((DateTime)evnt.StartTime).ToShortTimeString()), EndTime = Convert.ToDateTime(sdate.AddDays(daylength).ToShortDateString() + " " + ((DateTime)evnt.EndTime).ToShortTimeString()) });
-                        sdate = ApplicationUtility.GetNextDate(sdate, evnt.Frequency, (int)evnt.Interval, evnt.Day, sdate.AddDays(1), evnt.MonthDays);
-                    }
-                    DataContext.SaveChanges();
-                }
-            }
+                        var sdate = DataContext.EventInstances.Where(i => i.EventId == id).Max(i => i.DateTime).AddDays(1);
+                        var daylength = (Convert.ToDateTime(evnt.EndDate) - evnt.StartDate).TotalDays;
+                        sdate = ApplicationUtility.GetNextDate(evnt.StartDate, evnt.Frequency, (int)evnt.Interval, evnt.Day, sdate, evnt.MonthDays);
 
-            return RedirectToAction("Manage", new { id = id, eventType = evnt is Class ? EventType.Class : EventType.Social });
+                        for (int i = 1; i <= eventCount; i++)
+                        {
+                            evnt.EventInstances.Add(new EventInstance() { DateTime = sdate, EndDate = sdate.AddDays(daylength), PlaceId = evnt.PlaceId, StartTime = Convert.ToDateTime(sdate.ToShortDateString() + " " + ((DateTime)evnt.StartTime).ToShortTimeString()), EndTime = Convert.ToDateTime(sdate.AddDays(daylength).ToShortDateString() + " " + ((DateTime)evnt.EndTime).ToShortTimeString()) });
+                            sdate = ApplicationUtility.GetNextDate(sdate, evnt.Frequency, (int)evnt.Interval, evnt.Day, sdate.AddDays(1), evnt.MonthDays);
+                        }
+                        DataContext.SaveChanges();
+                    }
+                }
+
+                return RedirectToAction("Manage", new { id = id, eventType = evnt is Class ? EventType.Class : EventType.Social });
+            }
+            catch (DbEntityValidationException e)
+            {
+                var msg = "";
+                foreach (var eve in e.EntityValidationErrors)
+                {
+                    msg = eve.Entry.Entity.GetType().Name + " " + eve.Entry.State;
+                    foreach (var ve in eve.ValidationErrors)
+                    {
+                        msg = ve.PropertyName + " " + ve.ErrorMessage;
+                    }
+                }
+
+                return RedirectToAction("Manage", new { id = id, eventType = evnt is Class ? EventType.Class : EventType.Social });
+            }
         }
 
         [Authorize(Roles = "Owner,Promoter,Teacher")]

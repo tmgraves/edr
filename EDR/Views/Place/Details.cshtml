@@ -46,7 +46,7 @@
     <div class="row">
         <div class="col-lg-4 nospace">
             <div class="col-lg-12 nospace panel panel-default" style="margin-bottom: 20px !important;">
-                <img style="max-width: 100%;" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Place.Latitude,@Model.Place.Longitude&zoom=10&size=450x150&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Place.Latitude, @Model.Place.Longitude" title="@Model.Place.City, @Model.Place.State">
+                <img style="max-width: 100%;" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Place.Latitude,@Model.Place.Longitude&zoom=10&size=450x150&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Place.Latitude, @Model.Place.Longitude&key=@System.Configuration.ConfigurationManager.AppSettings["GoogleAPIKey"]" title="@Model.Place.City, @Model.Place.State">
                 <div class="panel-body">
                     <p class="text-primary">
                         <div id="location">
@@ -130,7 +130,7 @@
     <script src="~/Scripts/jquery-simple-pagination-plugin.js"></script>
     @*<link href="~/Content/Simple-Pagination.css" rel="stylesheet" />*@
 @Scripts.Render("~/bundles/GeoComplete")
-<script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+<script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places&key=@System.Configuration.ConfigurationManager.AppSettings["GoogleAPIKey"]"></script>
 
     <script>
         function LoadClasses() {

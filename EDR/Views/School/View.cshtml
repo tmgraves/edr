@@ -65,7 +65,7 @@
                                 @Html.DisplayFor(member => item.Price)
                             </div>
                             <div class="col-lg-4">
-                                @Html.ActionLink("Purchase Ticket", "BuyTicket", "School", new { id = item.Id }, new { @class = "btn btn-primary" })
+                                @Html.ActionLink("Purchase Ticket", "BuyTicket", "Store", new { id = item.Id, schoolid = item.SchoolId }, new { @class = "btn btn-primary" })
                             </div>
                         </div>
                     }
@@ -79,7 +79,7 @@
             <div class="panel panel-default">
                 <div class="panel-body nospace">
                     <a target="_blank" href="https://maps.google.com/?q=@Model.School.Latitude,@Model.School.Longitude">
-                        <img style="width: 100%;" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.School.Latitude,@Model.School.Longitude&zoom=10&size=500x200&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.School.Latitude, @Model.School.Longitude" title="@Model.School.City, @Model.School.State">
+                        <img style="width: 100%;" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.School.Latitude,@Model.School.Longitude&zoom=10&size=500x200&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.School.Latitude, @Model.School.Longitude&key=@System.Configuration.ConfigurationManager.AppSettings["GoogleAPIKey"]" title="@Model.School.City, @Model.School.State">
                     </a>
                     <div class="row" style="padding: 5px;">
                         <div class="col-lg-12">

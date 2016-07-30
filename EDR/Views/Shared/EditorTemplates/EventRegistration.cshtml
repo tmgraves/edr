@@ -1,0 +1,12 @@
+﻿@model EDR.Models.EventRegistration
+
+<tr>
+    @Html.HiddenFor(model => model.Id)
+    <td>
+        @Html.EditorFor(m => m.FirstName, new { @class = "form-control", @placeholder = "Attendee First Name" })
+    </td>
+    <td>
+        @Html.EditorFor(m => m.LastName, new { @class = "form-control", @placeholder = "Attendee Last Name" })
+    </td>
+</tr>
+

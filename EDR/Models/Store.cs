@@ -90,11 +90,11 @@ namespace EDR.Models
         public decimal UnitPrice { get; set; }
         public int? TicketId { get; set; }
         [ForeignKey("TicketId")]
-        public Ticket Ticket { get; set; }
+        public virtual Ticket Ticket { get; set; }
         [Required]
         public int OrderId { get; set; }
         [ForeignKey("OrderId")]
-        public Order Order { get; set; }
+        public virtual Order Order { get; set; }
     }
 
     [Bind(Exclude = "Id")]
@@ -130,7 +130,7 @@ namespace EDR.Models
         [Required]
         public int TicketId { get; set; }
         [ForeignKey("TicketId")]
-        public Ticket Ticket { get; set; }
+        public virtual Ticket Ticket { get; set; }
         [Required]
         public decimal Quantity { get; set; }
         private DateTime _date = DateTime.Now;

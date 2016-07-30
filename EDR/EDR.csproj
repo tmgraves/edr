@@ -969,6 +969,9 @@
     <Content Include="Views\Shared\_AddTeamPartial.cshtml" />
     <Content Include="Views\Shared\_TeamsPartial.cshtml" />
     <Content Include="Views\Dancer\Mobile\Manage.cshtml" />
+    <Content Include="Views\Store\Attendees.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\EventRegistration.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Attendee.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

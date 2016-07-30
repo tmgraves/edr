@@ -626,7 +626,7 @@
     <script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
     <script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
     @Scripts.Render("~/bundles/GeoComplete")
-    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places&key=@System.Configuration.ConfigurationManager.AppSettings["GoogleAPIKey"]"></script>
 <link href="~/Content/fullcalendar/fullcalendar.css" rel="stylesheet" />
 <link href="~/Content/fullcalendar/fullcalendar.print.css" rel="stylesheet" media="print" />
 <script src="~/Scripts/fullcalendar/moment.min.js"></script>

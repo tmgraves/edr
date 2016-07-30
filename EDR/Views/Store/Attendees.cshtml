@@ -1,0 +1,83 @@
+﻿@model EDR.Models.ViewModels.AttendeesViewModel
+@{
+    ViewBag.Title = "Attendees";
+}
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { @class = "form-horizontal main", @id = "attendeeform" }))
+{
+    @Html.HiddenFor(m => m.EventInstance.Id)
+
+    <div class="container-fluid">
+        <div class="container">
+            <div class="col-lg-6 col-lg-offset-3">
+                <h2 class="text-center">Attendee Names</h2>
+            </div>
+            <div class="col-lg-6 col-lg-offset-3 bg-info">
+                <div class="col-lg-8 col-lg-offset-2 text-center">
+                    @*@Html.ValidationSummary(false, "", new { @class = "text-danger" })*@
+                    @if (ViewBag.Message != "" && ViewBag.Message != null)
+                    {
+                        <span class="text-danger">@ViewBag.Message</span>
+                    }
+
+                    <h4 class="text-center">@Model.EventInstance.Event.Name</h4>
+                    <text>@@</text> @Model.EventInstance.Event.Place.Name<br />
+                    @Model.EventInstance.DateTime.ToLongDateString()<br />
+                    <text>@@</text> @(((DateTime)Model.EventInstance.Event.StartTime).ToString("h:mm tt"))
+
+                </div>
+                <div class="col-lg-8 col-lg-offset-2 text-center">
+                    <div class="form-group form-group-sm text-center">
+                        @Html.EditorFor(model => model.Attendees)
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-lg-offset-3">
+                <div class="col-lg-8 col-lg-offset-2 text-center">
+                    <div class="row" style="margin-top: 10px;">
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">Register Dancers</button>
+                            @Html.ActionLink("Cancel", "View", "Event", new { @id = Model.EventInstance.EventId, eventType = Model.EventInstance.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social }, new { @class = "btn btn-warning" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@*<button id="btnaddrows">Add Rows</button>*@
+
+@section Scripts
+{
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/foolproof")
+    @Scripts.Render("~/bundles/jqueryUI")
+    @Scripts.Render("~/bundles/GeoComplete")
+
+    <script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
+
+    <script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
+
+    <script>
+        $('#btnaddrows').click(function () {
+            $.get('@Url.Action("GetAttendeeRowPartial", "Store")', { 'id': id }, function (data) {
+                $('#tattendees').append(data);
+            });
+        });
+
+        function submitForm() {
+            if (!$('#attendeeform.main').valid()) {
+                var val = $('#attendeeform.main').validate();
+                //for (var i = 0; i < val.errorList.length; i++) {
+                //    alert(val.errorList[i].message);
+                //}
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+    </script>
+}

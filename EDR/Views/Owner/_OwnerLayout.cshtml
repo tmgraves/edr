@@ -48,7 +48,7 @@
             <div>
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <p>
-                        <img src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Address.Latitude,@Model.Address.Longitude&zoom=4&size=250x100&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Address.Latitude, @Model.Address.Longitude">
+                        <img src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Address.Latitude,@Model.Address.Longitude&zoom=4&size=250x100&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Address.Latitude, @Model.Address.Longitude&key=@System.Configuration.ConfigurationManager.AppSettings["GoogleAPIKey"]">
                     </p>
                 </div>
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">

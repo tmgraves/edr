@@ -1,0 +1,31 @@
+﻿@model EDR.Models.ViewModels.Attendee
+
+<div class="row">
+    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 nospace">
+        @Html.HiddenFor(x => x.UserId)
+        @if (Model.UserId != null)
+        {
+            <div class="form-control text-left">
+                @Model.FirstName
+            </div>
+        }
+        else
+        {
+            @Html.TextBoxFor(x => x.FirstName, new { @class = "form-control", @placeholder = "First Name" })
+            @Html.ValidationMessageFor(x => x.FirstName, "", new { @class = "text-danger" })
+        }
+    </div>
+    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 nospace">
+        @if (Model.UserId != null)
+        {
+            <div class="form-control text-left">
+                @Model.LastName
+            </div>
+        }
+        else
+        {
+            @Html.TextBoxFor(x => x.LastName, new { @class = "form-control", @placeholder = "Last Name" })
+            @Html.ValidationMessageFor(x => x.LastName, "", new { @class = "text-danger" })
+        }
+    </div>
+</div>

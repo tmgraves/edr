@@ -11,6 +11,7 @@ using AuthorizeNet.Api.Contracts.V1;
 using AuthorizeNet.Api.Controllers.Bases;
 using System.Configuration;
 using System.Data.Entity;
+using System.Globalization;
 
 namespace EDR.Controllers
 {
@@ -80,7 +81,82 @@ namespace EDR.Controllers
             LoadOrderModel(model);
             return View(model);
         }
-        
+
+        [Authorize]
+        public ActionResult Attendees(int instanceId, int attendees)
+        {
+            var model = new AttendeesViewModel();
+
+            model.EventInstance = DataContext.EventInstances.Include("EventRegistrations").Where(i => i.Id == instanceId).FirstOrDefault();
+
+            var userid = User.Identity.GetUserId();
+            var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+            model.Attendees = new List<Attendee>();
+
+            for (int i = 0; i < attendees; i++)
+            {
+                if (model.EventInstance.EventRegistrations.Where(r => r.UserId == userid).Count() == 0 && i == 0)
+                {
+                    model.Attendees.Add(new Attendee() { UserId = userid, FirstName = user.FirstName, LastName = user.LastName });
+                }
+                else
+                {
+                    model.Attendees.Add(new Attendee());
+                }
+            }
+            return View(model);
+        }
+
+        [Authorize]
+        [HttpPost]
+        public ActionResult Attendees(AttendeesViewModel attendeemodel)
+        {
+            foreach (var a in attendeemodel.Attendees.Where(a => a.UserId == null))
+            {
+                a.FirstName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(a.FirstName);
+                a.LastName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(a.LastName);
+            }
+
+            var userid = User.Identity.GetUserId();
+            var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+            var instance = DataContext.EventInstances.Where(i => i.Id == attendeemodel.EventInstance.Id).FirstOrDefault();
+            var tix = DataContext.UserTickets.Include("EventRegistrations").Where(u => u.UserId == userid && u.Ticket.EventId == instance.EventId && (u.Ticket.Quantity * u.Quantity > u.EventRegistrations.Count())).ToList();
+            //  School tickets?
+            if (tix.Count() == 0)
+            {
+                tix = DataContext.UserTickets.Include("EventRegistrations").Where(u => u.UserId == userid && u.Ticket.SchoolId == ((Class)instance.Event).SchoolId && (u.Ticket.Quantity * u.Quantity > u.EventRegistrations.Count())).ToList();
+            }
+
+            var curtic = tix.FirstOrDefault();
+            var rem = (curtic.Quantity * curtic.Ticket.Quantity) - curtic.EventRegistrations.Count();
+            foreach (var a in attendeemodel.Attendees)
+            {
+                if (a.FirstName != null)
+                {
+                    a.FirstName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(a.FirstName);
+                }
+                if (a.LastName != null)
+                {
+                    a.LastName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(a.LastName);
+                }
+
+                if (rem == 0)
+                {
+                    curtic = tix.Where(t => t.Id != curtic.Id).FirstOrDefault();
+                    rem = (curtic.Quantity * curtic.Ticket.Quantity) - curtic.EventRegistrations.Count();
+                }
+
+                if (rem >= 1)
+                {
+                    DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = attendeemodel.EventInstance.Id, UserTicketId = curtic.Id, FirstName = a.UserId == null ? a.FirstName : user.FirstName, LastName = a.UserId == null ? a.LastName : user.LastName });
+                    DataContext.SaveChanges();
+                    rem = rem - 1;
+                }
+            }
+
+            return RedirectToAction("View", "Event", new { id = instance.EventId, eventtype = instance.Event is Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social });
+        }
+
         // GET: School
         [Authorize(Roles = "Teacher,Owner")]
         public ActionResult AddTicket(int? schoolId, int? eventId)
@@ -116,6 +192,12 @@ namespace EDR.Controllers
             {
                 return View(ticket);
             }
+        }
+
+        [Authorize]
+        public PartialViewResult GetAttendeeRowPartial()
+        {
+            return PartialView("~/Views/Shared/EditorTemplates/EventRegistration.cshtml", new EventRegistration());
         }
 
         // GET: School
@@ -155,7 +237,7 @@ namespace EDR.Controllers
                     {
                         DataContext.Entry(model.Order).State = EntityState.Modified;
                         DataContext.SaveChanges();
-                        model.Order = DataContext.Orders.Include("OrderDetails.Ticket").Single(o => o.Id == model.Order.Id);
+                        model.Order = DataContext.Orders.Include("OrderDetails").Single(o => o.Id == model.Order.Id);
                     }
                     else
                     {
@@ -178,14 +260,20 @@ namespace EDR.Controllers
                         DataContext.SaveChanges();
                         //  Create User Ticket record
 
-                        //  Register User for Event
-                        if (model.EventInstance != null)
+                        //  Event Registration
+                        if (model.EventInstanceId != null)
                         {
-                            DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = (int)model.EventInstanceId, UserTicketId = uticket.Id });
+                            DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = (int)model.EventInstanceId, UserTicketId = uticket.Id, FirstName = user.FirstName, LastName = user.LastName });
                             DataContext.SaveChanges();
+
+                            //  Register User for Event
+                            return RedirectToAction("Confirmation", "Store", new { id = model.Order.Id });
                         }
-                        //  Register User for Event
-                        return RedirectToAction("Confirmation", "Store", new { id = model.Order.Id });
+                        //  School Ticket
+                        else
+                        {
+                            return RedirectToAction("Confirmation", "Store", new { id = model.Order.Id });
+                        }
                     }
                     else
                     {
@@ -208,6 +296,32 @@ namespace EDR.Controllers
                 return View("Error");
             }
         }
+
+        //  School Ticket?
+        ////  Event Ticket?
+        //else
+        //{
+        //    var tix = DataContext.UserTickets.Include("EventRegistrations").Where(u => u.UserId == userid && u.Ticket.EventId == model.EventInstance.EventId);
+        //    var avail = tix.Sum(t => t.Ticket.Quantity * t.Quantity) - tix.Sum(t => t.EventRegistrations.Count());
+
+        //    if (avail > 1)
+        //    {
+        //        DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = (int)model.EventInstanceId, UserTicketId = uticket.Id });
+        //        DataContext.SaveChanges();
+
+        //        //  Go To Attendees Screen
+        //        return RedirectToAction("Attendees", new { orderid = model.Order.Id });
+        //    }
+        //    else
+        //    {
+        //        DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = (int)model.EventInstanceId, UserTicketId = uticket.Id });
+        //        DataContext.SaveChanges();
+
+        //        //  Register User for Event
+        //        return RedirectToAction("Confirmation", "Store", new { id = model.Order.Id });
+        //    }
+        //}
+        //  Event Ticket?
 
         [Authorize]
         public static ANetApiResponse PostTransaction(OrderViewModel model)

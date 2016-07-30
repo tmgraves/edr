@@ -113,7 +113,7 @@
     @Scripts.Render("~/bundles/jqueryUI")
     @Scripts.Render("~/bundles/GeoComplete")
 <script src="../../Scripts/searchhelper.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places&key=@System.Configuration.ConfigurationManager.AppSettings["GoogleAPIKey"]"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="../../Scripts/jquery.geocomplete.js"></script>
     <link rel="stylesheet" href="~/Content/jquery.rateyo.css" />

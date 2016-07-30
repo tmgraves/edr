@@ -497,7 +497,7 @@
 <script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
 
     <script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places&key=@System.Configuration.ConfigurationManager.AppSettings["GoogleAPIKey"]"></script>
 <script src="~/Scripts/searchhelper.js"></script>
 <script src="~/Scripts/changepicture.js"></script>
 <script src="~/Scripts/readmore.js"></script>

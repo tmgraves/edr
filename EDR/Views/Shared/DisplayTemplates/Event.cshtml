@@ -241,7 +241,7 @@
                         @Html.DisplayFor(modelItem => Model.Place.City), @(Model.Place.State != null ? Model.Place.State.ToString() : Model.Place.StateName)
                         <div style="border: 1px solid #ddd;">
                             <a target="_blank" href="https://www.google.com/maps/place/@Model.Place.Name+@Model.Place.Address,+@Model.Place.City,+@Model.Place.State+@Model.Place.Zip">
-                                <img style="width: 100%;" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Place.Latitude,@Model.Place.Longitude&zoom=10&size=300x150&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Place.Latitude, @Model.Place.Longitude&key=AIzaSyCQZYhgRAjXZdBM2qCEYbZ9vO0T9eyyfjc" title="@Model.Place.City, @Model.Place.StateName">
+                                <img style="width: 100%;" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Place.Latitude,@Model.Place.Longitude&zoom=10&size=300x150&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Place.Latitude, @Model.Place.Longitude&key=@System.Configuration.ConfigurationManager.AppSettings["GoogleAPIKey"]" title="@Model.Place.City, @Model.Place.StateName">
                             </a>
                         </div>
                     </div>
@@ -263,7 +263,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

@@ -66,7 +66,7 @@ namespace EDR.Models.ViewModels
         public decimal Amount { get; set; }
         public string Result { get; set; }
         public string Message { get; set; }
-       
+
         //public OrderViewModel(List<Ticket> tickets)
         //{
         //    Quantity = 1;
@@ -77,5 +77,23 @@ namespace EDR.Models.ViewModels
         //        Years.Add(i.ToString());
         //    }
         //}
+
+    }
+    public class AttendeesViewModel
+    {
+        public Order Order { get; set; }
+        public int EventInstanceId { get; set; }
+        public EventInstance EventInstance { get; set; }
+        public int Available { get; set; }
+        public ICollection<Attendee> Attendees { get; set; }
+    }
+
+    public class Attendee
+    {
+        [Required(ErrorMessage ="Please enter a First Name")]
+        public string FirstName { get; set; }
+        [Required(ErrorMessage = "Please enter a Last Name")]
+        public string LastName { get; set; }
+        public string UserId { get; set; }
     }
 }

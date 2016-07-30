@@ -5,7 +5,7 @@
 }
 
 
-@using (Html.BeginForm(null, null, FormMethod.Post, new { @class = "form-horizontal" }))
+@using (Html.BeginForm(null, null, FormMethod.Post, new { @class = "form-horizontal", id = "buyticketform", onsubmit = "submitorder()" }))
 {
     @Html.HiddenFor(m => m.Order.Id, new { Value = Model.Order.Id })
     @Html.HiddenFor(m => m.EventInstanceId)
@@ -48,8 +48,25 @@
                     }
                     else
                     {
-                        
+                        <h4 class="text-center">@Model.School.Name</h4>
+                        @Model.School.Address<br />
+                        @Model.School.City<text>, </text>@Model.School.State<text> </text>@Model.School.Zip
                     }
+                    @*@if (Model.Attendees != null)
+                    {
+                        <input type="hidden" name="attendeecount" />
+                        <h4>Attendees</h4>
+                        foreach(var a in Model.Attendees)
+                        {
+                            <div>
+                                @a.LastName<text>, </text>@a.FirstName
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <input type="hidden" name="attendeecount" value="0" />
+                    }*@
                     <h4 class="text-center">Order Details</h4>
                     <div class="form-group form-group-sm">
                         <div class="row">
@@ -145,9 +162,17 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/GeoComplete")
-    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places&key=@System.Configuration.ConfigurationManager.AppSettings["GoogleAPIKey"]"></script>
 
     <script type="text/javascript">
+        //$(function () {
+        //    $("#buyticketform").submit(function (event) {
+        //        alert("submit");
+        //        event.preventDefault();
+        //        //  myJsFunction();
+        //    });
+        //});
+        
         $(function () {
             $("#Order_Address").geocomplete({
                 details: "form",

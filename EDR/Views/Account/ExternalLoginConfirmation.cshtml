@@ -78,7 +78,7 @@
 <script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
 <script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
 @Scripts.Render("~/bundles/GeoComplete")
-<script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+<script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places&key=@System.Configuration.ConfigurationManager.AppSettings["GoogleAPIKey"]"></script>
 
 <script type="text/javascript">
     $.validator.setDefaults({

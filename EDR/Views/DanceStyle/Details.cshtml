@@ -96,7 +96,7 @@
     <script src="~/Scripts/jquery-simple-pagination-plugin.js"></script>
     @*<link href="~/Content/Simple-Pagination.css" rel="stylesheet" />*@
     @Scripts.Render("~/bundles/GeoComplete")
-    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places&key=@System.Configuration.ConfigurationManager.AppSettings["GoogleAPIKey"]"></script>
     <script src="~/Scripts/readmore.js"></script>
 
     <script>

@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
     @Scripts.Render("~/bundles/jqueryUI")
     @Scripts.Render("~/bundles/GeoComplete")
-    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places&key=@System.Configuration.ConfigurationManager.AppSettings["GoogleAPIKey"]"></script>
     @Scripts.Render("~/bundles/TimePicker")
     @Styles.Render("~/Content/TimePickercss")
 

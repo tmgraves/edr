@@ -265,6 +265,8 @@ namespace EDR.Models
         public string UserId { get; set; }
         [ForeignKey("UserId")]
         public ApplicationUser User { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
         [Required]
         public int EventInstanceId { get; set; }
         [ForeignKey("EventInstanceId")]

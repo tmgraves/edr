@@ -548,3 +548,5 @@ input[type="file"] {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+.field-validation-valid { display: none; }
+.validation-summary-valid {  display: none; }
