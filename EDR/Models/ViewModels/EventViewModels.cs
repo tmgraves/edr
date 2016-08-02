@@ -252,6 +252,7 @@ namespace EDR.Models.ViewModels
         public int AvailableTickets { get; set; }
         public IEnumerable<Ticket> Tickets { get; set; }
         public Review Review { get; set; }
+        public EventInstance CurrentInstance { get; set; }
 
         public EventViewModel()
         {
@@ -266,6 +267,11 @@ namespace EDR.Models.ViewModels
             //  Tickets = new List<Ticket>();
             AvailableTickets = 0;
         }
+    }
+
+    public class ScanRegistrantsViewModel
+    {
+        public int RegistrationId { get; set; }
     }
 
     public class EventManageViewModel : EventBaseViewModel

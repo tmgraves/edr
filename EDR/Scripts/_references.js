@@ -5,6 +5,7 @@
 /// <reference path="bootstrap.js" />
 /// <reference path="bootstrap-multiselect.js" />
 /// <reference path="bootstrap-toggle.js" />
+/// <reference path="browser-deeplink.min.js" />
 /// <reference path="changepicture.js" />
 /// <reference path="cropper.js" />
 /// <reference path="daypilot/daypilot-all.min.js" />

@@ -48,12 +48,12 @@
 
 @{
     var eventType = Model.Event is Class ? "Class" : "Social";
-    var instance = Model.Event.EventInstances.Where(e => e.DateTime >= DateTime.Today).OrderBy(c => c.DateTime).FirstOrDefault();
-    if (instance == null)
-    {
-        instance = Model.Event.EventInstances.OrderByDescending(c => c.DateTime).FirstOrDefault();
-    }
-    var reg = instance.EventRegistrations.Where(r => r.UserId == userid).FirstOrDefault();
+    //var instance = Model.Event.EventInstances.Where(e => e.DateTime >= DateTime.Today).OrderBy(c => c.DateTime).FirstOrDefault();
+    //if (instance == null)
+    //{
+    //    instance = Model.Event.EventInstances.OrderByDescending(c => c.DateTime).FirstOrDefault();
+    //}
+    //  var reg = instance.EventRegistrations.Where(r => r.UserId == userid).FirstOrDefault();
 }
 
 <ol class="breadcrumb">
@@ -67,7 +67,6 @@
     }
     <li class="active">View @Model.EventType</li>
 </ol>
-
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-12 verticaljustify nospace">
@@ -86,7 +85,7 @@
                             else
                             {
                                 @:(@(((EDR.Models.Social)Model.Event).SocialType))
-                        }
+                            }
                         </h3>
                     </div>
                     <div class="col-lg-2 text-right">
@@ -133,11 +132,36 @@
                     </p>
                     }
             </div>
+
             <div class="col-lg-8 attachbottom bg-success">
                 @{
                     <div style="width: 100%;">
                         <div class="col-lg-8">
-                            <h3>Next Date: <span class="text-info">@instance.DateTime.ToString("ddd, MMM d, yyyy") at @Convert.ToDateTime(instance.StartTime).ToShortTimeString()</span></h3>
+                            @*@Html.DropDownListFor(m => m.CurrentInstance.Id, Model.Event.EventInstances.Where(ei => ei.DateTime >= DateTime.Today).Select(i => new SelectListItem() { Text = i.DateTime.ToString("ddd, MMM d, yyyy") + " at " + Convert.ToDateTime(Model.CurrentInstance.StartTime).ToShortTimeString(), Value = i.Id.ToString() }), "", new { @class = "form-control" })*@
+                            <div class="btn-group" style="width: 100% !important; padding: 10px 0px 10px 0px;">
+                                <div>
+                                    <button class="btn btn-default btn-sm col-lg-11" type="button">
+                                        <h4>@Model.CurrentInstance.DateTime.ToString("dddd, MMMM d, yyyy") at @Convert.ToDateTime(Model.CurrentInstance.StartTime).ToShortTimeString()</h4>
+                                    </button>
+                                    <button type="button" class="col-lg-1 btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <h4>
+                                            <span class="caret"></span>
+                                            <span class="sr-only">Toggle Dropdown</span>
+                                        </h4>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        @foreach (var i in Model.Event.EventInstances.Where(ei => ei.DateTime >= DateTime.Today))
+                                        {
+                                            <li>
+                                                <a class="large" style="padding: 0px 50px 0px 50px;" href="@Url.Action("View", "Event", new { id = Model.Event.Id, eventType = Model.EventType, instanceId = i.Id })">
+                                                    @i.DateTime.ToString("dddd, MMMM d, yyyy") at @Convert.ToDateTime(i.StartTime).ToShortTimeString()
+                                                </a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+
                             @if (!Model.Event.Free)
                             {
                                 <p class="text-center" style="background-color: lemonchiffon;">
@@ -148,10 +172,10 @@
                         <div class="col-lg-4 text-center">
                             <div class="text-center">
                                 <div class="btn-group" style="padding-top: 18px;">
-                                    @if (instance.DateTime >= DateTime.Today)
+                                    @if (Model.CurrentInstance.DateTime >= DateTime.Today)
                                     {
                                         //  User is not registered
-                                        if (instance.EventRegistrations.Where(r => r.UserId == userid).Count() == 0)
+                                        if (Model.CurrentInstance.EventRegistrations.Where(r => r.UserId == userid).Count() == 0)
                                         {
                                             if (Model.AvailableTickets > 0)
                                             {
@@ -161,19 +185,19 @@
                                                 <ul class="dropdown-menu" role="menu">
                                                     @for (int i = 1; i <= Model.AvailableTickets && i <= 10; i++)
                                                     {
-                                                        <li><a href="@Url.Action("Attendees", "Store", new { instanceId = instance.Id, attendees = i })"><i class="text-info glyphicon glyphicon-plus-sign"></i> @(i) add'l Attendees</a></li>
+                                                        <li><a href="@Url.Action("Attendees", "Store", new { instanceId = Model.CurrentInstance.Id, attendees = i })"><i class="text-info glyphicon glyphicon-plus-sign"></i> @(i) Attendee@(i > 1 ? "(s)" : "")</a></li>
                                                     }
                                                 </ul>
                                             }
                                             else
                                             {
-                                                if (instance.Event.Free)
+                                                if (Model.CurrentInstance.Event.Free)
                                                 {
-                                                    @Html.ActionLink("Register", "Register", new { id = instance.Id }, new { @class = "btn btn-primary btn-lg", @style = "width: 100%;" })
+                                                    @Html.ActionLink("Register", "Register", new { id = Model.CurrentInstance.Id }, new { @class = "btn btn-primary btn-lg", @style = "width: 100%;" })
                                                 }
                                                 else
                                                 {
-                                                    @Html.ActionLink("Buy Credits", "Register", new { id = instance.Id }, new { @class = "btn btn-primary btn-lg", @style = "width: 100%;" })
+                                                    @Html.ActionLink("Buy Credits", "Register", new { id = Model.CurrentInstance.Id }, new { @class = "btn btn-primary btn-lg", @style = "width: 100%;" })
                                                 }
                                             }
                                         }
@@ -182,17 +206,17 @@
                                             if (!Model.Event.Free)
                                             {
                                                 //if (reg.UserTicket.Ticket.EventId == null && reg.Checkedin == null)
-                                                if (instance.EventRegistrations.Where(r => r.UserId == userid && r.Checkedin != null).Count() == 0)
+                                                if (Model.CurrentInstance.EventRegistrations.Where(r => r.UserId == userid && r.Checkedin != null).Count() == 0)
                                                 {
                                                     <div class="btn-group">
-                                                        <a class="btn btn-primary btn-lg">Registered (@instance.EventRegistrations.Where(r => r.UserId == userid).Count())</a>
+                                                        <a class="btn btn-primary btn-lg">(@Model.CurrentInstance.EventRegistrations.Where(r => r.UserId == userid).Count()) Registered</a>
                                                         <button type="button" class="btn btn-primary btn-lg dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                                             <span class="caret"></span>
                                                             <span class="sr-only">Toggle Dropdown</span>
                                                         </button>
                                                         <ul class="dropdown-menu" role="menu" style="width: 100%;">
                                                             @*<li>@Html.ActionLink("Un-Register", "UnRegister", new { id = instance.Id }, new { @class = "btn btn-danger" })</li>*@
-                                                            @foreach (var er in instance.EventRegistrations.Where(r => r.UserId == userid))
+                                                            @foreach (var er in Model.CurrentInstance.EventRegistrations.Where(r => r.UserId == userid))
                                                             {
                                                                 <li class="col-lg-12" style="padding: 5px;">
                                                                     <div class="row">
@@ -200,7 +224,7 @@
                                                                             @er.FirstName @er.LastName
                                                                         </div>
                                                                         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 right nospace">
-                                                                            <a class="btn btn-danger btn-sm" title="Un-register" style="display: inline-block;" href="@Url.Action("UnRegister", "Event", new { id = instance.Id, regid = er.Id })">
+                                                                            <a class="btn btn-danger btn-sm" title="Un-register" style="display: inline-block;" href="@Url.Action("UnRegister", "Event", new { id = Model.CurrentInstance.Id, regid = er.Id })">
                                                                                 <i class="glyphicon glyphicon glyphicon-remove-circle"></i>
                                                                             </a>
                                                                         </div>
@@ -209,7 +233,7 @@
                                                             }
                                                             @for (int i = 1; i <= Model.AvailableTickets && i <= 10; i++)
                                                             {
-                                                                <li><a style="padding: 10px" href="@Url.Action("Attendees", "Store", new { instanceId = instance.Id, attendees = i })"><i class="text-info glyphicon glyphicon-plus-sign"></i> @(i)  Add'l Attendees</a></li>
+                                                                <li><a style="padding: 10px" href="@Url.Action("Attendees", "Store", new { instanceId = Model.CurrentInstance.Id, attendees = i })"><i class="text-info glyphicon glyphicon-plus-sign"></i> @(i) Attendee@(i > 1 ? "(s)" : "")</a></li>
                                                             }
                                                         </ul>
                                                     </div>
@@ -221,7 +245,7 @@
                                             }
                                             else
                                             {
-                                                @Html.ActionLink("Un-Register", "UnRegister", new { id = instance.Id }, new { @class = "btn btn-danger btn-lg" });
+                                                @Html.ActionLink("Un-Register", "UnRegister", new { id = Model.CurrentInstance.Id }, new { @class = "btn btn-danger btn-lg" });
                                             }
                                         }
                                     }

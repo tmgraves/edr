@@ -148,7 +148,7 @@ namespace EDR.Models
         public int PlaceId { get; set; }
         [ForeignKey("PlaceId")]
         public virtual Place Place { get; set; }
-        public ApplicationUser Creator { get; set; }
+        public virtual ApplicationUser Creator { get; set; }
         public ICollection<EventMember> EventMembers { get; set; }
         public ICollection<LinkedFacebookObject> LinkedFacebookObjects { get; set; }
         public ICollection<LinkedMedia> LinkedMedia { get; set; }
@@ -270,7 +270,7 @@ namespace EDR.Models
         [Required]
         public int EventInstanceId { get; set; }
         [ForeignKey("EventInstanceId")]
-        public EventInstance Instance { get; set; }
+        public virtual EventInstance Instance { get; set; }
         private DateTime _date = DateTime.Now;
         public DateTime DateRegistered
         {

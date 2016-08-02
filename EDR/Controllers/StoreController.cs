@@ -154,7 +154,7 @@ namespace EDR.Controllers
                 }
             }
 
-            return RedirectToAction("View", "Event", new { id = instance.EventId, eventtype = instance.Event is Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social });
+            return RedirectToAction("View", "Event", new { id = instance.EventId, eventtype = instance.Event is Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social, instanceId = attendeemodel.EventInstance.Id });
         }
 
         // GET: School

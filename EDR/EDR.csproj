@@ -533,6 +533,7 @@
     <Content Include="Content\images\NoPic.png" />
     <Content Include="Content\images\Play1PressedSmall.png" />
     <Content Include="Content\images\promoter.png" />
+    <Content Include="Content\images\qrsample.png" />
     <Content Include="Content\images\rehearsal.jpg" />
     <Content Include="Content\images\Share.png" />
     <Content Include="Content\images\social.jpg" />
@@ -614,6 +615,8 @@
     <Content Include="Scripts\bootstrap-toggle.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\browser-deeplink.js" />
+    <Content Include="Scripts\browser-deeplink.min.js" />
     <Content Include="Scripts\changepicture.js" />
     <Content Include="Scripts\cropper.js" />
     <Content Include="Scripts\DayPilot\daypilot-all.min.js" />
@@ -972,6 +975,8 @@
     <Content Include="Views\Store\Attendees.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\EventRegistration.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Attendee.cshtml" />
+    <Content Include="Views\Event\Mobile\ScanRegistrants.cshtml" />
+    <Content Include="Views\Event\ScanRegistrants.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

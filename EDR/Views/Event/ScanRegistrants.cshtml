@@ -1,0 +1,54 @@
+﻿@model EDR.Models.ViewModels.ScanRegistrantsViewModel
+
+@{
+    ViewBag.Title = "ScanRegistrants";
+}
+
+<style>
+    input {
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+</style>
+
+<div class="container">
+    <div class="center-block col-md-6 text-center" style="float: none;">
+        <h2>Enter Registrant Code</h2>
+        @if (ViewBag.Message != null)
+        {
+            <h4 class="text-danger">
+                @ViewBag.Message
+            </h4>
+        }
+
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+            <div class="panel panel-default">
+                <div class="panel-body bg-info">
+                    @Html.ValidationSummary("", new { @class = "text-danger" })
+                    <div class="form-group">
+                        <div class="col-lg-8 center-block" style="float: none;">
+                            @Html.TextBoxFor(model => model.RegistrationId, new { @class = "form-control", @placeholder = "Enter the Registrant Id", @Id = "id" })
+                            @Html.ValidationMessageFor(model => model.RegistrationId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-lg-8 center-block" style="float: none;">
+                            <input type="submit" class="btn btn-primary" value="Submit Code" style="max-width: 100% !important; width: 100% !important;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jqueryUI")
+
+    <script>
+    </script>
+}

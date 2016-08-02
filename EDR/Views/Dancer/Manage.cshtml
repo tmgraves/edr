@@ -419,7 +419,98 @@
                 <h3 class="nospace">Purchased Tickets</h3>
             </div>
             <div class="panel-body ">
-                <table class="table table-condensed">
+                <div class="text-center" style="padding: 10px;">
+                    <label><input type="radio" name="usedtickets" value="available" checked> Available</label>
+                    <label><input type="radio" name="usedtickets" value="used"> Used</label>
+                </div>
+                <div id="availableticketsdiv">
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+                                <th>Ticket</th>
+                                <th class="text-center">Purchased</th>
+                                <th class="text-center">Qty</th>
+                                <th class="text-center">Used/Total</th>
+                            </tr>
+                        </thead>
+                        @foreach (var item in Model.Dancer.Tickets.Where(t => t.EventRegistrations.Count() < (t.Quantity * t.Ticket.Quantity)))
+                        {
+                            <tr>
+                                <td class="text-left">
+                                    <p>
+                                        @if (item.Ticket.EventId != null)
+                                        {
+                                            <a href="@Url.Action("View", "Event", new { id = item.Ticket.EventId, eventType = item.Ticket.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social })">
+                                                @item.Ticket.Event.Name
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a href="@Url.Action("View", "School", new { id = item.Ticket.SchoolId })">
+                                                @item.Ticket.School.Name
+                                            </a>
+                                        }
+                                    </p>
+                                    @(String.Format("{0:N0}", item.Ticket.Quantity) + " tix for " + String.Format("{0:C}", item.Ticket.Price))
+                                </td>
+                                <td class="text-center" style="vertical-align: bottom;">
+                                    @item.DatePurchased.ToShortDateString()
+                                </td>
+                                <td class="text-right" style="vertical-align: bottom;">
+                                    @String.Format("{0:N0}", item.Quantity)
+                                </td>
+                                <td class="text-right" style="vertical-align: bottom;">
+                                    @String.Format("{0:N0}", item.EventRegistrations.Count())/<b>@String.Format("{0:N0}", item.Quantity * item.Ticket.Quantity)</b>
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+                <div id="usedticketsdiv" style="display: none;">
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+                                <th>Ticket</th>
+                                <th class="text-center">Purchased</th>
+                                <th class="text-center">Qty</th>
+                                <th class="text-center">Used/Total</th>
+                            </tr>
+                        </thead>
+                        @foreach (var item in Model.Dancer.Tickets.Where(t => t.EventRegistrations.Count() >= (t.Quantity * t.Ticket.Quantity)))
+                        {
+                            <tr>
+                                <td class="text-left">
+                                    <p>
+                                        @if (item.Ticket.EventId != null)
+                                        {
+                                            <a href="@Url.Action("View", "Event", new { id = item.Ticket.EventId, eventType = item.Ticket.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social })">
+                                                @item.Ticket.Event.Name
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a href="@Url.Action("View", "School", new { id = item.Ticket.SchoolId })">
+                                                @item.Ticket.School.Name
+                                            </a>
+                                        }
+                                    </p>
+                                    @(String.Format("{0:N0}", item.Ticket.Quantity) + " tix for " + String.Format("{0:C}", item.Ticket.Price))
+                                </td>
+                                <td class="text-center" style="vertical-align: bottom;">
+                                    @item.DatePurchased.ToShortDateString()
+                                </td>
+                                <td class="text-right" style="vertical-align: bottom;">
+                                    @String.Format("{0:N0}", item.Quantity)
+                                </td>
+                                <td class="text-right" style="vertical-align: bottom;">
+                                    @String.Format("{0:N0}", item.EventRegistrations.Count())/<b>@String.Format("{0:N0}", item.Quantity * item.Ticket.Quantity)</b>
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+
+                @*<table class="table table-condensed">
                     <thead>
                         <tr>
                             <th>Ticket</th>
@@ -459,7 +550,7 @@
                             </td>
                         </tr>
                     }
-                </table>
+                </table>*@
                 @*<table class="table table-condensed table-bordered">
                     @foreach (var s in Model.Dancer.Tickets.Select(t => t.Ticket.School).Distinct().ToList())
                     {
@@ -650,7 +741,18 @@
         }
     });
 
-    //$('input[type="radio"]').on('click change', function (e) {
+    $('input[name="usedtickets"]').on('change', function (e) {
+        if ($('input[name="usedtickets"]:checked').val() == "available") {
+            $('#availableticketsdiv').show();
+            $('#usedticketsdiv').hide();
+        }
+        else {
+            $('#availableticketsdiv').hide();
+            $('#usedticketsdiv').show();
+        }
+    });
+
+        //$('input[type="radio"]').on('click change', function (e) {
     //    alert("here");
     //});
 

@@ -34,7 +34,7 @@
     }
 </style>
 <p>
-    <a href="https://play.google.com/store/apps/details?id=tw.mobileapp.qrcode.banner&hl=en">download</a>
+    <a href="#" class="btn btn-primary" data-uri="scan://scan" onclick="clickHandler(this.dataset.uri)">Open Scanner</a>
 </p>
 
 <div class="container-fluid">
@@ -329,8 +329,24 @@
     <script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
     @Scripts.Render("~/bundles/GeoComplete")
     <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places&key=@System.Configuration.ConfigurationManager.AppSettings["GoogleAPIKey"]"></script>
+<script src="~/Scripts/browser-deeplink.js"></script>
 
     <script type="text/javascript">
+        deeplink.setup({
+            iOS: {
+                appId: "698925807",
+                appName: "QR Code Reader",
+            },
+            android: {
+                appId: "me.scan.android.client"
+            }
+        });
+
+        function clickHandler(uri) {
+            deeplink.open(uri);
+            return false;
+        }
+
         $('.stylesearch').autocomplete({
             source: function (request, response) {
                 $.ajax({

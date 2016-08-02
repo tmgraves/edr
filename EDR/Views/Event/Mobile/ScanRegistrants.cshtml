@@ -1,0 +1,26 @@
+﻿@model EDR.Models.ViewModels.ScanRegistrantsViewModel
+
+@{
+    ViewBag.Title = "ScanRegistrants";
+}
+
+<div class="text-center" style="padding-top: 50px;">
+    <p>
+        <button id="btnscan" class="btn btn-primary" type="button" value="">Registrant was Scanned</button>
+        @*<a href="#" class="btn btn-primary" data-uri="scan://scan" onclick="clickHandler(this.dataset.uri)">Open Scanner</a>*@
+    </p>
+</div>
+
+@section Scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jqueryUI")
+
+    <script>
+        $('#btnscan').click(function () {
+            //  alert("Open Scanner")
+            window.open("scan://scan");
+            open(location, '_self').close();
+        });
+    </script>
+}
