@@ -14,7 +14,7 @@
 <div class="container">
     <div class="center-block col-md-6 text-center" style="float: none;">
         <h2>Enter Registrant Code</h2>
-        @if (ViewBag.Message != null)
+        @if (ViewBag.Message != null && ViewBag.Message != "")
         {
             <h4 class="text-danger">
                 @ViewBag.Message

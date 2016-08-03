@@ -292,6 +292,11 @@
                                     </thead>
                                     @foreach (var item in Model.Dancer.EventRegistrations.Where(r => r.Instance.DateTime >= DateTime.Today).OrderBy(r => r.Instance.DateTime))
                                     {
+                                        @*<tr>
+                                            <td colspan="3">
+                                                https://@Request.Url.Host/Event/CheckinByCode/@item.Id
+                                            </td>
+                                        </tr>*@
                                         <tr>
                                             <td style="max-width: 75px;">
                                                 @item.Instance.DateTime.ToString("ddd, M/d")

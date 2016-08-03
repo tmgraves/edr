@@ -5,9 +5,15 @@
 }
 
 <div class="text-center" style="padding-top: 50px;">
+    <h2>Scan Registration Codes</h2>
+    @if (ViewBag.Message != null && ViewBag.Message != "")
+    {
+        <h4 class="text-danger">
+            @ViewBag.Message
+        </h4>
+    }
     <p>
-        <button id="btnscan" class="btn btn-primary" type="button" value="">Registrant was Scanned</button>
-        @*<a href="#" class="btn btn-primary" data-uri="scan://scan" onclick="clickHandler(this.dataset.uri)">Open Scanner</a>*@
+        <button id="btnscan" class="btn btn-primary" type="button" value="">Scan Another Code?</button>
     </p>
 </div>
 

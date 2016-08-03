@@ -4664,10 +4664,19 @@ namespace EDR.Controllers
         public ActionResult CheckinByCode(int id)
         {
             var registration = DataContext.EventRegistrations.Where(i => i.Id == id).FirstOrDefault();
-            registration.Checkedin = registration.Checkedin == null ? (DateTime?)DateTime.Now : null;
-            var instanceid = registration.EventInstanceId;
-            DataContext.Entry(registration).State = EntityState.Modified;
-            DataContext.SaveChanges();
+            if (registration != null)
+            {
+                registration.Checkedin = registration.Checkedin == null ? (DateTime?)DateTime.Now : null;
+                var instanceid = registration.EventInstanceId;
+                DataContext.Entry(registration).State = EntityState.Modified;
+                DataContext.SaveChanges();
+
+                ViewBag.Message = "Registrant Checked In";
+            }
+            else
+            {
+                ViewBag.Message = "Code Not Found";
+            }
 
             return RedirectToAction("ScanRegistrants");
         }
