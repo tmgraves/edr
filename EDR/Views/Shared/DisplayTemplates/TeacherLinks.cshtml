@@ -1,6 +1,13 @@
 ﻿@model IEnumerable<EDR.Models.Teacher>
 
+@{var index = 0; }
+
 @foreach (var item in Model.OrderBy(s => s.ApplicationUser.FullName))
 {
-    @Html.ActionLink(item.ApplicationUser.FullName, "Home", "Teacher", new { username = item.ApplicationUser.UserName }, null)<text> </text>
+    if (index != 0)
+    {
+        <text>&#9679;</text>
+    }
+    @Html.ActionLink(item.ApplicationUser.FullName, "Home", "Teacher", new { username = item.ApplicationUser.UserName }, null)
+    index += 1;
 }

@@ -120,15 +120,31 @@ namespace EDR.Controllers
             var userid = User.Identity.GetUserId();
             var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
             var instance = DataContext.EventInstances.Where(i => i.Id == attendeemodel.EventInstance.Id).FirstOrDefault();
-            var tix = DataContext.UserTickets.Include("EventRegistrations").Where(u => u.UserId == userid && u.Ticket.EventId == instance.EventId && (u.Ticket.Quantity * u.Quantity > u.EventRegistrations.Count())).ToList();
+            var tix = DataContext.UserTickets
+                            .Include("EventRegistrations")
+                            .Where(u => u.UserId == userid 
+                                    && u.Ticket.EventId == instance.EventId 
+                                    && u.Quantity > u.EventRegistrations.Where(r => r.EventInstanceId == instance.Id).Count()
+                                    && (u.Ticket.Quantity * u.Quantity > u.EventRegistrations.Count()))
+                            .ToList()
+                            .Select(u => new { UserTicketId = u.Id, Remaining = u.Quantity - u.EventRegistrations.Where(r => r.EventInstanceId == instance.Id).Count() });
             //  School tickets?
             if (tix.Count() == 0)
             {
-                tix = DataContext.UserTickets.Include("EventRegistrations").Where(u => u.UserId == userid && u.Ticket.SchoolId == ((Class)instance.Event).SchoolId && (u.Ticket.Quantity * u.Quantity > u.EventRegistrations.Count())).ToList();
+                tix = DataContext.UserTickets
+                            .Include("EventRegistrations")
+                            .Where(u => u.UserId == userid 
+                                    && u.Ticket.SchoolId == ((Class)instance.Event).SchoolId
+                                    && u.Quantity > u.EventRegistrations.Where(r => r.EventInstanceId == instance.Id).Count()
+                                    && (u.Ticket.Quantity * u.Quantity > u.EventRegistrations.Count()))
+                            .ToList()
+                            .Select(u => new { UserTicketId = u.Id, Remaining = u.Quantity - u.EventRegistrations.Where(r => r.EventInstanceId == instance.Id).Count() });
             }
 
             var curtic = tix.FirstOrDefault();
-            var rem = (curtic.Quantity * curtic.Ticket.Quantity) - curtic.EventRegistrations.Count();
+            var ids = new System.Collections.ArrayList();
+            ids.Add(curtic.UserTicketId);
+            var rem = curtic.Remaining;
             foreach (var a in attendeemodel.Attendees)
             {
                 if (a.FirstName != null)
@@ -142,19 +158,30 @@ namespace EDR.Controllers
 
                 if (rem == 0)
                 {
-                    curtic = tix.Where(t => t.Id != curtic.Id).FirstOrDefault();
-                    rem = (curtic.Quantity * curtic.Ticket.Quantity) - curtic.EventRegistrations.Count();
+                    curtic = tix.Where(t => !ids.Contains(t.UserTicketId)).FirstOrDefault();
+                    ids.Add(curtic.UserTicketId);
+                    rem = curtic.Remaining;
                 }
 
                 if (rem >= 1)
                 {
-                    DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = attendeemodel.EventInstance.Id, UserTicketId = curtic.Id, FirstName = a.UserId == null ? a.FirstName : user.FirstName, LastName = a.UserId == null ? a.LastName : user.LastName });
-                    DataContext.SaveChanges();
+                    RegisterDancer(userid, attendeemodel.EventInstance.Id, curtic.UserTicketId, a.UserId == null ? a.FirstName : user.FirstName, a.UserId == null ? a.LastName : user.LastName);
+                    //  DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = attendeemodel.EventInstance.Id, UserTicketId = curtic.UserTicketId, FirstName = a.UserId == null ? a.FirstName : user.FirstName, LastName = a.UserId == null ? a.LastName : user.LastName });
+                    //  DataContext.SaveChanges();
                     rem = rem - 1;
                 }
             }
 
             return RedirectToAction("View", "Event", new { id = instance.EventId, eventtype = instance.Event is Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social, instanceId = attendeemodel.EventInstance.Id });
+        }
+
+        [Authorize]
+        public void RegisterDancer(string userid, int instanceid, int? userTicketId, string firstName, string lastName)
+        {
+            var registration = new EventRegistration() { UserId = userid, UserTicketId = userTicketId, EventInstanceId = instanceid, FirstName = firstName, LastName = lastName };
+            DataContext.EventRegistrations.Add(registration);
+            DataContext.SaveChanges();
+            EmailProcess.NewEventRegistration(registration.Id);
         }
 
         // GET: School
@@ -263,8 +290,9 @@ namespace EDR.Controllers
                         //  Event Registration
                         if (model.EventInstanceId != null)
                         {
-                            DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = (int)model.EventInstanceId, UserTicketId = uticket.Id, FirstName = user.FirstName, LastName = user.LastName });
-                            DataContext.SaveChanges();
+                            RegisterDancer(userid, (int)model.EventInstanceId, uticket.Id, user.FirstName, user.LastName);
+                            //DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = (int)model.EventInstanceId, UserTicketId = uticket.Id, FirstName = user.FirstName, LastName = user.LastName });
+                            //DataContext.SaveChanges();
 
                             //  Register User for Event
                             return RedirectToAction("Confirmation", "Store", new { id = model.Order.Id });
@@ -328,7 +356,14 @@ namespace EDR.Controllers
         {
             //  Console.WriteLine("Charge Credit Card Sample");
 
-            ApiOperationBase<ANetApiRequest, ANetApiResponse>.RunEnvironment = AuthorizeNet.Environment.SANDBOX;
+            if (ConfigurationManager.AppSettings["AuthorizeEnvironment"] == "Production")
+            {
+                ApiOperationBase<ANetApiRequest, ANetApiResponse>.RunEnvironment = AuthorizeNet.Environment.PRODUCTION;
+            }
+            else
+            {
+                ApiOperationBase<ANetApiRequest, ANetApiResponse>.RunEnvironment = AuthorizeNet.Environment.SANDBOX;
+            }
 
             // define the merchant information (authentication / transaction id)
             ApiOperationBase<ANetApiRequest, ANetApiResponse>.MerchantAuthentication = new merchantAuthenticationType()
@@ -357,6 +392,8 @@ namespace EDR.Controllers
             //standard api call to retrieve response
             var paymentType = new paymentType { Item = creditCard };
 
+            var order = new orderType { invoiceNumber = model.Order.Id.ToString(), description = "Ticket Order" };
+
             // Add line Items
             var lineItems = new List<lineItemType>();
             foreach(var i in model.Order.OrderDetails)
@@ -373,7 +410,8 @@ namespace EDR.Controllers
                 amount = model.Order.OrderDetails.Sum(i => i.Ticket.Price),
                 payment = paymentType,
                 billTo = billingAddress,
-                lineItems = lineItems.ToArray()
+                lineItems = lineItems.ToArray(),
+                order = order,
             };
 
             var request = new createTransactionRequest { transactionRequest = transactionRequest };
@@ -390,8 +428,10 @@ namespace EDR.Controllers
             {
                 if (response.transactionResponse != null)
                 {
-                    model.Order.OrderTransactions.Add(new OrderTransaction() { Success = true, ResponseCode = response.messages.message[0].code, ResponseMessage = response.messages.message[0].text });
+                    model.Order.OrderTransactions.Add(new OrderTransaction() { Success = true, ResponseCode = response.messages.message[0].code, ResponseMessage = response.messages.message[0].text, TransactionId = response.transactionResponse.transId });
                     //  Console.WriteLine("Success, Auth Code : " + response.transactionResponse.authCode);
+                    //  Send a Confirmation
+                    EmailProcess.OrderConfirmation(model.Order.Id);
                 }
             }
             else if (response != null)
@@ -400,8 +440,8 @@ namespace EDR.Controllers
                 if (response.transactionResponse != null)
                 {
                     model.Result = response.messages.message[0].code;
-                    model.Message = response.transactionResponse.errors[0].errorText;
-                    model.Order.OrderTransactions.Add(new OrderTransaction() { Success = false, ResponseCode = response.messages.message[0].code, ResponseMessage = response.transactionResponse.errors[0].errorText });
+                    model.Message = response.messages.message[0].text;
+                    model.Order.OrderTransactions.Add(new OrderTransaction() { Success = false, ResponseCode = response.messages.message[0].code, ResponseMessage = response.messages.message[0].text });
                     //  Console.WriteLine("Transaction Error : " + response.transactionResponse.errors[0].errorCode + " " + response.transactionResponse.errors[0].errorText);
                 }
             }

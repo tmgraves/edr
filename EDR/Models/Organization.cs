@@ -41,8 +41,10 @@ namespace EDR.Models
         public string FacebookId { get; set; }
         public ICollection<OrganizationMember> Members { get; set; }
         public virtual ICollection<DanceStyle> DanceStyles { get; set; }
-        public ICollection<Review> Reviews { get; set; }
+        public virtual ICollection<Review> Reviews { get; set; }
         public virtual ICollection<Feed> Feeds { get; set; }
+        public ICollection<OrganizationVideo> Videos { get; set; }
+        public ICollection<OrganizationPlaylist> Playlists { get; set; }
     }
 
     public class School : Organization
@@ -96,17 +98,26 @@ namespace EDR.Models
         [Required]
         public int TeamId { get; set; }
         [ForeignKey("TeamId")]
-        public Team Team { get; set; }
+        public virtual Team Team { get; set; }
     }
 
     public class Performance : Event
     {
         public int? TeamId { get; set; }
         [ForeignKey("TeamId")]
-        public Team Team { get; set; }
+        public virtual Team Team { get; set; }
         [Display(Name = "Event")]
         public int? EventId { get; set; }
         [ForeignKey("EventId")]
         public Event Event { get; set; }
+    }
+    public class OrganizationVideo : Video
+    {
+        public Organization Organization { get; set; }
+    }
+
+    public class OrganizationPlaylist : Playlist
+    {
+        public Organization Organization { get; set; }
     }
 }

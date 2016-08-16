@@ -1,39 +1,37 @@
 ﻿@model EDR.Models.Team
 
-<div class="col-lg-12" style="padding-left: 0px !important; margin-bottom: 10px;">
-    <div class="col-lg-3 nospace" style="background-color: #eee;">
+<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding-left: 0px !important; margin-bottom: 10px;">
+    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 nospace" style="background-color: #eee;">
         <img style="max-height: 100%; max-width: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.PhotoUrl))" title="@Model.Name" />
     </div>
-    <div class="col-lg-9">
-        <div class="col-lg-12 nospace">
-            @Html.ActionLink(Model.Name, "View", "Team", new { id = Model.Id }, new { @class = "lead text-warning" })
+    <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 nospace">
+            @Html.ActionLink(Model.Name, "View", "Team", new { id = Model.Id }, new { @class = "lead text-warning oneline" })
         </div>
-        <div class="col-lg-12 nospace">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 nospace">
             <div style="padding-bottom: 10px;">
-                <h4>
-                    <span class="label label-success">
-                        @{
-                            switch (Model.SkillLevel)
-                            {
-                                case 1:
-                                    <text>Beginner</text>;
-                                    break;
-                                case 2:
-                                    <text>Beginner/Intermediate</text>;
-                                    break;
-                                case 3:
-                                    <text>Intermediate</text>;
-                                    break;
-                                case 4:
-                                    <text>Intermediate/Advanced</text>;
-                                    break;
-                                case 5:
-                                    <text>Advanced</text>;
-                                    break;
-                            }
+                <span class="label label-success">
+                    @{
+                        switch (Model.SkillLevel)
+                        {
+                            case 1:
+                                <text>Beginner</text>;
+                                break;
+                            case 2:
+                                <text>Beginner/Intermediate</text>;
+                                break;
+                            case 3:
+                                <text>Intermediate</text>;
+                                break;
+                            case 4:
+                                <text>Intermediate/Advanced</text>;
+                                break;
+                            case 5:
+                                <text>Advanced</text>;
+                                break;
                         }
-                    </span>
-                </h4>
+                    }
+                </span>
             </div>
             <div>
                 @Html.DisplayFor(m => Model.DanceStyles, "DanceStyleLabels")

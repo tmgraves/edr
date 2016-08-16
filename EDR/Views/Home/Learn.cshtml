@@ -4,105 +4,109 @@
     ViewBag.Title = "Learn";
 }
 
-<div class="container-fluid" style="position: fixed; background-color: #fff; z-index: 1000;">
-    <ol class="breadcrumb">
-        <li class="active">Search Classes/Workshops</li>
-    </ol>
-    @*<h1 class="text-center">Find a Class/Workshop</h1>*@
-    @*<div class="text-center" style="padding: 10px;">
-        @Html.ActionLink("Teachers", "List", "Teacher", null, new { @class = "btn btn-primary" })
-        @Html.ActionLink("Schools", "List", "School", null, new { @class = "btn btn-primary" })
-        @Html.ActionLink("Studios", "List", "Place", new { @TypeParam = "Studio" }, new { @class = "btn btn-primary" })
-    </div>*@
+<ol class="breadcrumb">
+    <li class="active">Search Classes/Workshops</li>
+</ol>
+@*<h1 class="text-center">Find a Class/Workshop</h1>*@
+@*<div class="text-center" style="padding: 10px;">
+    @Html.ActionLink("Teachers", "List", "Teacher", null, new { @class = "btn btn-primary" })
+    @Html.ActionLink("Schools", "List", "School", null, new { @class = "btn btn-primary" })
+    @Html.ActionLink("Studios", "List", "Place", new { @TypeParam = "Studio" }, new { @class = "btn btn-primary" })
+</div>*@
 
-    @*<div id="bcalendar"></div>*@
+@*<div id="bcalendar"></div>*@
 
-    @using (Html.BeginForm("Learn", "Home", FormMethod.Post, new { @class = "formmain" }))
-    {
-        @Html.HiddenFor(m => m.SearchAddress.Latitude, new { Name = "lat", @class = "latfield" })
-        @Html.HiddenFor(m => m.SearchAddress.Longitude, new { Name = "lng", @class = "lngfield" })
-        @Html.HiddenFor(m => m.NELat, new { @class = "nelatfield" })
-        @Html.HiddenFor(m => m.NELng, new { @class = "nelngfield" })
-        @Html.HiddenFor(m => m.SWLat, new { @class = "swlatfield" })
-        @Html.HiddenFor(m => m.SWLng, new { @class = "swlngfield" })
-        @Html.HiddenFor(m => m.CenterLat, new { @class = "clatfield" })
-        @Html.HiddenFor(m => m.CenterLng, new { @class = "clngfield" })
-        @Html.HiddenFor(m => m.Zoom, new { @class = "czoomfield" })
-        <div class="container bg-info text-center" style="padding: 0px !important;">
-            <div class="form-inline">
-                <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
-                    <div class="form-group">
-                        @Html.TextBoxFor(m => m.Location, new { placeholder = "Location", @class = "form-control locationsearch" })
-                    </div>
-                    <div class="form-group">
-                        @Html.HiddenFor(m => m.DanceStyleId, new { @class = "stylesearchid" })
-                        @Html.TextBoxFor(m => m.Style, new { placeholder = "Dance Style", @class = "form-control stylesearch" })
-                    </div>
-                    <div class="form-group">
-                        @Html.HiddenFor(m => m.TeacherId, new { @class = "teachersearchid" })
-                        @Html.TextBoxFor(m => m.Teacher, new { placeholder = "Teacher", @class = "form-control teachersearch" })
-                    </div>
-                    <div class="form-group">
-                        @*@Html.DropDownListFor(m => m.SkillLevel, new SelectList(new List<int> { 1, 2, 3, 4, 5 }), "Skill Level", new { @class = "form-control text-center" })*@
-                        @Html.ListBoxFor(m => m.SkillLevel,
-                                    new SelectList(new List<SelectListItem> {
-                                        new SelectListItem { Text = "Beginner", Value = "1" },
-                                        new SelectListItem { Text = "Beginner/Intermediate", Value = "2" },
-                                        new SelectListItem { Text = "Intermediate", Value = "3" },
-                                        new SelectListItem { Text = "Intermediate/Advanced", Value = "4" },
-                                        new SelectListItem { Text = "Advanced", Value = "5" },
-                                    }, "Value", "Text"), new { multiple = "multiple", @class = "form-control", @style = "display: none;" })
-
-                        @*<select id="SkillLevel" name="SkillLevel" multiple="multiple">
-                                <option value="1">Beginner</option>
-                                <option value="2">Beginner/Intermediate</option>
-                                <option value="3">Intermediate</option>
-                                <option value="4">Intermediate/Advanced</option>
-                                <option value="5">Advanced</option>
-                            </select>*@
-                    </div>
-                    <div class="form-group">
-                        @Html.ListBoxFor(m => m.Days,
-                                    (Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>().Select(enu => new SelectListItem() { Text = enu.ToString(), Value = enu.ToString() })).ToList(), new { multiple = "multiple", @class = "form-control", @style = "display: none;" })
-                        @*<select id="Days" name="Days" multiple="multiple">
-                                <option value="Monday">Monday</option>
-                                <option value="Tuesday">Tuesday</option>
-                                <option value="Wednesday">Wednesday</option>
-                                <option value="Thursday">Thursday</option>
-                                <option value="Friday">Friday</option>
-                                <option value="Saturday">Saturday</option>
-                                <option value="Sunday">Sunday</option>
-                            </select>*@
-                    </div>
-                    <div class="form-group">
-                        <input type="submit" value="Search Classes" class="btn btn-warning" />
-                    </div>
+@using (Html.BeginForm("Learn", "Home", FormMethod.Post, new { @class = "formmain" }))
+{
+    @Html.HiddenFor(m => m.SearchAddress.Latitude, new { Name = "lat", @class = "latfield" })
+    @Html.HiddenFor(m => m.SearchAddress.Longitude, new { Name = "lng", @class = "lngfield" })
+    @Html.HiddenFor(m => m.NELat, new { @class = "nelatfield" })
+    @Html.HiddenFor(m => m.NELng, new { @class = "nelngfield" })
+    @Html.HiddenFor(m => m.SWLat, new { @class = "swlatfield" })
+    @Html.HiddenFor(m => m.SWLng, new { @class = "swlngfield" })
+    @Html.HiddenFor(m => m.CenterLat, new { @class = "clatfield" })
+    @Html.HiddenFor(m => m.CenterLng, new { @class = "clngfield" })
+    @Html.HiddenFor(m => m.Zoom, new { @class = "czoomfield" })
+    <div class="container-fluid bg-info text-center" style="padding: 0px !important;">
+        <div class="form-inline">
+            <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+                <div class="form-group">
+                    @Html.TextBoxFor(m => m.Location, new { placeholder = "Location", @class = "form-control locationsearch" })
                 </div>
-                <div class="map_canvas nospace"></div>
+                <div class="form-group">
+                    @Html.HiddenFor(m => m.DanceStyleId, new { @class = "stylesearchid" })
+                    @Html.TextBoxFor(m => m.Style, new { placeholder = "Dance Style", @class = "form-control stylesearch" })
+                </div>
+                <div class="form-group">
+                    @Html.HiddenFor(m => m.TeacherId, new { @class = "teachersearchid" })
+                    @Html.TextBoxFor(m => m.Teacher, new { placeholder = "Teacher", @class = "form-control teachersearch" })
+                </div>
+                <div class="form-group">
+                    @*@Html.DropDownListFor(m => m.SkillLevel, new SelectList(new List<int> { 1, 2, 3, 4, 5 }), "Skill Level", new { @class = "form-control text-center" })*@
+                    @Html.ListBoxFor(m => m.SkillLevel,
+                                new SelectList(new List<SelectListItem> {
+                                    new SelectListItem { Text = "Beginner", Value = "1" },
+                                    new SelectListItem { Text = "Beginner/Intermediate", Value = "2" },
+                                    new SelectListItem { Text = "Intermediate", Value = "3" },
+                                    new SelectListItem { Text = "Intermediate/Advanced", Value = "4" },
+                                    new SelectListItem { Text = "Advanced", Value = "5" },
+                                }, "Value", "Text"), new { multiple = "multiple", @class = "form-control", @style = "display: none;" })
+
+                    @*<select id="SkillLevel" name="SkillLevel" multiple="multiple">
+                            <option value="1">Beginner</option>
+                            <option value="2">Beginner/Intermediate</option>
+                            <option value="3">Intermediate</option>
+                            <option value="4">Intermediate/Advanced</option>
+                            <option value="5">Advanced</option>
+                        </select>*@
+                </div>
+                <div class="form-group">
+                    @Html.ListBoxFor(m => m.Days,
+                                (Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>().Select(enu => new SelectListItem() { Text = enu.ToString(), Value = enu.ToString() })).ToList(), new { multiple = "multiple", @class = "form-control", @style = "display: none;" })
+                    @*<select id="Days" name="Days" multiple="multiple">
+                            <option value="Monday">Monday</option>
+                            <option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option>
+                            <option value="Thursday">Thursday</option>
+                            <option value="Friday">Friday</option>
+                            <option value="Saturday">Saturday</option>
+                            <option value="Sunday">Sunday</option>
+                        </select>*@
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Search Classes" class="btn btn-warning" />
+                </div>
             </div>
+            <div class="map_canvas nospace"></div>
         </div>
-    }
-    <div class="col-lg-12 text-center" style="padding: 10px;">
-        <div id="myButtons" class="btn-group" data-toggle="buttons">
-            <label class="btn btn-warning btn-sm active">
-                <input type="radio" name="options" id="listbtn" autocomplete="off" checked class="rbutton"> List View
-            </label>
-            <label class="btn btn-warning btn-sm">
-                <input type="radio" name="options" id="calendarbtn" autocomplete="off" class="rbutton"> Calendar View
-            </label>
-        </div>
+    </div>
+}
+<div class="col-lg-12" style="padding: 10px;">
+    <div id="myButtons" class="btn-group" data-toggle="buttons">
+        <label class="btn btn-warning btn-sm active">
+            <input type="radio" name="options" id="listbtn" autocomplete="off" checked class="rbutton">
+            <i class="glyphicon glyphicon-th-list"></i>
+            List
+        </label>
+        <label class="btn btn-warning btn-sm">
+            <input type="radio" name="options" id="calendarbtn" autocomplete="off" class="rbutton">
+            <i class="glyphicon glyphicon-calendar"></i>
+            Calendar
+        </label>
     </div>
 </div>
 
-<div class="container" style="padding-top: 360px;">
-    <div id="listdiv">
-        @Html.DisplayFor(m => m.Classes, "Classes")
+<div class="col-lg-12" id="classesdiv" style="overflow: auto; overflow-x: hidden;">
+    <div class="row">
+        <div id="listdiv">
+            @Html.DisplayFor(m => m.Classes, "Classes")
+        </div>
+        <div id='script-warning'>
+            <code>php/get-events.php</code> must be running.
+        </div>
+        <div id='loading'>loading...</div>
+        <div id='calendar'></div>
     </div>
-    <div id='script-warning'>
-        <code>php/get-events.php</code> must be running.
-    </div>
-    <div id='loading'>loading...</div>
-    <div id='calendar'></div>
 </div>
 
 @section Scripts
@@ -141,19 +145,32 @@
 
 <script>
     $(document).ready(function() {
+        $(window).resize(function() {
+            var bodyheight = $(this).height() - 540;
+            //alert($(this).height());
+            //alert(bodyheight);
+            $("#classesdiv").height(bodyheight);
+        }).resize();
+    });
+
+    $(document).ready(function() {
         //$('.formmain').submit(function () {
         //    alert($('#SkillLevel').val());
         //});
 
-        $("#calendar").css({"visibility": "hidden"});
+        //  $("#calendar").css({"visibility": "hidden"});
+        $("#calendar").hide();
         $('#listbtn').parent().on("click", function () {
             $('#listdiv').show();
-            $("#calendar").css({"visibility": "hidden"});
+            $("#calendar").hide();
+            //  $("#calendar").css({"visibility": "hidden"});
         });
 
         $('#calendarbtn').parent().on("click", function () {
             $('#listdiv').hide();
-            $("#calendar").css({"visibility": "visible"});
+            $("#calendar").show();
+            //  $("#calendar").css({"visibility": "visible"});
+            $('#calendar').fullCalendar('render');
         });
 
 		$('#calendar').fullCalendar({

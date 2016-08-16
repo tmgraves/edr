@@ -1,0 +1,19 @@
+﻿@model IEnumerable<EDR.Models.OrganizationVideo>
+
+@foreach(var v in Model)
+{
+    <div class="col-lg-6">
+        <div class="frame">
+            <img src="@Url.Content(v.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" title="@v.Title" />
+            @Ajax.ActionLink(" ", "DeleteVideo", "Team", new { id = v.Organization.Id, videoId = v.Id },
+                new AjaxOptions()
+                {
+                    UpdateTargetId = "videosdiv",
+                    OnSuccess = "done(this)"
+                }, new { @class = "btn btn-danger glyphicon glyphicon-trash delete", @title = "Delete" })
+        </div>
+        <p>
+            <div class="item-short" title="@v.Title"><strong>@v.Title</strong></div>
+        </p>
+    </div>
+}

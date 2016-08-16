@@ -197,6 +197,7 @@ namespace EDR.Models
         public int? PlaceId { get; set; }
         [ForeignKey("PlaceId")]
         public virtual Place Place { get; set; }
+        public DateTime? Confirmed { get; set; }
     }
 
     public class LinkedFacebookObject : Entity
@@ -264,7 +265,7 @@ namespace EDR.Models
         [Required]
         public string UserId { get; set; }
         [ForeignKey("UserId")]
-        public ApplicationUser User { get; set; }
+        public virtual ApplicationUser User { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         [Required]
@@ -299,7 +300,7 @@ namespace EDR.Models
     {
         [Required]
         [DisplayFormat(DataFormatString = "{0:G0}")]
-        public decimal Quantity { get; set; }
+        public int Quantity { get; set; }
         [Required]
         [DisplayFormat(DataFormatString = "{0:C}")]
         public decimal Price { get; set; }

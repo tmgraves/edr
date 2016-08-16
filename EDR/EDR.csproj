@@ -296,6 +296,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\DanceStyleController.cs" />
+    <Compile Include="Areas\Admin\Controllers\EmailController.cs" />
     <Compile Include="Areas\Admin\Controllers\RolesController.cs" />
     <Compile Include="Areas\Admin\Models\ViewModels\DanceStyleViewModels.cs" />
     <Compile Include="Areas\Admin\Models\ViewModels\RolesViewModels.cs" />
@@ -325,6 +326,7 @@
     <Compile Include="Data\ApplicationDbInitializer.cs" />
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Address.cs" />
+    <Compile Include="Models\Email.cs" />
     <Compile Include="Models\EventInviations.cs" />
     <Compile Include="Models\EventMember.cs" />
     <Compile Include="Models\EventPlaylist.cs" />
@@ -420,12 +422,23 @@
     <Compile Include="Utilities\Geolocation.cs" />
     <Compile Include="Utilities\IdentityExtension.cs" />
     <Compile Include="Utilities\InstagramHelper.cs" />
+    <Compile Include="Utilities\MailHelper.cs" />
     <Compile Include="Utilities\SpotifyHelper.cs" />
     <Compile Include="Utilities\Validators.cs" />
     <Compile Include="Utilities\YelpHelper.cs" />
     <Compile Include="Utilities\YouTubeHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\Templates\ConfirmEventInstance.txt" />
+    <Content Include="App_Data\Templates\DailySalesSummary.txt" />
+    <Content Include="App_Data\Templates\ExpiringEvent.txt" />
+    <Content Include="App_Data\Templates\EventSummary.txt" />
+    <Content Include="App_Data\Templates\DailyDancerSummary.txt" />
+    <Content Include="App_Data\Templates\NewEventRegistration.txt" />
+    <Content Include="App_Data\Templates\NewVideo.txt" />
+    <Content Include="App_Data\Templates\NewRoleUser.txt" />
+    <Content Include="App_Data\Templates\ForgotPassword.txt" />
+    <Content Include="App_Data\Templates\OrderConfirmation.txt" />
     <Content Include="Areas\Admin\Views\Roles\Index.cshtml">
       <SubType>Code</SubType>
     </Content>
@@ -596,6 +609,7 @@
     <Content Include="Content\images\MobileIcons\Set 1\Set 1.ai" />
     <Content Include="Content\images\MobileIcons\Set 2\Set 2.ai" />
     <Content Include="Content\images\MobileIcons\Set 3\set 3.ai" />
+    <Content Include="Areas\Admin\Views\Email\Dashboard.cshtml" />
     <None Include="Properties\PublishProfiles\SmarterASP.pubxml" />
     <None Include="Properties\PublishProfiles\SmarterASP_FTP.pubxml" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
@@ -901,7 +915,6 @@
     <Content Include="Views\School\Manage.cshtml" />
     <Content Include="Views\Teacher\ApplyNew.cshtml" />
     <Content Include="Views\Event\Manage.cshtml" />
-    <Content Include="Views\Team\Delete.cshtml" />
     <Content Include="Views\Team\View.cshtml" />
     <Content Include="Views\Team\Edit.cshtml" />
     <Content Include="Views\Team\Index.cshtml" />
@@ -977,6 +990,12 @@
     <Content Include="Views\Shared\EditorTemplates\Attendee.cshtml" />
     <Content Include="Views\Event\Mobile\ScanRegistrants.cshtml" />
     <Content Include="Views\Event\ScanRegistrants.cshtml" />
+    <Content Include="Views\Shared\Team\_ManagePlaylistsPartial.cshtml" />
+    <Content Include="Views\Shared\Team\_ManageVideosPartial.cshtml" />
+    <Content Include="Views\Team\Mobile\Index.cshtml" />
+    <Content Include="Views\Team\Mobile\View.cshtml" />
+    <Content Include="Views\School\Mobile\List.cshtml" />
+    <Content Include="Views\School\Mobile\View.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

@@ -5,7 +5,7 @@
     }
     @foreach (var item in Model.OrderBy(c => c.NextDate))
     {
-        <div class="col-lg-6">
+        <div class="col-lg-6 col-md-6">
             @Html.DisplayFor(m => item, "Event")
         </div>
             @*<text>

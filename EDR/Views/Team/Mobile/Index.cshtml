@@ -1,0 +1,286 @@
+﻿@model EDR.Models.ViewModels.TeamIndexViewModel
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<ol class="breadcrumb">
+    <li class="active">All Teams</li>
+</ol>
+<h2 class="text-center">Find a Dance Team</h2>
+
+<div class="container">
+    <div class="center-block col-md-6 nospace" style="float: none;">
+        <div class="row" style="padding: 5px;">
+            <button type="button" class="btn btn-warning btn-sm" data-toggle="collapse" data-target="#filter">
+                <i class="glyphicon glyphicon glyphicon-plus"></i> Search Filters
+            </button>
+        </div>
+        <div id="filter" class="collapse">
+            <div class="panel panel-default">
+                <div class="panel-body bg-info">
+                    <section id="searchForm">
+                        @using (Html.BeginForm("Index", "Team", FormMethod.Post, new { @class = "formmain" }))
+                        {
+                            @Html.HiddenFor(m => m.SearchAddress.Latitude, new { Name = "lat", @class = "latfield" })
+                            @Html.HiddenFor(m => m.SearchAddress.Longitude, new { Name = "lng", @class = "lngfield" })
+                            @Html.HiddenFor(m => m.NELat, new { @class = "nelatfield" })
+                            @Html.HiddenFor(m => m.NELng, new { @class = "nelngfield" })
+                            @Html.HiddenFor(m => m.SWLat, new { @class = "swlatfield" })
+                            @Html.HiddenFor(m => m.SWLng, new { @class = "swlngfield" })
+                            @Html.HiddenFor(m => m.CenterLat, new { @class = "clatfield" })
+                            @Html.HiddenFor(m => m.CenterLng, new { @class = "clngfield" })
+                            @Html.HiddenFor(m => m.Zoom, new { @class = "czoomfield" })
+                            <div class="form-group">
+                                <div class="col-lg-8 center-block" style="float: none;">
+                                    @Html.TextBoxFor(m => m.Location, new { placeholder = "Location", @class = "form-control locationsearch", @style = "width: 100% !important; max-width: 100% !important;" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-lg-8 center-block" style="float: none;">
+                                    @Html.HiddenFor(m => m.TeacherId, new { @class = "teachersearchid" })
+                                    @Html.TextBoxFor(m => m.Teacher, new { placeholder = "Teacher", @class = "form-control teachersearch" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-lg-8 center-block" style="float: none;">
+                                    <input type="submit" value="Search Teams" class="btn btn-warning" />
+                                </div>
+                            </div>
+                        }
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12 nospace">
+            <div class="panel with-nav-tabs panel-default">
+                <div class="panel-heading nospace" style="border-bottom: none !important;">
+                    <ul class="nav nav-tabs nav-tabs-justified nospace">
+                        <li class="nospace active"><a href="#tab1default" data-toggle="tab">Map</a></li>
+                        <li class="nospace"><a id="calendarlink" href="#tab2default" data-toggle="tab">Calendar</a></li>
+                        <li class="nospace"><a href="#tab3default" data-toggle="tab">List</a></li>
+                    </ul>
+                </div>
+                <div class="panel-body">
+                    <div class="tab-content">
+                        <div class="tab-pane fade in active" id="tab1default">
+                            <div class="map_canvas" style="height: 400px;"></div>
+                        </div>
+                        <div class="tab-pane fade" id="tab2default">
+                            <div id='script-warning'>
+                                <code>php/get-events.php</code> must be running.
+                            </div>
+                            <div id='loading'>loading...</div>
+                            <div id='calendar'></div>
+                        </div>
+                        <div class="tab-pane fade" id="tab3default">
+                            @Html.DisplayFor(m => m.Teams, "Teams")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/foolproof")
+    @Scripts.Render("~/bundles/jqueryUI")
+    @Scripts.Render("~/bundles/GeoComplete")
+    <script src="../../Scripts/searchhelper.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places&key=@System.Configuration.ConfigurationManager.AppSettings["GoogleAPIKey"]"></script>
+    <script src="../../Scripts/jquery.geocomplete.js"></script>
+    <link rel="stylesheet" href="~/Content/jquery.rateyo.css" />
+    <script src="~/Scripts/jquery.rateyo.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap-multiselect.js"></script>
+    <link rel="stylesheet" href="~/Content/bootstrap-multiselect.css" type="text/css" />
+
+    <link href="~/Content/fullcalendar/fullcalendar.css" rel="stylesheet" />
+    <link href="~/Content/fullcalendar/fullcalendar.print.css" rel="stylesheet" media="print" />
+    <script src="~/Scripts/fullcalendar/moment.min.js"></script>
+    @*<script src="~/Scripts/fullcalendar/jquery.min.js"></script>*@
+    <script src="~/Scripts/fullcalendar/fullcalendar.js"></script>
+
+    <script>
+    $(document).ready(function() {
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            if ($(e.target).attr("id") == "calendarlink")
+            {
+                $('#calendar').fullCalendar('render');
+            }
+            //var target = $(e.target).attr("href") // activated tab
+            //alert(target);
+        });
+
+        $('#Days').multiselect({
+            nonSelectedText: 'Day of Week',
+            buttonClass: 'multiselectbutton form-control',
+            buttonText: function(options, select) {
+                return 'Day of Week';
+            }
+        });
+
+		$('#calendar').fullCalendar({
+			header: {
+				left: 'prev,next today',
+				center: 'title',
+				right: 'basicWeek,basicDay'
+			},
+			defaultDate: new Date(),
+            defaultView: 'basicWeek',
+			editable: false,
+			eventLimit: true, // allow "more" link when too many events
+		    events: {
+		        url: '../../Home/GetClasses',
+                traditional: true,
+		        data: {
+		            neLat: $('.nelatfield').val(),
+		            neLng: $('.nelngfield').val(),
+		            swLat: $('.swlatfield').val(),
+		            swLng: $('.swlngfield').val(),
+		            styleId: $('.stylesearchid').val(),
+		            teacherId: $('.teachersearchid').val(),
+		            skillLevel: $('#SkillLevel').val() == null ? new Array() : $('#SkillLevel').val(),
+		            days: $('#Days').val() == null ? new Array() : $('#Days').val(),
+		        },
+				error: function() {
+					$('#script-warning').show();
+				}
+		    },
+		    eventMouseover: function(event) {
+		        openEvent(event.id, event.lat, event.lng);
+		        //// opens events in a popup window
+		        //window.open(event.url, 'gcalevent', 'width=700,height=600');
+		        return false;
+		    },
+
+		    loading: function(bool) {
+				$('#loading').toggle(bool);
+			}
+		});
+	});
+
+    </script>
+
+    <script>
+
+    $(function () {
+        $('#Days').multiselect({
+            nonSelectedText: 'Day of Week',
+            buttonClass: 'multiselectbutton form-control',
+            buttonText: function(options, select) {
+                return 'Day of Week';
+            }
+        });
+        $('#SkillLevel').multiselect({
+            nonSelectedText: 'Skill Level',
+            buttonClass: 'multiselectbutton form-control',
+            buttonText: function(options, select) {
+                return 'Skill Level';
+            }
+        });
+        $('#Days').show();
+        $('#SkillLevel').show();
+    });
+
+    //  Global Map Variables
+    var markers = [];
+    var infowindows = [];
+    $(function () {
+        //  Map Marker Containers
+        //  Map Marker Containers
+        //  Build up the Markers
+        var map = $(".locationsearch").geocomplete("map");
+
+        @foreach(var t in Model.Teams.OrderBy(t => t.Name))
+        {
+        <text>
+        var marker = new google.maps.Marker({
+            position: new google.maps.LatLng('@t.Latitude', @t.Longitude),
+            map: map,
+            title: '@t.Name',
+            icon: "../../Content/images/MapMarker.png"
+        });
+
+        attachMessage(@t.Id, map, marker, '@t.Id', '@t.Name', '@t.Address', '@(t.City + ", " + t.State + " " + t.Zip)', '<a href="@Url.Action("View", "Event", new { id = t.Id, eventType = EDR.Enums.EventType.Class })">' + '@t.Name' + '</a>');
+        markers.push({
+            id: @t.Id,
+            marker: marker
+        });
+        </text>
+    }
+
+        function attachMessage(id, map, marker, num, placeName, address, address2, link) {
+            var message = marker.title;
+            var infowindow = new google.maps.InfoWindow({
+                disableAutoPan: false,
+                maxWidth: 200,
+                content: '<div id="content" class="text-center" style="width: 200px;">' +
+                '<div id="siteNotice">' +
+                '</div>' +
+                '<div style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
+                link +
+                '</div>' +
+                '<div id="bodyContent">' +
+                '<p>' +
+                address + '<br>' +
+                address2 +
+                '</p>' +
+                '</div>' +
+                '</div>'
+            });
+            infowindows.push({
+                id: id,
+                infowindow: infowindow
+            });
+
+            //  infowindow.open(map, marker);
+
+            google.maps.event.addListener(marker, 'click', function () {
+                clearWindows();
+                infowindow.open(map, marker);
+            });
+        }
+    });
+
+    function clearWindows() {
+        for (var i = 0; i < infowindows.length; i++) {
+            infowindows[i].infowindow.close();
+        }
+    };
+
+    function openEvent(id, lati, long) {
+        var latLng = new google.maps.LatLng(lati, long); //Makes a latlng
+        var map = $("#Location").geocomplete("map");
+        map.panTo(latLng); //Make map global
+        var mark = markers.filter(function (item) { return item.id == id })[0];
+        mark.marker.setMap(map);
+        //  markers[id].setMap(map);
+        clearWindows();
+        iwin = infowindows.filter(function (item) { return item.id == id })[0];
+        iwin.infowindow.open(map, mark.marker);
+        //  infowindows[id].open(map, markers[id]);
+        return false;
+    };
+
+    $(function () {
+        $(".rateYo").rateYo({
+            starWidth: "15px",
+            onInit: function (rating, rateYoInstance) {
+                //  alert("init");
+                var t = $(this);
+                $(this).rateYo("option", "rating", t.parent('div').find('.ratingval').prop('value'));
+                $(this).rateYo("option", "readOnly", true);
+            }
+        });
+    });
+    </script>
+}

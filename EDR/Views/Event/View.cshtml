@@ -69,13 +69,13 @@
 </ol>
 <div class="container-fluid">
     <div class="row">
-        <div class="col-lg-12 verticaljustify nospace">
-            <div class="col-lg-4" style="height: 100%;">
+        <div class="col-lg-12 col-md-12 verticaljustify nospace">
+            <div class="col-lg-4 col-md-4" style="height: 100%;">
                 <img style="max-height: 100%; max-width: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.Event.PhotoUrl))" />
             </div>
-            <div class="col-lg-8">
+            <div class="col-lg-8 col-md-8">
                 <div class="row">
-                    <div class="col-lg-10 nospace">
+                    <div class="col-lg-10 col-md-10 nospace">
                         <h2 class="item-short" style="margin: 0px !important;">@Model.Event.Name</h2>
                         <h3 style="margin: 0px !important;">
                             @if (Model.EventType == EventType.Class)
@@ -88,7 +88,7 @@
                             }
                         </h3>
                     </div>
-                    <div class="col-lg-2 text-right">
+                    <div class="col-lg-2 col-md-2 text-right">
                         @if ((Model.EventType == EventType.Class && ((Class)Model.Event).Teachers.Where(t => t.ApplicationUser.Id == User.Identity.GetUserId()).Count() == 1) || (Model.EventType == EventType.Social && ((Social)Model.Event).Promoters.Where(p => p.ApplicationUser.Id == User.Identity.GetUserId()).Count() == 1))
                         {
                             <a class="btn btn-warning" title="Edit" href="@Url.Action("Manage", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">
@@ -133,17 +133,17 @@
                     }
             </div>
 
-            <div class="col-lg-8 attachbottom bg-success">
+            <div class="col-lg-8 col-md-8 attachbottom bg-success">
                 @{
                     <div style="width: 100%;">
-                        <div class="col-lg-8">
+                        <div class="col-lg-8 col-md-8">
                             @*@Html.DropDownListFor(m => m.CurrentInstance.Id, Model.Event.EventInstances.Where(ei => ei.DateTime >= DateTime.Today).Select(i => new SelectListItem() { Text = i.DateTime.ToString("ddd, MMM d, yyyy") + " at " + Convert.ToDateTime(Model.CurrentInstance.StartTime).ToShortTimeString(), Value = i.Id.ToString() }), "", new { @class = "form-control" })*@
                             <div class="btn-group" style="width: 100% !important; padding: 10px 0px 10px 0px;">
                                 <div>
-                                    <button class="btn btn-default btn-sm col-lg-11" type="button">
+                                    <button class="btn btn-default btn-sm col-lg-11 col-md-11" type="button">
                                         <h4>@Model.CurrentInstance.DateTime.ToString("dddd, MMMM d, yyyy") at @Convert.ToDateTime(Model.CurrentInstance.StartTime).ToShortTimeString()</h4>
                                     </button>
-                                    <button type="button" class="col-lg-1 btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <button type="button" class="col-lg-1 col-md-1 btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <h4>
                                             <span class="caret"></span>
                                             <span class="sr-only">Toggle Dropdown</span>
@@ -169,7 +169,7 @@
                                 </p>
                             }
                         </div>
-                        <div class="col-lg-4 text-center">
+                        <div class="col-lg-4 col-md-4 text-center">
                             <div class="text-center">
                                 <div class="btn-group" style="padding-top: 18px;">
                                     @if (Model.CurrentInstance.DateTime >= DateTime.Today)
@@ -263,7 +263,7 @@
     </div>
     <hr />
     <div class="row vertical-divider">
-        <div class="col-lg-4">
+        <div class="col-lg-4 col-md-4">
             @*@if (reg != null)
             {
                 <div class="text-center">
@@ -278,11 +278,11 @@
             </div>
             <div style="border: 1px solid #ccc;">
                 <div class="row" style="padding: 5px;">
-                    <div class="col-lg-12">
-                        <div class="col-lg-3">
+                    <div class="col-lg-12 col-md-12">
+                        <div class="col-lg-3 col-md-3">
                             @Html.Label("Where:")
                         </div>
-                        <div class="col-lg-9">
+                        <div class="col-lg-9 col-md-9">
                             @Html.ActionLink(Model.Event.Place.Name, "Details", "Place", new { id = Model.Event.Place.Id }, new { }) (@Model.Event.Place.PlaceType.ToString())<br />
                             @Model.Event.Place.Address <br /> @Model.Event.Place.City, @Model.Event.Place.StateName @Model.Event.Place.Zip
                         </div>
@@ -291,11 +291,11 @@
                 @if (eventType == "Class")
                 {
                     <div class="row" style="padding: 5px;">
-                        <div class="col-lg-12">
-                            <div class="col-lg-3">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="col-lg-3 col-md-3">
                                 @Html.Label("School:")
                             </div>
-                            <div class="col-lg-9">
+                            <div class="col-lg-9 col-md-9">
                                 @Html.ActionLink(((Class)Model.Event).School.Name, "View", "School", new { id = ((Class)Model.Event).SchoolId }, null)
                             </div>
                         </div>
@@ -304,22 +304,22 @@
                 @if (eventType == "Social")
                 {
                     <div class="row" style="padding: 5px;">
-                        <div class="col-lg-12">
-                            <div class="col-lg-3">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="col-lg-3 col-md-3">
                                 @Html.Label("Music:")
                             </div>
-                            <div class="col-lg-9">
+                            <div class="col-lg-9 col-md-9">
                                 @(EDR.Utilities.ApplicationUtility.GetDisplayName(((Social)Model.Event).MusicType))
                             </div>
                         </div>
                     </div>
                 }
                 <div class="row" style="padding: 5px;">
-                    <div class="col-lg-12">
-                        <div class="col-lg-3">
+                    <div class="col-lg-12 col-md-12">
+                        <div class="col-lg-3 col-md-3">
                             @Html.Label("Styles:")
                         </div>
-                        <div class="col-lg-9">
+                        <div class="col-lg-9 col-md-9">
                             @Html.DisplayFor(m => Model.Event.DanceStyles, "DanceStyleLabels")
                         </div>
                     </div>
@@ -327,11 +327,11 @@
                 @if (Model.EventType == EventType.Class)
                 {
                     <div class="row" style="padding: 5px;">
-                        <div class="col-lg-12">
-                            <div class="col-lg-3">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="col-lg-3 col-md-3">
                                 @Html.Label("Teachers:")
                             </div>
-                            <div class="col-lg-9">
+                            <div class="col-lg-9 col-md-9">
                                 @Html.DisplayFor(m => Model.Class.Teachers, "TeacherLinks")
                                 @*@foreach (var t in Model.Class.Teachers)
                                 {
@@ -339,13 +339,13 @@
                                         @Html.DisplayFor(m => t, "Teacher")
                                     </div>
                                 }*@
-                           </div>
+                            </div>
                         </div>
                     </div>
                 }
             </div>
         </div>
-        <div class="col-lg-8">
+        <div class="col-lg-8 col-md-8">
             <h3>Details</h3>
             <div class="description">
                 <div style="white-space: pre-line;">
@@ -356,13 +356,13 @@
     </div>
     <hr />
     <div class="row vertical-divider">
-        <div class="col-lg-4">
-            <div class="col-lg-12 nospace">
+        <div class="col-lg-4 col-md-4">
+            <div class="col-lg-12 col-md-12 nospace">
                 <div class="row">
-                    <div class="col-lg-6">
+                    <div class="col-lg-6 col-md-6">
                         <h3>Reviews</h3>
                     </div>
-                    <div class="col-lg-6 text-right">
+                    <div class="col-lg-6 col-md-6 text-right">
                         <span style="line-height: 50px; vertical-align: bottom;"></span>
                         @if (User.Identity.IsAuthenticated)
                         {
@@ -390,7 +390,7 @@
                     <h5>No Reviews have been posted for this Event</h5>
                 }
             </div>
-            <div class="col-lg-12 nospace">
+            <div class="col-lg-12 col-md-12 nospace">
                 <h3>Dancers</h3>
                 <div class="row">
                     @{
@@ -400,7 +400,7 @@
                     {
                         foreach (var r in Model.Event.EventInstances.SelectMany(i => i.EventRegistrations.Select(r => r.User)).Distinct())
                         {
-                            <div class="col-lg-3">
+                            <div class="col-lg-3 col-md-3">
                                 @Html.DisplayFor(m => r, "DancerThumblink")
                             </div>
                         }
@@ -412,7 +412,7 @@
                 </div>
                 <hr />
             </div>
-            <div class="col-lg-12 nospace">
+            <div class="col-lg-12 col-md-12 nospace">
                 <h3>Links</h3>
                 @foreach (var ee in Model.Event.LinkedMedia)
                 {
@@ -422,11 +422,11 @@
                 }
             </div>
         </div>
-        <div class="col-lg-8">
-            <div class="col-lg-12 nospace">
+        <div class="col-lg-8 col-md-8">
+            <div class="col-lg-12 col-md-12 nospace">
                 <h3>Latest Updates</h3>
                 <hr />
-                
+
                 <div id="updates-container">
                     <ul class="my-navigation pagination">
                         <li class="simple-pagination-first"></li>
@@ -474,7 +474,7 @@
                 @Html.DisplayFor(m => p, "PictureThumbnail")
             </div>
         }*@
-            <div class="col-lg-12 nospace" style="margin-top: 20px !important;">
+            <div class="col-lg-12 col-md-12 nospace" style="margin-top: 20px !important;">
                 <div class="panel with-nav-tabs panel-default">
                     <div class="panel-heading nospace" style="border-bottom: none !important;">
                         <ul class="nav nav-tabs nav-justified nospace">

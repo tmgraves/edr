@@ -16,8 +16,15 @@
 }
 </style>
 
-<h2>Manage: <span class="text-info">@Model.Team.Name</span></h2>
-<hr />
+<div class="buttoncontainer">
+    <h2>Manage: <span class="text-info">@Model.Team.Name</span></h2>
+    <hr />
+    <a style="display: block !important;" class="btn btn-danger actionbutton" title="Delete Event" href="@Url.Action("Delete", "Team", new { id = Model.Team.Id })" onclick="return confirm('Are you sure you want to DELETE this Team?')">
+        <i class="glyphicon glyphicon-remove"></i>
+        Delete Event
+    </a>
+
+</div>
 
 <div class="container-fluid">
     <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
@@ -479,6 +486,7 @@
                     {
                         @Html.HiddenFor(x => x.NewRehearsal.TeamId, new { @Value = Model.Team.Id })
                         @Html.HiddenFor(x => x.NewRehearsal.Name, new { @Value = "Rehearsal" })
+                        @Html.HiddenFor(x => x.NewRehearsal.Today)
                         <div class="text-right" style="padding-bottom: 10px;">
                             <input type="submit" id="btnsaverehearsal" value="Save" class="btn btn-primary" />
                             <input id="btncancelrehearsal" type="button" class="btn btn-primary" value="Cancel" />
@@ -488,8 +496,9 @@
                                 @Html.LabelFor(model => model.NewRehearsal.StartDate, htmlAttributes: new { @class = "control-label col-md-2" })
                             </dt>
                             <dd>
-                                @Html.TextBoxFor(m => m.NewRehearsal.StartDate, "{0:yyyy-MM-dd}", htmlAttributes: new { @type = "date", @class = "form-control rehearsal_event_form startdate", @placeholder = "End Date" })
-                                @Html.ValidationMessageFor(model => model.NewRehearsal.StartDate, "", new { @class = "text-danger" })
+                                @Html.HiddenFor(m => m.NewRehearsal.StartDate)
+                                @Html.TextBox("StartDateField", "{0:yyyy-MM-dd}", htmlAttributes: new { @type = "date", @class = "form-control rehearsal_event_form startdate", @placeholder = "Start Date" })
+                                @Html.ValidationMessageFor(model => model.NewRehearsal.Today, "", new { @class = "text-danger" })
                                 @Html.HiddenFor(x => x.NewRehearsal.EndDate, new { @class = "enddate rehearsal_event_form" })
                             </dd>
                         </dl>
@@ -636,6 +645,56 @@
                             </dd>
                         </dl>
                     }
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body ">
+                <h3>Videos</h3>
+                <hr />
+                <h3 class="text-info">Playlists</h3>
+                <div style="margin-bottom: 10px;">
+                    @using (Ajax.BeginForm("AddYouTubePlaylist",
+                    "Team",
+                    new AjaxOptions()
+                    {
+                        UpdateTargetId = "playlistsdiv",
+                        OnSuccess = "done(this)"
+                    },
+                    new { @id = "addytplaylistform" }
+                    ))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(m => m.Team.Id)
+                        @Html.TextBoxFor(m => m.NewYoutubePlayList, new { placeholder = "Enter a YouTube Playlist url", @class = "form-control col-md-4" })
+                        @Html.ValidationMessageFor(model => model.NewYoutubePlayList, "", new { @class = "text-danger" })
+                        <input class="btn" type="submit" value="Add Playlist" />
+                    }
+                </div>
+                <div class="row" id="playlistsdiv">
+                    @Html.Partial("~/Views/Shared/Team/_ManagePlaylistsPartial.cshtml", Model.Team.Playlists)
+                </div>
+                <h3 class="text-info">Single Videos</h3>
+                <div style="margin-bottom: 10px;">
+                    @using (Ajax.BeginForm("AddYouTubeVideo",
+                        "Team",
+                        new AjaxOptions()
+                        {
+                            UpdateTargetId = "videosdiv",
+                            OnSuccess = "done(this)"
+                        },
+                        new { @id = "addytvideoform" }
+                        ))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(m => m.Team.Id)
+                        @Html.TextBoxFor(m => m.NewYouTubeVideo, new { placeholder = "Enter a YouTube Video url", @class = "form-control col-md-4" })
+                        @Html.ValidationMessageFor(model => model.NewYouTubeVideo, "", new { @class = "text-danger" })
+                        <input class="btn" type="submit" value="Add Video" />
+                    }
+                </div>
+                <div class="row" id="videosdiv">
+                    @Html.Partial("~/Views/Shared/Team/_ManageVideosPartial.cshtml", Model.Team.Videos)
                 </div>
             </div>
         </div>
@@ -857,6 +916,9 @@
         }
     });
 
+    function done() {
+    }
+
     $('#modalAudition').on('shown.bs.modal', function () {
         $('#newaudition').show();
         $('#importaudition').hide();
@@ -875,6 +937,8 @@
     });
 
     $('.startdate').change(function () {
+        var date = new Date($(this).val());
+        $('#NewRehearsal_StartDate').val((date.getUTCMonth() + 1).toString() + "/" + date.getUTCDate().toString() + "/" + date.getUTCFullYear().toString());
         SetDates(this);
     });
 
@@ -1008,6 +1072,7 @@
 
         $('#addrehearsalform.main').submit(function () {
             var valid = $('#addrehearsalform.main').valid();
+            //  alert(valid);
         });
 
         $('#saverehearsal.main').submit(function () {

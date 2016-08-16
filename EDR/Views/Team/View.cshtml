@@ -1,4 +1,5 @@
 ﻿@model EDR.Models.ViewModels.TeamViewViewModel
+@using Microsoft.AspNet.Identity
 
 @{
     ViewBag.Title = Model.Team.Name + " Details";
@@ -11,9 +12,9 @@
 
 @Html.HiddenFor(m => m.Team.Id)
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
-        <div class="col-lg-6">
+        <div class="col-lg-6 col-md-6">
             <div class="panel panel-default">
                 <div class="panel-body buttoncontainer bg-info">
                     @if (Model.Member != null && Model.Member.Admin)
@@ -21,12 +22,12 @@
                         @Html.ActionLink("Manage", "Manage", "Team", new { id = Model.Team.Id }, new { @class = "btn btn-warning actionbutton" })
                     }
                     <div class="row">
-                        <div class="col-lg-4">
+                        <div class="col-lg-4 col-md-4">
                             <div id="img_container">
                                 <img id="profilepic" style="max-width: 100%; max-height: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.Team.PhotoUrl))" />
                             </div>
                         </div>
-                        <div class="col-lg-8 nospace">
+                        <div class="col-lg-8 col-md-4 nospace">
                             <h2>@Model.Team.Name</h2>
                             <p>
                                 @Model.Team.City, @Model.Team.State
@@ -74,43 +75,56 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-12" style="background-color: #fff; margin-top: 20px; padding-top: 20px;">
+                            <div class="col-lg-12 col-md-12" style="background-color: #fff; margin-top: 20px; padding-top: 20px;">
                                 <p>
                                     @Html.Label("Dance Styles:", new { @class = "form-label col-md-4" })
                                     @Html.DisplayFor(m => Model.Team.DanceStyles, "DanceStyleLabels")
                                 </p>
-                                <div class="col-lg-12" style="padding-bottom: 20px;">
+                                <div class="col-lg-12 col-md-12" style="padding-bottom: 20px;">
                                     @Html.DisplayFor(m => m.Team.Description)
                                 </div>
                             </div>
                 </div>
             </div>
-            <div class="panel panel-default">
-                <div class="panel-body">
+            <div class="col-lg-12 col-md-12" style="padding: 10px;">
+                <div class="row">
                     <h3>Teachers</h3>
                     @foreach (var item in Model.Team.Teachers)
                     {
-                        <div class="col-lg-2">
+                        <div class="col-lg-2 col-md-2 col-sm-3 col-xs-3">
                             @Html.DisplayFor(m => item, "Teacher")
                         </div>
                     }
                 </div>
             </div>
-            <div class="panel panel-default">
-                <div class="panel-body">
+            <div class="col-lg-12 col-md-12" style="padding: 10px;">
+                <div class="row">
                     <h3>Dancers</h3>
                     @foreach (var item in Model.Team.Members)
                     {
-                        <div class="col-lg-2">
+                        <div class="col-lg-2 col-md-2 col-sm-3 col-xs-3">
                             @Html.DisplayFor(m => item.User, "DancerThumbLink")
                         </div>
+                    }
+                </div>
+            </div>
+            <div class="col-lg-12 col-md-12">
+                <div class="row">
+                    <h3>Videos</h3>
+                    @if (Model.Team.Members.Where(m => m.UserId == User.Identity.GetUserId()).Count() == 1)
+                    {
+                        <div id="videos">
+                        </div>
+                    }
+                    else
+                    {
+                        <h4>You must be registered for this event to view Videos</h4>
                     }
                 </div>
             </div>
         </div>
         <div class="col-lg-6 col-md-6">
             <div class="row text-center" style="margin-bottom: 20px;">
-                <h3>Classes/Workshops</h3>
                 <div id="myButtons" class="btn-group" data-toggle="buttons">
                     <label class="btn btn-primary btn-sm active">
                         <input type="radio" name="options" id="listbtn" autocomplete="off" checked class="rbutton"> List View
@@ -142,20 +156,66 @@
         </div>
     </div>
 </div>
+
+<input type="hidden" id="hiddeninstanceid" />
+<!-- Modal Details -->
+<div class="modal fade" id="modalEventDetails" tabindex="-1" role="dialog" aria-labelledby="myDetails">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 id="calregtitle" class="nospace">Title</h4>
+            </div>
+            <div class="modal-body">
+                <div class="text-center">
+                    <div id="caldatetimediv">
+                        Text Text
+                    </div>
+                    <div class="small">
+                        <div id="caladdressdiv">
+                            @*@Html.DisplayFor(modelItem => Model.Place.Address)<br />
+                            @Html.DisplayFor(modelItem => Model.Place.City), @(Model.Place.State != null ? Model.Place.State.ToString() : Model.Place.StateName)*@
+                        </div>
+                        <div id="calmaplinkdiv" style="border: 1px solid #ddd;">
+                            @*<a target="_blank" href="https://www.google.com/maps/place/@Model.Place.Name+@Model.Place.Address,+@Model.Place.City,+@Model.Place.State+@Model.Place.Zip">
+                                <img style="width: 100%;" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Place.Latitude,@Model.Place.Longitude&zoom=10&size=300x150&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Place.Latitude, @Model.Place.Longitude&key=@System.Configuration.ConfigurationManager.AppSettings["GoogleAPIKey"]" title="@Model.Place.City, @Model.Place.StateName">
+                            </a>*@
+                        </div>
+                    </div>
+                    <div id="calregisterdiv" style="padding: 10px;" class="text-center">
+                        <button id="btncalregister" class="register btn btn-primary">
+                            Add to Calendar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Details -->
+
 @section Scripts
 {
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/jqueryUI")
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <link rel="stylesheet" href="~/Content/jquery.rateyo.css" />
     <script src="~/Scripts/jquery.rateyo.js"></script>
     <script src="~/Scripts/jquery-simple-pagination-plugin.js"></script>
-    @*<link href="~/Content/Simple-Pagination.css" rel="stylesheet" />*@
 <link href="~/Content/fullcalendar/fullcalendar.css" rel="stylesheet" />
 <link href="~/Content/fullcalendar/fullcalendar.print.css" rel="stylesheet" media="print" />
 <script src="~/Scripts/fullcalendar/moment.min.js"></script>
 <script src="~/Scripts/fullcalendar/fullcalendar.js"></script>
+
+@*<link href="~/Content/Simple-Pagination.css" rel="stylesheet" />*@
+@*<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>*@
+@*<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>*@
+<link href="~/Content/YouTubePopUp.css" rel="stylesheet" />
+<script src="~/Scripts/YouTubePopUp.jquery.js"></script>
 
 <script>
     $(document).ready(function () {
@@ -173,6 +233,42 @@
             $('#listdiv').hide();
             $("#calendar").css({ "visibility": "visible" });
         });
+
+        if ($("#videos") != null) {
+            loadVideos();
+        }
+
+        //  Load Videos via JSON
+        function loadVideos() {
+            $.ajax({
+                url: '@Url.Action("GetVideosJSON", "Team")',
+                data: { id: '@Model.Team.Id.ToString()' },
+                dataType: 'json',
+                type: 'GET',
+                success: function (data) {
+                    var row = ""
+                    $.each(data, function (index, item) {
+                        row +=
+                            "<div class='col-lg-4 col-md-4'>" +
+                                "<div class='buttonoverlay_container'>" +
+                                    "<img class='img-rounded' src='http://img.youtube.com/vi/" + item.Id + "/0.jpg' />" +
+                                    "<a class='btn btn-danger videoplayer' target='_blank' href='" + item.VideoUrl + "' title='" + item.Title + "'>" +
+                                        "<i class='glyphicon glyphicon-play'></i>" +
+                                    "</a>" +
+                                    "<div class='item-short'><b>" + item.Title + "</b></div>" +
+                                "</div>" +
+                            "</div>"
+                    });
+                    //  alert(row);
+                    $("#videos").html(row);
+                    $("a.videoplayer").YouTubePopUp();
+                    //$(row).find('.pickfbpic').click(function () {
+                    //    alert("here");
+                    //}).end();
+                }
+            })
+        }
+        //  Load Videos via JSON
 
         $('#calendar').fullCalendar({
             header: {
@@ -194,6 +290,79 @@
                     $('#script-warning').show();
                 }
             },
+            eventClick: function (calEvent, jsEvent, view) {
+                //alert('Event: ' + calEvent.title);
+                //alert('Coordinates: ' + jsEvent.pageX + ',' + jsEvent.pageY);
+                //alert('View: ' + view.name);
+                $('#hiddeninstanceid').val(calEvent.instanceid);
+                $('#calregtitle').html(calEvent.title);
+                //  alert($('#caldatetimediv').html());
+
+                $('#caldatetimediv').html(
+                '<strong>' +
+                    calEvent.starttext + '<br />' +
+                    calEvent.starttimetext + ' to ' + calEvent.endtimetext +
+                '</strong>');
+
+                $('#caladdressdiv').html(
+                    calEvent.address + '<br />' +
+                    calEvent.city + ', ' + calEvent.state);
+
+                var mapid = '@System.Configuration.ConfigurationManager.AppSettings["GoogleAPIKey"]';
+
+                $('#caladdressdiv').html(
+                    '<a target="_blank" href="https://www.google.com/maps/place/' + calEvent.place + '+' + calEvent.address + ',+' + calEvent.city + ',+' + calEvent.state + '+' + calEvent.zip + '">' +
+                        '<img style="width: 100%;" src="https://maps.googleapis.com/maps/api/staticmap?center=' + calEvent.lat + ',' + calEvent.lng + '&zoom=10&size=300x150&maptype=roadmap&markers=color:red%7Clabel:A%7C ' + calEvent.lat + ', ' + calEvent.lng + '&key=' + mapid + '" title="' + calEvent.address + ', ' + calEvent.state + '">' +
+                    '</a>'
+                    );
+
+                //  btncalregister
+                $('#btncalregister').val(calEvent.reg);
+                if (!calEvent.reg)
+                {
+                    $('#btncalregister').text("Add to Calendar");
+                    $('#btncalregister').addClass("btn-primary");
+                    $('#btncalregister').removeClass("btn-danger");
+                }
+                else
+                {
+                    $('#btncalregister').text("Remove from Calendar");
+                    $('#btncalregister').removeClass("btn-primary");
+                    $('#btncalregister').addClass("btn-danger");
+                }
+
+                @*@{
+                    if (User.Identity.IsAuthenticated)
+                    {
+                        <text>
+                        $('#calregisterdiv').html(
+                            '<div style="padding: 10px;" class="text-center">' +
+                                '<div id="divRegister' + calEvent.id + '" style="display:block">' +
+                                '<button id="' + calEvent.id + '" class="register btn btn-primary" value="' + calEvent.id + '">' +
+                                'Add to Calendar' +
+                                '</button>' +
+                            '</div>'
+                        );
+                        </text>
+                    }
+                }*@
+
+                @*'<div id="divRegister"' + calEvent.id + '" style="@(reg == null ? "display:block" : "display:none")">
+                '<button id="@("btnRegister" + instance.Id)" class="register btn btn-primary" value="@instance.Id">
+                'Add to Calendar
+                '</button>
+                '</div>
+                '<div id="@("divUnregister" + instance.Id)" style="@(reg != null ? "display:block" : "display:none")">
+                '<button id="@("btnUnregister" + instance.Id)" class="unregister btn btn-danger" value="@instance.Id">
+                Remove from Calendar
+            </button>
+        </div>*@
+                $("#modalEventDetails").modal();
+
+                // change the border color just for fun
+                //  $(this).css('border-color', 'red');
+                return false;
+            },
             views: {
                 month: { // name of view
                     titleFormat: 'MMM YYYY'
@@ -209,6 +378,49 @@
             }
         });
     });
+
+    $(function () {
+        $('#btncalregister').click(function (e) {
+            if ($(e.target).val() == 'false')
+            {
+                $.ajax({
+                    url: '@Url.Action("RegisterJSON", "Event", new { Area = "" })',
+                    data: { 'id': $('#hiddeninstanceid').val() },
+                    dataType: 'json',
+                    type: 'GET',
+                    success: function (data) {
+                        $('#btncalregister').text("Remove from Calendar");
+                        $('#calendar').fullCalendar('removeEvents');
+                        $('#calendar').fullCalendar('refetchEvents');
+                        LoadPerformances(); //Loads events partial view
+                        LoadAuditions(); //Loads events partial view
+                        LoadRehearsals(); //Loads events partial view
+                        $("#modalEventDetails").modal('toggle');
+                    }
+                })
+            }
+            else
+            {
+                $.ajax({
+                    url: '@Url.Action("UnRegisterJSON", "Event", new { Area = "" })',
+                    data: { 'id': $('#hiddeninstanceid').val() },
+                    dataType: 'json',
+                    type: 'GET',
+                    success: function (data) {
+                        $('#btncalregister').text("Add to Calendar");
+                        $('#calendar').fullCalendar('removeEvents');
+                        $('#calendar').fullCalendar('refetchEvents');
+                        LoadPerformances(); //Loads events partial view
+                        LoadAuditions(); //Loads events partial view
+                        LoadRehearsals(); //Loads events partial view
+                        $("#modalEventDetails").modal('toggle');
+                    }
+                })
+            }
+            //  var id = $(e.target).prop('value'); // $(this) refers to button that was clicked
+        });
+    });
+
     function BuildRatingStars() {
         $(".rateYo").rateYo({
             starWidth: "18px",
@@ -240,5 +452,6 @@
             $("#rehearsals").html(data);
         });
     }
+
 </script>
 }

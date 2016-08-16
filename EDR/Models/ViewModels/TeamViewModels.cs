@@ -44,14 +44,32 @@ namespace EDR.Models.ViewModels
         public IEnumerable<Team> Teams { get; set; }
     }
 
+    public class NewRehearsal : Rehearsal
+    {
+        private DateTime _date = DateTime.Today;
+        [Foolproof.LessThanOrEqualTo("StartDate", ErrorMessage ="Start Date must be greater than Today.")]
+        public DateTime Today
+        {
+            get { return _date; }
+        }
+    }
+
     public class TeamManageViewModel : TeamBaseViewModel
     {
-        public Rehearsal NewRehearsal { get; set; }
+        public NewRehearsal NewRehearsal { get; set; }
         public Audition NewAudition { get; set; }
         public Performance NewPerformance { get; set; }
         public int NewStyleId { get; set; }
         public string NewMemberId { get; set; }
         public string NewFacebookEventId { get; set; }
+        public Uri NewYoutubePlayList { get; set; }
+        [RegularExpression("http[s]?://(www.youtube.com|youtu.?be)/.+$", ErrorMessage = "Please enter a valid YouTube link")]
+        public Uri NewYouTubeVideo { get; set; }
+
+        public TeamManageViewModel()
+        {
+            NewRehearsal = new NewRehearsal();
+        }
     }
 
     public class TeamCreateViewModel : TeamBaseViewModel

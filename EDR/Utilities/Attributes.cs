@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using System.ComponentModel.DataAnnotations;
 
 namespace EDR.Attributes
 {
@@ -28,5 +29,5 @@ namespace EDR.Attributes
                 filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new { Controller = AccessDeniedController, Action = AccessDeniedAction }));
             }
         }
-    }   
+    }
 }

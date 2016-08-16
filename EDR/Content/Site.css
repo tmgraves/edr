@@ -522,6 +522,12 @@ input[type="file"] {
     left: 5px;
     top: 5px;
 }
+.textoverlay.topright {
+    z-index: 10;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+}
 
 .textoverlay.bottomright {
     z-index: 10;

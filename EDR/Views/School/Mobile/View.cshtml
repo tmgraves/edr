@@ -1,0 +1,305 @@
+﻿@model EDR.Models.ViewModels.ViewSchoolViewModel
+
+@{
+    ViewBag.Title = Model.School.Name;
+}
+<style>
+    .profilecontainer {
+        position: relative;
+    }
+
+        .profilecontainer:hover .button {
+            display: block;
+        }
+
+    .button {
+        z-index: 10;
+        display: none;
+        position: absolute;
+        right: 5px;
+        top: 5px;
+    }
+</style>
+
+<div class="textoverlaycontainer" style="background-color: transparent !important;">
+    <ol class="breadcrumb">
+        <li>@Html.ActionLink("All Schools", "List", "School")</li>
+        <li class="active">School Page</li>
+    </ol>
+    <div class="textoverlay topright">
+        @if (Model.Member != null && Model.Member.Admin)
+        {
+            <a class="btn btn-warning btn-sm" title="Edit" href="@Url.Action("Manage", "School", new { id = Model.School.Id })">
+                <i class="glyphicon glyphicon-edit"></i>
+                <span class="sr-only">Edit</span>
+            </a>
+        }
+    </div>
+</div>
+@Html.HiddenFor(x => x.School.Id)
+<div class="container-fluid">
+    <div class="col-xs-12 verticaljustify nospace">
+        <div class="text-left textoverlaycontainer" style="height: 100%;">
+            <div style="opacity:0.7;filter:alpha(opacity=70); height: 100%;">
+                <img id="profilepic" style="width: 100%; max-height: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.School.PhotoUrl))" />
+            </div>
+            <div class="textoverlay topleft text-left" style="width: 100%;">
+                <h3 class="oneline" style="color: #fff;">@Model.School.Name</h3>
+                <div id='parentc'>
+                    <input id='eventrating' type='hidden' class='ratingval' value="@(Model.School.Classes.SelectMany(c => c.Reviews).Count() != 0 ? Model.School.Classes.SelectMany(c => c.Reviews).Average(r => r.Rating) : 0)" />
+                    <div id='cont' class='rateYo'></div>
+                </div>
+                <div style="padding: 5px !important;">
+                    @if (Model.School.FacebookLink != null)
+                    {
+                        <a href='@Model.School.FacebookLink' target="_blank" title="Visit Us On Facebook"><img class="img-rounded" src="@Url.Content("~/Content/images/facebookSmall.png")" /></a>
+                    }
+                </div>
+            </div>
+            <div class="textoverlay bottomleft text-left" style="width: 100%;">
+                <p>
+                    <span style="color: #fff;">
+                        @Html.DisplayFor(m => Model.School.DanceStyles, "DanceStyleLabels")
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12 col-xs-12" style="padding-top: 5px !important;">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="header nospace">Avaiable Tickets for Purchase</h4>
+                    <span class="text-center nospace" style="background-color: lemonchiffon; width: 100% !important;">
+                        <span class="text-success">You have <b>(@Convert.ToInt32(Model.UserTickets != null ? Model.UserTickets.Sum(t => t.Quantity * t.Ticket.Quantity) - Model.UserTickets.Sum(t => t.EventRegistrations.Count()) : 0))</b> Credits to Use at this School</span>
+                    </span>
+                </div>
+                <div class="panel-body bg-success">
+                    <table class="table table-condensed table-striped table-bordered">
+                        @foreach (var item in Model.School.Tickets.Where(t => t.EventId == null).OrderBy(t => t.Quantity))
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(member => item.Quantity) Class(es) for
+                                    @Html.DisplayFor(member => item.Price)
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                    @Html.ActionLink("Purchase Ticket", "BuyTicket", "Store", new { schoolid = Model.School.Id }, new { @class = "btn btn-primary", @style = "width: 100%;" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel with-nav-tabs panel-default">
+        <div class="panel-heading nospace" style="border-bottom: none !important;">
+            <ul class="nav nav-tabs nav-tabs-justified nospace">
+                <li class="nospace active"><a href="#tablocation" data-toggle="tab">Location</a></li>
+                <li class="nospace"><a href="#tababout" data-toggle="tab">Description</a></li>
+            </ul>
+        </div>
+        <div class="panel-body">
+            <div class="tab-content">
+                <div class="tab-pane fade in active" id="tablocation">
+                    <a target="_blank" href="https://maps.google.com/?q=@Model.School.Latitude,@Model.School.Longitude">
+                        <img style="width: 100%;" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.School.Latitude,@Model.School.Longitude&zoom=10&size=300x100&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.School.Latitude, @Model.School.Longitude&key=@System.Configuration.ConfigurationManager.AppSettings["GoogleAPIKey"]" title="@Model.School.City, @Model.School.State">
+                    </a>
+                    <div class="row" style="padding: 5px;">
+                        <div class="col-lg-12 col-md-12">
+                            @Model.School.Address <br /> @Model.School.City, @Model.School.State @Model.School.Zip
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="tababout">
+                    @Model.School.Description
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12 col-xs-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="nospace">Classes/Workshops</h4>
+                </div>
+                <div class="panel-body">
+                    <div id="myButtons" class="btn-group" data-toggle="buttons">
+                        <label class="btn btn-warning btn-sm active">
+                            <input type="radio" name="options" id="listbtn" autocomplete="off" checked class="rbutton">
+                            <i class="glyphicon glyphicon-th-list"></i>
+                            List
+                        </label>
+                        <label class="btn btn-warning btn-sm">
+                            <input type="radio" name="options" id="calendarbtn" autocomplete="off" class="rbutton">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                            Calendar
+                        </label>
+                    </div>
+                    <div id="listdiv">
+                        <div id="classes">
+                        </div>
+                    </div>
+                    <div id='script-warning'>
+                        <code>php/get-events.php</code> must be running.
+                    </div>
+                    <div id='loading'>loading...</div>
+                    <div id='calendar'></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6 col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading nospace" style="border-bottom: none !important;">
+                    <ul class="nav nav-tabs nav-tabs-justified nospace">
+                        <li class="nospace active"><a href="#tabteachers" data-toggle="tab">Teachers</a></li>
+                        <li class="nospace"><a href="#tabowners" data-toggle="tab">Owners</a></li>
+                    </ul>
+                </div>
+                <div class="panel-body">
+                    <div class="tab-content">
+                        <div class="tab-pane fade in active" id="tabteachers">
+                            @foreach (var item in Model.School.Teachers)
+                            {
+                                <div class="col-sm-3 col-xs-3">
+                                    @Html.DisplayFor(m => item, "Teacher")
+                                </div>
+                            }
+                        </div>
+                        <div class="tab-pane fade" id="tabowners">
+                            @foreach (var item in Model.School.Owners)
+                            {
+                                <div class="col-sm-3 col-xs-3">
+                                    @Html.DisplayFor(m => item, "Owner")
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Performance Teams</h3>
+                </div>
+                <div class="panel-body buttoncontainer">
+                    <div class="row">
+                        @Html.DisplayFor(m => m.School.Teams, "Teams")
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-6">
+            <div class="row" style="margin-bottom: 5px;">
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+{
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jqueryUI")
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="~/Content/jquery.rateyo.css" />
+    <script src="~/Scripts/jquery.rateyo.js"></script>
+    <script src="~/Scripts/jquery-simple-pagination-plugin.js"></script>
+    @*<link href="~/Content/Simple-Pagination.css" rel="stylesheet" />*@
+    <link href="~/Content/fullcalendar/fullcalendar.css" rel="stylesheet" />
+    <link href="~/Content/fullcalendar/fullcalendar.print.css" rel="stylesheet" media="print" />
+    <script src="~/Scripts/fullcalendar/moment.min.js"></script>
+    @*<script src="~/Scripts/fullcalendar/jquery.min.js"></script>*@
+    <script src="~/Scripts/fullcalendar/fullcalendar.js"></script>
+
+    <script>
+$(document).ready(function () {
+    LoadClasses(); //Loads events partial view
+
+    //  $("#calendar").css({ "visibility": "hidden" });
+    $("#calendar").hide();
+    $('#listbtn').parent().on("click", function () {
+        $('#listdiv').show();
+        //  $("#calendar").css({ "visibility": "hidden" });
+        $("#calendar").hide();
+    });
+
+    $('#calendarbtn').parent().on("click", function () {
+        $('#listdiv').hide();
+        //  $("#calendar").css({ "visibility": "visible" });
+        $("#calendar").show();
+        $('#calendar').fullCalendar('render');
+    });
+
+    $('#calendar').fullCalendar({
+        header: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'basicWeek, month'
+        },
+        defaultDate: new Date(),
+        defaultView: 'basicWeek',
+        editable: false,
+        eventLimit: true, // allow "more" link when too many events
+        events: {
+            url: '../../Home/GetClasses',
+            traditional: true,
+            data: {
+                schoolId: $('#School_Id').val(),
+            },
+            error: function () {
+                $('#script-warning').show();
+            }
+        },
+        views: {
+            month: { // name of view
+                titleFormat: 'MMM YYYY'
+                // other view-specific options here
+            },
+            basicWeek: { // name of view
+                titleFormat: 'MMM DD'
+                // other view-specific options here
+            }
+        },
+        loading: function (bool) {
+            $('#loading').toggle(bool);
+        }
+    });
+});
+function BuildRatingStars() {
+    $(".rateYo").rateYo({
+        starWidth: "18px",
+        ratedFill: "#FFD700",
+        normalFill: "#ccc",
+        onInit: function (rating, rateYoInstance) {
+            var t = $(this);
+            $(this).rateYo("option", "rating", t.parent('div').find('.ratingval').prop('value'));
+            $(this).rateYo("option", "readOnly", true);
+        }
+    });
+}
+
+function LoadClasses() {
+    $.get('@Url.Action("GetClassesPartial", "School")', { 'id': '@Model.School.Id' }, function (data) {
+        $("#classes").empty();
+        $("#classes").html(data);
+        BuildRatingStars();
+    });
+}
+    </script>
+}
+
+@*@if (Model.Member == null)
+    {
+        <p>
+            @Html.ActionLink("Join", "Join", "School", new { id = Model.School.Id }, new { @class = "btn btn-warning button" })
+        </p>
+    }
+    else
+    {
+        <p>
+            Member
+        </p>
+    }*@

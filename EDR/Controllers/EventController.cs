@@ -284,6 +284,23 @@ namespace EDR.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        public ActionResult ConfirmInstance(int id)
+        {
+            DataContext.EventInstances.Where(i => i.Id == id).FirstOrDefault().Confirmed = DateTime.Now;
+            DataContext.SaveChanges();
+            return RedirectToAction("ManageInstance", new { id = id });
+        }
+
+        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        public ActionResult CancelInstance(int id)
+        {
+            var ins = DataContext.EventInstances.Where(i => i.Id == id).FirstOrDefault();
+            DataContext.EventInstances.Remove(DataContext.EventInstances.Where(i => i.Id == id).FirstOrDefault());
+            DataContext.SaveChanges();
+            return RedirectToAction("Manage", new { id = ins.EventId, eventType = ins.Event is Class ? EventType.Class : EventType.Social });
+        }
+
         public JsonResult Search(string searchString)
         {
             var events = DataContext.Events.Where(e => e.StartDate >= DateTime.Today && (e.Name + " " + e.Description).Contains(searchString)).Select(s => new { Id = s.Id, Name = s.Name + " - " + s.Place.Address + " " + s.Place.City + ", " + s.Place.State + " " + s.Place.Zip }).ToList();
@@ -1037,7 +1054,7 @@ namespace EDR.Controllers
             else
             {
                 model.Event =
-                DataContext.Events.OfType<Social>().Where(x => x.Id == id)
+                DataContext.Socials.Where(x => x.Id == id)
                 .Include("DanceStyles")
                 .Include("Reviews")
                 .Include("EventMembers")
@@ -1079,42 +1096,77 @@ namespace EDR.Controllers
                 //  Event Tickets
                 if (model.Event.Tickets.Count() != 0)
                 {
-                    var tix =
-                        from i in DataContext.EventInstances
-                        join t in DataContext.Tickets
-                        on i.EventId equals t.EventId
-                        join ut in (from ut in DataContext.UserTickets
-                                    where ut.Quantity > ut.EventRegistrations.Where(r => r.EventInstanceId == model.CurrentInstance.Id).Count()
-                                    && ut.Ticket.Quantity > ut.EventRegistrations.Count()
-                                    select new
-                                    {
-                                        ut.Id,
-                                        ut.TicketId,
-                                        AmountPurchased =
+                    var tix = DataContext.UserTickets
+                            .Include("EventRegistrations")
+                            .Where(ut =>
+                            ut.UserId == userid
+                            && ut.Ticket.EventId == model.CurrentInstance.EventId
+                            && ut.Quantity * ut.Ticket.Quantity > ut.EventRegistrations.Count()
+                            && ut.Quantity > ut.EventRegistrations.Where(r => r.EventInstanceId == model.CurrentInstance.Id).Count())
+                            .Select(ut =>
+                            new
+                            {
+                                ut.Id,
+                                ut.TicketId,
+                                AmountPurchased =
                                         ut.Quantity,
-                                        NumInstances =
+                                NumInstances =
                                         ut.Ticket.Quantity,
-                                        TotalInstances =
+                                TotalInstances =
                                         ut.Quantity * ut.Ticket.Quantity,
-                                        EventAvail =
+                                EventAvail =
                                         ut.Ticket.Quantity * ut.Quantity - ut.EventRegistrations.Count(),
-                                        EventUsed =
+                                EventUsed =
                                         ut.EventRegistrations.Count(),
-                                        ut.Quantity,
-                                        InstanceAvail =
+                                ut.Quantity,
+                                InstancesUsed =
+                                        ut.EventRegistrations.Where(r => r.EventInstanceId == model.CurrentInstance.Id).Count(),
+                                InstanceAvail =
                                         ut.Quantity - ut.EventRegistrations.Where(r => r.EventInstanceId == model.CurrentInstance.Id).Count()
-                                    })
-                        on t.Id equals ut.TicketId
-                        where i.Id == model.CurrentInstance.Id
-                        select new
-                        {
-                            i.Id,
-                            i.DateTime,
-                            TicketId = t.Id,
-                            t.Description,
-                            UserTickets =
-                            ut
-                        };
+                            }).ToList();
+
+                    if (tix != null)
+                    {
+                        model.AvailableTickets = tix.Sum(ut => (ut.InstanceAvail < ut.EventAvail ? ut.InstanceAvail : ut.EventAvail));
+                    }
+
+                    //var tix1 =
+                    //    from i in DataContext.EventInstances
+                    //    join t in DataContext.Tickets
+                    //    on i.EventId equals t.EventId
+                    //    join ut in (from ut in DataContext.UserTickets
+                    //                where ut.Quantity > ut.EventRegistrations.Where(r => r.EventInstanceId == model.CurrentInstance.Id).Count()
+                    //                && ut.UserId == userid
+                    //                && ut.Ticket.Quantity > ut.EventRegistrations.Count()
+                    //                select new
+                    //                {
+                    //                    ut.Id,
+                    //                    ut.TicketId,
+                    //                    AmountPurchased =
+                    //                    ut.Quantity,
+                    //                    NumInstances =
+                    //                    ut.Ticket.Quantity,
+                    //                    TotalInstances =
+                    //                    ut.Quantity * ut.Ticket.Quantity,
+                    //                    EventAvail =
+                    //                    ut.Ticket.Quantity * ut.Quantity - ut.EventRegistrations.Count(),
+                    //                    EventUsed =
+                    //                    ut.EventRegistrations.Count(),
+                    //                    ut.Quantity,
+                    //                    InstanceAvail =
+                    //                    ut.Quantity - ut.EventRegistrations.Where(r => r.EventInstanceId == model.CurrentInstance.Id).Count()
+                    //                })
+                    //    on t.Id equals ut.TicketId
+                    //    where i.Id == model.CurrentInstance.Id
+                    //    select new
+                    //    {
+                    //        i.Id,
+                    //        i.DateTime,
+                    //        TicketId = t.Id,
+                    //        t.Description,
+                    //        UserTickets =
+                    //        ut
+                    //    };
 
                     //var usertickets =
                     //        from ut in DataContext.UserTickets
@@ -1133,48 +1185,86 @@ namespace EDR.Controllers
                     //         select er.Id).Distinct();
 
                     //  model.AvailableTickets = Convert.ToInt32((usertickets.Count() != 0 ? usertickets.Sum() : 0) - (used.Count() != 0 ? used.Count() : 0));
-                    model.AvailableTickets = tix.Any(t => t.UserTickets != null) ? Convert.ToInt32(tix.Sum(t => t.UserTickets.InstanceAvail)) : 0;
+                    //  model.AvailableTickets = tix.Any(t => t.UserTickets != null) ? Convert.ToInt32(tix.Sum(t => t.UserTickets.InstanceAvail)) : 0;
                 }
                 else
                 {
-                    var tix =
-                        from i in DataContext.EventInstances
-                        join c in DataContext.Classes
-                        on i.EventId equals c.Id
-                        join t in DataContext.Tickets
-                        on c.SchoolId equals t.SchoolId
-                        join ut in (from ut in DataContext.UserTickets
-                                    where ut.Quantity > ut.EventRegistrations.Where(r => r.EventInstanceId == model.CurrentInstance.Id).Count()
-                                    && ut.Ticket.Quantity > ut.EventRegistrations.Count()
-                                    select new
-                                    {
-                                        ut.Id,
-                                        ut.TicketId,
-                                        AmountPurchased =
+                    var tix = DataContext.UserTickets
+                            .Include("EventRegistrations")
+                            .Where(ut =>
+                            ut.UserId == userid
+                            && ut.Ticket.SchoolId == DataContext.Classes.Where(c => c.Id == model.CurrentInstance.EventId).FirstOrDefault().SchoolId
+                            && ut.Quantity * ut.Ticket.Quantity > ut.EventRegistrations.Count()
+                            && ut.Quantity > ut.EventRegistrations.Where(r => r.EventInstanceId == model.CurrentInstance.Id).Count())
+                            .Select(ut =>
+                            new
+                            {
+                                ut.Id,
+                                ut.TicketId,
+                                AmountPurchased =
                                         ut.Quantity,
-                                        NumInstances =
+                                NumInstances =
                                         ut.Ticket.Quantity,
-                                        TotalInstances =
+                                TotalInstances =
                                         ut.Quantity * ut.Ticket.Quantity,
-                                        EventAvail =
+                                EventAvail =
                                         ut.Ticket.Quantity * ut.Quantity - ut.EventRegistrations.Count(),
-                                        EventUsed =
+                                EventUsed =
                                         ut.EventRegistrations.Count(),
-                                        ut.Quantity,
-                                        InstanceAvail =
+                                ut.Quantity,
+                                InstancesUsed =
+                                        ut.EventRegistrations.Where(r => r.EventInstanceId == model.CurrentInstance.Id).Count(),
+                                InstanceAvail =
                                         ut.Quantity - ut.EventRegistrations.Where(r => r.EventInstanceId == model.CurrentInstance.Id).Count()
-                                    })
-                        on t.Id equals ut.TicketId
-                        where i.Id == model.CurrentInstance.Id
-                        select new
-                        {
-                            i.Id,
-                            i.DateTime,
-                            TicketId = t.Id,
-                            t.Description,
-                            UserTickets =
-                            ut
-                        };
+                            }).ToList();
+
+                    if (tix != null)
+                    {
+                        model.AvailableTickets = tix.Sum(ut => (ut.InstanceAvail < ut.EventAvail ? ut.InstanceAvail : ut.EventAvail));
+                    }
+                    //  model.AvailableTickets = tix.Sum(ut => ut.Quantity - ut.EventRegistrations.Where(r => r.EventInstanceId == model.CurrentInstance.Id).Count());
+
+                    //var tix =
+                    //    from i in DataContext.EventInstances
+                    //    join c in DataContext.Classes
+                    //    on i.EventId equals c.Id
+                    //    join t in DataContext.Tickets
+                    //    on c.SchoolId equals t.SchoolId
+                    //    join ut in (from ut in DataContext.UserTickets
+                    //                where ut.Quantity > ut.EventRegistrations.Where(r => r.EventInstanceId == model.CurrentInstance.Id).Count()
+                    //                && ut.UserId == userid
+                    //                && ut.Ticket.Quantity > ut.EventRegistrations.Count()
+                    //                select new
+                    //                {
+                    //                    ut.Id,
+                    //                    ut.TicketId,
+                    //                    AmountPurchased =
+                    //                    ut.Quantity,
+                    //                    NumInstances =
+                    //                    ut.Ticket.Quantity,
+                    //                    TotalInstances =
+                    //                    ut.Quantity * ut.Ticket.Quantity,
+                    //                    EventAvail =
+                    //                    ut.Ticket.Quantity * ut.Quantity - ut.EventRegistrations.Count(),
+                    //                    EventUsed =
+                    //                    ut.EventRegistrations.Count(),
+                    //                    ut.Quantity,
+                    //                    InstanceAvail =
+                    //                    ut.Quantity - ut.EventRegistrations.Where(r => r.EventInstanceId == model.CurrentInstance.Id).Count()
+                    //                })
+                    //    on t.Id equals ut.TicketId
+                    //    where i.Id == model.CurrentInstance.Id
+                    //    select new
+                    //    {
+                    //        i.Id,
+                    //        i.DateTime,
+                    //        TicketId = t.Id,
+                    //        t.Description,
+                    //        UserTickets =
+                    //        ut
+                    //    };
+
+                    //model.AvailableTickets = tix.Any(t => t.UserTickets != null) ? Convert.ToInt32(tix.Sum(t => t.UserTickets.InstanceAvail)) : 0;
 
                     //var usertickets =
                     //        from ut in DataContext.UserTickets
@@ -1193,7 +1283,6 @@ namespace EDR.Controllers
                     //         select er.Id).Distinct();
 
                     //  model.AvailableTickets = Convert.ToInt32((usertickets.Count() != 0 ? usertickets.Sum() : 0) - (used.Count() != 0 ? used.Count() : 0));
-                    model.AvailableTickets = tix.Any(t => t.UserTickets != null) ? Convert.ToInt32(tix.Sum(t => t.UserTickets.InstanceAvail)) : 0;
 
                     //var usertickets =
                     //        from ut in DataContext.UserTickets
@@ -1805,8 +1894,9 @@ namespace EDR.Controllers
             {
                 try
                 {
-                    DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = id });
-                    DataContext.SaveChanges();
+                    RegisterDancer(userid, id, null, "", "");
+                    //DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = id });
+                    //DataContext.SaveChanges();
                 }
                 catch (DbEntityValidationException e)
                 {
@@ -1866,7 +1956,9 @@ namespace EDR.Controllers
         public ActionResult Register(int id)
         {
             var userid = User.Identity.GetUserId();
+            var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
 
+            //  CHECK TO REMOVE SINCE ATTENDEES GETS CALLED FROM EVENTS VIEW
             var einstance = DataContext.EventInstances.Where(i => i.Id == id).FirstOrDefault();
 
             //  Pay Event
@@ -1895,22 +1987,36 @@ namespace EDR.Controllers
                 //  Event Tickets
                 if (instance.Tickets != null)
                 {
-                    utix = DataContext.UserTickets.Include("EventRegistrations").Where(t => t.UserId == userid && t.Ticket.EventId == instance.EventInstance.EventId && (t.Quantity * t.Ticket.Quantity) > t.EventRegistrations.Count()).ToList();
+                    utix = DataContext.UserTickets
+                                .Include("EventRegistrations")
+                                .Where(t => t.UserId == userid 
+                                    && t.Ticket.EventId == instance.EventInstance.EventId
+                                    && t.Quantity > t.EventRegistrations.Where(r => r.EventInstanceId == id).Count()
+                                    && (t.Quantity * t.Ticket.Quantity) > t.EventRegistrations.Count())
+                                .ToList();
                 }
                 //  School Tickets
                 else
                 {
-                    utix = DataContext.UserTickets.Include("EventRegistrations").Where(t => t.UserId == userid && t.Ticket.SchoolId == instance.Class.SchoolId && (t.Quantity * t.Ticket.Quantity) > t.EventRegistrations.Count()).ToList();
+                    utix = DataContext.UserTickets
+                                .Include("EventRegistrations")
+                                .Where(t => t.UserId == userid 
+                                    && t.Ticket.SchoolId == instance.Class.SchoolId 
+                                    && t.Quantity > t.EventRegistrations.Where(r => r.EventInstanceId == id).Count()
+                                    && (t.Quantity * t.Ticket.Quantity) > t.EventRegistrations.Count())
+                                .ToList();
                 }
 
                 //  Does user have tickets?
                 if (utix.Count() != 0)
                 {
-                    DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = id, UserTicketId = utix.FirstOrDefault().Id });
-                    DataContext.SaveChanges();
+                    RegisterDancer(userid, id, null, user.FirstName, user.LastName);
+                    //DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = id, UserTicketId = utix.FirstOrDefault().Id, FirstName = user.FirstName, LastName = user.LastName });
+                    //DataContext.SaveChanges();
 
                     return RedirectToAction("View", new { id = instance.EventInstance.EventId, eventType = instance.EventInstance.Event is Class ? EventType.Class : EventType.Social, instanceId = id });
                 }
+                //  CHECK TO REMOVE SINCE ATTENDEES GETS CALLED FROM EVENTS VIEW
                 //  User Needs to buy tickets
                 else
                 {
@@ -1922,8 +2028,9 @@ namespace EDR.Controllers
             {
                 try
                 {
-                    DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = id });
-                    DataContext.SaveChanges();
+                    RegisterDancer(userid, id, null, user.FirstName, user.LastName);
+                    //DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = id, FirstName = user.FirstName, LastName = user.LastName });
+                    //DataContext.SaveChanges();
                 }
                 catch (DbEntityValidationException e)
                 {
@@ -1941,35 +2048,44 @@ namespace EDR.Controllers
             }
         }
 
-                //else
-                //{
-                //    var credits = DataContext.UserTickets.Where(t => t.Ticket.SchoolId == instance.Class.SchoolId && t.UserId == userid).Include("Ticket").Include("EventRegistrations").ToList();
+        [Authorize]
+        public void RegisterDancer(string userid, int instanceid, int? userTicketId, string firstName, string lastName)
+        {
+            var registration = new EventRegistration() { UserId = userid, UserTicketId = userTicketId, EventInstanceId = instanceid, FirstName = firstName, LastName = lastName };
+            DataContext.EventRegistrations.Add(registration);
+            DataContext.SaveChanges();
+            EmailProcess.NewEventRegistration(registration.Id);
+        }
 
-                //    if (credits != null)
-                //    {
-                //        //  User Has Remaining Credit
-                //        if (credits.Sum(c => c.Quantity * c.Ticket.Quantity) > credits.Sum(c => c.EventRegistrations.Count()))
-                //        {
-                //            //  Get Available Tickets
-                //            var ticket =
-                //                    (from ut in DataContext.UserTickets
-                //                     join t in DataContext.Tickets
-                //                     on ut.TicketId equals t.Id
-                //                     where ut.UserId == userid
-                //                     && t.SchoolId == instance.Class.SchoolId
-                //                     && ut.EventRegistrations.Count() < ut.Quantity * t.Quantity
-                //                     select ut).FirstOrDefault();
-                //            DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = id, UserTicketId = ticket.Id });
-                //            DataContext.SaveChanges();
-                //            return RedirectToAction("View", new { id = instance.EventInstance.EventId, eventType = instance.EventInstance.Event is Class ? EventType.Class : EventType.Social });
-                //        }
-                //        //  User needs to purchase tickets
-                //        else
-                //        {
-                //            return RedirectToAction("BuyTicket", "Store", new { instanceId = id });
-                //        }
-                //    }
-                //var credits = DataContext.UserTickets.Where(t => t.Ticket.EventId == instance.EventInstance.EventId && t.UserId == userid).Include("Ticket").Include("EventRegistrations").ToList();
+        //else
+        //{
+        //    var credits = DataContext.UserTickets.Where(t => t.Ticket.SchoolId == instance.Class.SchoolId && t.UserId == userid).Include("Ticket").Include("EventRegistrations").ToList();
+
+        //    if (credits != null)
+        //    {
+        //        //  User Has Remaining Credit
+        //        if (credits.Sum(c => c.Quantity * c.Ticket.Quantity) > credits.Sum(c => c.EventRegistrations.Count()))
+        //        {
+        //            //  Get Available Tickets
+        //            var ticket =
+        //                    (from ut in DataContext.UserTickets
+        //                     join t in DataContext.Tickets
+        //                     on ut.TicketId equals t.Id
+        //                     where ut.UserId == userid
+        //                     && t.SchoolId == instance.Class.SchoolId
+        //                     && ut.EventRegistrations.Count() < ut.Quantity * t.Quantity
+        //                     select ut).FirstOrDefault();
+        //            DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = id, UserTicketId = ticket.Id });
+        //            DataContext.SaveChanges();
+        //            return RedirectToAction("View", new { id = instance.EventInstance.EventId, eventType = instance.EventInstance.Event is Class ? EventType.Class : EventType.Social });
+        //        }
+        //        //  User needs to purchase tickets
+        //        else
+        //        {
+        //            return RedirectToAction("BuyTicket", "Store", new { instanceId = id });
+        //        }
+        //    }
+        //var credits = DataContext.UserTickets.Where(t => t.Ticket.EventId == instance.EventInstance.EventId && t.UserId == userid).Include("Ticket").Include("EventRegistrations").ToList();
         //if (credits != null)
         //{
         //    //  User Has Remaining Credit
@@ -2271,7 +2387,7 @@ namespace EDR.Controllers
                         if (!model.UseSchoolTickets)
                         {
                             evnt.Tickets = new List<Ticket>();
-                            evnt.Tickets.Add(new Ticket() { Price = (decimal)model.TicketPrice, Quantity = (decimal)model.TicketQuantity });
+                            evnt.Tickets.Add(new Ticket() { Price = (decimal)model.TicketPrice, Quantity = (int)model.TicketQuantity });
                             //  DataContext.SaveChanges();
                         }
                     }
@@ -4664,25 +4780,34 @@ namespace EDR.Controllers
         public ActionResult CheckinByCode(int id)
         {
             var registration = DataContext.EventRegistrations.Where(i => i.Id == id).FirstOrDefault();
+            string message;
             if (registration != null)
             {
-                registration.Checkedin = registration.Checkedin == null ? (DateTime?)DateTime.Now : null;
-                var instanceid = registration.EventInstanceId;
-                DataContext.Entry(registration).State = EntityState.Modified;
-                DataContext.SaveChanges();
+                if (DateTime.Now >= ((DateTime)registration.Instance.StartTime).AddMinutes(-15))
+                {
+                    registration.Checkedin = registration.Checkedin == null ? (DateTime?)DateTime.Now : null;
+                    var instanceid = registration.EventInstanceId;
+                    DataContext.Entry(registration).State = EntityState.Modified;
+                    DataContext.SaveChanges();
 
-                ViewBag.Message = "Registrant Checked In";
+                    message = (registration.FirstName ?? registration.User.FirstName) + " is checked in";
+                }
+                else
+                {
+                    message = "Event hasn't started yet";
+                }
             }
             else
             {
-                ViewBag.Message = "Code Not Found";
+                message = "Code Not Found";
             }
 
-            return RedirectToAction("ScanRegistrants");
+            return RedirectToAction("ScanRegistrants", new { message = message });
         }
 
-        public ActionResult ScanRegistrants()
+        public ActionResult ScanRegistrants(string message)
         {
+            ViewBag.Message = message;
             if (HttpContext.Request.Browser.IsMobileDevice)
             {
                 return View("Mobile/ScanRegistrants");
@@ -4721,7 +4846,7 @@ namespace EDR.Controllers
             return RedirectToAction("View", "Event", new { id = evnt.Id, eventType = (evnt is Class ? EventType.Class : EventType.Social) });
         }
 
-        [Authorize(Roles = "Teacher,Owner")]
+        [Authorize(Roles = "Teacher,Owner,Admin")]
         [HttpPost]
         public ActionResult AddTeacher(FormCollection formCollection)
         {
@@ -4732,15 +4857,37 @@ namespace EDR.Controllers
                 DataContext.Classes.Single(s => s.Id == id).Teachers.Add(DataContext.Teachers.Single(t => t.ApplicationUser.Id == teacherid));
                 DataContext.SaveChanges();
             }
-            return RedirectToAction("Manage", new { id = id });
+            return RedirectToAction("Manage", new { id = id, eventType = EventType.Class });
         }
 
-        [Authorize(Roles = "Teacher,Owner")]
+        [Authorize(Roles = "Teacher,Owner,Admin")]
         public ActionResult RemoveTeacher(int id, int teacherid)
         {
             DataContext.Classes.Where(s => s.Id == id).Include("Teachers").FirstOrDefault().Teachers.Remove(DataContext.Teachers.Single(t => t.Id == teacherid));
             DataContext.SaveChanges();
-            return RedirectToAction("Manage", new { id = id });
+            return RedirectToAction("Manage", new { id = id, eventType = EventType.Class });
+        }
+
+        [Authorize(Roles = "Promoter,Owner,Admin")]
+        [HttpPost]
+        public ActionResult AddPromoter(FormCollection formCollection)
+        {
+            int id = Convert.ToInt32(formCollection["id"]);
+            string promid = formCollection["promoterid"];
+            if (DataContext.Socials.Where(c => c.Id == id && c.Promoters.Any(t => t.ApplicationUser.Id == promid)).Count() == 0)
+            {
+                DataContext.Socials.Single(s => s.Id == id).Promoters.Add(DataContext.Promoters.Single(t => t.ApplicationUser.Id == promid));
+                DataContext.SaveChanges();
+            }
+            return RedirectToAction("Manage", new { id = id, eventType = EventType.Social });
+        }
+
+        [Authorize(Roles = "Promoter,Owner,Admin")]
+        public ActionResult RemovePromoter(int id, int promoterid)
+        {
+            DataContext.Socials.Where(s => s.Id == id).Include("Promoters").FirstOrDefault().Promoters.Remove(DataContext.Promoters.Single(t => t.Id == promoterid));
+            DataContext.SaveChanges();
+            return RedirectToAction("Manage", new { id = id, eventType = EventType.Social });
         }
 
         ////

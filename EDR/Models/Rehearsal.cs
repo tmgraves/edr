@@ -13,6 +13,6 @@ namespace EDR.Models
         [Required]
         public int TeamId { get; set; }
         [ForeignKey("TeamId")]
-        public Team Team { get; set; }
+        public virtual Team Team { get; set; }
     }
 }

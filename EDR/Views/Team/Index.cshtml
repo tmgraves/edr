@@ -5,10 +5,8 @@
 }
 
 <ol class="breadcrumb">
-    <li class="active">All Teams</li>
+    <li class="active">Find a Dance Team</li>
 </ol>
-<h2 class="text-center">Find a Dance Team</h2>
-
 @using (Html.BeginForm("Index", "Team", FormMethod.Post, new { @class = "formmain" }))
 {
     @Html.HiddenFor(m => m.SearchAddress.Latitude, new { Name = "lat", @class = "latfield" })
@@ -20,7 +18,7 @@
     @Html.HiddenFor(m => m.CenterLat, new { @class = "clatfield" })
     @Html.HiddenFor(m => m.CenterLng, new { @class = "clngfield" })
     @Html.HiddenFor(m => m.Zoom, new { @class = "czoomfield" })
-    <div class="container bg-info text-center" style="padding: 0px !important;">
+    <div class="container-fluid bg-info text-center" style="padding: 0px !important; margin-bottom: 5px;">
         <div class="form-inline">
             <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
                 <div class="form-group">
@@ -42,8 +40,32 @@
         </div>
     </div>
 }
-
-@Html.DisplayFor(m => m.Teams, "Teams")
+<div class="col-lg-12" style="padding: 10px;">
+    <div id="myButtons" class="btn-group" data-toggle="buttons">
+        <label class="btn btn-warning btn-sm active">
+            <input type="radio" name="options" id="listbtn" autocomplete="off" checked class="rbutton">
+            <i class="glyphicon glyphicon-th-list"></i>
+            List
+        </label>
+        <label class="btn btn-warning btn-sm">
+            <input type="radio" name="options" id="calendarbtn" autocomplete="off" class="rbutton">
+            <i class="glyphicon glyphicon-calendar"></i>
+            Calendar
+        </label>
+    </div>
+</div>
+<div class="col-lg-12" id="teamsdiv" style="overflow: auto; overflow-x: hidden;">
+    <div class="row">
+        <div id="listdiv">
+            @Html.DisplayFor(m => m.Teams, "Teams")
+        </div>
+        <div id='script-warning'>
+            <code>php/get-events.php</code> must be running.
+        </div>
+        <div id='loading'>loading...</div>
+        <div id='calendar'></div>
+    </div>
+</div>
 
 @section Scripts
 {
@@ -59,7 +81,91 @@
     <link rel="stylesheet" href="~/Content/jquery.rateyo.css" />
     <script src="~/Scripts/jquery.rateyo.js"></script>
 
+<link href="~/Content/fullcalendar/fullcalendar.css" rel="stylesheet" />
+<link href="~/Content/fullcalendar/fullcalendar.print.css" rel="stylesheet" media="print" />
+<script src="~/Scripts/fullcalendar/moment.min.js"></script>
+@*<script src="~/Scripts/fullcalendar/jquery.min.js"></script>*@
+<script src="~/Scripts/fullcalendar/fullcalendar.js"></script>
+
 <script>
+    $(document).ready(function() {
+        $(window).resize(function() {
+            var bodyheight = $(this).height() - 550;
+            //alert($(this).height());
+            //alert(bodyheight);
+            $("#teamsdiv").height(bodyheight);
+        }).resize();
+    });
+
+    $("#calendar").hide();
+    $('#listbtn').parent().on("click", function () {
+        $('#listdiv').show();
+        $("#calendar").hide();
+        //  $("#calendar").css({"visibility": "hidden"});
+    });
+
+    $('#calendarbtn').parent().on("click", function () {
+        $('#listdiv').hide();
+        $("#calendar").show();
+        //  $("#calendar").css({"visibility": "visible"});
+        $('#calendar').fullCalendar('render');
+    });
+
+    $('#calendar').fullCalendar({
+        header: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'month,basicWeek,basicDay'
+        },
+        defaultDate: new Date(),
+        editable: false,
+        eventLimit: true, // allow "more" link when too many events
+        eventSources: [
+            {
+                url: '../../Team/GetAuditionInstances',
+                traditional: true,
+                data: {
+                        neLat: $('.nelatfield').val(),
+                        neLng: $('.nelngfield').val(),
+                        swLat: $('.swlatfield').val(),
+                        swLng: $('.swlngfield').val(),
+                        styleId: $('.stylesearchid').val(),
+                        teacherId: $('.teachersearchid').val(),
+                        skillLevel: $('#SkillLevel').val() == null ? new Array() : $('#SkillLevel').val(),
+                        },
+                    error: function() {
+                        $('#script-warning').show();
+                }
+            },
+            {
+                url: '../../Team/GetPerformanceInstances',
+                traditional: true,
+                data: {
+                    neLat: $('.nelatfield').val(),
+                    neLng: $('.nelngfield').val(),
+                    swLat: $('.swlatfield').val(),
+                    swLng: $('.swlngfield').val(),
+                    styleId: $('.stylesearchid').val(),
+                    teacherId: $('.teachersearchid').val(),
+                    skillLevel: $('#SkillLevel').val() == null ? new Array() : $('#SkillLevel').val(),
+                },
+                error: function() {
+                    $('#script-warning').show();
+                }
+            },
+        ],
+        eventMouseover: function(event) {
+            openEvent(event.id, event.lat, event.lng);
+            //// opens events in a popup window
+            //window.open(event.url, 'gcalevent', 'width=700,height=600');
+            return false;
+        },
+
+        loading: function(bool) {
+            $('#loading').toggle(bool);
+        }
+    });
+
     //  Map Marker Containers
     var markers = [];
     var infowindows = [];
@@ -77,12 +183,15 @@
             icon: "../../Content/images/MapMarker.png"
         });
 
-        attachMessage(map, marker, '@s.Id', '@s.Name', '@s.Address', '@(s.City + ", " + s.State + " " + s.Zip)', '<a href="@Url.Action("View", "Team", new { id = s.Id })">' + '@s.Name' + '</a>');
-        markers.push(marker);
+        attachMessage(@s.Id, map, marker, '@s.Id', '@s.Name', '@s.Address', '@(s.City + ", " + s.State + " " + s.Zip)', '<a href="@Url.Action("View", "Team", new { id = s.Id })">' + '@s.Name' + '</a>');
+        markers.push({
+            id: @s.Id,
+            marker: marker
+        });
         </text>
     }
 
-        function attachMessage(map, marker, num, placeName, address, address2, link) {
+        function attachMessage(id, map, marker, num, placeName, address, address2, link) {
             var message = marker.title;
             var infowindow = new google.maps.InfoWindow({
                 disableAutoPan: false,
@@ -101,7 +210,10 @@
                 '</div>' +
                 '</div>'
             });
-            infowindows.push(infowindow);
+            infowindows.push({
+                id: id,
+                infowindow: infowindow
+            });
 
             //  infowindow.open(map, marker);
 
@@ -114,18 +226,31 @@
 
     function clearWindows() {
         for (var i = 0; i < infowindows.length; i++) {
-            infowindows[i].close();
+            infowindows[i].infowindow.close();
         }
-    }
+    };
 
     function openEvent(id, lati, long) {
         var latLng = new google.maps.LatLng(lati, long); //Makes a latlng
         var map = $("#Location").geocomplete("map");
         map.panTo(latLng); //Make map global
-        markers[id].setMap(map);
+        var mark = markers.filter(function (item) { return item.id == id })[0];
+        mark.marker.setMap(map);
+        //  markers[id].setMap(map);
         clearWindows();
-        infowindows[id].open(map, markers[id]);
+        iwin = infowindows.filter(function (item) { return item.id == id })[0];
+        iwin.infowindow.open(map, mark.marker);
+        //  infowindows[id].open(map, markers[id]);
         return false;
     };
+    //function openEvent(id, lati, long) {
+    //    var latLng = new google.maps.LatLng(lati, long); //Makes a latlng
+    //    var map = $("#Location").geocomplete("map");
+    //    map.panTo(latLng); //Make map global
+    //    markers[id].setMap(map);
+    //    clearWindows();
+    //    infowindows[id].open(map, markers[id]);
+    //    return false;
+    //};
 </script>
 }

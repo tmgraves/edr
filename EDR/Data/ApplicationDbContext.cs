@@ -81,7 +81,12 @@ namespace EDR.Data
             //// Groups
             //modelBuilder.Entity<Team>().ToTable("Teams");
             //modelBuilder.Entity<School>().ToTable("Schools");
-            modelBuilder.Entity<EventInstance>().ToTable("EventInstances");
+            //  modelBuilder.Entity<EventInstance>().ToTable("EventInstances");
+            modelBuilder.Entity<EventInstance>()
+                        .ToTable("EventInstances")
+                        .HasRequired(f => f.Event)
+                        .WithMany(f => f.EventInstances)
+                        .WillCascadeOnDelete(true);
 
             // Reviews
             modelBuilder.Entity<Review>().ToTable("Reviews");
@@ -98,6 +103,8 @@ namespace EDR.Data
             modelBuilder.Entity<EventVideo>().ToTable("EventVideos");
             modelBuilder.Entity<EventPlaylist>().ToTable("EventPlaylists");
             modelBuilder.Entity<DanceStyleVideo>().ToTable("DanceStyleVideos");
+            modelBuilder.Entity<OrganizationVideo>().ToTable("OrganizationVideos");
+            modelBuilder.Entity<OrganizationPlaylist>().ToTable("OrganizationPlaylists");
 
             //Students
             modelBuilder.Entity<Student>().ToTable("Students");
@@ -130,6 +137,9 @@ namespace EDR.Data
             //Organizations
             modelBuilder.Entity<Organization>().ToTable("Organizations");
             modelBuilder.Entity<OrganizationMember>().ToTable("OrganizationMembers");
+
+            //  Email
+            modelBuilder.Entity<Email>().ToTable("Emails");
         }
 
         public DbSet<Place> Places { get; set; }
@@ -185,6 +195,8 @@ namespace EDR.Data
         public DbSet<School> Schools { get; set; }
         public DbSet<Team> Teams { get; set; }
 
+        //  Email
+        public DbSet<Email> Emails { get; set; }
         //// TODO: REMOVE THESE DBSETS
         //public DbSet<Class> Classes { get; set; }
         //public DbSet<ClassSeries> ClassSeries { get; set; }

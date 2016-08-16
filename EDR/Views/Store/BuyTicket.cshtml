@@ -4,7 +4,6 @@
     ViewBag.Title = "BuyTicket";
 }
 
-
 @using (Html.BeginForm(null, null, FormMethod.Post, new { @class = "form-horizontal", id = "buyticketform", onsubmit = "submitorder()" }))
 {
     @Html.HiddenFor(m => m.Order.Id, new { Value = Model.Order.Id })
@@ -28,11 +27,11 @@
     
     <div class="container-fluid">
         <div class="container">
-            <div class="col-lg-6 col-lg-offset-3">
+            <div class="col-lg-6 col-md-6 col-lg-offset-3 col-md-offset-3">
                 <h2 class="text-center">Your Order</h2>
             </div>
-            <div class="col-lg-6 col-lg-offset-3 bg-info">
-                <div class="col-lg-8 col-lg-offset-2 text-center">
+            <div class="col-lg-6 col-md-6 col-lg-offset-3 col-md-offset-3 bg-info">
+                <div class="col-lg-8 col-md-8 col-lg-offset-2 col-md-offset-2 text-center">
                     @Html.ValidationSummary(false, "", new { @class = "text-danger" })
                     @if(Model.Result != "" && Model.Result != null)
                     {
@@ -70,10 +69,10 @@
                     <h4 class="text-center">Order Details</h4>
                     <div class="form-group form-group-sm">
                         <div class="row">
-                            <div class="col-xs-6 col-sm-6 col-md-3 col-lg-8">
+                            <div class="col-xs-6 col-sm-6 col-md-8 col-lg-8">
                                 @Html.DropDownListFor(m => m.TicketId, Model.Tickets.OrderBy(t => t.Quantity).Select(t => new SelectListItem() { Value = t.Id.ToString(), Text = String.Format("{0:N0}", t.Quantity) + " @ " + String.Format("{0:C0}", t.Price) }).ToList(), "Select a Ticket", new { @class = "form-control" })
                             </div>
-                            <div class="col-xs-3 col-sm-2 col-md-1 col-lg-4 input-group">
+                            <div class="col-xs-3 col-sm-2 col-md-4 col-lg-4 input-group">
                                 <div class="input-group-addon">Qty</div>
                                 @Html.TextBoxFor(t => t.Quantity, htmlAttributes: new { @class = "form-control text-right", @type = "number", @min = "1", @autocomplete = "off" })
                             </div>
@@ -85,7 +84,7 @@
                     </div>
                     <div class="form-group form-group-sm">
                         <div class="row">
-                            <div class="col-xs-6 col-sm-6 col-md-3 col-lg-8 text-left">
+                            <div class="col-xs-6 col-sm-6 col-md-8 col-lg-8 text-left">
                                 @*@Html.TextBoxFor(m => m.CCMonth, htmlAttributes: new { @class = "form-control", @size = "2", @placeholder = "Exp Date(YY)" })*@
                                 @Html.DropDownListFor(m => m.CCMonth, new SelectList(new List<SelectListItem>
                                                 {
@@ -102,10 +101,10 @@
                                                     new SelectListItem { Text = "10", Value = "10" },
                                                     new SelectListItem { Text = "11", Value = "11" },
                                                     new SelectListItem { Text = "12", Value = "12" }
-                                                    }, "Value", "Text", ""), new { @class = "form-control time", style = "width: 70px; display: inline;" })
-                                @Html.DropDownListFor(m => m.CCYear, new SelectList(Model.Years, "YY"), "YY", htmlAttributes: new { @class = "form-control", style = "width: 70px; display: inline;" })
+                                                    }, "Value", "Text", ""), new { @class = "form-control time", style = "width: 90px; display: inline;" })
+                                @Html.DropDownListFor(m => m.CCYear, new SelectList(Model.Years, "YY"), "YY", htmlAttributes: new { @class = "form-control", style = "width: 100px; display: inline;" })
                             </div>
-                            <div class="col-xs-3 col-sm-2 col-md-1 col-lg-4 input-group">
+                            <div class="col-xs-3 col-sm-2 col-md-4 col-lg-4 input-group">
                                 @Html.TextBoxFor(m => m.SecurityCode, htmlAttributes: new { @class = "form-control", @size = "4", @autocomplete = "off", @placeholder = "CVV" })
                             </div>
                         </div>
@@ -136,7 +135,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6 col-lg-offset-3">
+            <div class="col-lg-6 col-md-6 col-lg-offset-3 col-md-offset-3">
                 <div class="row" style="margin-top: 10px;">
                     <div class="form-group">
                         <div class="col-sm-6 text-left">
@@ -151,6 +150,21 @@
                         </div>
                         <div class="col-sm-6 text-right">
                             <input class="btn btn-primary" type="submit" value="Submit Order" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-lg-offset-3">
+                <div class="row" style="margin-top: 10px;">
+                    <div class="form-group">
+                        <div class="col-sm-6 text-left">
+                            <!-- (c) 2005, 2016. Authorize.Net is a registered trademark of CyberSource Corporation --> <div class="AuthorizeNetSeal">
+                                <script type="text/javascript" language="javascript">var ANS_customer_id="2b7fc3e6-1313-4039-a9df-09b00f9f3a81";</script>
+                                <script type="text/javascript" language="javascript" src="//verify.authorize.net/anetseal/seal.js"></script> <a href="http://www.authorize.net/" id="AuthorizeNetText" target="_blank">Credit Card Processing</a>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 text-right">
+                            <script type='text/javascript' src='https://www.rapidscansecure.com/siteseal/siteseal.js?code=65,C8E0AAAAB0B0308D8ECEAFBDDAC2194C8E0613FF'></script>
                         </div>
                     </div>
                 </div>

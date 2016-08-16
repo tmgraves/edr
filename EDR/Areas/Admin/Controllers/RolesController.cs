@@ -90,6 +90,9 @@ namespace EDR.Areas.Admin.Controllers
                         {
                             UserManager.AddToRole(id, "Teacher");
                         }
+                        //  Notify User
+                        EmailProcess.NewRoleuser(id, role);
+
                         return RedirectToAction("Index", new { message = user.FullName + " was added to Teacher Role" });
                     }
                     else if (role == "Promoter")
@@ -104,6 +107,9 @@ namespace EDR.Areas.Admin.Controllers
                         {
                             UserManager.AddToRole(id, "Promoter");
                         }
+                        //  Notify User
+                        EmailProcess.NewRoleuser(id, role);
+
                         return RedirectToAction("Index", new { message = user.FullName + " was added to Promoter Role" });
                     }
                     else if (role == "Owner")
@@ -118,6 +124,9 @@ namespace EDR.Areas.Admin.Controllers
                         {
                             UserManager.AddToRole(id, "Owner");
                         }
+                        //  Notify User
+                        EmailProcess.NewRoleuser(id, role);
+
                         return RedirectToAction("Index", new { message = user.FullName + " was added to Owner Role" });
                     }
                     else if (role == "Admin")
@@ -126,6 +135,9 @@ namespace EDR.Areas.Admin.Controllers
                         {
                             UserManager.AddToRole(id, "Admin");
                         }
+                        //  Notify User
+                        EmailProcess.NewRoleuser(id, role);
+
                         return RedirectToAction("Index", new { message = user.FullName + " was added to Admin Role" });
                     }
                 }

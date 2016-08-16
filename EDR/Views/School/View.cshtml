@@ -28,19 +28,19 @@
 @Html.HiddenFor(x => x.School.Id)
 <div class="container-fluid">
     <div class="row">
-        <div class="col-lg-6">
+        <div class="col-lg-6 col-md-6">
             <div class="row" style="padding-bottom: 10px;">
-                <div class="col-lg-12">
+                <div class="col-lg-12 col-md-12">
                     <img style="max-width: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.School.PhotoUrl))" />
                 </div>
             </div>
         </div>
-        <div class="col-lg-6">
+        <div class="col-lg-6 col-md-6">
             <div class="row" style="padding-bottom: 20px;">
-                <div class="col-lg-10">
+                <div class="col-lg-10 col-md-10">
                     <h2 class="item-short" style="margin: 0px !important;">@Model.School.Name</h2>
                 </div>
-                <div class="col-lg-2 text-right">
+                <div class="col-lg-2 col-md-2 text-right">
                     @if (Model.Member != null && Model.Member.Admin)
                     {
                         <a class="btn btn-warning" title="Edit" href="@Url.Action("Manage", "School", new { id = Model.School.Id })">
@@ -60,11 +60,11 @@
                     @foreach (var item in Model.School.Tickets.Where(t => t.EventId == null).OrderBy(t => t.Quantity))
                     {
                         <div class="row" style="padding: 5px;">
-                            <div class="col-lg-8">
+                            <div class="col-lg-8 col-md-8">
                                 @Html.DisplayFor(member => item.Quantity) Class(es) for
                                 @Html.DisplayFor(member => item.Price)
                             </div>
-                            <div class="col-lg-4">
+                            <div class="col-lg-4 col-md-4">
                                 @Html.ActionLink("Purchase Ticket", "BuyTicket", "Store", new { id = item.Id, schoolid = item.SchoolId }, new { @class = "btn btn-primary" })
                             </div>
                         </div>
@@ -75,29 +75,29 @@
     </div>
     <hr />
     <div class="row">
-        <div class="col-lg-6">
+        <div class="col-lg-6 col-md-6">
             <div class="panel panel-default">
                 <div class="panel-body nospace">
                     <a target="_blank" href="https://maps.google.com/?q=@Model.School.Latitude,@Model.School.Longitude">
                         <img style="width: 100%;" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.School.Latitude,@Model.School.Longitude&zoom=10&size=500x200&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.School.Latitude, @Model.School.Longitude&key=@System.Configuration.ConfigurationManager.AppSettings["GoogleAPIKey"]" title="@Model.School.City, @Model.School.State">
                     </a>
                     <div class="row" style="padding: 5px;">
-                        <div class="col-lg-12">
-                            <div class="col-lg-3">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="col-lg-3 col-md-3">
                                 @Html.Label("Where:")
                             </div>
-                            <div class="col-lg-9">
+                            <div class="col-lg-9 col-md-9">
                                 @Model.School.Address <br /> @Model.School.City, @Model.School.State @Model.School.Zip
                             </div>
                         </div>
                     </div>
                     <div class="row" style="padding: 5px;">
-                        <div class="col-lg-12">
+                        <div class="col-lg-12 col-md-12">
                             <p>
                                 @Html.Label("Dance Styles:", new { @class = "form-label col-md-4" })
                                 @Html.DisplayFor(m => Model.School.DanceStyles, "DanceStyleLabels")
                             </p>
-                            <div class="col-lg-12" style="padding-bottom: 20px;">
+                            <div class="col-lg-12 col-md-12" style="padding-bottom: 20px;">
                                 @Html.DisplayFor(m => m.School.Description)
                             </div>
                         </div>
@@ -116,7 +116,7 @@
                     <h3>Teachers</h3>
                     @foreach (var item in Model.School.Teachers)
                     {
-                        <div class="col-lg-2">
+                        <div class="col-lg-2 col-md-2">
                             @Html.DisplayFor(m => item, "Teacher")
                         </div>
                     }
@@ -128,7 +128,7 @@
                     @foreach (var team in Model.School.Teams)
                     {
                         <div class="row">
-                            <div class="col-lg-12">
+                            <div class="col-lg-12 col-md-12">
                                 @Html.DisplayFor(m => team)
                             </div>
                         </div>
@@ -141,7 +141,7 @@
                     <h3>Owners</h3>
                     @foreach (var item in Model.School.Owners)
                     {
-                        <div class="col-lg-2">
+                        <div class="col-lg-2 col-md-2">
                             @Html.DisplayFor(m => item, "Owner")
                         </div>
                     }
@@ -149,26 +149,32 @@
             </div>
         </div>
         <div class="col-lg-6 col-md-6">
-            <div class="row text-center" style="margin-bottom: 20px;">
-                <h3>Classes/Workshops</h3>
-                <div id="myButtons" class="btn-group" data-toggle="buttons">
-                    <label class="btn btn-primary btn-sm active">
-                        <input type="radio" name="options" id="listbtn" autocomplete="off" checked class="rbutton"> List View
-                    </label>
-                    <label class="btn btn-primary btn-sm">
-                        <input type="radio" name="options" id="calendarbtn" autocomplete="off" class="rbutton"> Calendar View
-                    </label>
+            <div class="row" style="margin-bottom: 5px;">
+                <div class="col-lg-12 col-md-12">
+                    <h3>Classes/Workshops</h3>
+                    <div id="myButtons" class="btn-group" data-toggle="buttons">
+                        <label class="btn btn-warning btn-sm active">
+                            <input type="radio" name="options" id="listbtn" autocomplete="off" checked class="rbutton">
+                            <i class="glyphicon glyphicon-th-list"></i>
+                            List
+                        </label>
+                        <label class="btn btn-warning btn-sm">
+                            <input type="radio" name="options" id="calendarbtn" autocomplete="off" class="rbutton">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                            Calendar
+                        </label>
+                    </div>
+                    <div id="listdiv">
+                        <div id="classes">
+                        </div>
+                    </div>
+                    <div id='script-warning'>
+                        <code>php/get-events.php</code> must be running.
+                    </div>
+                    <div id='loading'>loading...</div>
+                    <div id='calendar'></div>
                 </div>
             </div>
-            <div id="listdiv">
-                <div id="classes">
-                </div>
-            </div>
-            <div id='script-warning'>
-                <code>php/get-events.php</code> must be running.
-            </div>
-            <div id='loading'>loading...</div>
-            <div id='calendar'></div>
         </div>
     </div>
 </div>

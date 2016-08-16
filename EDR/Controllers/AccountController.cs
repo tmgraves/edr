@@ -22,6 +22,7 @@ using Newtonsoft.Json;
 using System.Text;
 using EDR.Enums;
 using System.Configuration;
+using System.IO;
 
 namespace EDR.Controllers
 {
@@ -195,8 +196,43 @@ namespace EDR.Controllers
                     // Send an email with this link
                     string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
                     var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    await UserManager.SendEmailAsync(user.Id, "Eat. Dance. Repeat. - Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
-                    return RedirectToAction("ForgotPasswordConfirmation", "Account");
+
+                    string body;
+                    //Read template file from the App_Data folder
+                    using (var sr = new StreamReader(Server.MapPath("\\App_Data\\Templates\\ForgotPassword.txt")))
+                    {
+                        body = sr.ReadToEnd();
+                    }
+
+                    try
+                    {
+                        //add email logic here to email the customer that their invoice has been voided
+                        //Username: {1}
+                        string name = HttpUtility.UrlEncode(user.FullName);
+                        //  string formattedcallback = HttpUtility.UrlEncode(callbackUrl);
+                        string emailSubject = @"Eat. Dance. Repeat. - Reset Password";
+
+                        string messageBody = string.Format(body, user.FullName, callbackUrl, callbackUrl);
+                        //  string messageBody = string.Format(body, "test", "test");
+
+                        var MailHelper = new MailHelper
+                        {
+                            //  Sender = sender, //email.Sender,
+                            Recipient = user.Email,
+                            RecipientCC = null,
+                            Subject = emailSubject,
+                            Body = messageBody
+                        };
+                        MailHelper.Send();
+
+                        //  await UserManager.SendEmailAsync(user.Id, emailSubject, messageBody);
+                        return RedirectToAction("ForgotPasswordConfirmation", "Account");
+                    }
+                    catch(Exception ex)
+                    {
+                        ViewBag.Message = ex.Message;
+                        return View();
+                    }
                 }
 
                 //UserManager.SendEmail(user.Id, "Test Email", "Test Body");

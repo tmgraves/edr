@@ -37,7 +37,14 @@ namespace EDR.Controllers
             }
 
             model.Schools = model.Schools.ToList().Take(100);
-            return View(model);
+            if (HttpContext.Request.Browser.IsMobileDevice)
+            {
+                return View("Mobile/List", model);
+            }
+            else
+            {
+                return View(model);
+            }
         }
 
         // GET: School
@@ -110,6 +117,7 @@ namespace EDR.Controllers
                         .Include("Owners.ApplicationUser")
                         .Include("Teachers.ApplicationUser")
                         .Include("Teams.DanceStyles")
+                        .Include("Classes.Reviews")
                         .FirstOrDefault());
             model.Member = DataContext.OrganizationMembers
                                         .Where(m => m.OrganizationId == id && m.UserId == userid && m.Admin).FirstOrDefault();
@@ -118,7 +126,14 @@ namespace EDR.Controllers
                                         .Include("EventRegistrations")
                                         .Where(t => t.Ticket.SchoolId == id && t.UserId == userid).ToList();
             model.School.DanceStyles = DataContext.DanceStyles.Where(s => s.Events.OfType<Class>().Any(c => c.SchoolId == id)).ToList();
-            return View(model);
+            if (HttpContext.Request.Browser.IsMobileDevice)
+            {
+                return View("Mobile/View", model);
+            }
+            else
+            {
+                return View(model);
+            }
         }
 
         [Authorize(Roles = "Teacher,Owner")]

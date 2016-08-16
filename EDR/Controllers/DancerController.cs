@@ -850,7 +850,7 @@ namespace EDR.Controllers
 
             return model;
         }
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
@@ -1067,7 +1067,8 @@ namespace EDR.Controllers
 
         public JsonResult GetEvents(string id, DateTime start, DateTime end)
         {
-            var instances = DataContext.Events.Where(e => e.EventInstances.Any(i => i.EventRegistrations.Any(r => r.UserId == id))).SelectMany(c => c.EventInstances).Where(i => i.DateTime >= start && i.DateTime <= end).ToList();
+            //  var instances = DataContext.Events.Where(e => e.EventInstances.Any(i => i.EventRegistrations.Any(r => r.UserId == id))).SelectMany(c => c.EventInstances).Where(i => i.DateTime >= start && i.DateTime <= end).ToList();
+            var instances = DataContext.Events.Where(e => (e is Class || e is Social) && e.EventInstances.Any(i => i.EventRegistrations.Any(r => r.UserId == id))).SelectMany(c => c.EventInstances).Where(i => i.DateTime >= start && i.DateTime <= end).ToList();
 
             return Json(instances.AsEnumerable().Select(s =>
                         new {

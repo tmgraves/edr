@@ -1,0 +1,36 @@
+﻿<html>
+<style>
+</style>
+<body style="color:grey; font-size:15px;">
+<font face="Helvetica, Arial, sans-serif">
+
+<div style="background-color: #ece8d4; width:600px; height:100%; padding:30px; margin-top:30px;">
+<div style="height:100px; text-align: center;">
+	<img style="max-height: 100%; max-width: 100%;" src="https://www.eatdancerepeat.com/Content/images/eatdancerepeat.png" />
+</div>
+<div style="padding: 10px; display: block;">
+<p>Hello {0},
+</p>
+<p>
+Your {1}, {2}, is about to expire.  The last date is {3}.  Please click this button to add more dates for your event.
+</p>
+<p>
+If you don't see the button above, please paste this link into your browser to add Dates for this Event:<br/> {4}
+</p>
+<p>Thank you</p>
+<p>
+	Eat.Dance.Repeat.
+</p>
+<p>
+	<a href='https://www.eatdancerepeat.com/'>www.EatDanceRepeat.com</a>
+</p>
+<p>
+	(323) 940-3377
+</p>
+<p>
+	<a href='mailto:info@eatdancerepeat.com'>info@eatdancerepeat.com</a>
+</p>
+</div>
+</div>
+</body>
+</html> 

@@ -74,7 +74,7 @@ namespace EDR.Models
         [ScaffoldColumn(false)]
         public string UserId { get; set; }
         [ForeignKey("UserId")]
-        public ApplicationUser User { get; set; }
+        public virtual ApplicationUser User { get; set; }
         public decimal Total { get; set; }
         public int? EventInstanceId { get; set; }
         [ForeignKey("EventInstanceId")]
@@ -118,6 +118,7 @@ namespace EDR.Models
         public string AccountNumber { get; set; }
         public string AccountType { get; set; }
         public bool Success { get; set; }
+        public string TransactionId { get; set; }
     }
 
     [Bind(Exclude = "Id")]
@@ -132,7 +133,7 @@ namespace EDR.Models
         [ForeignKey("TicketId")]
         public virtual Ticket Ticket { get; set; }
         [Required]
-        public decimal Quantity { get; set; }
+        public int Quantity { get; set; }
         private DateTime _date = DateTime.Now;
         [Required]
         public DateTime DatePurchased

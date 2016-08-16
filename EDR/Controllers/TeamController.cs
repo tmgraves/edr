@@ -25,6 +25,7 @@ namespace EDR.Controllers
                                 .Include("Teachers.ApplicationUser")
                                 .Include("DanceStyles")
                                 .Include("Reviews")
+                                .Include("Auditions")
                                 .AsQueryable();
             if (model.DanceStyleId != null)
             {
@@ -45,7 +46,15 @@ namespace EDR.Controllers
             }
 
             model.Teams = model.Teams.ToList().Take(100);
-            return View(model);
+
+            if (HttpContext.Request.Browser.IsMobileDevice)
+            {
+                return View("Mobile/Index", model);
+            }
+            else
+            {
+                return View(model);
+            }
         }
 
         // GET: Team/Details/5
@@ -69,7 +78,14 @@ namespace EDR.Controllers
             {
                 return HttpNotFound();
             }
-            return View(model);
+            if (HttpContext.Request.Browser.IsMobileDevice)
+            {
+                return View("Mobile/View", model);
+            }
+            else
+            {
+                return View(model);
+            }
         }
 
         [Authorize(Roles = "Teacher")]
@@ -90,6 +106,8 @@ namespace EDR.Controllers
                             .Include("Performances.Event.Place")
                             .Include("DanceStyles")
                             .Include("School")
+                            .Include("Videos")
+                            .Include("Playlists")
                             .Single(e => e.Id == id);
             if (model.Team == null)
             {
@@ -133,6 +151,38 @@ namespace EDR.Controllers
             var model = new TeamCreateViewModel();
             model.Team.SchoolId = schoolId;
             return View(model);
+        }
+
+        [Authorize(Roles ="Teacher, Admin")]
+        public ActionResult Delete(int id)
+        {
+            var userid = User.Identity.GetUserId();
+            var user = UserManager.FindById(userid);
+
+            var tm = DataContext.Teams
+                        .Include("Members")
+                        .Include("Reviews")
+                        .Include("Auditions.EventInstances.EventRegistrations")
+                        .Include("Performances.EventInstances.EventRegistrations")
+                        .Include("Rehearsals.EventInstances.EventRegistrations")
+                        .Where(t => t.Id == id).FirstOrDefault();
+            var schoolid = tm.SchoolId;
+
+            DataContext.OrganizationMembers.RemoveRange(tm.Members);
+            DataContext.Reviews.RemoveRange(tm.Reviews);
+            tm.DanceStyles.Clear();
+            DataContext.Feeds.RemoveRange(tm.Feeds);
+            DataContext.EventRegistrations.RemoveRange(tm.Performances.SelectMany(a => a.EventInstances.SelectMany(i => i.EventRegistrations)));
+            DataContext.Performances.RemoveRange(tm.Performances);
+            DataContext.EventRegistrations.RemoveRange(tm.Auditions.SelectMany(a => a.EventInstances.SelectMany(i => i.EventRegistrations)));
+            DataContext.Auditions.RemoveRange(tm.Auditions);
+            DataContext.EventRegistrations.RemoveRange(tm.Rehearsals.SelectMany(a => a.EventInstances.SelectMany(i => i.EventRegistrations)));
+            DataContext.Rehearsals.RemoveRange(tm.Rehearsals);
+            tm.Teachers.Clear();
+            DataContext.Teams.Remove(tm);
+            DataContext.SaveChanges();
+
+            return RedirectToAction("Manage", "School", new { id = schoolid });
         }
 
         // POST: Team/Create
@@ -190,21 +240,21 @@ namespace EDR.Controllers
             return View(team);
         }
 
-        // GET: Team/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            var model = new TeamDeleteViewModel();
-            model.Team = DataContext.Teams.Find(id);
-            if (model.Team == null)
-            {
-                return HttpNotFound();
-            }
-            return View(model);
-        }
+        //// GET: Team/Delete/5
+        //public ActionResult Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+        //    var model = new TeamDeleteViewModel();
+        //    model.Team = DataContext.Teams.Find(id);
+        //    if (model.Team == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+        //    return View(model);
+        //}
 
         // POST: Team/Delete/5
         [HttpPost, ActionName("Delete")]
@@ -255,9 +305,14 @@ namespace EDR.Controllers
             if (ModelState.IsValidField("NewRehearsal"))
             {
                 model.NewRehearsal.Free = true;
-                model.NewRehearsal.EventInstances = new List<EventInstance>();
-                model.NewRehearsal.EventInstances.Add(new EventInstance() { DateTime = model.NewRehearsal.StartDate, EndDate = Convert.ToDateTime(model.NewRehearsal.EndDate), StartTime = model.NewRehearsal.StartTime, EndTime = model.NewRehearsal.EndTime, PlaceId = model.NewRehearsal.PlaceId });
-                DataContext.Rehearsals.Add(model.NewRehearsal);
+                model.NewRehearsal.Recurring = true;
+                model.NewRehearsal.Frequency = Enums.Frequency.Weekly;
+                model.NewRehearsal.Interval = 1;
+                var reh = new Rehearsal();
+                UpdateModel(reh, "NewRehearsal");
+                reh.EventInstances = new List<EventInstance>();
+                reh.EventInstances.Add(new EventInstance() { DateTime = model.NewRehearsal.StartDate, EndDate = Convert.ToDateTime(model.NewRehearsal.EndDate), StartTime = model.NewRehearsal.StartTime, EndTime = model.NewRehearsal.EndTime, PlaceId = model.NewRehearsal.PlaceId });
+                DataContext.Rehearsals.Add(reh);
                 DataContext.SaveChanges();
                 return RedirectToAction("Manage", new { id = model.NewRehearsal.TeamId });
             }
@@ -514,11 +569,23 @@ namespace EDR.Controllers
         public virtual ActionResult GetRehearsalDatesPartial(int id)
         {
             var start = DateTime.Today;
-            var instances = DataContext.Rehearsals
+            var reh = DataContext.Rehearsals
                                 .Include("Place")
                                 .Include("EventInstances")
-                                .Where(r => r.EventInstances.Any(i => i.DateTime >= start) && r.Id == id).FirstOrDefault().EventInstances;
-            return PartialView("~/Views/Shared/_EventInstancesPartial.cshtml", instances);
+                                .Where(r => r.Id == id).FirstOrDefault();
+
+            if (reh.EventInstances.Where(i => i.DateTime >= start).Count() > 0)
+            {
+                var instances = DataContext.Rehearsals
+                                    .Include("Place")
+                                    .Include("EventInstances")
+                                    .Where(r => r.EventInstances.Any(i => i.DateTime >= start) && r.Id == id).FirstOrDefault().EventInstances;
+                return PartialView("~/Views/Shared/_EventInstancesPartial.cshtml", instances);
+            }
+            else
+            {
+                return PartialView("~/Views/Shared/_EventInstancesPartial.cshtml", new List<EventInstance>());
+            }
         }
 
         [Authorize(Roles = "Owner,Teacher")]
@@ -529,7 +596,11 @@ namespace EDR.Controllers
 
             if (DataContext.EventInstances.Where(i => i.EventId == rehearsalId && i.DateTime >= DateTime.Today).Count() < 20)
             {
-                var sdate = DataContext.EventInstances.Where(i => i.EventId == rehearsalId).Max(i => i.DateTime).AddDays(1);
+                var sdate = reh.StartDate;
+                if (DataContext.EventInstances.Where(i => i.EventId == rehearsalId).Count() > 0)
+                {
+                    sdate = DataContext.EventInstances.Where(i => i.EventId == rehearsalId).Max(i => i.DateTime).AddDays(1);
+                }
                 var daylength = (Convert.ToDateTime(reh.EndDate) - reh.StartDate).TotalDays;
                 sdate = ApplicationUtility.GetNextDate(reh.StartDate, Enums.Frequency.Weekly, 1, reh.Day, sdate, null);
 
@@ -639,7 +710,12 @@ namespace EDR.Controllers
         public JsonResult GetEventInstances(DateTime start, DateTime end, int teamId)
         {
             var instances = new List<EventInstance>();
-            var team = DataContext.Teams.Where(t => t.Id == teamId).FirstOrDefault();
+            var userid = User.Identity.GetUserId();
+            var team = DataContext.Teams
+                                .Include("Auditions.EventInstances.EventRegistrations")
+                                .Include("Performances.EventInstances.EventRegistrations")
+                                .Include("Rehearsals.EventInstances.EventRegistrations")
+                                .Where(t => t.Id == teamId).FirstOrDefault();
             instances.AddRange(team.Auditions.SelectMany(a => a.EventInstances).ToList());
             instances.AddRange(team.Performances.SelectMany(a => a.EventInstances).ToList());
             instances.AddRange(team.Rehearsals.SelectMany(a => a.EventInstances).ToList());
@@ -647,14 +723,106 @@ namespace EDR.Controllers
             return Json(instances.AsEnumerable().Select(s =>
                         new {
                             id = s.EventId,
+                            instanceid = s.Id,
+                            title = s.Event.Name,
+                            start = s.StartTime.Value.ToString("o"),
+                            end = s.EndTime.Value.ToString("o"),
+                            starttext = ((DateTime)s.StartTime).ToLongDateString(),
+                            starttimetext = ((DateTime)s.StartTime).ToShortTimeString(),
+                            endtimetext = ((DateTime)s.EndTime).ToShortTimeString(),
+                            place = s.Event.Place.Name,
+                            address = s.Event.Place.Address,
+                            city = s.Event.Place.City,
+                            state = s.Event.Place.State,
+                            zip = s.Event.Place.Zip,
+                            lat = s.Event.Place.Latitude,
+                            lng = s.Event.Place.Longitude,
+                            reg = s.EventRegistrations.Where(r => r.UserId == userid).Count() > 0 ? true : false,
+                            color = s.Event is Class ? "#65AE25" : s.Event is Social ? "#006A90" : s.Event is Performance ? "#f0ad4e" : s.Event is Rehearsal ? "#d9534f" : "#428bca",
+                            url = Url.Action("View", "Team", new { id = teamId })
+                        }), JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetAuditionInstances(double? neLat, double? neLng, double? swLat, double? swLng, int? styleId, string teacherId, int[] skillLevel, DateTime start, DateTime end)
+        {
+            var auditions = DataContext.Auditions
+                                .Include("EventInstances.EventRegistrations")
+                                .Where(a => a.StartDate >= start && a.StartDate <= end);
+            if (styleId != null)
+            {
+                auditions = auditions.Where(c => c.Team.DanceStyles.Select(st => st.Id).Contains((int)styleId));
+            }
+            if (teacherId != null && teacherId != "")
+            {
+                auditions = auditions.Where(c => c.Team.Teachers.Select(t => t.ApplicationUser.Id).Contains(teacherId));
+            }
+
+            if (neLat != null && swLng != null)
+            {
+                auditions = auditions.Where(c => c.Team.Longitude >= swLng && c.Team.Longitude <= neLng && c.Team.Latitude >= swLat && c.Team.Latitude <= neLat);
+            }
+            if (skillLevel != null)
+            {
+                auditions = auditions.Where(x => skillLevel.Contains(x.Team.SkillLevel));
+            }
+
+            var auditionlist = auditions.ToList().Take(100);
+
+            var userid = User.Identity.GetUserId();
+
+            return Json(auditionlist.AsEnumerable().SelectMany(a => a.EventInstances.Where(i => i.DateTime >= start && i.DateTime <= end).Select(s =>
+                        new {
+                            id = (s.Event as Audition).TeamId,
                             title = s.Event.Name,
                             start = s.StartTime.Value.ToString("o"),
                             end = s.EndTime.Value.ToString("o"),
                             lat = s.Event.Place.Latitude,
                             lng = s.Event.Place.Longitude,
-                            color = s.Event is Class ? "#65AE25" : s.Event is Social ? "#006A90" : s.Event is Performance ? "#f0ad4e" : s.Event is Rehearsal ? "#d9534f" : "#428bca",
-                            url = Url.Action("View", "Team", new { id = teamId })
-                        }), JsonRequestBehavior.AllowGet);
+                            color = "#428bca",
+                            url = Url.Action("View", "Team", new { id = (s.Event as Audition).TeamId }),
+                            })
+                        ), JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetPerformanceInstances(double? neLat, double? neLng, double? swLat, double? swLng, int? styleId, string teacherId, int[] skillLevel, DateTime start, DateTime end)
+        {
+            var performances = DataContext.Performances
+                                .Include("EventInstances.EventRegistrations")
+                                .Where(a => a.StartDate >= start && a.StartDate <= end);
+            if (styleId != null)
+            {
+                performances = performances.Where(c => c.Team.DanceStyles.Select(st => st.Id).Contains((int)styleId));
+            }
+            if (teacherId != null && teacherId != "")
+            {
+                performances = performances.Where(c => c.Team.Teachers.Select(t => t.ApplicationUser.Id).Contains(teacherId));
+            }
+
+            if (neLat != null && swLng != null)
+            {
+                performances = performances.Where(c => c.Team.Longitude >= swLng && c.Team.Longitude <= neLng && c.Team.Latitude >= swLat && c.Team.Latitude <= neLat);
+            }
+            if (skillLevel != null)
+            {
+                performances = performances.Where(x => skillLevel.Contains(x.Team.SkillLevel));
+            }
+
+            var performancelist = performances.ToList().Take(100);
+
+            var userid = User.Identity.GetUserId();
+
+            return Json(performancelist.AsEnumerable().SelectMany(a => a.EventInstances.Where(i => i.DateTime >= start && i.DateTime <= end).Select(s =>
+                        new {
+                            id = (s.Event as Performance).TeamId,
+                            title = s.Event.Name,
+                            start = s.StartTime.Value.ToString("o"),
+                            end = s.EndTime.Value.ToString("o"),
+                            lat = s.Event.Place.Latitude,
+                            lng = s.Event.Place.Longitude,
+                            color = "#f0ad4e",
+                            url = Url.Action("View", "Team", new { id = (s.Event as Performance).TeamId }),
+                        })
+                        ), JsonRequestBehavior.AllowGet);
         }
 
         // POST: Team
@@ -704,6 +872,98 @@ namespace EDR.Controllers
             }
             var objUpload = new { FilePath = Url.Content(newFile.FilePath), UploadStatus = newFile.UploadStatus };
             return Json(objUpload, JsonRequestBehavior.AllowGet);
+        }
+
+        [Authorize(Roles = "Teacher")]
+        public PartialViewResult AddYouTubePlaylist(TeamManageViewModel model)
+        {
+            var ytPlaylist = YouTubeHelper.GetPlaylist(model.NewYoutubePlayList.ToString());
+            var userid = User.Identity.GetUserId();
+            var auth = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+            var team = DataContext.Teams.Where(t => t.Id == model.Team.Id).Include("Playlists").FirstOrDefault();
+            //  var ePlaylist = new EventPlaylist() { Title = ytPlaylist.Name, PublishDate = ytPlaylist.PubDate, YouTubeId = ytPlaylist.Id, Author = auth, YouTubeUrl = ytPlaylist.Url, CoverPhoto = ytPlaylist.ThumbnailUrl, MediaSource = MediaSource.YouTube };
+
+            if (team.Playlists.Where(p => p.YouTubeId == ytPlaylist.Id).Count() == 0)
+            {
+                team.Playlists.Add(new OrganizationPlaylist() { Title = ytPlaylist.Name, PublishDate = ytPlaylist.PubDate, YouTubeId = ytPlaylist.Id, Author = auth, YouTubeUrl = ytPlaylist.Url.ToString(), CoverPhoto = ytPlaylist.ThumbnailUrl.ToString(), MediaSource = EDR.Enums.MediaSource.YouTube, UpdatedDate = ytPlaylist.PubDate, VideoCount = ytPlaylist.VideoCount });
+                DataContext.Entry(team).State = EntityState.Modified;
+                DataContext.SaveChanges();
+                ViewBag.Message = "Playlist was imported";
+            }
+            return PartialView("~/Views/Shared/Team/_ManagePlaylistsPartial.cshtml", team.Playlists);
+        }
+
+        [Authorize(Roles = "Teacher")]
+        public PartialViewResult DeletePlaylist(int id, int playListId)
+        {
+            var playlists = DataContext.Teams.Include("Playlists").Single(e => e.Id == id).Playlists;
+            playlists.Remove(playlists.Single(l => l.Id == playListId));
+            DataContext.SaveChanges();
+            ViewBag.Message = "Playlist was removed";
+            return PartialView("~/Views/Shared/Team/_ManagePlaylistsPartial.cshtml", playlists);
+        }
+
+        [Authorize(Roles = "Teacher")]
+        public PartialViewResult AddYouTubeVideo(TeamManageViewModel model)
+        {
+            var ytVideo = YouTubeHelper.GetVideo(model.NewYouTubeVideo.ToString());
+            var userid = User.Identity.GetUserId();
+            var auth = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+            var team = DataContext.Teams.Where(e => e.Id == model.Team.Id).Include("Videos").FirstOrDefault();
+            //  var ePlaylist = new EventPlaylist() { Title = ytPlaylist.Name, PublishDate = ytPlaylist.PubDate, YouTubeId = ytPlaylist.Id, Author = auth, YouTubeUrl = ytPlaylist.Url, CoverPhoto = ytPlaylist.ThumbnailUrl, MediaSource = MediaSource.YouTube };
+
+            if (team.Videos.Where(p => p.YoutubeId == ytVideo.Id).Count() == 0)
+            {
+                team.Videos.Add(new OrganizationVideo() { Title = ytVideo.Title, PublishDate = ytVideo.PubDate, YoutubeId = ytVideo.Id, Author = auth, YoutubeUrl = ytVideo.VideoLink.ToString(), PhotoUrl = ytVideo.Thumbnail.ToString(), MediaSource = EDR.Enums.MediaSource.YouTube });
+                DataContext.Entry(team).State = EntityState.Modified;
+                DataContext.SaveChanges();
+                ViewBag.Message = "Video was imported";
+            }
+            return PartialView("~/Views/Shared/Team/_ManageVideosPartial.cshtml", team.Videos);
+        }
+
+        [Authorize(Roles = "Teacher")]
+        public PartialViewResult DeleteVideo(int id, int videoId)
+        {
+            var videos = DataContext.Teams.Include("Videos").Single(e => e.Id == id).Videos;
+            videos.Remove(videos.Single(l => l.Id == videoId));
+            DataContext.SaveChanges();
+            ViewBag.Message = "Video was removed";
+            return PartialView("~/Views/Shared/Team/_ManageVideosPartial.cshtml", videos);
+        }
+
+        private List<OrganizationVideo> GetVideos(int id)
+        {
+            var team = DataContext.Teams
+                            .Include("Videos.Author")
+                            .Include("Playlists.Author")
+                            .Single(t => t.Id == id);
+            var videos = new List<OrganizationVideo>();
+            videos = team.Videos.ToList();
+
+            //  Extract YouTube Playlists
+            if (team.Playlists != null)
+            {
+                foreach (var lst in team.Playlists)
+                {
+                    var ytids = videos.Select(v => v.YoutubeId).ToArray();
+                    videos.AddRange(YouTubeHelper.GetPlaylistVideos(lst.YouTubeId).Where(v => !ytids.Contains(v.Id)).Select(v => new OrganizationVideo() { Author = lst.Author, MediaSource = EDR.Enums.MediaSource.YouTube, YoutubeId = v.Id, PhotoUrl = v.Thumbnail.ToString(), PublishDate = v.PubDate, Title = v.Title, VideoUrl = v.VideoLink.ToString(), YouTubePlaylistTitle = lst.Title, YouTubePlaylistUrl = lst.YouTubeUrl, YoutubeThumbnail = v.Thumbnail.ToString(), YoutubeUrl = v.VideoLink.ToString() }));
+                    //  lstMedia.AddRange(videos.Select(v => new EventMedia() { Event = evt, SourceName = v.Title, SourceLink = v.VideoLink.ToString(), MediaDate = v.PubDate, MediaType = Enums.MediaType.Video, PhotoUrl = v.Thumbnail.ToString(), MediaUrl = v.VideoLink.ToString(), Title = v.Title, MediaSource = MediaSource.YouTube, Target = target, Playlist = lst, Author = lst.Author }).ToList());
+                }
+            }
+
+            return videos;
+        }
+
+        public JsonResult GetVideosJSON(int id)
+        {
+            //  Get Linked Objects Videos
+            //  Get Facebook Group/Event/Page Feed Videos
+
+            //  Get YouTube Playlist Videos
+            //  Add Videos
+            var videos = GetVideos(id);
+            return Json(videos.OrderByDescending(v => v.PublishDate).Select(v => new { PhotoUrl = v.PhotoUrl, VideoUrl = v.VideoUrl, Title = v.Title, Id = v.YoutubeId }), JsonRequestBehavior.AllowGet);
         }
     }
 }

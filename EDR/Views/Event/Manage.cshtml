@@ -524,6 +524,50 @@
                 </div>
             </div>
         }
+        else
+        {
+            <div class="panel panel-default">
+                <div class="panel-body buttoncontainer">
+                    <h3>Promoters</h3>
+                    <div>
+                        @using (Html.BeginForm("AddPromoter", "Event", FormMethod.Post))
+                        {
+                            <input type="hidden" id="id" name="id" value="@Model.Event.Id" />
+                            <input type="hidden" class="promotersearchid" id="promoterid" name="promoterid" />
+                            <input type="text" class="promotersearch form-control" placeholder="Type in a Promoter Name" style="display: inline-block;" />
+                            <button type="submit" class="btn btn-primary btn-sm" style="display: inline-block;">Add Promoter</button>
+                        }
+                    </div>
+                    <div id="promoters">
+                        <table style="width: 100%;">
+                            <tr>
+                                <th>
+                                    Name
+                                </th>
+                                <th>
+                                </th>
+                            </tr>
+                            @foreach (var t in ((Social)Model.Event).Promoters)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(model => t.ApplicationUser.FullName)
+                                    </td>
+                                    <td class="text-right">
+                                        @if (t.ApplicationUser.UserName != User.Identity.Name)
+                                        {
+                                            <a class="btn btn-link text-danger" title="Remove" href="@Url.Action("RemovePromoter", new { id = Model.Event.Id, promoterid = t.Id })" onclick="return confirm('Are you sure you want to remove this Promoter?')">
+                                                <i class="text-danger glyphicon glyphicon-remove-circle"></i>
+                                            </a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
         <div class="panel panel-default">
             <div class="panel-body ">
                 <h3>Registrations</h3>

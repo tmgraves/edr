@@ -1,0 +1,37 @@
+﻿
+@{
+    ViewBag.Title = "Dashboard";
+}
+
+<h2>Email Dashboard</h2>
+
+<div>
+    <p>
+        Test send Event Confirmations
+        @Html.ActionLink("Send Confirmations", "SendConfirmations", null, new { @class = "btn btn-primary" })
+    </p>
+</div>
+<div>
+    <p>
+        Test send Expiring Events
+        @Html.ActionLink("Expiring Events", "ExpiringEvents", null, new { @class = "btn btn-primary" })
+    </p>
+</div>
+<div>
+    <p>
+        Load Event Summaries
+        @Html.ActionLink("Event Summaries", "EventSummaries", null, new { @class = "btn btn-primary" })
+    </p>
+</div>
+<div>
+    <p>
+        Daily Dancer Summaries
+        @Html.ActionLink("Daily Dancer Summaries", "DailyDancerSummaries", null, new { @class = "btn btn-primary" })
+    </p>
+</div>
+<div>
+    <p>
+        Process Email Queue
+        @Html.ActionLink("Send Emails", "ProcessEmails", null, new { @class = "btn btn-primary" })
+    </p>
+</div>
