@@ -23,7 +23,7 @@
 
 <ol class="breadcrumb">
     <li>@Html.ActionLink("All Schools", "List", "School")</li>
-    <li class="active">School Profile</li>
+    <li class="active">School Page</li>
 </ol>
 @Html.HiddenFor(x => x.School.Id)
 <div class="container-fluid">
@@ -31,7 +31,7 @@
         <div class="col-lg-6 col-md-6">
             <div class="row" style="padding-bottom: 10px;">
                 <div class="col-lg-12 col-md-12">
-                    <img style="max-width: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.School.PhotoUrl))" />
+                    <img style="max-width: 100%; max-height: 300px;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.School.PhotoUrl))" />
                 </div>
             </div>
         </div>
@@ -151,7 +151,6 @@
         <div class="col-lg-6 col-md-6">
             <div class="row" style="margin-bottom: 5px;">
                 <div class="col-lg-12 col-md-12">
-                    <h3>Classes/Workshops</h3>
                     <div id="myButtons" class="btn-group" data-toggle="buttons">
                         <label class="btn btn-warning btn-sm active">
                             <input type="radio" name="options" id="listbtn" autocomplete="off" checked class="rbutton">
@@ -165,7 +164,14 @@
                         </label>
                     </div>
                     <div id="listdiv">
+                        <h3>Classes/Workshops</h3>
                         <div id="classes">
+                        </div>
+                        <h3>Auditions</h3>
+                        <div id="auditions">
+                        </div>
+                        <h3>Performances</h3>
+                        <div id="performances">
                         </div>
                     </div>
                     <div id='script-warning'>
@@ -197,6 +203,8 @@
 <script>
 $(document).ready(function () {
     LoadClasses(); //Loads events partial view
+    LoadAuditions();
+    LoadPerformances();
 
     $("#calendar").css({ "visibility": "hidden" });
     $('#listbtn').parent().on("click", function () {
@@ -219,16 +227,38 @@ $(document).ready(function () {
         defaultView: 'basicWeek',
         editable: false,
         eventLimit: true, // allow "more" link when too many events
-        events: {
-            url: '../../Home/GetClasses',
-            traditional: true,
-            data: {
-                schoolId: $('#School_Id').val(),
+        eventSources:[
+            {
+                url: '../../School/GetClasses',
+                traditional: true,
+                data: {
+                    schoolId: $('#School_Id').val(),
+                    },
+                error: function () {
+                    $('#script-warning').show();
+                }
             },
-            error: function () {
-                $('#script-warning').show();
-            }
-        },
+            {
+                url: '../../School/GetAuditions',
+                traditional: true,
+                data: {
+                    schoolId: $('#School_Id').val(),
+                },
+                error: function () {
+                    $('#script-warning').show();
+                }
+            },
+            {
+                url: '../../School/GetPerformances',
+                traditional: true,
+                data: {
+                    schoolId: $('#School_Id').val(),
+                },
+                error: function () {
+                    $('#script-warning').show();
+                }
+            },
+        ],
         views: {
             month: { // name of view
                 titleFormat: 'MMM YYYY'
@@ -264,6 +294,18 @@ function LoadClasses() {
         BuildRatingStars();
     });
 }
+    function LoadAuditions() {
+        $.get('@Url.Action("GetAuditionsPartial", "School")', { 'id': '@Model.School.Id' }, function (data) {
+            $("#auditions").empty();
+            $("#auditions").html(data);
+        });
+    }
+    function LoadPerformances() {
+        $.get('@Url.Action("GetPerformancesPartial", "School")', { 'id': '@Model.School.Id' }, function (data) {
+            $("#performances").empty();
+            $("#performances").html(data);
+        });
+    }
 </script>
 }
 

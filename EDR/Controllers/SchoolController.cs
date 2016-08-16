@@ -371,14 +371,150 @@ namespace EDR.Controllers
         {
             var start = DateTime.Today;
             var classes = DataContext.Classes
+                                .Include("EventInstances.EventRegistrations")
+                                .Include("Reviews")
+                                .Where(c => c.EventInstances.Any(i => i.DateTime >= start)
+                                        && c.SchoolId == id);
+            return PartialView("~/Views/Shared/_EventsPartial.cshtml", classes);
+        }
+
+        [HttpGet]
+        public virtual ActionResult GetPerformancesPartial(int id)
+        {
+            var start = DateTime.Today;
+            var performances = DataContext.Performances
+                                .Where(c => c.EventInstances.Any(i => i.DateTime >= start)
+                                        && c.Team.SchoolId == id);
+            return PartialView("~/Views/Shared/_EventsPartial.cshtml", performances);
+        }
+
+        [HttpGet]
+        public virtual ActionResult GetAuditionsPartial(int id)
+        {
+            var start = DateTime.Today;
+            var performances = DataContext.Auditions
+                                .Where(c => c.EventInstances.Any(i => i.DateTime >= start)
+                                        && c.Team.SchoolId == id);
+            return PartialView("~/Views/Shared/_EventsPartial.cshtml", performances);
+        }
+
+        [HttpGet]
+        public virtual ActionResult GetEventsPartial(int id)
+        {
+            var start = DateTime.Today;
+            var events = new List<Event>();
+
+            events.AddRange(DataContext.Classes
                                 .Include("DanceStyles")
                                 .Include("Place")
                                 .Include("EventInstances.EventRegistrations")
                                 .Include("Reviews")
                                 .Include("Teachers.ApplicationUser")
                                 .Where(c => c.EventInstances.Any(i => i.DateTime >= start)
-                                        && c.SchoolId == id);
-            return PartialView("~/Views/Shared/_EventsPartial.cshtml", classes);
+                                        && c.SchoolId == id).AsEnumerable());
+
+            events.AddRange(DataContext.Auditions
+                                .Where(a => a.Team.SchoolId == id && a.EventInstances.Any(i => i.DateTime >= start)).AsEnumerable());
+            events.AddRange(DataContext.Performances
+                                .Where(a => a.Team.SchoolId == id && a.EventInstances.Any(i => i.DateTime >= start)).AsEnumerable());
+            events.AddRange(DataContext.Rehearsals
+                                .Where(a => a.Team.SchoolId == id && a.EventInstances.Any(i => i.DateTime >= start)).AsEnumerable());
+
+            return PartialView("~/Views/Shared/_EventsPartial.cshtml", events);
+        }
+
+        public JsonResult GetClasses(DateTime start, DateTime end, int? schoolId)
+        {
+            var instances = DataContext.Classes
+                                    .Where(c => c.SchoolId == schoolId)
+                                    .SelectMany(c => c.EventInstances)
+                                    .Where(i => i.DateTime >= start && i.DateTime <= end).ToList();
+
+            return Json(instances.AsEnumerable().Select(s =>
+                        new {
+                            id = s.EventId,
+                            title = s.Event.Name,
+                            start = s.StartTime.Value.ToString("o"),
+                            end = s.EndTime.Value.ToString("o"),
+                            lat = s.Event.Place.Latitude,
+                            lng = s.Event.Place.Longitude,
+                            url = Url.Action("View", "Event", new { id = s.EventId, eventType = EventType.Class })
+                        }), JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetAuditions(int? schoolId, DateTime start, DateTime end)
+        {
+            var auditions = DataContext.Auditions
+                                .Include("EventInstances.EventRegistrations")
+                                .Where(a => a.Team.SchoolId == schoolId)
+                                .Where(a => a.StartDate >= start && a.StartDate <= end);
+
+            var auditionlist = auditions.ToList().Take(100);
+
+            var userid = User.Identity.GetUserId();
+
+            return Json(auditionlist.AsEnumerable().SelectMany(a => a.EventInstances.Where(i => i.DateTime >= start && i.DateTime <= end).Select(s =>
+                        new {
+                            id = (s.Event as Audition).TeamId,
+                            title = s.Event.Name,
+                            start = s.StartTime.Value.ToString("o"),
+                            end = s.EndTime.Value.ToString("o"),
+                            lat = s.Event.Place.Latitude,
+                            lng = s.Event.Place.Longitude,
+                            color = "#428bca",
+                            url = Url.Action("View", "Team", new { id = (s.Event as Audition).TeamId }),
+                        })
+                        ), JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetPerformances(int? schoolId, DateTime start, DateTime end)
+        {
+            var auditions = DataContext.Performances
+                                .Include("EventInstances.EventRegistrations")
+                                .Where(a => a.Team.SchoolId == schoolId)
+                                .Where(a => a.StartDate >= start && a.StartDate <= end);
+
+            var auditionlist = auditions.ToList().Take(100);
+
+            var userid = User.Identity.GetUserId();
+
+            return Json(auditionlist.AsEnumerable().SelectMany(a => a.EventInstances.Where(i => i.DateTime >= start && i.DateTime <= end).Select(s =>
+                        new {
+                            id = (s.Event as Performance).TeamId,
+                            title = s.Event.Name,
+                            start = s.StartTime.Value.ToString("o"),
+                            end = s.EndTime.Value.ToString("o"),
+                            lat = s.Event.Place.Latitude,
+                            lng = s.Event.Place.Longitude,
+                            color = "#f0ad4e",
+                            url = Url.Action("View", "Team", new { id = (s.Event as Performance).TeamId }),
+                        })
+                        ), JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetRehearsals(int? schoolId, DateTime start, DateTime end)
+        {
+            var auditions = DataContext.Rehearsals
+                                .Include("EventInstances.EventRegistrations")
+                                .Where(a => a.Team.SchoolId == schoolId)
+                                .Where(a => a.StartDate >= start && a.StartDate <= end);
+
+            var auditionlist = auditions.ToList().Take(100);
+
+            var userid = User.Identity.GetUserId();
+
+            return Json(auditionlist.AsEnumerable().SelectMany(a => a.EventInstances.Where(i => i.DateTime >= start && i.DateTime <= end).Select(s =>
+                        new {
+                            id = (s.Event as Rehearsal).TeamId,
+                            title = s.Event.Name,
+                            start = s.StartTime.Value.ToString("o"),
+                            end = s.EndTime.Value.ToString("o"),
+                            lat = s.Event.Place.Latitude,
+                            lng = s.Event.Place.Longitude,
+                            color = "#d9534f",
+                            url = Url.Action("View", "Team", new { id = (s.Event as Rehearsal).TeamId }),
+                        })
+                        ), JsonRequestBehavior.AllowGet);
         }
 
         //// GET: School

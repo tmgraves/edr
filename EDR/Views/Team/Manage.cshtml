@@ -75,7 +75,9 @@
                             @Html.LabelFor(model => model.Team.FacebookLink, htmlAttributes: new { @class = "control-label col-md-2" })
                         </dt>
                         <dd>
-                            @Html.DisplayFor(model => model.Team.FacebookLink)
+                            <div class="oneline">
+                                @Html.DisplayFor(model => model.Team.FacebookLink)
+                            </div>
                         </dd>
                     </dl>
                     <dl class="dl-horizontal">
@@ -392,10 +394,7 @@
                                     Day
                                 </th>
                                 <th>
-                                    Start Time
-                                </th>
-                                <th>
-                                    End Time
+                                    Time
                                 </th>
                                 <th>
                                     Location
@@ -408,12 +407,10 @@
                         {
                             <tr>
                                 <td>
-                                    @r.Day
+                                    @r.StartDate.ToShortDateString()
                                 </td>
                                 <td>
-                                    @(((DateTime)r.StartTime).ToShortTimeString())
-                                </td>
-                                <td>
+                                    @(((DateTime)r.StartTime).ToShortTimeString()) to<br />
                                     @(((DateTime)r.EndTime).ToShortTimeString())
                                 </td>
                                 <td>

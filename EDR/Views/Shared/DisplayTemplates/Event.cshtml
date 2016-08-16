@@ -69,7 +69,7 @@
                         }
                         else
                         {
-                            @eventtype.ToString()
+                            @eventtype.ToString().ToUpper()
                         }
                     </div>
                 </div>
@@ -164,7 +164,18 @@
                 else
                 {
                     <a class="btnevent" href="#" data-toggle="modal" data-target='#@Model.Id' >
-                        @Model.Name
+                        @if (Model is EDR.Models.Audition)
+                        {
+                            <div class="oneline">
+                                @Model.Name: @((Model as EDR.Models.Audition).Team.Name)
+                            </div>
+                        }
+                        else if (Model is EDR.Models.Performance)
+                        {
+                            <div class="oneline">
+                                @Model.Name: @((Model as EDR.Models.Performance).Team.Name)
+                            </div>
+                        }
                     </a>
                 }
             </div>

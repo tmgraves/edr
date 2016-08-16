@@ -9,7 +9,6 @@ $(function () {
         var options = {
             map: ".map_canvas"
         };
-
         $(".locationsearch").geocomplete(options)
             .on("geocode:result", function (event, result) {
             });
@@ -33,7 +32,13 @@ $(function () {
     if ($('.map_canvas').length != 0)
     {
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(success);
+            //  navigator.geolocation.getCurrentPosition(success);
+            navigator.geolocation.getCurrentPosition(success, error);
+        }
+        else
+        {
+            var loc = new google.maps.LatLng(34.052235, -118.243683);
+            success(loc);
         }
     }
 
@@ -63,6 +68,41 @@ $(function () {
             });
         }
     }
+
+    function error(err) {
+        //  alert('ERROR(' + err.code + '): ' + err.message);
+
+        if (err.code == 1)
+        {
+            var loc = new google.maps.LatLng(34.052235, -118.243683);
+            SetMap(loc);
+        }
+    };
+
+    function SetMap(loc) {
+        if ($('.clatfield').val() != "" && $('.clngfield').val() != "") {
+            loc = new google.maps.LatLng($('.clatfield').val(), $('.clngfield').val());
+        }
+
+        if ($('.locationsearch').length != 0) {
+            var map = $('.locationsearch').geocomplete("map");
+            map.setCenter(loc);
+
+            google.maps.event.addListenerOnce(map, 'idle', function () {
+                var bounds = map.getBounds();
+                var ne = bounds.getNorthEast(); // LatLng of the north-east corner
+                var sw = bounds.getSouthWest(); // LatLng of the south-west corder
+
+                //alert(ne.lat());
+
+                $('.nelatfield').val(ne.lat());
+                $('.nelngfield').val(ne.lng());
+                $('.swlatfield').val(sw.lat());
+                $('.swlngfield').val(sw.lng());
+                //alert(map);
+            });
+        }
+    };
 });
 
 $('.stylesearch').autocomplete({

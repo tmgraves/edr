@@ -1,6 +1,81 @@
 ﻿@model EDR.Models.Team
 
-<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding-left: 0px !important; margin-bottom: 10px;">
+<div class="row" style="padding: 5px !important; height: 150px;">
+    <div class="box-default" style="padding: 5px; height: 100%;">
+        <div class="col-lg-4 col-xs-4 nospace helper text-center" style="height: 100%; background-color: #000;">
+            <span style="line-height: 100%; vertical-align: middle;"></span><img style="max-width: 100%; max-height: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.PhotoUrl))" />
+        </div>
+        <div class="col-lg-8 col-xs-8 text-left" style="height: 100%;">
+            <div class="row">
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" id="parentc">
+                    <input id="rv" type="hidden" value="@(Model.Reviews.Count() != 0 ? Model.Reviews.Average(r => r.Rating) : 0)" class="ratingval" />
+                    <div id="cont" class="rateYo"></div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 nospace text-right">
+                    <div>
+                        <span class="label label-success">
+                            @{
+                                switch (Model.SkillLevel)
+                                {
+                                    case 1:
+                                        <text>Beginner</text>;
+                                        break;
+                                    case 2:
+                                        <text>Beg/Int</text>;
+                                        break;
+                                    case 3:
+                                        <text>Intermediate</text>;
+                                        break;
+                                    case 4:
+                                        <text>Int/Adv</text>;
+                                        break;
+                                    case 5:
+                                        <text>Advanced</text>;
+                                        break;
+                                }
+                            }
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="item-title text-primary">
+                <a href="@Url.Action("View", "Team", new { id = Model.Id })" onmouseover="openEvent(@Model.Id, @Model.Latitude, @Model.Longitude); return false;">
+                    @Model.Name
+                </a>
+            </div>
+            <div class="small">
+                <a target="_blank" href="https://www.google.com/maps/place/@Model.Address,+@Model.City,+@Model.State+@Model.Zip">
+                    <i class="glyphicon glyphicon-map-marker"></i>
+                    @Model.City, @Model.State.Substring(0, 2).ToUpper()
+                </a>
+            </div>
+            <div class="small">
+                Teacher(s): @Html.DisplayFor(m => Model.Teachers, "TeacherLinks")
+            </div>
+            <div class="small">
+                @if (Model.Auditions != null && Model.Auditions.Where(a => a.StartDate >= DateTime.Today).Count() != 0)
+                {
+                    <text>Next Audition: </text><span class="text-danger">@Model.Auditions.Where(a => a.StartDate >= DateTime.Today).Min(a => a.StartDate).ToString("ddd, M/d/yyyy")</span>
+                }
+                else
+                {
+                    <text>Next Audition: None</text>
+                }
+            </div>
+            <div style="padding: 0px !important; margin-top: 2px; white-space: normal; vertical-align: bottom;">
+                @foreach (var s in Model.DanceStyles)
+                {
+                    <span class="label label-warning" style="margin: 1px;">@s.Name</span><text> </text>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+@*<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding-left: 0px !important; margin-bottom: 10px;">
     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 nospace" style="background-color: #eee;">
         <img style="max-height: 100%; max-width: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.PhotoUrl))" title="@Model.Name" />
     </div>
@@ -38,4 +113,4 @@
             </div>
         </div>
     </div>
-</div>
+</div>*@
