@@ -13,96 +13,25 @@
 <h2 class="page-header">
     Manage Promoter Profile
 </h2>
-<p>
-    <a href="#" class="btn btn-primary" data-uri="scan://scan" onclick="clickHandler(this.dataset.uri)">Open Scanner</a>
-</p>
 
 <div class="container-fluid">
-    <div class="col-lg-6 col-md-6">
-        <div class="panel panel-default">
-            <div class="panel-body bg-info">
-                <div id="viewdiv">
-                    <div class="text-right" style="padding-bottom: 10px;">
-                        <input id="btnEdit" type="button" class="btn btn-primary" value="Edit" />
-                    </div>
-                    <div class="col-lg-12">
-                        <div class="col-lg-6">
-                            <div id="img_container">
-                                <img id="profilepic" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.Promoter.ApplicationUser.PhotoUrl))" />
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="row">
-                                <dl>
-                                    <dt>
-                                        @Html.Label("Name", htmlAttributes: new { @class = "control-label" })
-                                    </dt>
-                                    <dd>
-                                        @Html.DisplayFor(model => model.Promoter.ApplicationUser.FullName)
-                                    </dd>
-                                </dl>
-                            </div>
-                            <div class="row">
-                                <dl>
-                                    <dt>
-                                        @Html.LabelFor(model => model.Promoter.Phone, htmlAttributes: new { @class = "control-label" })
-                                    </dt>
-                                    <dd>
-                                        @Html.DisplayFor(model => model.Promoter.Phone)
-                                    </dd>
-                                </dl>
-                            </div>
-                            <div class="row">
-                                <dl>
-                                    <dt>
-                                        @Html.LabelFor(model => model.Promoter.ContactEmail, htmlAttributes: new { @class = "control-label" })
-                                    </dt>
-                                    <dd>
-                                        @Html.DisplayFor(model => model.Promoter.ContactEmail)
-                                    </dd>
-                                </dl>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-12">
-                        <hr />
-                        <dl class="dl-horizontal">
-                            <dt>
-                                @Html.Label("Facebook Link", htmlAttributes: new { @class = "control-label col-md-2" })
-                            </dt>
-                            <dd>
-                                <a href="@Model.Promoter.Facebook" title="Facebook Page" style="width: 150px;" target="_blank">
-                                    <div class="item-short">@Model.Promoter.Facebook</div>
-                                </a>
-                            </dd>
-                        </dl>
-                        <dl class="dl-horizontal">
-                            <dt>
-                                @Html.LabelFor(model => model.Promoter.Website, htmlAttributes: new { @class = "control-label col-md-2" })
-                            </dt>
-                            <dd>
-                                <a href="@Model.Promoter.Website" title="Website" style="width: 150px;" target="_blank">
-                                    <div class="item-short">@Model.Promoter.Website</div>
-                                </a>
-                            </dd>
-                        </dl>
-                    </div>
-                </div>
-                <div id="editdiv" style="display: none;">
-                    @Html.ValidationSummary("", new { @class = "text-danger" })
-                    @using (Html.BeginForm("Manage", "Promoter", FormMethod.Post, new { @id = "saveform", @class = "main" }))
-                    {
-                        @Html.AntiForgeryToken()
-                        @Html.HiddenFor(model => model.Promoter.Id)
-                        @Html.HiddenFor(model => model.Promoter.ApplicationUser.Id)
+    <div class="row" style="padding-bottom: 10px;">
+        <div class="col-xs-12">
+            <a href="#" style="width: 100% !important;" class="btn btn-success" data-uri="scan://scan" onclick="clickHandler(this.dataset.uri)"><i class="glyphicon glyphicon-screenshot"></i> Open Code Scanner</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6 col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-body bg-info">
+                    <div id="viewdiv">
                         <div class="text-right" style="padding-bottom: 10px;">
-                            <input type="submit" id="btnsave" value="Save" class="btn btn-success" />
-                            <input id="btncanceledit" type="button" class="btn btn-primary" value="Cancel" />
+                            <input id="btnEdit" type="button" class="btn btn-primary" value="Edit" />
                         </div>
                         <div class="col-lg-12">
                             <div class="col-lg-6">
                                 <div id="img_container">
-                                    <img id="profilepic" src="@Url.Content(Model.Promoter.ApplicationUser.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
+                                    <img id="profilepic" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.Promoter.ApplicationUser.PhotoUrl))" />
                                 </div>
                             </div>
                             <div class="col-lg-6">
@@ -122,8 +51,7 @@
                                             @Html.LabelFor(model => model.Promoter.Phone, htmlAttributes: new { @class = "control-label" })
                                         </dt>
                                         <dd>
-                                            @Html.EditorFor(model => model.Promoter.Phone, new { htmlAttributes = new { @class = "form-control" } })
-                                            @Html.ValidationMessageFor(model => model.Promoter.Phone, "", new { @class = "text-danger" })
+                                            @Html.DisplayFor(model => model.Promoter.Phone)
                                         </dd>
                                     </dl>
                                 </div>
@@ -133,8 +61,7 @@
                                             @Html.LabelFor(model => model.Promoter.ContactEmail, htmlAttributes: new { @class = "control-label" })
                                         </dt>
                                         <dd>
-                                            @Html.EditorFor(model => model.Promoter.ContactEmail, new { htmlAttributes = new { @class = "form-control" } })
-                                            @Html.ValidationMessageFor(model => model.Promoter.ContactEmail, "", new { @class = "text-danger" })
+                                            @Html.DisplayFor(model => model.Promoter.ContactEmail)
                                         </dd>
                                     </dl>
                                 </div>
@@ -147,8 +74,9 @@
                                     @Html.Label("Facebook Link", htmlAttributes: new { @class = "control-label col-md-2" })
                                 </dt>
                                 <dd>
-                                    @Html.EditorFor(model => model.Promoter.Facebook, new { htmlAttributes = new { @class = "form-control" } })
-                                    @Html.ValidationMessageFor(model => model.Promoter.Facebook, "", new { @class = "text-danger" })
+                                    <a href="@Model.Promoter.Facebook" title="Facebook Page" style="width: 150px;" target="_blank">
+                                        <div class="item-short">@Model.Promoter.Facebook</div>
+                                    </a>
                                 </dd>
                             </dl>
                             <dl class="dl-horizontal">
@@ -156,76 +84,152 @@
                                     @Html.LabelFor(model => model.Promoter.Website, htmlAttributes: new { @class = "control-label col-md-2" })
                                 </dt>
                                 <dd>
-                                    @Html.EditorFor(model => model.Promoter.Website, new { htmlAttributes = new { @class = "form-control", @placeholder = "e.g. https://www.google.com" } })
-                                    @Html.ValidationMessageFor(model => model.Promoter.Website, "", new { @class = "text-danger" })
+                                    <a href="@Model.Promoter.Website" title="Website" style="width: 150px;" target="_blank">
+                                        <div class="item-short">@Model.Promoter.Website</div>
+                                    </a>
                                 </dd>
                             </dl>
                         </div>
-                    }
+                    </div>
+                    <div id="editdiv" style="display: none;">
+                        @Html.ValidationSummary("", new { @class = "text-danger" })
+                        @using (Html.BeginForm("Manage", "Promoter", FormMethod.Post, new { @id = "saveform", @class = "main" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.HiddenFor(model => model.Promoter.Id)
+                            @Html.HiddenFor(model => model.Promoter.ApplicationUser.Id)
+                            <div class="text-right" style="padding-bottom: 10px;">
+                                <input type="submit" id="btnsave" value="Save" class="btn btn-success" />
+                                <input id="btncanceledit" type="button" class="btn btn-primary" value="Cancel" />
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-6">
+                                    <div id="img_container">
+                                        <img id="profilepic" src="@Url.Content(Model.Promoter.ApplicationUser.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <dl>
+                                            <dt>
+                                                @Html.Label("Name", htmlAttributes: new { @class = "control-label" })
+                                            </dt>
+                                            <dd>
+                                                @Html.DisplayFor(model => model.Promoter.ApplicationUser.FullName)
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                    <div class="row">
+                                        <dl>
+                                            <dt>
+                                                @Html.LabelFor(model => model.Promoter.Phone, htmlAttributes: new { @class = "control-label" })
+                                            </dt>
+                                            <dd>
+                                                @Html.EditorFor(model => model.Promoter.Phone, new { htmlAttributes = new { @class = "form-control" } })
+                                                @Html.ValidationMessageFor(model => model.Promoter.Phone, "", new { @class = "text-danger" })
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                    <div class="row">
+                                        <dl>
+                                            <dt>
+                                                @Html.LabelFor(model => model.Promoter.ContactEmail, htmlAttributes: new { @class = "control-label" })
+                                            </dt>
+                                            <dd>
+                                                @Html.EditorFor(model => model.Promoter.ContactEmail, new { htmlAttributes = new { @class = "form-control" } })
+                                                @Html.ValidationMessageFor(model => model.Promoter.ContactEmail, "", new { @class = "text-danger" })
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <hr />
+                                <dl class="dl-horizontal">
+                                    <dt>
+                                        @Html.Label("Facebook Link", htmlAttributes: new { @class = "control-label col-md-2" })
+                                    </dt>
+                                    <dd>
+                                        @Html.EditorFor(model => model.Promoter.Facebook, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Promoter.Facebook, "", new { @class = "text-danger" })
+                                    </dd>
+                                </dl>
+                                <dl class="dl-horizontal">
+                                    <dt>
+                                        @Html.LabelFor(model => model.Promoter.Website, htmlAttributes: new { @class = "control-label col-md-2" })
+                                    </dt>
+                                    <dd>
+                                        @Html.EditorFor(model => model.Promoter.Website, new { htmlAttributes = new { @class = "form-control", @placeholder = "e.g. https://www.google.com" } })
+                                        @Html.ValidationMessageFor(model => model.Promoter.Website, "", new { @class = "text-danger" })
+                                    </dd>
+                                </dl>
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-lg-6 col-md-6">
-        <div class="panel panel-default">
-            <div class="panel-body bg-warning">
-                <h3>Import Facebook Events</h3>
-                <div id="importfbclasses">
+        <div class="col-lg-6 col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-body bg-warning">
+                    <h3>Import Facebook Events</h3>
+                    <div id="importfbclasses">
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="panel panel-default">
-            <div class="panel-body buttoncontainer">
-                <h3>Socials</h3>
-                @Html.ActionLink("Create Social", "Create", "Event", new { eventType = EDR.Enums.EventType.Social, role = EDR.Enums.RoleName.Promoter }, new { @class = "btn btn-warning actionbutton" })
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Social</th>
-                        </tr>
-                    </thead>
-                    @foreach (var item in Model.Promoter.Socials)
-                    {
-                        <tr>
-                            <td>
-                                @Html.ActionLink(item.Name, "View", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Social }, null)
-                            </td>
-                        </tr>
-                    }
-                </table>
+            <div class="panel panel-default">
+                <div class="panel-body buttoncontainer">
+                    <h3>Socials</h3>
+                    @Html.ActionLink("Create Social", "Create", "Event", new { eventType = EDR.Enums.EventType.Social, role = EDR.Enums.RoleName.Promoter }, new { @class = "btn btn-warning actionbutton" })
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Social</th>
+                            </tr>
+                        </thead>
+                        @foreach (var item in Model.Promoter.Socials)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.ActionLink(item.Name, "View", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Social }, null)
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </div>
             </div>
-        </div>
-        <div class="panel panel-default">
-            <div class="panel-body buttoncontainer">
-                <h3>Promoter Groups (Financial Info)</h3>
-                <button id="btnAddGroup" type="button" class="btn btn-warning actionbutton" data-toggle="modal" data-target="#modalPromoterGroup">
-                    Add Promoter Group
-                </button>
-                <table class="table table-striped" style="max-width: 100%;">
-                    <thead>
-                        <tr>
-                            <th>Group</th>
-                            <th>Promoters</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    @foreach (var item in Model.Promoter.PromoterGroups)
-                    {
-                        <tr>
-                            <td>
-                                @item.Name
-                            </td>
-                            <td>
-                                @item.Promoters.Count()
-                            </td>
-                            <td>
-                                @Html.ActionLink("View Group", "ManageGroup", "Promoter", new { id = item.Id, promoterid = Model.Promoter.Id }, new { @class = "btn btn-primary" })
-                                @Html.ActionLink("Delete", "DeleteGroup", "Promoter", new { id = item.Id, promoterId = Model.Promoter.Id }, new { @class = "btn btn-danger" })
-                            </td>
-                        </tr>
-                    }
-                </table>
+            <div class="panel panel-default">
+                <div class="panel-body buttoncontainer">
+                    <h3>Promoter Groups (Financial Info)</h3>
+                    <button id="btnAddGroup" type="button" class="btn btn-warning actionbutton" data-toggle="modal" data-target="#modalPromoterGroup">
+                        Add Promoter Group
+                    </button>
+                    <table class="table table-striped" style="max-width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>Group</th>
+                                <th>Promoters</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        @foreach (var item in Model.Promoter.PromoterGroups)
+                        {
+                            <tr>
+                                <td>
+                                    @item.Name
+                                </td>
+                                <td>
+                                    @item.Promoters.Count()
+                                </td>
+                                <td>
+                                    @Html.ActionLink("View Group", "ManageGroup", "Promoter", new { id = item.Id, promoterid = Model.Promoter.Id }, new { @class = "btn btn-primary" })
+                                    @Html.ActionLink("Delete", "DeleteGroup", "Promoter", new { id = item.Id, promoterId = Model.Promoter.Id }, new { @class = "btn btn-danger" })
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </div>
             </div>
         </div>
     </div>

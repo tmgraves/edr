@@ -287,7 +287,7 @@
                                         <tr>
                                             <th>Date/Time</th>
                                             <th>Class/Social</th>
-                                            <th></th>
+                                            <th>Code</th>
                                         </tr>
                                     </thead>
                                     @foreach (var item in Model.Dancer.EventRegistrations.Where(r => r.Instance.DateTime >= DateTime.Today).OrderBy(r => r.Instance.DateTime))
@@ -299,8 +299,8 @@
                                         </tr>*@
                                         <tr>
                                             <td style="max-width: 75px;">
-                                                @item.Instance.DateTime.ToString("ddd, M/d")
-                                                @@ @Convert.ToDateTime(item.Instance.StartTime).ToShortTimeString()
+                                                @item.Instance.DateTime.ToString("ddd, M/d")<br />
+                                                @@@Convert.ToDateTime(item.Instance.StartTime).ToShortTimeString()
                                             </td>
                                             <td style="max-width: 150px;">
                                                 <a href=@Url.Action("View", "Event", new { id = item.Instance.EventId, eventType = item.Instance.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social }) title="@item.Instance.Event.Name">
@@ -317,8 +317,9 @@
                                                 }
                                                 else
                                                 {
-                                                    <button id="btnCheckIn" type="button" class="btn btn-default nospace" data-toggle="modal" data-target="#modalRegistrationCode" value="@("https://" + Request.Url.Host + "/Event/CheckinByCode/" + item.Id)">
-                                                        <img style="max-width: 100%;" src="~/Content/images/qrsample.png" />
+                                                    <button id="btnCheckIn" type="button" class="btn btn-success" data-toggle="modal" data-target="#modalRegistrationCode" value="@("https://" + Request.Url.Host + "/Event/CheckinByCode/" + item.Id)">
+                                                        <i class="glyphicon glyphicon-qrcode"></i>
+                                                        @*<img style="max-width: 100%;" src="~/Content/images/qrsample.png" />*@
                                                     </button>
                                                 }
                                             </td>

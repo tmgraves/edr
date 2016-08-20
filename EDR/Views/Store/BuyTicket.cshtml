@@ -69,12 +69,14 @@
                     <h4 class="text-center">Order Details</h4>
                     <div class="form-group form-group-sm">
                         <div class="row">
-                            <div class="col-xs-6 col-sm-6 col-md-8 col-lg-8">
-                                @Html.DropDownListFor(m => m.TicketId, Model.Tickets.OrderBy(t => t.Quantity).Select(t => new SelectListItem() { Value = t.Id.ToString(), Text = String.Format("{0:N0}", t.Quantity) + " @ " + String.Format("{0:C0}", t.Price) }).ToList(), "Select a Ticket", new { @class = "form-control" })
-                            </div>
-                            <div class="col-xs-3 col-sm-2 col-md-4 col-lg-4 input-group">
-                                <div class="input-group-addon">Qty</div>
-                                @Html.TextBoxFor(t => t.Quantity, htmlAttributes: new { @class = "form-control text-right", @type = "number", @min = "1", @autocomplete = "off" })
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="col-xs-7 col-sm-7 col-md-8 col-lg-8 nospace">
+                                    @Html.DropDownListFor(m => m.TicketId, Model.Tickets.OrderBy(t => t.Quantity).Select(t => new SelectListItem() { Value = t.Id.ToString(), Text = String.Format("{0:N0}", t.Quantity) + " @ " + String.Format("{0:C0}", t.Price) }).ToList(), "Select a Ticket", new { @class = "form-control" })
+                                </div>
+                                <div class="col-xs-5 col-sm-5 col-md-4 col-lg-4 input-group nospace">
+                                    <div class="input-group-addon">Qty</div>
+                                    @Html.TextBoxFor(t => t.Quantity, htmlAttributes: new { @class = "form-control text-right", @type = "number", @min = "1", @autocomplete = "off" })
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -84,9 +86,10 @@
                     </div>
                     <div class="form-group form-group-sm">
                         <div class="row">
-                            <div class="col-xs-6 col-sm-6 col-md-8 col-lg-8 text-left">
-                                @*@Html.TextBoxFor(m => m.CCMonth, htmlAttributes: new { @class = "form-control", @size = "2", @placeholder = "Exp Date(YY)" })*@
-                                @Html.DropDownListFor(m => m.CCMonth, new SelectList(new List<SelectListItem>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 nospace">
+                                    @*@Html.TextBoxFor(m => m.CCMonth, htmlAttributes: new { @class = "form-control", @size = "2", @placeholder = "Exp Date(YY)" })*@
+                                    @Html.DropDownListFor(m => m.CCMonth, new SelectList(new List<SelectListItem>
                                                 {
                                                     new SelectListItem { Text = "MM", Value = "" },
                                                     new SelectListItem { Text = "01", Value = "01" },
@@ -101,11 +104,15 @@
                                                     new SelectListItem { Text = "10", Value = "10" },
                                                     new SelectListItem { Text = "11", Value = "11" },
                                                     new SelectListItem { Text = "12", Value = "12" }
-                                                    }, "Value", "Text", ""), new { @class = "form-control time", style = "width: 90px; display: inline;" })
-                                @Html.DropDownListFor(m => m.CCYear, new SelectList(Model.Years, "YY"), "YY", htmlAttributes: new { @class = "form-control", style = "width: 100px; display: inline;" })
-                            </div>
-                            <div class="col-xs-3 col-sm-2 col-md-4 col-lg-4 input-group">
-                                @Html.TextBoxFor(m => m.SecurityCode, htmlAttributes: new { @class = "form-control", @size = "4", @autocomplete = "off", @placeholder = "CVV" })
+                                                    }, "Value", "Text", ""), new { @class = "form-control time", style = "display: inline;" })<SelectListItem>
+                                        <SelectListItem>
+                                </div>
+                                <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 nospace">
+                                    @Html.DropDownListFor(m => m.CCYear, new SelectList(Model.Years, "YY"), "YY", htmlAttributes: new { @class = "form-control", style = "display: inline;" })
+                                </div>
+                                <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 nospace">
+                                    @Html.TextBoxFor(m => m.SecurityCode, htmlAttributes: new { @class = "form-control", @type = "number", @size = "4", @autocomplete = "off", @placeholder = "CVV" })
+                                </div>
                             </div>
                         </div>
                     </div>

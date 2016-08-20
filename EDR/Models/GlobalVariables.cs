@@ -18,7 +18,7 @@ public static class GlobalVariables
     {
         get
         {
-            return 10;
+            return 100;
         }
     }
 
