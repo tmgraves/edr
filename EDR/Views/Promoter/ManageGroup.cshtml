@@ -1,0 +1,465 @@
+﻿@model EDR.Models.ViewModels.PromoterGroupManageViewModel
+
+@{
+    ViewBag.Title = "ManageGroup";
+}
+
+<ol class="breadcrumb">
+    <li>@Html.ActionLink("All Promoters", "List", "Promoter")</li>
+    <li>@Html.ActionLink("Promoter Profile", "Home", "Promoter", new { username = Model.Promoter.ApplicationUser.UserName }, null)</li>
+    <li>@Html.ActionLink("Manage Promoter", "Manage", "Promoter", new { username = Model.Promoter.ApplicationUser.UserName }, null)</li>
+    <li class="active">Manage Promoter Group</li>
+</ol>
+
+<div class="container-fluid">
+    <div class="col-lg-12 col-md-12">
+        <h2><span class="text-info">@Model.PromoterGroup.Name</span></h2>
+        @if (Model.PromoterGroup.PayeeName == null || Model.PromoterGroup.PayeeAddress == null || Model.PromoterGroup.PayeeCity == null || Model.PromoterGroup.PayeeState == null || Model.PromoterGroup.PayeeZip == null || Model.PromoterGroup.BankName == null || Model.PromoterGroup.BankAccount == null || Model.PromoterGroup.RoutingNumber == null)
+        {
+            <h4 class="bg-danger">**Please fill in your Financial information so you can get paid for your Ticket Sales</h4>
+        }
+    </div>
+    <div class="col-lg-12 col-md-12">
+        <div class="panel with-nav-tabs panel-default">
+            <div class="panel-heading nospace" style="border-bottom: none !important;">
+                <ul class="nav nav-pills nav-justified nospace">
+                    <li class="nospace active"><a href="#tabmain" data-toggle="tab"><i class="glyphicon glyphicon-home"></i> Details</a></li>
+                    <li class="nospace"><a href="#tabsocials" data-toggle="tab"><i class="glyphicon glyphicon-calendar"></i> Events</a></li>
+                    <li class="nospace"><a href="#tabfinancials" data-toggle="tab"><i class="glyphicon glyphicon-usd"></i> Financials</a></li>
+                </ul>
+            </div>
+            <div class="panel-body">
+                <div class="tab-content">
+                    <div class="tab-pane fade in active" id="tabmain">
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6">
+                                <div class="panel panel-success">
+                                    <div class="panel-heading">
+                                        <h2 class="panel-title">Group Details</h2>
+                                    </div>
+                                    <div class="panel-body">
+                                        @Html.ValidationSummary("", new { @class = "text-danger" })
+                                        @using (Html.BeginForm("ManageGroup", "Promoter", FormMethod.Post, new { @id = "addgroupform", @class = "main" }))
+                                    {
+                                            @Html.AntiForgeryToken()
+                                            @Html.HiddenFor(x => x.PromoterGroup.Id)
+                                            @Html.HiddenFor(x => x.Promoter.Id)
+                                            <dl class="dl-horizontal">
+                                                <dt>
+                                                    @Html.LabelFor(model => model.PromoterGroup.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+                                                </dt>
+                                                <dd>
+                                                    @Html.TextBoxFor(m => m.PromoterGroup.Name, new { @class = "form-control" })
+                                                    @Html.ValidationMessageFor(model => model.PromoterGroup.Name, "", new { @class = "text-danger" })
+                                                </dd>
+                                            </dl>
+                                            <dl class="dl-horizontal">
+                                                <dt>
+                                                    @Html.LabelFor(model => model.PromoterGroup.PayeeName, htmlAttributes: new { @class = "control-label col-md-2" })
+                                                </dt>
+                                                <dd>
+                                                    @Html.TextBoxFor(m => m.PromoterGroup.PayeeName, new { @class = "form-control" })
+                                                    @Html.ValidationMessageFor(model => model.PromoterGroup.PayeeName, "", new { @class = "text-danger" })
+                                                </dd>
+                                            </dl>
+                                                <dl class="dl-horizontal">
+                                                    <dt>
+                                                        @Html.LabelFor(model => model.PromoterGroup.PayeeAddress, htmlAttributes: new { @class = "control-label col-md-2" })
+                                                    </dt>
+                                                    <dd>
+                                                        @Html.TextBoxFor(m => m.PromoterGroup.PayeeAddress, new { @class = "form-control" })
+                                                        @Html.ValidationMessageFor(model => model.PromoterGroup.PayeeAddress, "", new { @class = "text-danger" })
+                                                    </dd>
+                                                </dl>
+                                                <dl class="dl-horizontal">
+                                                    <dt>
+                                                        @Html.LabelFor(model => model.PromoterGroup.PayeeCity, htmlAttributes: new { @class = "control-label col-md-2" })
+                                                    </dt>
+                                                    <dd>
+                                                        @Html.TextBoxFor(m => m.PromoterGroup.PayeeCity, new { @class = "form-control" })
+                                                        @Html.ValidationMessageFor(model => model.PromoterGroup.PayeeCity, "", new { @class = "text-danger" })
+                                                    </dd>
+                                                </dl>
+                                                <dl class="dl-horizontal">
+                                                    <dt>
+                                                        @Html.LabelFor(model => model.PromoterGroup.PayeeState, htmlAttributes: new { @class = "control-label col-md-2" })
+                                                    </dt>
+                                                    <dd>
+                                                        @Html.TextBoxFor(m => m.PromoterGroup.PayeeState, new { @class = "form-control" })
+                                                        @Html.ValidationMessageFor(model => model.PromoterGroup.PayeeState, "", new { @class = "text-danger" })
+                                                    </dd>
+                                                </dl>
+                                                <dl class="dl-horizontal">
+                                                    <dt>
+                                                        @Html.LabelFor(model => model.PromoterGroup.PayeeZip, htmlAttributes: new { @class = "control-label col-md-2" })
+                                                    </dt>
+                                                    <dd>
+                                                        @Html.TextBoxFor(m => m.PromoterGroup.PayeeZip, new { @class = "form-control" })
+                                                        @Html.ValidationMessageFor(model => model.PromoterGroup.PayeeZip, "", new { @class = "text-danger" })
+                                                    </dd>
+                                                </dl>
+                                                @*<dl class="dl-horizontal">
+                                    <dt>
+                                        @Html.LabelFor(model => model.PromoterGroup.PaymentInformation, htmlAttributes: new { @class = "control-label col-md-2" })
+                                    </dt>
+                                    <dd>
+                                        @Html.TextBoxFor(m => m.PromoterGroup.PaymentInformation, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.PromoterGroup.PaymentInformation, "", new { @class = "text-danger" })
+                                    </dd>
+                                </dl>*@
+                                                <dl class="dl-horizontal">
+                                                    <dt>
+                                                        @Html.LabelFor(model => model.PromoterGroup.BankName, htmlAttributes: new { @class = "control-label col-md-2" })
+                                                    </dt>
+                                                    <dd>
+                                                        @Html.TextBoxFor(m => m.PromoterGroup.BankName, new { @class = "form-control" })
+                                                        @Html.ValidationMessageFor(model => model.PromoterGroup.BankName, "", new { @class = "text-danger" })
+                                                    </dd>
+                                                </dl>
+                                                <dl class="dl-horizontal">
+                                                    <dt>
+                                                        @Html.LabelFor(model => model.PromoterGroup.BankAccount, htmlAttributes: new { @class = "control-label col-md-2" })
+                                                    </dt>
+                                                    <dd>
+                                                        @Html.TextBoxFor(m => m.PromoterGroup.BankAccount, new { @class = "form-control" })
+                                                        @Html.ValidationMessageFor(model => model.PromoterGroup.BankAccount, "", new { @class = "text-danger" })
+                                                    </dd>
+                                                </dl>
+                                                <dl class="dl-horizontal">
+                                                    <dt>
+                                                        @Html.LabelFor(model => model.PromoterGroup.RoutingNumber, htmlAttributes: new { @class = "control-label col-md-2" })
+                                                    </dt>
+                                                    <dd>
+                                                        @Html.TextBoxFor(m => m.PromoterGroup.RoutingNumber, new { @class = "form-control" })
+                                                        @Html.ValidationMessageFor(model => model.PromoterGroup.RoutingNumber, "", new { @class = "text-danger" })
+                                                    </dd>
+                                                </dl>
+                                                <div class="text-right" style="padding-bottom: 10px;">
+                                                    <input type="submit" id="btnsaveaudition" value="Save" class="btn btn-primary" />
+                                                </div>
+                                    }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 col-md-6">
+                                <div class="panel panel-success">
+                                    <div class="panel-heading">
+                                        <h2 class="panel-title">Promoters</h2>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div>
+                                            @using (Html.BeginForm("AddGroupPromoter", "Promoter", FormMethod.Post))
+                                        {
+                                                <input type="hidden" id="id" name="id" value="@Model.PromoterGroup.Id" />
+                                                <input type="hidden" id="rpromoterid" name="rpromoterid" value="@Model.Promoter.Id" />
+                                                    <input type="hidden" class="promotersearchid" id="promoterid" name="promoterid" />
+                                                    <div class="col-lg-12 col-md-12 input-group">
+                                                        <input type="text" class="promotersearch form-control" placeholder="Type in a Promoter Name" style="display: inline-block;" />
+                                                        <button type="submit" class="btn btn-primary" style="display: inline-block;">Add Promoter</button>
+                                                    </div>
+                                        }
+                                        </div>
+                                        <table class="table" style="width: 100%;">
+                                            <tr>
+                                                <th>
+                                                    Name
+                                                </th>
+                                                <th>
+                                                </th>
+                                            </tr>
+                                            @foreach (var t in Model.PromoterGroup.Promoters)
+                                        {
+                                                <tr>
+                                                    <td>
+                                                        @Html.DisplayFor(model => t.ApplicationUser.FullName)
+                                                    </td>
+                                                    <td class="text-right">
+                                                        @if (t.ApplicationUser.UserName != User.Identity.Name)
+                                                    {
+                                                            <a class="btn btn-link text-danger" title="Remove" href="@Url.Action("RemoveGroupPromoter", new { id = Model.PromoterGroup.Id, promoterid = t.Id, rpromoterid = Model.Promoter.Id })" onclick="return confirm('Are you sure you want to remove this Promoter?')">
+                                                                <i class="text-danger glyphicon glyphicon-remove-circle"></i>
+                                                            </a>
+                                                    }
+                                                    </td>
+                                                </tr>
+                                        }
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade in" id="tabsocials">
+                        <div class="col-lg-12 col-md-12" style="padding-bottom: 10px;">
+                            @Html.ActionLink("Add a Social", "Create", "Event", new { eventType = EDR.Enums.EventType.Social, promotergroupId = Model.PromoterGroup.Id, role = EDR.Enums.RoleName.Promoter }, new { @class = "btn btn-warning" })
+                        </div>
+                        <div class="col-lg-6 col-md-6">
+                            <div class="panel panel-success">
+                                <div class="panel-heading">
+                                    <h2 class="panel-title">Socials</h2>
+                                </div>
+                                <div class="panel-body buttoncontainer">
+                                    <div class="panel with-nav-tabs">
+                                        <div class="panel-heading">
+                                            <ul class="nav nav-pills nav-justified">
+                                                <li class="nospace active"><a href="#tabpresent" data-toggle="tab">Present</a></li>
+                                                <li class="nospace"><a href="#tabpast" data-toggle="tab">Past</a></li>
+                                            </ul>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class="tab-content">
+                                                <div class="tab-pane fade in active" id="tabpresent">
+                                                    <div class="row">
+                                                        <table class="table table-bordered table-striped">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Socials</th>
+                                                                    <th>Registrations</th>
+                                                                    <th></th>
+                                                                </tr>
+                                                            </thead>
+                                                            @foreach (var item in Model.PromoterGroup.Socials.Where(c => c.EventInstances.Where(i => i.DateTime >= DateTime.Today).Count() > 0).Select(i => new { i.Name, i.Id, NextDate = i.EventInstances.Where(ei => ei.DateTime >= DateTime.Today).OrderBy(ei => ei.DateTime).FirstOrDefault(), Registrations = i.EventInstances.Sum(ei => ei.EventRegistrations.Count()) }).OrderBy(x => x.NextDate.DateTime))
+                                                            {
+                                                                <tr>
+                                                                    <td>
+                                                                        <a href="@Url.Action("Manage", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Social })">
+                                                                            <div style="max-width: 200px;" class="item-short">
+                                                                                <b>@item.NextDate.DateTime.ToString("ddd, M/d")</b> -
+                                                                                @item.Name
+                                                                            </div>
+                                                                        </a>
+                                                                    </td>
+                                                                    <td class="text-right">
+                                                                        @item.Registrations
+                                                                    </td>
+                                                                    <td>
+                                                                        @Html.ActionLink("Next Date", "ManageInstance", "Event", new { id = item.NextDate.Id }, new { @class = "btn btn-primary" })
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                                <div class="tab-pane fade in" id="tabpast">
+                                                    <div class="row">
+                                                        <table class="table table-bordered table-striped">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Social</th>
+                                                                    <th>Registrations</th>
+                                                                    <th></th>
+                                                                </tr>
+                                                            </thead>
+                                                            @foreach (var item in Model.PromoterGroup.Socials.Where(c => c.EventInstances.Where(i => i.DateTime >= DateTime.Today).Count() == 0).Select(i => new { i.Name, i.Id, NextDate = i.EventInstances.OrderBy(ei => ei.DateTime).FirstOrDefault(), Registrations = i.EventInstances.Sum(ei => ei.EventRegistrations.Count()) }).OrderBy(x => x.NextDate.DateTime))
+                                                            {
+                                                                <tr>
+                                                                    <td>
+                                                                        <a href="@Url.Action("Manage", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Social })">
+                                                                            <div style="max-width: 200px;" class="item-short">
+                                                                                <b>@item.NextDate.DateTime.ToString("ddd, M/d")</b> -
+                                                                                @item.Name
+                                                                            </div>
+                                                                        </a>
+                                                                    </td>
+                                                                    <td class="text-right">
+                                                                        @item.Registrations
+                                                                    </td>
+                                                                    <td>
+                                                                        @Html.ActionLink("Next Date", "ManageInstance", "Event", new { id = item.NextDate.Id }, new { @class = "btn btn-primary" })
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6">
+                            <div class="panel panel-info">
+                                <div class="panel-heading">
+                                    <h2 class="panel-title">Import Facebook Events</h2>
+                                </div>
+                                <div class="panel-body">
+                                    <div id="importfbevents" style="max-height: 400px; overflow: auto; overflow-x: hidden;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade in" id="tabfinancials">
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12">
+                                <div class="panel panel-success">
+                                    <div class="panel-heading">
+                                        <h2 class="panel-title">Tickets</h2>
+                                    </div>
+                                    <div class="panel-body ">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Quantity</th>
+                                                    <th>Price</th>
+                                                    <th>Purchase Limit</th>
+                                                    <th>Valid From</th>
+                                                    <th>Valid To</th>
+                                                    <th>Related Event</th>
+                                                    <th>Sold</th>
+                                                </tr>
+                                            </thead>
+                                            @foreach (var item in Model.PromoterGroup.Socials.SelectMany(s => s.Tickets).OrderBy(t => t.Event.Name).ThenBy(t => t.Quantity))
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        @Html.DisplayFor(member => item.Quantity)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(member => item.Price)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(member => item.Limit)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(member => item.Start)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(member => item.End)
+                                                    </td>
+                                                    <td>
+                                                        @Html.ActionLink(item.Event.Name, "Manage", "Event", new { id = item.EventId, eventType = EDR.Enums.EventType.Social }, null)
+                                                    </td>
+                                                    <td>
+                                                        @item.UserTickets.Sum(u => u.Quantity)
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="panel panel-info">
+                                    <div class="panel-heading">
+                                        <h2 class="panel-title">Transactions</h2>
+                                    </div>
+                                    <div class="panel-body">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>
+                                                        Date
+                                                    </th>
+                                                    <th>
+                                                        Transaction Type
+                                                    </th>
+                                                    <th>
+                                                        Amount
+                                                    </th>
+                                                    <th>
+                                                        Balance
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            @{
+                                            decimal total = Model.PromoterGroup.FinancialTransactions.Where(t => t.Committed != null).Sum(t => t.Amount);
+                                            }
+                                            @foreach (var t in Model.PromoterGroup.FinancialTransactions.Where(t => t.Committed != null).OrderByDescending(t => t.TranDate).ThenByDescending(t => t.Id))
+                                        {
+                                                <tr>
+                                                    <td>
+                                                        @t.TranDate.ToLongDateString() @t.TranDate.ToLongTimeString()
+                                                    </td>
+                                                    <td>
+                                                        @t.TranType
+                                                    </td>
+                                                    <td>
+                                                        @t.Amount.ToString("C")
+                                                    </td>
+                                                    <td>
+                                                        @total.ToString("C")
+                                                    </td>
+                                                </tr>
+                                            total -= t.Amount;
+                                        }
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/foolproof")
+    @Scripts.Render("~/bundles/jqueryUI")
+    @Scripts.Render("~/bundles/GeoComplete")
+    <script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
+    <script src="~/Scripts/readmore.js"></script>
+    <script src="~/Scripts/browser-deeplink.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places&key=@System.Configuration.ConfigurationManager.AppSettings["GoogleAPIKey"]"></script>
+    <script src="../../Scripts/jquery.geocomplete.js"></script>
+    <script src="~/Scripts/searchhelper.js"></script>
+
+    <script>
+        LoadSocials();
+
+        function LoadSocials() {
+            $.get('@Url.Action("FacebookEventsPartial", "Dancer")', { 'username': '@User.Identity.Name', 'eventType': 'Social', 'promotergroupId': '@Model.PromoterGroup.Id', 'role': 'promoter' }, function (data) {
+                $("#importfbevents").empty();
+                $("#importfbevents").html(data);
+                //$('#importfbclasses').readmore({
+                //    speed: 500,
+                //    collapsedHeight: 100,
+                //    moreLink: '<a class="col-lg-12" style="padding: 5px" href="#">View All Events</a>'
+                //});
+            });
+        };
+
+        $(function () {
+            $("#PromoterGroup_PayeeAddress").geocomplete({
+                details: "form",
+                types: ["geocode", "establishment"],
+            })
+            .bind("geocode:result", function (event, result) {
+                //$.each(result.reviews, function (i, review) {
+                //    alert(review.text);
+                //});
+                var street_num;
+                var street_name;
+                $.each(result.address_components, function (i, address_component) {
+
+                    //alert(address_component.types[0]);
+                    //alert(address_component.long_name);
+                    if (address_component.types[0] == "street_number") {
+                        street_num = address_component.long_name;
+                    }
+                    else if (address_component.types[0] == "route") {
+                        street_name = address_component.long_name;
+                    }
+                    else if (address_component.types[0] == "locality") {
+                        $('#PromoterGroup_PayeeCity').prop("value", address_component.long_name);
+                    }
+                    else if (address_component.types[0] == "administrative_area_level_1") {
+                        $('#PromoterGroup_PayeeState').prop("value", address_component.long_name);
+                    }
+                    else if (address_component.types[0] == "postal_code") {
+                        $('#PromoterGroup_PayeeZip').prop("value", address_component.long_name);
+                    }
+                });
+                //alert(street_num + " " + street_name);
+                $('#PromoterGroup_PayeeAddress').prop("value", street_num + " " + street_name);
+                //  console.log(result);
+            });
+        });
+
+    </script>
+}

@@ -1,0 +1,164 @@
+﻿@model EDR.Areas.Admin.Models.ViewModels.FinancialViewModel
+
+@{
+    ViewBag.Title = "Index";
+}
+
+@using (Html.BeginForm("Index", "Financial", FormMethod.Post, new { @class = "formmain" }))
+{
+    <h2>Partners</h2>
+    <div class="bg-info text-center" style="padding: 0px !important;">
+        <div class="form-inline">
+            <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+                <div class="form-group">
+                    @Html.TextBoxFor(m => m.AmountDue, new { placeholder = "Amount Due", @class = "form-control" })
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Search Partners" class="btn btn-warning" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>
+                    <input type="checkbox" name="select-all" id="select-all" />
+                </th>
+                <th>
+                    Partner
+                </th>
+                <th class="text-right">
+                    Balance
+                </th>
+            </tr>
+        </thead>
+        @foreach (var p in Model.Partners)
+        {
+            <tr>
+                <td>
+                    <input type="checkbox" name="PartnerIds" id="PartnerIds" value="@p.Id" />
+                </td>
+                <td>
+                    @p.Name
+                </td>
+                <td class="text-right">
+                    <input type="hidden" class="partnerid" value="@p.Id" />
+                    <input type="hidden" class="partnertype" value="@(p is EDR.Models.School ? "School" : "PromoterGroup")" />
+                    <a class="opentransbtn" href="#" data-toggle="modal" data-target="#modalTransactions">
+                        @if (p is EDR.Models.School)
+                        {
+                            @(((EDR.Models.School)p).FinancialTransactions.Where(t => t.Committed != null).Sum(f => f.Amount).ToString("C"))
+                        }
+                        else
+                        {
+                            @(((EDR.Models.PromoterGroup)p).FinancialTransactions.Where(t => t.Committed != null).Sum(f => f.Amount).ToString("C"))
+                        }
+                    </a>
+                </td>
+            </tr>
+        }
+    </table>
+}
+@Html.ActionLink("Create Batch", "CreateBatch", null, new { @class = "btn btn-primary" })
+<h3>Payment Batches</h3>
+<div class="col-md-10 col-lg-10 input-group">
+    @Html.DropDownList("PaymentBatchId",
+                    Model.PaymentBatches.OrderByDescending(b => b.BatchDate).Select(b => new SelectListItem() { Text = b.BatchDate.ToLongDateString(), Value = b.Id.ToString() }), "Select a Batch Date",
+                    new { @class = "form-control", @style = "display: inline-block;" })
+    @*<a id="btncombatch" class="btn btn-primary" href="@Url.Action("CommitBatch", new { batchId = 0, Area = "Admin" })">Commit Batch</a>
+    <a id="btndelbatch" class="btn btn-primary" href="@Url.Action("DeleteBatch", new { batchId = 0, Area = "Admin" })">Delete Batch</a>*@
+    <a id="btncombatch" class="btn btn-primary" href="">Commit Batch</a>
+    <a id="btndelbatch" class="btn btn-danger" href="">Delete Batch</a>
+</div>
+
+<div id="batchtransactionsdiv">
+</div>
+
+<!-- Modal Transactions -->
+<div class="modal fade" id="modalTransactions" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h3 class="modal-title">Transactions</h3>
+            </div>
+            <div class="modal-body">
+                <div id="transdiv" style="overflow: auto; overflow-x: hidden;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button id="btnupload" class="btn btn-danger" data-dismiss="modal" style="display: none;">Upload</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts
+{
+    <script>
+        $(document).ready(function () {
+            $(window).resize(function () {
+                var bodyheight = $(this).height() - 340;
+                //alert($(this).height());
+                //alert(bodyheight);
+                $("#transdiv").height(bodyheight);
+            }).resize();
+        });
+
+        $('#PaymentBatchId').change(function () {
+            var id = $("#PaymentBatchId option:selected").val();
+            LoadBatchTransactions(id);
+            $('#btncombatch').prop('href', '../Admin/Financial/CommitBatch?batchId=' + id);
+            $('#btndelbatch').prop('href', '../Admin/Financial/DeleteBatch?batchId=' + id);
+        });
+
+        $('.opentransbtn').click(function () {
+            var par = $(this).parent();
+            var type = par.find('.partnertype').val();
+            var id = par.find('.partnerid').val();
+            LoadPartnerTransactions(id, type);
+        });
+
+
+        // Listen for click on toggle checkbox
+        $('#select-all').click(function (event) {
+            if (this.checked) {
+                // Iterate each checkbox
+                $(':checkbox').each(function () {
+                    this.checked = true;
+                });
+            }
+            else {
+                $(':checkbox').each(function () {
+                    this.checked = false;
+                });
+            }
+        });
+
+        function LoadBatchTransactions(id) {
+            $.get('@Url.Action("BatchTransactionsPartial", "Financial")', { 'batchId': id }, function (data) {
+                $("#batchtransactionsdiv").empty();
+                $("#batchtransactionsdiv").html(data);
+            });
+        };
+
+        function LoadPartnerTransactions(id, type) {
+            if (type == "School")
+            {
+                $.get('@Url.Action("PartnerTransactionsPartial", "Financial")', { 'schoolId': id }, function (data) {
+                    $("#transdiv").empty();
+                    $("#transdiv").html(data);
+                });
+            }
+            else
+            {
+                $.get('@Url.Action("PartnerTransactionsPartial", "Financial")', { 'partnergroupId': id }, function (data) {
+                    $("#transdiv").empty();
+                    $("#transdiv").html(data);
+                });
+            }
+        };
+    </script>
+}

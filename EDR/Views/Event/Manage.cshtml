@@ -138,6 +138,17 @@
                     {
                         <dl class="dl-horizontal">
                             <dt>
+                                Promoter Group:
+                            </dt>
+                            <dd>
+                                @if (((Social)Model.Event).PromoterGroup != null)
+                                {
+                                    @(((Social)Model.Event).PromoterGroup.Name)
+                                }
+                            </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>
                                 Music Type:
                             </dt>
                             <dd>
@@ -263,8 +274,19 @@
                             @Html.ValidationMessageFor(model => model.Event.Name, "", new { @class = "text-danger" })
                         </dd>
                     </dl>
-                    if (Model.EventType == EDR.Enums.EventType.Social)
-                    {
+                        if (Model.EventType == EDR.Enums.EventType.Social)
+                        {
+                            <dl class="dl-horizontal">
+                                <dt>
+                                    @Html.DisplayName("Promoter Group:")
+                                </dt>
+                                <dd>
+                                    @Html.DropDownListFor(m => m.PromoterGroupId,
+                                                            Model.PromoterGroups.Select(g => new SelectListItem() { Text = g.Name, Value = g.Id.ToString() }),
+                                                            new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.PromoterGroupId, "", new { @class = "text-danger" })
+                                </dd>
+                            </dl>
                         <dl class="dl-horizontal">
                             <dt>
                                 @Html.DisplayName("Music Type:")

@@ -162,6 +162,7 @@ namespace EDR.Controllers
                             .Include("Teachers")
                             .Include("Teachers.ApplicationUser")
                             .Include("Teams")
+                            .Include("FinancialTransactions")
                             .FirstOrDefault());
                 return View(model);
             }

@@ -45,6 +45,23 @@ namespace EDR.Models
         public virtual ICollection<Feed> Feeds { get; set; }
         public ICollection<OrganizationVideo> Videos { get; set; }
         public ICollection<OrganizationPlaylist> Playlists { get; set; }
+        public string PaymentInformation { get; set; }
+        [Display(Name = "Bank Account #")]
+        public string BankAccount { get; set; }
+        [Display(Name = "Routing #")]
+        public string RoutingNumber { get; set; }
+        [Display(Name = "Bank Name")]
+        public string BankName { get; set; }
+        [Display(Name = "Payee Name")]
+        public string PayeeName { get; set; }
+        [Display(Name = "Payee Address")]
+        public string PayeeAddress { get; set; }
+        [Display(Name = "Payee City")]
+        public string PayeeCity { get; set; }
+        [Display(Name = "Payee State")]
+        public string PayeeState { get; set; }
+        [Display(Name = "Payee ZipCode")]
+        public string PayeeZip { get; set; }
     }
 
     public class School : Organization
@@ -55,6 +72,7 @@ namespace EDR.Models
         public virtual ICollection<Ticket> Tickets { get; set; }
         public ICollection<Owner> Owners { get; set; }
         public ICollection<Team> Teams { get; set; }
+        public ICollection<FinancialTransaction> FinancialTransactions { get; set; }
 
         public School()
         {

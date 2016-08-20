@@ -14,6 +14,14 @@ public static class GlobalVariables
         }
     }
 
+    public static decimal PaymentThreshold
+    {
+        get
+        {
+            return 10;
+        }
+    }
+
     //// read-write variable
     //public static string Bar
     //{

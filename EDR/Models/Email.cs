@@ -78,7 +78,7 @@ namespace EDR.Models
                 orderdetails += "</table>";
 
                 var dancerpage = new UrlHelper(requestContext).Action("Manage", "Dancer", new { Area = "" }, protocol: HttpContext.Current.Request.Url.Scheme);
-                var messagebody = LoadTemplate("OrderConfirmation.txt", order.User.FullName, orderdetails, dancerpage, dancerpage);
+                var messagebody = LoadTemplate("OrderConfirmation.txt", order.User.FullName, orderdetails, dancerpage, dancerpage, order.Id, order.OrderDate.ToString());
                 context.Emails.Add(new Email() { ToEmail = order.User.Email, Subject = "Thank you for your Order", Body = messagebody });
                 //  var result = LoadTemplateSend("NewRoleUser.txt", user.Email, "You've been added to the " + role + " role", user.FullName, role, rolepage, rolepage );
                 context.SaveChanges();

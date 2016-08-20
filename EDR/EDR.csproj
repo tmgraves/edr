@@ -297,8 +297,10 @@
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\DanceStyleController.cs" />
     <Compile Include="Areas\Admin\Controllers\EmailController.cs" />
+    <Compile Include="Areas\Admin\Controllers\FinancialController.cs" />
     <Compile Include="Areas\Admin\Controllers\RolesController.cs" />
     <Compile Include="Areas\Admin\Models\ViewModels\DanceStyleViewModels.cs" />
+    <Compile Include="Areas\Admin\Models\ViewModels\FinancialViewModels.cs" />
     <Compile Include="Areas\Admin\Models\ViewModels\RolesViewModels.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
@@ -610,6 +612,8 @@
     <Content Include="Content\images\MobileIcons\Set 2\Set 2.ai" />
     <Content Include="Content\images\MobileIcons\Set 3\set 3.ai" />
     <Content Include="Areas\Admin\Views\Email\Dashboard.cshtml" />
+    <Content Include="Areas\Admin\Views\Financial\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Shared\_TransactionsPartial.cshtml" />
     <None Include="Properties\PublishProfiles\SmarterASP.pubxml" />
     <None Include="Properties\PublishProfiles\SmarterASP_FTP.pubxml" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
@@ -996,6 +1000,7 @@
     <Content Include="Views\Team\Mobile\View.cshtml" />
     <Content Include="Views\School\Mobile\List.cshtml" />
     <Content Include="Views\School\Mobile\View.cshtml" />
+    <Content Include="Views\Promoter\ManageGroup.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

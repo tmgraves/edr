@@ -7,12 +7,15 @@
 
 <ol class="breadcrumb">
     <li>@Html.ActionLink("All Schools", "List", "School")</li>
-    <li>@Html.ActionLink("School Profile", "View", "School", new { id = Model.School.Id }, null)</li>
+    <li>@Html.ActionLink("School Page", "View", "School", new { id = Model.School.Id }, null)</li>
     <li class="active">Manage School</li>
 </ol>
 
-<h2>Manage: <span class="text-info">@Model.School.Name</span></h2>
-<hr />
+<h2><span class="text-info">@Model.School.Name</span></h2>
+@if(Model.School.PayeeName == null || Model.School.PayeeAddress == null || Model.School.PayeeCity == null || Model.School.PayeeState == null || Model.School.PayeeZip == null || Model.School.BankName == null || Model.School.BankAccount == null || Model.School.RoutingNumber == null)
+{
+    <h4 class="bg-danger">**Please fill in your Financial information so you can get paid for your Ticket Sales</h4>
+}
 
 <style>
     .dl-horizontal dt{
@@ -27,405 +30,576 @@
 
 </style>
 
-<div class="container-fluid">
-    <div class="col-lg-6 col-md-6">
-        <div class="panel panel-default">
-            <div class="panel-body ">
-                <div id="viewdiv">
-                    <div class="text-right">
-                        <input id="btnEdit" type="button" class="btn btn-primary" value="Edit" />
-                    </div>
-                    <div class="text-center">
-                        <div class="buttoncontainer" style="display: inline-block;">
-                            <img class="targetpic" style="max-width: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.School.PhotoUrl))" />
-                            <button id="btnChangePicture" type="button" class="btn btn-info actionbutton" data-toggle="modal" data-target="#modalPic">
-                                Change
-                            </button>
-                        </div>
-                    </div>
-                    <dl class="dl-horizontal">
-                        <dt>
-                            @Html.DisplayNameFor(model => model.School.Name)
-                        </dt>
-                        <dd>
-                            @Html.DisplayFor(model => model.School.Name)
-                        </dd>
-                    </dl>
-                    <dl class="dl-horizontal">
-                        <dt>
-                            @Html.DisplayNameFor(model => model.School.Address)
-                        </dt>
-                        <dd>
-                            @Model.School.Address<br />
-                            @if (Model.School.Address2 != null)
-                            {
-                                @Model.School.Address2<br />
-                            }
-                            @Model.School.City, @Model.School.State @Model.School.Zip<br />
-                            @Model.School.Country
-                        </dd>
-                    </dl>
-                    <dl class="dl-horizontal">
-                        <dt>
-                            @Html.DisplayNameFor(model => model.School.FacebookLink)
-                        </dt>
-
-                        <dd>
-                            <a href="@Model.School.FacebookLink" target="_blank" title="@Model.School.FacebookLink"><div class="item-short">@Model.School.FacebookLink</div></a>
-                        </dd>
-                    </dl>
-                    <dl class="dl-horizontal">
-                        <dt>
-                            @Html.DisplayNameFor(model => model.School.Description)
-                        </dt>
-
-                        <dd>
-                            @Html.DisplayFor(model => model.School.Description)
-                        </dd>
-                    </dl>
-                </div>
-                <div id="editdiv" style="display: none;">
-                    @Html.ValidationSummary("", new { @class = "text-danger" })
-                    @using (Html.BeginForm("Save", "School", FormMethod.Post, new { @id = "saveform", @class = "main" }))
-                    {
-                        @Html.HiddenFor(m => m.School.Id)
-                        @Html.HiddenFor(model => model.School.Address)
-                        @Html.HiddenFor(model => model.School.Address2)
-                        @Html.HiddenFor(model => model.School.City)
-                        @Html.HiddenFor(model => model.School.State)
-                        @Html.HiddenFor(model => model.School.Zip)
-                        @Html.HiddenFor(model => model.School.Country)
-                        @Html.HiddenFor(model => model.School.Latitude)
-                        @Html.HiddenFor(model => model.School.Longitude)
-                        @Html.HiddenFor(model => model.School.DateStarted)
-                        <div class="text-right" style="padding-bottom: 10px;">
-                            <input type="submit" id="btnsave" value="Save" class="btn btn-success" />
-                            <input id="btncanceledit" type="button" class="btn btn-primary" value="Cancel" />
-                        </div>
-                        <dl class="dl-horizontal">
-                            <dt>
-                                @Html.LabelFor(model => model.School.Name, htmlAttributes: new { @class = "control-label" })
-                            </dt>
-                            <dd>
-                                @Html.EditorFor(model => model.School.Name, new { htmlAttributes = new { @class = "form-control" } })
-                                @Html.ValidationMessageFor(model => model.School.Name, "", new { @class = "text-danger" })
-                            </dd>
-                        </dl>
-
-                        <dl class="dl-horizontal">
-                            <dt>
-                                @Html.LabelFor(model => model.School.Description, htmlAttributes: new { @class = "control-label" })
-                            </dt>
-                            <dd>
-                                @Html.TextAreaFor(model => model.School.Description, 10, 50, new { htmlAttributes = new { @class = "form-control" } })
-                                @Html.ValidationMessageFor(model => model.School.Description, "", new { @class = "text-danger" })
-                            </dd>
-                        </dl>
-
-                        <dl class="dl-horizontal">
-                            <dt>
-                                @Html.LabelFor(model => model.School.FacebookLink, htmlAttributes: new { @class = "control-label" })
-                            </dt>
-                            <dd>
-                                @Html.EditorFor(model => model.School.FacebookLink, new { htmlAttributes = new { @class = "form-control" } })
-                                @Html.ValidationMessageFor(model => model.School.FacebookLink, "", new { @class = "text-danger" })
-                            </dd>
-                        </dl>
-
-                        @*<dl class="dl-horizontal">
-                            <dt>
-                                @Html.LabelFor(model => model.School.Public, htmlAttributes: new { @class = "control-label" })
-                            </dt>
-                            <dd>
-                                @Html.EditorFor(model => model.School.Public)
-                                @Html.ValidationMessageFor(model => model.School.Public, "", new { @class = "text-danger" })
-                            </dd>
-                        </dl>
-
-                        <dl class="dl-horizontal">
-                            <dt>
-                                @Html.LabelFor(model => model.School.DateStarted, htmlAttributes: new { @class = "control-label" })
-                            </dt>
-                            <dd>
-                                @Html.EditorFor(model => model.School.DateStarted, new { htmlAttributes = new { @class = "form-control" } })
-                                @Html.ValidationMessageFor(model => model.School.DateStarted, "", new { @class = "text-danger" })
-                            </dd>
-                        </dl>*@
-
-                        <dl class="dl-horizontal">
-                            <dt>
-                                @Html.Label("New Location", htmlAttributes: new { @class = "control-label" })
-                            </dt>
-                            <dd>
-                                <input id="newplace" type="text" placeholder="Search for a new Location" class="form-control" />
-                            </dd>
-                        </dl>
-
-                        <dl class="dl-horizontal">
-                            <dt>
-                                @Html.Label("Location", htmlAttributes: new { @class = "control-label" })
-                            </dt>
-                            <dd>
-                                @Html.TextArea("Location", Model.School.Address + "\n" + Model.School.City + ", " + Model.School.State + " " + Model.School.Zip + "\n" + Model.School.Country, 4, 50, new { @class = "form-control", Name = "formatted_address", @readonly = true })
-                            </dd>
-                        </dl>
-                    }
-                </div>
-            </div>
-        </div>
-        <div class="panel panel-default">
-            <div class="panel-body buttoncontainer">
-                <h3>Teachers</h3>
-                <div>
-                    @using (Html.BeginForm("AddTeacher", "School", FormMethod.Post))
-                    {
-                        <input type="hidden" id="id" name="id" value="@Model.School.Id" />
-                        <input type="hidden" class="teachersearchid" id="teacherid" name="teacherid" />
-                        <input type="text" class="teachersearch form-control" placeholder="Type in a Teacher Name" style="display: inline-block;" />
-                        <button type="submit" class="btn btn-primary btn-sm" style="display: inline-block;">Add Teacher</button>
-                    }
-                </div>
-                <div id="teachers">
-                    <table style="width: 100%;">
-                        <tr>
-                            <th>
-                                Name
-                            </th>
-                            <th>
-                            </th>
-                        </tr>
-                        @foreach (var t in Model.School.Teachers)
-                        {
-                            <tr>
-                                <td>
-                                    @Html.DisplayFor(model => t.ApplicationUser.FullName)
-                                </td>
-                                <td class="text-right">
-                                    @if (t.ApplicationUser.UserName != User.Identity.Name)
-                                    {
-                                        <a class="btn btn-link text-danger" title="Remove" href="@Url.Action("RemoveTeacher", new { id = Model.School.Id, teacherid = t.Id })" onclick="return confirm('Are you sure you want to remove this Teacher?')">
-                                            <i class="text-danger glyphicon glyphicon-remove-circle"></i>
-                                        </a>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div class="panel panel-default">
-            <div class="panel-body buttoncontainer">
-                <h3>Owners</h3>
-                <div>
-                    @using (Html.BeginForm("AddOwner", "School", FormMethod.Post))
-                    {
-                        <input type="hidden" id="id" name="id" value="@Model.School.Id" />
-                        <input type="hidden" class="ownersearchid" id="ownerid" name="ownerid" />
-                        <input type="text" class="ownersearch form-control" placeholder="Type in a Owner Name" style="display: inline-block;" />
-                        <button type="submit" class="btn btn-primary btn-sm" style="display: inline-block;">Add Owner</button>
-                    }
-                </div>
-                <div id="owners">
-                    <table style="width: 100%;">
-                        <tr>
-                            <th>
-                                Name
-                            </th>
-                            <th>
-                            </th>
-                        </tr>
-                        @foreach (var t in Model.School.Owners)
-                        {
-                            <tr>
-                                <td>
-                                    @Html.DisplayFor(model => t.ApplicationUser.FullName)
-                                </td>
-                                <td class="text-right">
-                                    @if (t.ApplicationUser.UserName != User.Identity.Name)
-                                    {
-                                        <a class="btn btn-link text-danger" title="Remove" href="@Url.Action("RemoveOwner", new { id = Model.School.Id, ownerid = t.Id })" onclick="return confirm('Are you sure you want to remove this Owner?')">
-                                            <i class="text-danger glyphicon glyphicon-remove-circle"></i>
-                                        </a>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div class="panel panel-default">
-            <div class="panel-body ">
-                <h3>Tickets</h3>
-                @Html.ActionLink("Add Ticket", "AddTicket", "Store", new { schoolId = Model.School.Id }, null)
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Quantity</th>
-                            <th>Price</th>
-                            <th>Purchase Limit</th>
-                            <th>Valid From</th>
-                            <th>Valid To</th>
-                            <th>Related Event</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    @foreach (var item in Model.School.Tickets)
-                    {
-                        <tr>
-                            <td>
-                                @Html.DisplayFor(member => item.Quantity)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(member => item.Price)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(member => item.Limit)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(member => item.Start)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(member => item.End)
-                            </td>
-                            <td>
-                                @if (item.Event != null)
-                                {
-                                    @item.Event.Name
-                                }
-                            </td>
-                            <td>
-                                @Html.ActionLink("Details", "ViewTicket", new { id = item.Id }) |
-                                @Html.ActionLink("Delete", "DeleteTicket", new { id = item.Id })
-                            </td>
-                        </tr>
-                    }
-                </table>
-            </div>
-        </div>
+<div class="panel with-nav-tabs panel-default">
+    <div class="panel-heading nospace" style="border-bottom: none !important;">
+        <ul class="nav nav-pills nav-justified nospace">
+            <li class="nospace active"><a href="#tabmain" data-toggle="tab"><i class="glyphicon glyphicon-home"></i> Details</a></li>
+            <li class="nospace"><a href="#tabclasses" data-toggle="tab"><i class="glyphicon glyphicon-book"></i> Classes</a></li>
+            <li class="nospace"><a href="#tabteams" data-toggle="tab"><i class="glyphicon glyphicon-user"></i><i class="glyphicon glyphicon-user"></i> Teams</a></li>
+            <li class="nospace"><a href="#tabfinancials" data-toggle="tab"><i class="glyphicon glyphicon-usd"></i> Financials</a></li>
+        </ul>
     </div>
+    <div class="panel-body">
+        <div class="tab-content">
+            <div class="tab-pane fade in active" id="tabmain">
+                <div class="panel panel-default">
+                    <div class="panel-body ">
+                        <div id="viewdiv">
+                            <div class="text-right">
+                                <input id="btnEdit" type="button" class="btn btn-primary" value="Edit" />
+                            </div>
+                            <div>
+                                <div class="buttoncontainer" style="display: inline-block;">
+                                    <img class="targetpic" style="max-height: 300px; max-width: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.School.PhotoUrl))" />
+                                    <button id="btnChangePicture" type="button" class="btn btn-info actionbutton" data-toggle="modal" data-target="#modalPic">
+                                        Change
+                                    </button>
+                                </div>
+                            </div>
+                            <dl class="dl-horizontal">
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.School.Name)
+                                </dt>
+                                <dd>
+                                    @Html.DisplayFor(model => model.School.Name)
+                                </dd>
+                            </dl>
+                            <dl class="dl-horizontal">
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.School.Address)
+                                </dt>
+                                <dd>
+                                    @Model.School.Address<br />
+                                    @if (Model.School.Address2 != null)
+                                    {
+                                        @Model.School.Address2<br />
+                                    }
+                                    @Model.School.City, @Model.School.State @Model.School.Zip<br />
+                                    @Model.School.Country
+                                </dd>
+                            </dl>
+                            <dl class="dl-horizontal">
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.School.FacebookLink)
+                                </dt>
 
-    <div class="col-lg-6 col-md-6">
-        <div class="panel panel-info">
-            <div class="panel-heading">
-                <h2 class="panel-title">Import Facebook Events</h2>
-            </div>
-            <div class="panel-body">
-                <div id="importfbclasses">
-                </div>
-            </div>
-        </div>
-        <div class="panel panel-default">
-            <div class="panel-body buttoncontainer">
-                <h3>Classes</h3>
-                <p>
-                    <a href="#" class="text-primary eventstoggle">Present|Past Events</a>
-                </p>
-                @Html.ActionLink("Add a Class", "Create", "Event", new { eventType = EDR.Enums.EventType.Class, schoolId = Model.School.Id, role = EDR.Enums.RoleName.Teacher }, new { @class = "btn btn-warning actionbutton" } )
-                <div id="divcurrentclasses">
-                    <table class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th>Class</th>
-                                <th>Registrations</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        @foreach (var item in Model.School.Classes.Where(c => c.EventInstances.Where(i => i.DateTime >= DateTime.Today).Count() > 0).Select(i => new { i.Name, i.Id, NextDate = i.EventInstances.Where(ei => ei.DateTime >= DateTime.Today).OrderBy(ei => ei.DateTime).FirstOrDefault(), Registrations = i.EventInstances.Sum(ei => ei.EventRegistrations.Count()) }).OrderBy(x => x.NextDate.DateTime))
-                            {
-                            <tr>
-                                <td>
-                                    <a href="@Url.Action("Manage", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Class })">
-                                        <div style="max-width: 200px;" class="item-short">
-                                            <b>@item.NextDate.DateTime.ToString("ddd, M/d")</b> -
-                                            @item.Name
-                                        </div>
-                                    </a>
-                                </td>
-                                <td class="text-right">
-                                    @item.Registrations
-                                </td>
-                                <td>
-                                    @Html.ActionLink("Next Date", "ManageInstance", "Event", new { id = item.NextDate.Id }, new { @class = "btn btn-primary" })
-                                </td>
-                            </tr>
-                        }
-                    </table>
-                </div>
-                <div id="divpastclasses" style="display: none;">
-                    <table class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th>Class</th>
-                                <th>Registrations</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        @foreach (var item in Model.School.Classes.Where(c => c.EventInstances.Where(i => i.DateTime >= DateTime.Today).Count() == 0).Select(i => new { i.Name, i.Id, NextDate = i.EventInstances.OrderBy(ei => ei.DateTime).FirstOrDefault(), Registrations = i.EventInstances.Sum(ei => ei.EventRegistrations.Count()) }).OrderBy(x => x.NextDate.DateTime))
-                        {
-                            <tr>
-                                <td>
-                                    <a href="@Url.Action("Manage", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Class })">
-                                        <div style="max-width: 200px;" class="item-short">
-                                            <b>@item.NextDate.DateTime.ToString("ddd, M/d")</b> -
-                                            @item.Name
-                                        </div>
-                                    </a>
-                                </td>
-                                <td class="text-right">
-                                    @item.Registrations
-                                </td>
-                                <td>
-                                    @Html.ActionLink("Next Date", "ManageInstance", "Event", new { id = item.NextDate.Id }, new { @class = "btn btn-primary" })
-                                </td>
-                            </tr>
-                        }
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div class="panel panel-default">
-            <div class="panel-body ">
-                <h3>Members</h3>
-                @using (Html.BeginForm("AddMember", "School", FormMethod.Post))
-                {
-                    @Html.HiddenFor(model => model.School.Id)
-                    @Html.HiddenFor(m => m.NewMemberId)
-                    <input type="text" id="newmember" placeholder="Search for a User" required class="form-control" style="display: inline-block;" />
-                    <input type="submit" value="Add Member" style="display: inline-block;" class="btn btn-sm btn-primary" />
-                }
-                <div id="membersdiv">
-                    @using (Html.BeginForm("UpdateMembers", "School", FormMethod.Post))
-                    {
-                        @Html.HiddenFor(model => model.School.Id)
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Admin</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            @Html.EditorFor(model => model.School.Members)
-                        </table>
-                        <div>
-                            <input type="submit" value="Update Members" style="display: inline-block;" class="btn btn-sm btn-primary" />
+                                <dd>
+                                    <a href="@Model.School.FacebookLink" target="_blank" title="@Model.School.FacebookLink"><div class="item-short">@Model.School.FacebookLink</div></a>
+                                </dd>
+                            </dl>
+                            <dl class="dl-horizontal">
+                                <dt>
+                                    @Html.DisplayNameFor(model => model.School.Description)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.School.Description)
+                                </dd>
+                            </dl>
                         </div>
-                    }
+                        <div id="editdiv" style="display: none;">
+                            @Html.ValidationSummary("", new { @class = "text-danger" })
+                            @using (Html.BeginForm("Save", "School", FormMethod.Post, new { @id = "saveform", @class = "main" }))
+                            {
+                                @Html.HiddenFor(m => m.School.Id)
+                                @Html.HiddenFor(model => model.School.Address)
+                                @Html.HiddenFor(model => model.School.Address2)
+                                @Html.HiddenFor(model => model.School.City)
+                                @Html.HiddenFor(model => model.School.State)
+                                @Html.HiddenFor(model => model.School.Zip)
+                                @Html.HiddenFor(model => model.School.Country)
+                                @Html.HiddenFor(model => model.School.Latitude)
+                                @Html.HiddenFor(model => model.School.Longitude)
+                                @Html.HiddenFor(model => model.School.DateStarted)
+                                <div class="text-right" style="padding-bottom: 10px;">
+                                    <input type="submit" id="btnsave" value="Save" class="btn btn-success" />
+                                    <input id="btncanceledit" type="button" class="btn btn-primary" value="Cancel" />
+                                </div>
+                                <div class="col-lg-6 col-md-6">
+                                    <h3>Basic Info</h3>
+                                    <dl class="dl-horizontal">
+                                        <dt>
+                                            @Html.LabelFor(model => model.School.Name, htmlAttributes: new { @class = "control-label" })
+                                        </dt>
+                                        <dd>
+                                            @Html.EditorFor(model => model.School.Name, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.School.Name, "", new { @class = "text-danger" })
+                                        </dd>
+                                    </dl>
+
+                                    <dl class="dl-horizontal">
+                                        <dt>
+                                            @Html.LabelFor(model => model.School.Description, htmlAttributes: new { @class = "control-label" })
+                                        </dt>
+                                        <dd>
+                                            @Html.TextAreaFor(model => model.School.Description, 10, 50, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.School.Description, "", new { @class = "text-danger" })
+                                        </dd>
+                                    </dl>
+
+                                    <dl class="dl-horizontal">
+                                        <dt>
+                                            @Html.LabelFor(model => model.School.FacebookLink, htmlAttributes: new { @class = "control-label" })
+                                        </dt>
+                                        <dd>
+                                            @Html.EditorFor(model => model.School.FacebookLink, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.School.FacebookLink, "", new { @class = "text-danger" })
+                                        </dd>
+                                    </dl>
+
+                                    @*<dl class="dl-horizontal">
+            <dt>
+                @Html.LabelFor(model => model.School.Public, htmlAttributes: new { @class = "control-label" })
+            </dt>
+            <dd>
+                @Html.EditorFor(model => model.School.Public)
+                @Html.ValidationMessageFor(model => model.School.Public, "", new { @class = "text-danger" })
+            </dd>
+        </dl>
+
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.LabelFor(model => model.School.DateStarted, htmlAttributes: new { @class = "control-label" })
+            </dt>
+            <dd>
+                @Html.EditorFor(model => model.School.DateStarted, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.School.DateStarted, "", new { @class = "text-danger" })
+            </dd>
+        </dl>*@
+
+                                    <dl class="dl-horizontal">
+                                        <dt>
+                                            @Html.Label("New Location", htmlAttributes: new { @class = "control-label" })
+                                        </dt>
+                                        <dd>
+                                            <input id="newplace" type="text" placeholder="Search for a new Location" class="form-control" />
+                                        </dd>
+                                    </dl>
+
+                                    <dl class="dl-horizontal">
+                                        <dt>
+                                            @Html.Label("Location", htmlAttributes: new { @class = "control-label" })
+                                        </dt>
+                                        <dd>
+                                            @Html.TextArea("Location", Model.School.Address + "\n" + Model.School.City + ", " + Model.School.State + " " + Model.School.Zip + "\n" + Model.School.Country, 4, 50, new { @class = "form-control", Name = "formatted_address", @readonly = true })
+                                        </dd>
+                                    </dl>
+                                </div>
+                                <div class="col-lg-6 col-md-6">
+                                    <h3>Financial Information</h3>
+                                    <dl class="dl-horizontal">
+                                        <dt>
+                                            @Html.LabelFor(model => model.School.BankName, htmlAttributes: new { @class = "control-label" })
+                                        </dt>
+                                        <dd>
+                                            @Html.TextBoxFor(m => m.School.BankName, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.School.BankName, "", new { @class = "text-danger" })
+                                        </dd>
+                                    </dl>
+                                    <dl class="dl-horizontal">
+                                        <dt>
+                                            @Html.LabelFor(model => model.School.BankAccount, htmlAttributes: new { @class = "control-label" })
+                                        </dt>
+                                        <dd>
+                                            @Html.TextBoxFor(m => m.School.BankAccount, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.School.BankAccount, "", new { @class = "text-danger" })
+                                        </dd>
+                                    </dl>
+                                    <dl class="dl-horizontal">
+                                        <dt>
+                                            @Html.LabelFor(model => model.School.RoutingNumber, htmlAttributes: new { @class = "control-label" })
+                                        </dt>
+                                        <dd>
+                                            @Html.TextBoxFor(m => m.School.RoutingNumber, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.School.RoutingNumber, "", new { @class = "text-danger" })
+                                        </dd>
+                                    </dl>
+                                    <dl class="dl-horizontal">
+                                        <dt>
+                                            @Html.LabelFor(model => model.School.PayeeName, htmlAttributes: new { @class = "control-label" })
+                                        </dt>
+                                        <dd>
+                                            @Html.TextBoxFor(m => m.School.PayeeName, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.School.PayeeName, "", new { @class = "text-danger" })
+                                        </dd>
+                                    </dl>
+                                    <dl class="dl-horizontal">
+                                        <dt>
+                                            @Html.LabelFor(model => model.School.PayeeAddress, htmlAttributes: new { @class = "control-label" })
+                                        </dt>
+                                        <dd>
+                                            @Html.TextBoxFor(m => m.School.PayeeAddress, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.School.PayeeAddress, "", new { @class = "text-danger" })
+                                        </dd>
+                                    </dl>
+                                    <dl class="dl-horizontal">
+                                        <dt>
+                                            @Html.LabelFor(model => model.School.PayeeCity, htmlAttributes: new { @class = "control-label" })
+                                        </dt>
+                                        <dd>
+                                            @Html.TextBoxFor(m => m.School.PayeeCity, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.School.PayeeCity, "", new { @class = "text-danger" })
+                                        </dd>
+                                    </dl>
+                                    <dl class="dl-horizontal">
+                                        <dt>
+                                            @Html.LabelFor(model => model.School.PayeeState, htmlAttributes: new { @class = "control-label" })
+                                        </dt>
+                                        <dd>
+                                            @Html.TextBoxFor(m => m.School.PayeeState, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.School.PayeeState, "", new { @class = "text-danger" })
+                                        </dd>
+                                    </dl>
+                                    <dl class="dl-horizontal">
+                                        <dt>
+                                            @Html.LabelFor(model => model.School.PayeeZip, htmlAttributes: new { @class = "control-label" })
+                                        </dt>
+                                        <dd>
+                                            @Html.TextBoxFor(m => m.School.PayeeZip, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.School.PayeeZip, "", new { @class = "text-danger" })
+                                        </dd>
+                                    </dl>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 col-md-6">
+                        <div class="panel panel-success">
+                            <div class="panel-heading">
+                                <h2 class="panel-title">Teachers</h2>
+                            </div>
+                            <div class="panel-body buttoncontainer">
+                                <div>
+                                    @using (Html.BeginForm("AddTeacher", "School", FormMethod.Post))
+                                    {
+                                        <input type="hidden" id="id" name="id" value="@Model.School.Id" />
+                                        <input type="hidden" class="teachersearchid" id="teacherid" name="teacherid" />
+                                        <input type="text" class="teachersearch form-control" placeholder="Type in a Teacher Name" style="display: inline-block;" />
+                                        <button type="submit" class="btn btn-primary btn-sm" style="display: inline-block;">Add Teacher</button>
+                                    }
+                                </div>
+                                <div id="teachers">
+                                    <table style="width: 100%;">
+                                        <tr>
+                                            <th>
+                                                Name
+                                            </th>
+                                            <th>
+                                            </th>
+                                        </tr>
+                                        @foreach (var t in Model.School.Teachers)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.DisplayFor(model => t.ApplicationUser.FullName)
+                                                </td>
+                                                <td class="text-right">
+                                                    @if (t.ApplicationUser.UserName != User.Identity.Name)
+                                                    {
+                                                        <a class="btn btn-link text-danger" title="Remove" href="@Url.Action("RemoveTeacher", new { id = Model.School.Id, teacherid = t.Id })" onclick="return confirm('Are you sure you want to remove this Teacher?')">
+                                                            <i class="text-danger glyphicon glyphicon-remove-circle"></i>
+                                                        </a>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-success">
+                            <div class="panel-heading">
+                                <h2 class="panel-title">Members</h2>
+                            </div>
+                            <div class="panel-body ">
+                                @using (Html.BeginForm("AddMember", "School", FormMethod.Post))
+                                {
+                                @Html.HiddenFor(model => model.School.Id)
+                                @Html.HiddenFor(m => m.NewMemberId)
+                                <input type="text" id="newmember" placeholder="Search for a User" required class="form-control" style="display: inline-block;" />
+                                <input type="submit" value="Add Member" style="display: inline-block;" class="btn btn-sm btn-primary" />
+                                }
+                                <div id="membersdiv">
+                                    @using (Html.BeginForm("UpdateMembers", "School", FormMethod.Post))
+                                    {
+                                    @Html.HiddenFor(model => model.School.Id)
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Admin</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        @Html.EditorFor(model => model.School.Members)
+                                    </table>
+                                    <div>
+                                        <input type="submit" value="Update Members" style="display: inline-block;" class="btn btn-sm btn-primary" />
+                                    </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6">
+                        <div class="panel panel-success">
+                            <div class="panel-heading">
+                                <h2 class="panel-title">Owners</h2>
+                            </div>
+                            <div class="panel-body buttoncontainer">
+                                <div>
+                                    @using (Html.BeginForm("AddOwner", "School", FormMethod.Post))
+                                    {
+                                        <input type="hidden" id="id" name="id" value="@Model.School.Id" />
+                                        <input type="hidden" class="ownersearchid" id="ownerid" name="ownerid" />
+                                        <input type="text" class="ownersearch form-control" placeholder="Type in a Owner Name" style="display: inline-block;" />
+                                        <button type="submit" class="btn btn-primary btn-sm" style="display: inline-block;">Add Owner</button>
+                                    }
+                                </div>
+                                <div id="owners">
+                                    <table style="width: 100%;">
+                                        <tr>
+                                            <th>
+                                                Name
+                                            </th>
+                                            <th>
+                                            </th>
+                                        </tr>
+                                        @foreach (var t in Model.School.Owners)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.DisplayFor(model => t.ApplicationUser.FullName)
+                                                </td>
+                                                <td class="text-right">
+                                                    @if (t.ApplicationUser.UserName != User.Identity.Name)
+                                                    {
+                                                        <a class="btn btn-link text-danger" title="Remove" href="@Url.Action("RemoveOwner", new { id = Model.School.Id, ownerid = t.Id })" onclick="return confirm('Are you sure you want to remove this Owner?')">
+                                                            <i class="text-danger glyphicon glyphicon-remove-circle"></i>
+                                                        </a>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="panel panel-default">
-            <div class="panel-body buttoncontainer">
-                <h3>Performance Teams</h3>
-                <button id="btnChangePicture" type="button" class="btn btn-warning actionbutton" data-toggle="modal" data-target="#modalAddTeam">
-                    Add a Team
-                </button>
-                <div id="teamsdiv">
-                    @Html.Partial("~/Views/Shared/_TeamsPartial.cshtml", Model.School.Teams)
+            <div class="tab-pane fade" id="tabclasses">
+                <div class="col-lg-12 col-md-12" style="padding-bottom: 10px;">
+                    @Html.ActionLink("Add a Class", "Create", "Event", new { eventType = EDR.Enums.EventType.Class, schoolId = Model.School.Id, role = EDR.Enums.RoleName.Teacher }, new { @class = "btn btn-warning" })
                 </div>
-                @*@Html.ActionLink("Add a Team", "Create", "Team", new { schoolId = Model.School.Id }, new { @class = "btn btn-warning actionbutton"} )*@
+                <div class="col-lg-6 col-md-6">
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            <h2 class="panel-title">Classes</h2>
+                        </div>
+                        <div class="panel-body buttoncontainer">
+                            <p>
+                                <a href="#" class="text-primary eventstoggle">Present|Past Events</a>
+                            </p>
+                            <div id="divcurrentclasses">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Class</th>
+                                            <th>Registrations</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    @foreach (var item in Model.School.Classes.Where(c => c.EventInstances.Where(i => i.DateTime >= DateTime.Today).Count() > 0).Select(i => new { i.Name, i.Id, NextDate = i.EventInstances.Where(ei => ei.DateTime >= DateTime.Today).OrderBy(ei => ei.DateTime).FirstOrDefault(), Registrations = i.EventInstances.Sum(ei => ei.EventRegistrations.Count()) }).OrderBy(x => x.NextDate.DateTime))
+                                    {
+                                        <tr>
+                                            <td>
+                                                <a href="@Url.Action("Manage", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Class })">
+                                                    <div style="max-width: 200px;" class="item-short">
+                                                        <b>@item.NextDate.DateTime.ToString("ddd, M/d")</b> -
+                                                        @item.Name
+                                                    </div>
+                                                </a>
+                                            </td>
+                                            <td class="text-right">
+                                                @item.Registrations
+                                            </td>
+                                            <td>
+                                                @Html.ActionLink("Next Date", "ManageInstance", "Event", new { id = item.NextDate.Id }, new { @class = "btn btn-primary" })
+                                            </td>
+                                        </tr>
+                                    }
+                                </table>
+                            </div>
+                            <div id="divpastclasses" style="display: none;">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Class</th>
+                                            <th>Registrations</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    @foreach (var item in Model.School.Classes.Where(c => c.EventInstances.Where(i => i.DateTime >= DateTime.Today).Count() == 0).Select(i => new { i.Name, i.Id, NextDate = i.EventInstances.OrderBy(ei => ei.DateTime).FirstOrDefault(), Registrations = i.EventInstances.Sum(ei => ei.EventRegistrations.Count()) }).OrderBy(x => x.NextDate.DateTime))
+                                    {
+                                        <tr>
+                                            <td>
+                                                <a href="@Url.Action("Manage", "Event", new { id = item.Id, eventType = EDR.Enums.EventType.Class })">
+                                                    <div style="max-width: 200px;" class="item-short">
+                                                        <b>@item.NextDate.DateTime.ToString("ddd, M/d")</b> -
+                                                        @item.Name
+                                                    </div>
+                                                </a>
+                                            </td>
+                                            <td class="text-right">
+                                                @item.Registrations
+                                            </td>
+                                            <td>
+                                                @Html.ActionLink("Next Date", "ManageInstance", "Event", new { id = item.NextDate.Id }, new { @class = "btn btn-primary" })
+                                            </td>
+                                        </tr>
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h2 class="panel-title">Import Facebook Events</h2>
+                        </div>
+                        <div class="panel-body">
+                            <div id="importfbclasses" style="max-height: 400px; overflow: auto; overflow-x: hidden;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="tabteams">
+                <div class="col-lg-12 col-md-12" style="padding-bottom: 10px;">
+                    <button id="btnAddTeam" type="button" class="btn btn-warning" data-toggle="modal" data-target="#modalAddTeam">
+                        Add a Team
+                    </button>
+                </div>
+                <div class="col-lg-6 col-md-6">
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            <h2 class="panel-title">Performance Teams</h2>
+                        </div>
+                        <div class="panel-body">
+                            <div id="teamsdiv">
+                                @Html.Partial("~/Views/Shared/_TeamsPartial.cshtml", Model.School.Teams)
+                            </div>
+                            @*@Html.ActionLink("Add a Team", "Create", "Team", new { schoolId = Model.School.Id }, new { @class = "btn btn-warning actionbutton"} )*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="tabfinancials">
+                <div class="col-lg-12 col-md-12" style="padding-bottom: 10px;">
+                    @Html.ActionLink("Add Ticket", "AddTicket", "Store", new { schoolId = Model.School.Id }, new { @class = "btn btn-warning" })
+                </div>
+                <div class="col-lg-12 col-md-12">
+                    <div class="panel panel-success">
+                        <div class="panel-heading">
+                            <h2 class="panel-title">Tickets</h2>
+                        </div>
+                        <div class="panel-body ">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
+                                        <th>Purchase Limit</th>
+                                        <th>Valid From</th>
+                                        <th>Valid To</th>
+                                        <th>Related Event</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                @foreach (var item in Model.School.Tickets)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(member => item.Quantity)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(member => item.Price)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(member => item.Limit)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(member => item.Start)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(member => item.End)
+                                        </td>
+                                        <td>
+                                            @if (item.Event != null)
+                                            {
+                                                @item.Event.Name
+                                            }
+                                        </td>
+                                        <td>
+                                            @Html.ActionLink("Details", "ViewTicket", new { id = item.Id }) |
+                                            @Html.ActionLink("Delete", "DeleteTicket", new { id = item.Id })
+                                        </td>
+                                    </tr>
+                                }
+                            </table>
+                        </div>
+                    </div>
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h2 class="panel-title">Transactions</h2>
+                        </div>
+                        <div class="panel-body">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Date
+                                        </th>
+                                        <th>
+                                            Transaction Type
+                                        </th>
+                                        <th>
+                                            Amount
+                                        </th>
+                                        <th>
+                                            Balance
+                                        </th>
+                                    </tr>
+                                </thead>
+                                @{ 
+                                    decimal total = Model.School.FinancialTransactions.Where(t => t.Committed != null).Sum(t => t.Amount);
+                                }
+                                @foreach (var t in Model.School.FinancialTransactions.Where(t => t.Committed != null).OrderByDescending(t => t.TranDate).ThenByDescending(t => t.Id))
+                                {
+                                    <tr>
+                                        <td>
+                                            @t.TranDate.ToLongDateString() @t.TranDate.ToLongTimeString()
+                                        </td>
+                                        <td>
+                                            @t.TranType
+                                        </td>
+                                        <td>
+                                            @t.Amount.ToString("C")
+                                        </td>
+                                        <td>
+                                            @total.ToString("C")
+                                        </td>
+                                    </tr>
+                                    total -= t.Amount;
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -506,6 +680,44 @@
     uploadImageUrl = "../../School/UploadImageAsync";
                             id = '@Model.School.Id'; //  SchoolId
                             aspectratio = 16 / 9;
+
+    $(function () {
+        $("#School_PayeeAddress").geocomplete({
+            details: "form",
+            types: ["geocode", "establishment"],
+        })
+        .bind("geocode:result", function (event, result) {
+            //$.each(result.reviews, function (i, review) {
+            //    alert(review.text);
+            //});
+            var street_num;
+            var street_name;
+            $.each(result.address_components, function (i, address_component) {
+
+                //alert(address_component.types[0]);
+                //alert(address_component.long_name);
+                if (address_component.types[0] == "street_number") {
+                    street_num = address_component.long_name;
+                }
+                else if (address_component.types[0] == "route") {
+                    street_name = address_component.long_name;
+                }
+                else if (address_component.types[0] == "locality") {
+                    $('#School_PayeeCity').prop("value", address_component.long_name);
+                }
+                else if (address_component.types[0] == "administrative_area_level_1") {
+                    $('#School_PayeeState').prop("value", address_component.long_name);
+                }
+                else if (address_component.types[0] == "postal_code") {
+                    $('#School_PayeeZip').prop("value", address_component.long_name);
+                }
+            });
+            //alert(street_num + " " + street_name);
+            $('#School_PayeeAddress').prop("value", street_num + " " + street_name);
+            //  console.log(result);
+        });
+    });
+
     @*function loadImage(input) {
             if (input.files && input.files[0]) {
                 if (input.files[0].size < 1000000)
@@ -629,11 +841,11 @@
         $.get('@Url.Action("FacebookEventsPartial", "Dancer")', { 'username': '@User.Identity.Name', 'eventType' : 'Class', 'schoolId' : '@Model.School.Id', 'role' : '@(Model.School.Teachers.Where(t => t.ApplicationUser.Id == User.Identity.GetUserId()).Count() == 1 ? "teacher" : "owner")' }, function (data) {
             $("#importfbclasses").empty();
             $("#importfbclasses").html(data);
-            $('#importfbclasses').readmore({
-                speed: 500,
-                collapsedHeight: 100,
-                moreLink: '<a class="col-lg-12" style="padding: 5px" href="#">View All Events</a>'
-            });
+            //$('#importfbclasses').readmore({
+            //    speed: 500,
+            //    collapsedHeight: 100,
+            //    moreLink: '<a class="col-lg-12" style="padding: 5px" href="#">View All Events</a>'
+            //});
         });
     };
 

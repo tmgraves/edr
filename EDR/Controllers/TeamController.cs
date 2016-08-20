@@ -284,8 +284,12 @@ namespace EDR.Controllers
         [Authorize(Roles = "Teacher,Owner")]
         public ActionResult RemoveTeacher(int id, int teacherid)
         {
-            DataContext.Teams.Where(s => s.Id == id).Include("Teachers").FirstOrDefault().Teachers.Remove(DataContext.Teachers.Single(t => t.Id == teacherid));
-            DataContext.SaveChanges();
+            var team = DataContext.Teams.Where(s => s.Id == id).Include("Teachers").FirstOrDefault();
+            if (team.Teachers.Count() > 1)
+            {
+                team.Teachers.Remove(team.Teachers.Single(t => t.Id == teacherid));
+                DataContext.SaveChanges();
+            }
             return RedirectToAction("Manage", new { id = id });
         }
 
@@ -548,7 +552,7 @@ namespace EDR.Controllers
                                 .Include("Place")
                                 .Include("EventInstances")
                                 .Include("EventInstances.EventRegistrations")
-                                .Where(p => p.TeamId == id);
+                                .Where(p => p.TeamId == id && p.StartDate >= start);
             //  return PartialView("~/Views/Shared/DisplayTemplates/Performances.cshtml", performances);
             return PartialView("~/Views/Shared/_EventsPartial.cshtml", performances);
         }
@@ -621,7 +625,12 @@ namespace EDR.Controllers
         {
             if (ModelState.IsValid)
             {
+                var userid = User.Identity.GetUserId();
                 model.Team.DanceStyles = DataContext.DanceStyles.Where(s => model.DanceStyleId.Contains(s.Id.ToString())).ToList();
+                model.Team.Teachers = new List<Teacher>();
+                model.Team.Teachers.Add(DataContext.Teachers.Single(t => t.ApplicationUser.Id == userid));
+                model.Team.Members = new List<OrganizationMember>();
+                model.Team.Members.Add(new OrganizationMember() { UserId = userid, Admin = true, OrganizationId = model.Team.Id });
                 DataContext.Teams.Add(model.Team);
                 DataContext.SaveChanges();
 
@@ -830,13 +839,24 @@ namespace EDR.Controllers
         [Authorize]
         public ActionResult UpdateMembers(TeamManageViewModel model)
         {
-            foreach (var m in model.Team.Members)
+            if (model.Team.Members.Where(m => m.Admin).Count() > 0)
             {
-                var mem = DataContext.OrganizationMembers.Where(om => om.Id == m.Id).FirstOrDefault();
-                mem.Admin = m.Admin;
+                foreach (var m in model.Team.Members)
+                {
+                    var mem = DataContext.OrganizationMembers.Where(om => om.Id == m.Id).FirstOrDefault();
+                    mem.Admin = m.Admin;
+                }
+                DataContext.SaveChanges();
             }
-            DataContext.SaveChanges();
             return RedirectToAction("Manage", new { id = model.Team.Id });
+        }
+
+        [Authorize(Roles = "Teacher")]
+        public ActionResult RemoveMember(int id, string memberid)
+        {
+            DataContext.OrganizationMembers.Remove(DataContext.OrganizationMembers.Single(m => m.OrganizationId == id && m.UserId == memberid));
+            DataContext.SaveChanges();
+            return RedirectToAction("Manage", new { id = id });
         }
 
         [Authorize]

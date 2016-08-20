@@ -105,6 +105,12 @@
                                             }
                                             else
                                             {
+                                                <div id="promotergroup" class="row" style="margin-bottom: 5px;">
+                                                    @Html.DropDownListFor(m => m.PromoterGroupId,
+                                                                            Model.PromoterGroups.Select(g => new SelectListItem() { Text = g.Name, Value = g.Id.ToString() }),
+                                                                            new { @class = "form-control" })
+                                                    @Html.ValidationMessageFor(m => m.PromoterGroupId, "", new { @class = "text-danger" })
+                                                </div>
                                                 @Html.HiddenFor(m => m.SkillLevel)
                                             }
                                             <div class="row" style="margin-bottom: 5px;">

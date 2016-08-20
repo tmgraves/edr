@@ -91,6 +91,9 @@ namespace EDR.Models.ViewModels
         [Range(1, 100)]
         public int EventCount { get; set; }
 
+        public List<PromoterGroup> PromoterGroups { get; set; }
+        public int? PromoterGroupId { get; set; }
+
         //[Range(1, 12)]
         //public int StartHour { get; set; }
         //[Range(0, 59)]
@@ -111,9 +114,11 @@ namespace EDR.Models.ViewModels
             StylesCheckboxList = new MultiCheckBox();
             //  Tickets = new List<Ticket>();
         }
-        public EventCreateViewModel(EventType eventType, int? schoolId, RoleName role)
+        public EventCreateViewModel(EventType eventType, int? schoolId, int? promotergroupId, RoleName role)
         {
+            Role = role;
             SchoolId = schoolId;
+            PromoterGroupId = promotergroupId;
             EventType = eventType;
             Places = new List<PlaceItem>();
             MonthDays = new MultiCheckBox();
@@ -131,7 +136,7 @@ namespace EDR.Models.ViewModels
             }
             else
             {
-                Event = new Social() { StartDate = DateTime.Today, EndDate = DateTime.Today, StartTime = DateTime.Today.Add(new TimeSpan(20, 00, 0)), EndTime = DateTime.Today.Add(new TimeSpan(24, 00, 0)), Place = new Place() };
+                Event = new Social() { StartDate = DateTime.Today, EndDate = DateTime.Today, StartTime = DateTime.Today.Add(new TimeSpan(20, 00, 0)), EndTime = DateTime.Today.Add(new TimeSpan(24, 00, 0)), Place = new Place(), PromoterGroupId = promotergroupId };
             }
         }
     }
@@ -289,6 +294,8 @@ namespace EDR.Models.ViewModels
         [Url(ErrorMessage = "Please enter a valid Facebook, Twitter, or other url")]
         public Uri NewLinkedMedia { get; set; }
         public MusicType MusicType { get; set; }
+        public List<PromoterGroup> PromoterGroups { get; set; }
+        public int? PromoterGroupId { get; set; }
 
         public EventManageViewModel()
         {

@@ -133,6 +133,8 @@ namespace EDR.Data
             modelBuilder.Entity<Ticket>().ToTable("Tickets");
             //modelBuilder.Entity<EventTicket>().ToTable("EventTickets");
             modelBuilder.Entity<UserTicket>().ToTable("UserTickets");
+            modelBuilder.Entity<FinancialTransaction>().ToTable("FinancialTransactions");
+            modelBuilder.Entity<PaymentBatch>().ToTable("PaymentBatches");
 
             //Organizations
             modelBuilder.Entity<Organization>().ToTable("Organizations");
@@ -188,12 +190,15 @@ namespace EDR.Data
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<DancePack> DancePacks { get; set; }
+        public DbSet<FinancialTransaction> FinancialTransactions { get; set; }
+        public DbSet<PaymentBatch> PaymentBatches { get; set; }
 
         //Organization
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<OrganizationMember> OrganizationMembers { get; set; }
         public DbSet<School> Schools { get; set; }
         public DbSet<Team> Teams { get; set; }
+        public DbSet<PromoterGroup> PromoterGroups { get; set; }
 
         //  Email
         public DbSet<Email> Emails { get; set; }

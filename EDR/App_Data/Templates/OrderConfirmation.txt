@@ -21,6 +21,12 @@ table, th, td {{
 <p>
 Thank you for your order.  Here is your order receipt:
 </p>
+<p>
+<b>Order #:</b> {4}
+</p>
+<p>
+<b>Order Date:</b> {5}
+</p>
 {1}
 <p>
 To view your profile, please click the button below:

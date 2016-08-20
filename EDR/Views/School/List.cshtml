@@ -32,26 +32,18 @@
             <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
                 <div class="form-group">
                     @*@Html.Label("Location:", htmlAttributes: new { @class = "control-label col-md-4 col-lg-4" })*@
-                    <div class="col-md-12 col-lg-12">
-                        @Html.TextBoxFor(m => m.Location, new { placeholder = "Location", @class = "form-control locationsearch" })
-                    </div>
+                    @Html.TextBoxFor(m => m.Location, new { placeholder = "Location", @class = "form-control locationsearch" })
                 </div>
                 <div class="form-group">
-                    <div class="col-md-12 col-lg-12">
-                        @Html.HiddenFor(m => m.DanceStyleId, new { @class = "stylesearchid" })
-                        @Html.TextBoxFor(m => m.Style, new { placeholder = "Dance Style", @class = "form-control stylesearch" })
-                    </div>
+                    @Html.HiddenFor(m => m.DanceStyleId, new { @class = "stylesearchid" })
+                    @Html.TextBoxFor(m => m.Style, new { placeholder = "Dance Style", @class = "form-control stylesearch" })
                 </div>
                 <div class="form-group">
-                    <div class="col-md-12 col-lg-12">
-                        @Html.HiddenFor(m => m.TeacherId, new { @class = "teachersearchid" })
-                        @Html.TextBoxFor(m => m.Teacher, new { placeholder = "Teacher", @class = "form-control teachersearch" })
-                    </div>
+                    @Html.HiddenFor(m => m.TeacherId, new { @class = "teachersearchid" })
+                    @Html.TextBoxFor(m => m.Teacher, new { placeholder = "Teacher", @class = "form-control teachersearch" })
                 </div>
                 <div class="form-group">
-                    <div class="col-md-12 col-lg-12">
-                        <input type="submit" value="Search Schools" class="btn btn-warning" />
-                    </div>
+                    <input type="submit" value="Search Schools" class="btn btn-warning" />
                 </div>
             </div>
         </div>

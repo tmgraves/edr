@@ -229,9 +229,11 @@ namespace EDR.Controllers
                         .Include("DanceStyles")
                         .Include("Place")
                         .Include("LinkedMedia")
+                        .Include("PromoterGroup")
                         .SingleOrDefault(e => e.Id == id && (e.Promoters.Any(t => t.ApplicationUser.Id == userid) || e.Owners.Any(t => t.ApplicationUser.Id == userid)));
                 model.Event = soc;
                 model.MusicType = soc.MusicType;
+                model.PromoterGroups = DataContext.PromoterGroups.Where(g => g.Promoters.Any(p => p.ApplicationUser.Id == userid)).ToList();
             }
 
             if (model.Event == null)
@@ -253,6 +255,10 @@ namespace EDR.Controllers
             if (model.Event is Class)
             {
                 model.SchoolId = DataContext.Classes.Single(c => c.Id == model.Event.Id).SchoolId;
+            }
+            else if (model.Event is Social)
+            {
+                model.PromoterGroupId = DataContext.Socials.Single(s => s.Id == model.Event.Id).PromoterGroupId;
             }
 
             model.EventType = eventType;
@@ -1074,6 +1080,10 @@ namespace EDR.Controllers
             else
             {
                 model.CurrentInstance = model.Event.EventInstances.Where(i => i.DateTime >= DateTime.Today).OrderBy(i => i.DateTime).FirstOrDefault();
+                if (model.CurrentInstance == null)
+                {
+                    model.CurrentInstance = model.Event.EventInstances.OrderByDescending(i => i.DateTime).Take(1).FirstOrDefault();
+                }
             }
 
             ////  Get Tickets
@@ -2138,9 +2148,9 @@ namespace EDR.Controllers
 
 //          [Route("{eventType}/Create")]
         [Authorize(Roles = "Owner,Promoter,Teacher")]
-        public ActionResult Create(EventType eventType, int? schoolId, RoleName role, string fbId)
+        public ActionResult Create(EventType eventType, int? schoolId, int? promotergroupId, RoleName role, string fbId)
         {
-            var model = new EventCreateViewModel(eventType, schoolId, role);
+            var model = new EventCreateViewModel(eventType, schoolId, promotergroupId, role);
             var userid = User.Identity.GetUserId();
             var user = DataContext.Users.Single(u => u.Id == userid);
 
@@ -2235,6 +2245,11 @@ namespace EDR.Controllers
             }
             //  Load School
 
+            //  Load Promoter Groups
+            model.PromoterGroups = DataContext.PromoterGroups.Where(g => g.Promoters.Any(p => p.ApplicationUser.Id == userid)).ToList();
+            //  Load Promoter Groups
+
+
             ////  Set Tikcets
             //model.Tickets = DataContext.Tickets.Where(t => t.SchoolId == model.SchoolId).ToList();
             ////  Set Tickets
@@ -2310,6 +2325,7 @@ namespace EDR.Controllers
                     else
                     {
                         evnt = new Social();
+                        ((Social)evnt).PromoterGroupId = model.PromoterGroupId;
                         if (model.Role == RoleName.Promoter)
                         {
                             ((Social)evnt).Promoters = new List<Promoter>() { DataContext.Promoters.Single(t => t.ApplicationUser.Id == userid) };
@@ -2836,6 +2852,7 @@ namespace EDR.Controllers
                     if (evnt is Social)
                     {
                         ((Social)evnt).MusicType = model.MusicType;
+                        ((Social)evnt).PromoterGroupId = model.PromoterGroupId;
                     }
 
                     if (model.NewPlace.GooglePlaceId != null)

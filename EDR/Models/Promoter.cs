@@ -33,5 +33,13 @@ namespace EDR.Models
         public ICollection<SocialPromoterInvitation> SocialPromoterInvitations { get; set; }
         public virtual ICollection<DanceStyle> DanceStyles { get; set; }
         public virtual ICollection<Feed> Feeds { get; set; }
+        public virtual ICollection<PromoterGroup> PromoterGroups { get; set; }
+    }
+
+    public class PromoterGroup : Organization
+    {
+        public virtual ICollection<Promoter> Promoters { get; set; }
+        public ICollection<Social> Socials { get; set; }
+        public virtual ICollection<FinancialTransaction> FinancialTransactions { get; set; }
     }
 }

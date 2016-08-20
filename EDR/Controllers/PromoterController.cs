@@ -20,7 +20,10 @@ namespace EDR.Controllers
         public ActionResult Manage()
         {
             var userid = User.Identity.GetUserId();
-            var model = DataContext.Promoters.Single(s => s.ApplicationUser.Id == userid);
+            var model = new PromoterManageViewModel();
+            model.Promoter = DataContext.Promoters
+                                .Include("PromoterGroups")
+                                .Single(s => s.ApplicationUser.Id == userid);
 
             return View(model);
         }
@@ -28,17 +31,131 @@ namespace EDR.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Promoter")]
-        public ActionResult Manage(Promoter model)
+        public ActionResult Manage(PromoterManageViewModel model)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValidField("Promoter"))
             {
-                var promoter = DataContext.Promoters.Include("ApplicationUser").Single(d => d.Id == model.Id);
+                var promoter = DataContext.Promoters.Include("ApplicationUser").Single(d => d.Id == model.Promoter.Id);
                 TryUpdateModel(promoter);
                 DataContext.Entry(promoter).State = EntityState.Modified;
                 DataContext.SaveChanges();
                 return RedirectToAction("Manage");
             }
             return View(model);
+        }
+
+        [Authorize(Roles = "Promoter")]
+        public ActionResult ManageGroup(int id, int promoterid)
+        {
+            var userid = User.Identity.GetUserId();
+            var model = new PromoterGroupManageViewModel();
+            model.Promoter = DataContext.Promoters.Single(p => p.Id == promoterid);
+            model.PromoterGroup = DataContext.PromoterGroups
+                                .Include("Promoters")
+                                .Include("Socials.EventInstances.EventRegistrations")
+                                .Include("Socials.Tickets.UserTickets")
+                                .Single(s => s.Id == id);
+
+            if (model.PromoterGroup.Promoters.Where(p => p.ApplicationUser.Id == userid).Count() != 0)
+            {
+                return View(model);
+            }
+            else
+            {
+                ViewBag.Message = "You're not authorized";
+                return View("Error");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Promoter")]
+        public ActionResult ManageGroup(PromoterGroupManageViewModel model)
+        {
+            var userid = User.Identity.GetUserId();
+
+            var group = DataContext.PromoterGroups.Include("Promoters").Single(g => g.Id == model.PromoterGroup.Id);
+            if (group.Promoters.Where(p => p.ApplicationUser.Id == userid).Count() != 0)
+            {
+                if (ModelState.IsValidField("PromoterGroup"))
+                {
+                    group.Name = model.PromoterGroup.Name;
+                    group.PayeeAddress = model.PromoterGroup.PayeeAddress;
+                    group.PayeeCity = model.PromoterGroup.PayeeCity;
+                    group.PayeeState = model.PromoterGroup.PayeeState;
+                    group.PayeeZip = model.PromoterGroup.PayeeZip;
+                    group.BankName = model.PromoterGroup.BankName;
+                    group.BankAccount = model.PromoterGroup.BankAccount;
+                    group.RoutingNumber = model.PromoterGroup.RoutingNumber;
+                    group.PayeeName = model.PromoterGroup.PayeeName;
+
+                    //  UpdateModel(group, "PromoterGroup");
+                    DataContext.Entry(group).State = EntityState.Modified;
+                    DataContext.SaveChanges();
+                    return RedirectToAction("ManageGroup", new { id = model.PromoterGroup.Id, promoterid = model.Promoter.Id });
+                }
+                return RedirectToAction("ManageGroup", new { id = model.PromoterGroup.Id, promoterid = model.Promoter.Id });
+            }
+            else
+            {
+                ViewBag.Message = "You're not authorized";
+                return View("Error");
+            }
+        }
+
+        [Authorize(Roles = "Promoter,Owner,Admin")]
+        [HttpPost]
+        public ActionResult AddGroupPromoter(FormCollection formCollection)
+        {
+            int id = Convert.ToInt32(formCollection["id"]);
+            string promid = formCollection["promoterid"];
+            string promoterid = formCollection["rpromoterid"];
+            if (DataContext.PromoterGroups.Where(c => c.Id == id && c.Promoters.Any(t => t.ApplicationUser.Id == promid)).Count() == 0)
+            {
+                DataContext.PromoterGroups.Single(s => s.Id == id).Promoters.Add(DataContext.Promoters.Single(t => t.ApplicationUser.Id == promid));
+                DataContext.SaveChanges();
+            }
+            return RedirectToAction("ManageGroup", new { id = id, promoterid = promoterid });
+        }
+
+        [Authorize(Roles = "Promoter,Owner,Admin")]
+        public ActionResult RemoveGroupPromoter(int id, int promoterid, int rpromoterid)
+        {
+            DataContext.PromoterGroups.Where(s => s.Id == id).Include("Promoters").FirstOrDefault().Promoters.Remove(DataContext.Promoters.Single(t => t.Id == promoterid));
+            DataContext.SaveChanges();
+            return RedirectToAction("ManageGroup", new { id = id, promoterid = rpromoterid });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Promoter")]
+        public ActionResult AddGroup(PromoterManageViewModel model)
+        {
+            if (ModelState.IsValidField("NewPromoterGroup"))
+            {
+                try
+                {
+                    model.NewPromoterGroup.Promoters = new List<Promoter>() { DataContext.Promoters.Single(p => p.Id == model.Promoter.Id) };
+                    DataContext.PromoterGroups.Add(model.NewPromoterGroup);
+                    DataContext.SaveChanges();
+                    return RedirectToAction("Manage");
+                }
+                catch(Exception ex)
+                {
+                    return RedirectToAction("View", model.Promoter.Id);
+                }
+            }
+            return RedirectToAction("View", model.Promoter.Id);
+        }
+
+        // GET: School
+        [Authorize(Roles = "Teacher")]
+        public ActionResult DeleteGroup(int id, int promoterId)
+        {
+            var group = DataContext.PromoterGroups.Where(s => s.Id == id).FirstOrDefault();
+            group.Promoters.Clear();
+            DataContext.PromoterGroups.Remove(group);
+            DataContext.SaveChanges();
+            return RedirectToAction("Manage", new { id = promoterId });
         }
 
         public ActionResult List(PromoterListViewModel model)

@@ -12,6 +12,7 @@ using System.ComponentModel;
 using AuthorizeNet.Api.Controllers;
 using AuthorizeNet.Api.Contracts.V1;
 using AuthorizeNet.Api.Controllers.Bases;
+using EDR.Enums;
 
 namespace EDR.Models
 {
@@ -76,6 +77,8 @@ namespace EDR.Models
         [ForeignKey("UserId")]
         public virtual ApplicationUser User { get; set; }
         public decimal Total { get; set; }
+        //  Tran ID that comes back from Authorize.net
+        public string OrderTransactionId { get; set; }
         public int? EventInstanceId { get; set; }
         [ForeignKey("EventInstanceId")]
         public EventInstance EventInstance { get; set; }
@@ -119,6 +122,56 @@ namespace EDR.Models
         public string AccountType { get; set; }
         public bool Success { get; set; }
         public string TransactionId { get; set; }
+    }
+
+    [Bind(Exclude = "Id")]
+    public class FinancialTransaction : Entity
+    {
+        private DateTime _date = DateTime.Now;
+        [ScaffoldColumn(false)]
+        [Required]
+        public DateTime TranDate
+        {
+            get { return _date; }
+            set { _date = value; }
+        }
+        public decimal Amount { get; set; }
+        public string TranType { get; set; }
+        public int? OrderId { get; set; }
+        [ForeignKey("OrderId")]
+        public Order Order { get; set; }
+        public string OrderTransactionId { get; set; }
+        public PaymentType PaymentType { get; set; }
+        public string PayeeInfo { get; set; }
+        public int? SchoolId { get; set; }
+        [ForeignKey("SchoolId")]
+        public virtual School School { get; set; }
+        public int? PromoterId { get; set; }
+        [ForeignKey("PromoterId")]
+        public virtual Promoter Promoter { get; set; }
+        public int? PromoterGroupId { get; set; }
+        [ForeignKey("PromoterGroupId")]
+        public virtual PromoterGroup PromoterGroup { get; set; }
+        public int? PaymentBatchId { get; set; }
+        [ForeignKey("PaymentBatchId")]
+        public virtual PaymentBatch PaymentBatch { get; set; }
+        public DateTime? Committed { get; set; }
+    }
+
+    [Bind(Exclude = "Id")]
+    public class PaymentBatch : Entity
+    {
+        private DateTime _date = DateTime.Now;
+        [ScaffoldColumn(false)]
+        [Required]
+        public DateTime BatchDate
+        {
+            get { return _date; }
+            set { _date = value; }
+        }
+        public PaymentType PaymentType { get; set; }
+        public DateTime? CommitDate { get; set; }
+        public virtual ICollection<FinancialTransaction> FinancialTransactions { get; set; }
     }
 
     [Bind(Exclude = "Id")]

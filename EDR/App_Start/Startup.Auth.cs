@@ -13,6 +13,7 @@ using Microsoft.Owin.Security.Facebook;
 using System.Configuration;
 using Hangfire;
 using EDR.Utilities;
+using EDR.Models;
 
 namespace EDR
 {
@@ -102,6 +103,18 @@ namespace EDR
 
             ////  Recurring Job to refresh Facebook events
             //RecurringJob.AddOrUpdate(() => FacebookHelper.RefreshEvents(), Cron.Daily);
+
+            //  Recurring Job to send emails in queue
+            RecurringJob.AddOrUpdate(() => EmailProcess.ProcessEmails(), Cron.Hourly);
+
+            //  Recurring Job - Expiring Events
+            RecurringJob.AddOrUpdate(() => EmailProcess.ExpiringEvents(), Cron.Daily);
+
+            //  Recurring Job - Daily Dancer Summary
+            RecurringJob.AddOrUpdate(() => EmailProcess.DailyDancerSummaries(), Cron.Daily);
+
+            //  Recurring Job - Daily Dancer Summary
+            RecurringJob.AddOrUpdate(() => EmailProcess.EventSummaries(), Cron.Daily);
         }
     }
 }

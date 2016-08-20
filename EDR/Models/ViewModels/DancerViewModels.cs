@@ -59,6 +59,7 @@ namespace EDR.Models.ViewModels
         public EventType? Type { get; set; }
         public List<FacebookEvent> FacebookEvents { get; set; }
         public int? SchoolId { get; set; }
+        public int? PromoterGroupId { get; set; }
         public RoleName Role { get; set; }
     }
 

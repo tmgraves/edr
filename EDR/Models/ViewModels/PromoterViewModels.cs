@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EDR.Models.ViewModels
 {
@@ -44,5 +45,17 @@ namespace EDR.Models.ViewModels
 
         //  Results
         public IEnumerable<Promoter> Promoters { get; set; }
+    }
+
+    public class PromoterManageViewModel
+    {
+        public Promoter Promoter { get; set; }
+        public PromoterGroup NewPromoterGroup { get; set; }
+    }
+
+    public class PromoterGroupManageViewModel
+    {
+        public Promoter Promoter { get; set; }
+        public PromoterGroup PromoterGroup { get; set; }
     }
 }

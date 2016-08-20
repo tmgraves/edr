@@ -11,9 +11,18 @@
     <td>
         @if (Model.User.UserName != User.Identity.Name)
         {
-            <a class="text-danger" title="Delete" href="@Url.Action("RemoveMember", "School", new { id = Model.OrganizationId, memberid = Model.UserId })">
-                <i class="glyphicon glyphicon-remove-circle"></i>
-            </a>
+            if (Model.Organization is EDR.Models.Team)
+            {
+                <a class="text-danger" title="Delete" href="@Url.Action("RemoveMember", "Team", new { id = Model.OrganizationId, memberid = Model.UserId })">
+                    <i class="glyphicon glyphicon-remove-circle"></i>
+                </a>
+            }
+            else if (Model.Organization is EDR.Models.School)
+            {
+                <a class="text-danger" title="Delete" href="@Url.Action("RemoveMember", "School", new { id = Model.OrganizationId, memberid = Model.UserId })">
+                    <i class="glyphicon glyphicon-remove-circle"></i>
+                </a>
+            }
         }
     </td>
 </tr>

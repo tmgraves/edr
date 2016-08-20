@@ -23,6 +23,7 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Financials", "Index", "Financial")</li>
                     <li>@Html.ActionLink("Roles", "Index", "Roles")</li>
                     <li>@Html.ActionLink("Dance Styles", "Index", "DanceStyle")</li>
                     <li>@Html.ActionLink("Email", "Dashboard", "Email")</li>
@@ -51,7 +52,7 @@
         </div>
     </div>*@
 
-    <div class="container body-content">
+    <div class="container-fluid body-content">
         @RenderBody()
         <hr />
         <footer>

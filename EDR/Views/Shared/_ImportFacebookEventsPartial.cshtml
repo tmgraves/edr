@@ -15,9 +15,18 @@
                         </a>
                     </span>
                 </div>
-                <a class="col-lg-2 col-md-2 col-sm-2 col-xs-2 btn btn-sm btn-primary" href="@Url.Action("Create", "Event", new { eventType = Model.Type, schoolId = Model.SchoolId, role = Model.Role, fbId = evt.Id })" title="@evt.Name">
-                    Import
-                </a>
+                @if (Model.Type == EDR.Enums.EventType.Class)
+                {
+                    <a class="col-lg-2 col-md-2 col-sm-2 col-xs-2 btn btn-sm btn-primary" href="@Url.Action("Create", "Event", new { eventType = Model.Type, schoolId = Model.SchoolId, role = Model.Role, fbId = evt.Id })" title="@evt.Name">
+                        Import
+                    </a>
+                }
+                else
+                {
+                    <a class="col-lg-2 col-md-2 col-sm-2 col-xs-2 btn btn-sm btn-primary" href="@Url.Action("Create", "Event", new { eventType = Model.Type, promotergroupid = Model.PromoterGroupId, role = Model.Role, fbId = evt.Id })" title="@evt.Name">
+                        Import
+                    </a>
+                }
             </div>
             }
         </div>

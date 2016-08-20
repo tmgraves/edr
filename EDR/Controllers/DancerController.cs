@@ -453,11 +453,12 @@ namespace EDR.Controllers
 
         }
 
-        public ActionResult FacebookEventsPartial(string username, EventType? eventType, int? schoolId, RoleName role)
+        public ActionResult FacebookEventsPartial(string username, EventType? eventType, int? schoolId, int? promotergroupId, RoleName role)
         {
             var model = new FacebookEventsViewModel();
             model.Type = eventType;
             model.SchoolId = schoolId;
+            model.PromoterGroupId = promotergroupId;
             model.Role = role;
 
             //  Load Facebook Events

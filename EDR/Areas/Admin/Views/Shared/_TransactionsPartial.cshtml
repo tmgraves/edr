@@ -1,0 +1,57 @@
+﻿@model List<EDR.Models.FinancialTransaction>
+
+<h4>Batch Details</h4>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>
+                Date
+            </th>
+            <th>
+                Partner
+            </th>
+            <th>
+                Transaction Type
+            </th>
+            <th>
+                Amount
+            </th>
+            <th>
+                Payment Type
+            </th>
+            <th>
+                Commit Date
+            </th>
+        </tr>
+    </thead>
+    @foreach (var t in Model.OrderByDescending(t => t.TranDate).ThenByDescending(t => t.Id))
+    {
+        <tr>
+            <td>
+                @t.TranDate.ToShortDateString() @t.TranDate.ToShortTimeString()
+            </td>
+            <td>
+                @if (t.PromoterGroup != null)
+                {
+                    @t.PromoterGroup.Name
+                }
+                else
+                {
+                    @t.School.Name
+                }
+            </td>
+            <td>
+                @t.TranType
+            </td>
+            <td>
+                @t.Amount.ToString("C")
+            </td>
+            <td>
+                @EDR.Utilities.ApplicationUtility.GetDisplayName(t.PaymentType)
+            </td>
+            <td>
+                @t.Committed
+            </td>
+        </tr>
+    }
+</table>

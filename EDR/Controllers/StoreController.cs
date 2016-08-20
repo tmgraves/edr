@@ -12,6 +12,7 @@ using AuthorizeNet.Api.Controllers.Bases;
 using System.Configuration;
 using System.Data.Entity;
 using System.Globalization;
+using EDR.Enums;
 
 namespace EDR.Controllers
 {
@@ -280,6 +281,33 @@ namespace EDR.Controllers
                     //  Post Transaction
                     if (PostTransaction(model).messages.resultCode == messageTypeEnum.Ok)
                     {
+                        var now = DateTime.Now;
+                        //  Create Financial Record
+                        var tran = new FinancialTransaction() { Amount = model.Order.OrderDetails.Sum(i => i.Ticket.Price * i.Quantity), OrderId = model.Order.Id, OrderTransactionId = model.Order.OrderTransactionId, PaymentType = PaymentType.CC, TranType = "Purchase Order", Committed = now };
+                        var feetran = new FinancialTransaction() { Amount = -tran.Amount * (decimal)GlobalVariables.TicketRate, OrderId = model.Order.Id, PaymentType = PaymentType.Internal, TranType = "Transaction Fee", Committed = now };
+                        if (model.SchoolId != null)
+                        {
+                            tran.SchoolId = model.SchoolId;
+                            feetran.SchoolId = model.SchoolId;
+                        }
+                        else
+                        {
+                            var evnt = DataContext.Events.Single(e => e.Id == model.EventInstance.EventId);
+                            if (evnt is Class)
+                            {
+                                tran.SchoolId = DataContext.Classes.Single(c => c.Id == model.EventInstance.EventId).SchoolId;
+                                feetran.SchoolId = DataContext.Classes.Single(c => c.Id == model.EventInstance.EventId).SchoolId;
+                            }
+                            else
+                            {
+                                tran.PromoterGroupId = DataContext.Socials.Single(c => c.Id == model.EventInstance.EventId).PromoterGroupId;
+                                feetran.PromoterGroupId = DataContext.Socials.Single(c => c.Id == model.EventInstance.EventId).PromoterGroupId;
+                            }
+                        }
+                        DataContext.FinancialTransactions.Add(tran);
+                        DataContext.FinancialTransactions.Add(feetran);
+                        //  Create Financial Record
+
                         //  Create User Ticket record
                         var user = DataContext.Users.Single(u => u.Id == userid);
                         var uticket = new UserTicket() { UserId = userid, TicketId = model.TicketId, Quantity = model.Quantity };
@@ -407,7 +435,7 @@ namespace EDR.Controllers
             {
                 transactionType = transactionTypeEnum.authCaptureTransaction.ToString(),    // charge the card
 
-                amount = model.Order.OrderDetails.Sum(i => i.Ticket.Price),
+                amount = model.Order.OrderDetails.Sum(i => i.Ticket.Price * i.Quantity),
                 payment = paymentType,
                 billTo = billingAddress,
                 lineItems = lineItems.ToArray(),
@@ -428,6 +456,7 @@ namespace EDR.Controllers
             {
                 if (response.transactionResponse != null)
                 {
+                    model.Order.OrderTransactionId = response.transactionResponse.transId;
                     model.Order.OrderTransactions.Add(new OrderTransaction() { Success = true, ResponseCode = response.messages.message[0].code, ResponseMessage = response.messages.message[0].text, TransactionId = response.transactionResponse.transId });
                     //  Console.WriteLine("Success, Auth Code : " + response.transactionResponse.authCode);
                     //  Send a Confirmation

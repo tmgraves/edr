@@ -309,4 +309,20 @@ namespace EDR.Enums
         [Display(Name = "Live Band & DJ")]
         Both
     }
+
+    public enum PaymentType
+    {
+        [Display(Name = "Credit Card")]
+        CC,
+        [Display(Name = "Check")]
+        Check,
+        [Display(Name = "Bill Pay")]
+        BillPay,
+        [Display(Name = "Direct Deposit")]
+        Direct,
+        [Display(Name = "Wire Transfer")]
+        Wire,
+        [Display(Name = "Internal Charge/Credit")]
+        Internal
+    }
 }
