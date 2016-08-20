@@ -33,6 +33,7 @@ namespace EDR.Controllers
         [Authorize]
         private void LoadOrderModel(OrderViewModel model)
         {
+            var userid = User.Identity.GetUserId();
             model.Years = new List<string>();
             for (int i = DateTime.Today.Year; i <= DateTime.Today.Year + 10; i++)
             {
@@ -46,7 +47,7 @@ namespace EDR.Controllers
                 var tickets = new List<Ticket>();
                 if (model.EventInstance.Event.Tickets.Count() != 0)
                 {
-                    tickets = model.EventInstance.Event.Tickets.ToList();
+                    tickets = model.EventInstance.Event.Tickets.Where(t => t.Limit == null || (t.UserTickets != null && t.UserTickets.Where(ut => ut.UserId == userid).Count() < t.Limit)).ToList();
                 }
                 else
                 {
@@ -57,6 +58,7 @@ namespace EDR.Controllers
                              join t in DataContext.Tickets
                              on c.SchoolId equals t.SchoolId
                              where i.Id == model.EventInstanceId
+                             && (t.Limit == null || (t.UserTickets != null && t.UserTickets.Where(ut => ut.UserId == userid).Count() < t.Limit))
                              select t).Distinct().ToList();
                 }
                 model.Tickets = tickets;

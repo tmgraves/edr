@@ -4,6 +4,13 @@
     ViewBag.Title = "BuyTicket";
 }
 
+<style>
+input[type="number"].securitycode::-webkit-outer-spin-button,
+input[type="number"].securitycode::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+</style>
 @using (Html.BeginForm(null, null, FormMethod.Post, new { @class = "form-horizontal", id = "buyticketform", onsubmit = "submitorder()" }))
 {
     @Html.HiddenFor(m => m.Order.Id, new { Value = Model.Order.Id })
@@ -71,12 +78,15 @@
                         <div class="row">
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <div class="col-xs-7 col-sm-7 col-md-8 col-lg-8 nospace">
-                                    @Html.DropDownListFor(m => m.TicketId, Model.Tickets.OrderBy(t => t.Quantity).Select(t => new SelectListItem() { Value = t.Id.ToString(), Text = String.Format("{0:N0}", t.Quantity) + " @ " + String.Format("{0:C0}", t.Price) }).ToList(), "Select a Ticket", new { @class = "form-control" })
+                                    @Html.DropDownListFor(m => m.TicketId, Model.Tickets.OrderBy(t => t.Quantity).Select(t => new SelectListItem() { Value = t.Id.ToString(), Text = String.Format("{0:N0}", t.Quantity) + " @ " + String.Format("{0:C0}", t.Price) + (t.Limit != null ? " (Limit " + t.Limit + "/Person)" : "") }).ToList(), "Select a Ticket", new { @class = "form-control" })
                                 </div>
                                 <div class="col-xs-5 col-sm-5 col-md-4 col-lg-4 input-group nospace">
                                     <div class="input-group-addon">Qty</div>
                                     @Html.TextBoxFor(t => t.Quantity, htmlAttributes: new { @class = "form-control text-right", @type = "number", @min = "1", @autocomplete = "off" })
                                 </div>
+                            </div>
+                            <div>
+                                <div id="ticketdiv"></div>
                             </div>
                         </div>
                     </div>
@@ -111,7 +121,7 @@
                                     @Html.DropDownListFor(m => m.CCYear, new SelectList(Model.Years, "YY"), "YY", htmlAttributes: new { @class = "form-control", style = "display: inline;" })
                                 </div>
                                 <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 nospace">
-                                    @Html.TextBoxFor(m => m.SecurityCode, htmlAttributes: new { @class = "form-control", @type = "number", @size = "4", @autocomplete = "off", @placeholder = "CVV" })
+                                    @Html.TextBoxFor(m => m.SecurityCode, htmlAttributes: new { @class = "form-control securitycode", @type = "number", @size = "4", @min = "0", @autocomplete = "off", @placeholder = "CVV" })
                                 </div>
                             </div>
                         </div>

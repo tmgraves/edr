@@ -11,12 +11,12 @@
 
 @{
     var eventType = Model.Event is Class ? "Class" : "Social";
-    var instance = Model.Event.EventInstances.Where(e => e.DateTime >= DateTime.Today).OrderBy(c => c.DateTime).FirstOrDefault();
-    if (instance == null)
-    {
-        instance = Model.Event.EventInstances.OrderByDescending(c => c.DateTime).FirstOrDefault();
-    }
-    var reg = instance.EventRegistrations.Where(r => r.UserId == userid).FirstOrDefault();
+    //var instance = Model.Event.EventInstances.Where(e => e.DateTime >= DateTime.Today).OrderBy(c => c.DateTime).FirstOrDefault();
+    //if (instance == null)
+    //{
+    //    instance = Model.Event.EventInstances.OrderByDescending(c => c.DateTime).FirstOrDefault();
+    //}
+    var reg = Model.CurrentInstance.EventRegistrations.Where(r => r.UserId == userid).FirstOrDefault();
 }
 
 <ol class="breadcrumb">
@@ -52,14 +52,15 @@
                 <div class="textoverlay topleft text-left" style="width: 100%;">
                     <h3 class="oneline" style="color: #fff;">@Model.Event.Name</h3>
                     <h3 class="nospace" style="color: #fff;">
-                        @if (instance != null)
+                        @Model.CurrentInstance.DateTime.ToString("ddd, MMM\nd") @@@(((DateTime)Model.CurrentInstance.StartTime).ToShortTimeString())
+                        @*@if (instance != null)
                         {
                             @instance.DateTime.ToString("ddd, MMM\nd") @:@@ @(((DateTime)instance.StartTime).ToShortTimeString())
                         }
                         else
                         {
                             <text>Past Event</text>
-                        }
+                        }*@
                     </h3>
                     <div id='parentc' class='col-lg-4 nospace'>
                         <input id='eventrating' type='hidden' class='ratingval' />

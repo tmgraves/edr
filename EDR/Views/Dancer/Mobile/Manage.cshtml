@@ -309,6 +309,7 @@
                                                 @*@Html.ActionLink(item.Instance.Event.Name, "View", "Event", new { id = item.Instance.EventId, eventType = item.Instance.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social }, null)*@
                                             </td>
                                             <td style="max-width: 50px;">
+                                                <input type="hidden" class="registrantname" value="@(item.FirstName + " " + item.LastName)" />
                                                 @if (item.Checkedin != null)
                                                 {
                                                     <div class="btn btn-success">
@@ -519,6 +520,7 @@
             </div>
             <div class="modal-body">
                 <div class="text-center">
+                    <h4 id="registrant"></h4>
                     <div class="barcode" style="display: inline-block; text-align: center;"><input class="regid" type="hidden" /></div>
                 </div>
             </div>
@@ -553,6 +555,10 @@
     })
 
     $('#modalRegistrationCode').on('show.bs.modal', function (e) {
+        var par = $(e.relatedTarget).parent();
+        var name = par.find('.registrantname').val();
+        $('#registrant').text(name);
+
         var regid = $(e.relatedTarget).prop('value');
         $('.barcode').empty();
         $('.barcode').qrcode({

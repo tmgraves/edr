@@ -416,7 +416,7 @@
                 <h3>Links</h3>
                 @foreach (var ee in Model.Event.LinkedMedia)
                 {
-                    <a class="item-short" target="_blank" href="@Url.Content(ee.Url)" title="@ee.Name" style="text-align: left;">
+                    <a class="oneline" target="_blank" href="@Url.Content(ee.Url)" title="@ee.Name" style="text-align: left;">
                         <strong>@ee.Name</strong>
                     </a>
                 }
@@ -795,7 +795,7 @@
                 var row = ""
                 $.each(data, function (index, item) {
                     row +=
-                        "<div class='col-lg-4'>" +
+                        "<div class='col-lg-4 col-md-4'>" +
                             "<div class='buttonoverlay_container'>" +
                                 "<img class='img-rounded' src='http://img.youtube.com/vi/" + item.Id + "/0.jpg' />" +
                                 "<a class='btn btn-danger videoplayer' target='_blank' href='" + item.VideoUrl + "' title='" + item.Title + "'>" +
@@ -827,7 +827,7 @@
                 var row = ""
                 $.each(data, function (index, item) {
                     row +=
-                        "<div class='col-lg-3'>" +
+                        "<div class='col-lg-3 col-md-3'>" +
                             "<a target='_blank' href='" + item.FileName + "' style='text-align: left;' title='" + item.Title + "'>" +
                                 "<div class='croppedpic' style='height: 100px;'>" +
                                     "<img src='" + item.ThumbnailFilename + "' alt='" + item.Title + "' />" +

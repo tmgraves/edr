@@ -2364,15 +2364,15 @@ namespace EDR.Controllers
                     model.Event.EventInstances = new List<EventInstance>();
                     if (model.Event.Recurring)
                     {
-                        var sdate = model.Event.StartDate;
-                        var edate = model.Event.EndDate;
-                        var daylength = (Convert.ToDateTime(model.Event.EndDate) - model.Event.StartDate).TotalDays;
-                        sdate = ApplicationUtility.GetNextDate(sdate, model.Event.Frequency, (int)model.Event.Interval, model.Event.Day, sdate, model.Event.MonthDays);
+                        var sdate = evnt.StartDate;
+                        var edate = evnt.EndDate;
+                        var daylength = (Convert.ToDateTime(evnt.EndDate) - evnt.StartDate).TotalDays;
+                        sdate = ApplicationUtility.GetNextDate(sdate, evnt.Frequency, (int)evnt.Interval, evnt.Day, sdate, evnt.MonthDays);
 
                         for (int i = 1; i <= model.EventCount; i++)
                         {
                             evnt.EventInstances.Add(new EventInstance() { DateTime = sdate, EndDate = sdate.AddDays(daylength), PlaceId = evnt.PlaceId, StartTime = Convert.ToDateTime(sdate.ToShortDateString() + " " + ((DateTime)evnt.StartTime).ToShortTimeString()), EndTime = Convert.ToDateTime(sdate.AddDays(daylength).ToShortDateString() + " " + ((DateTime)evnt.EndTime).ToShortTimeString()) });
-                            sdate = ApplicationUtility.GetNextDate(sdate, model.Event.Frequency, (int)model.Event.Interval, model.Event.Day, sdate.AddDays(1), model.Event.MonthDays);
+                            sdate = ApplicationUtility.GetNextDate(sdate, evnt.Frequency, (int)evnt.Interval, evnt.Day, sdate.AddDays(1), evnt.MonthDays);
                         }
                     }
                     else
