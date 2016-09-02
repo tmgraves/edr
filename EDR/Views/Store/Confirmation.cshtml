@@ -87,7 +87,10 @@
                     }
                     else
                     {
-                        @Html.ActionLink("Return to " + Model.Order.OrderDetails.FirstOrDefault().Ticket.School.Name, "View", "School", new { id = Model.Order.OrderDetails.FirstOrDefault().Ticket.SchoolId }, new { @class = "btn btn-primary" })
+                        @{ 
+                            var det = Model.Order.OrderDetails.FirstOrDefault()
+                        }
+                        @Html.ActionLink("Return to " + det.Ticket.School.Name, "View", "School", new { id = det.Ticket.SchoolId, school = ApplicationUtility.ToUrlSlug(det.Ticket.School.Name), location = ApplicationUtility.ToUrlSlug(det.Ticket.School.City) }, new { @class = "btn btn-primary" })
                     }
                 </div>
             </div>

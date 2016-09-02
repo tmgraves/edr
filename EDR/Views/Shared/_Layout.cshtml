@@ -78,7 +78,7 @@ window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]
                     {
                         @*<li>@Html.ActionLink("Explore", "Explore", "Home")</li>*@
                         <li class='@Html.IsActive("Classes", "Event")'>
-                            @Html.ActionLink("Classes", "Classes", "Event")
+                            @Html.ActionLink("Classes", "Classes", "Event", new { Location = "" }, null)
                         </li>
                         <li class='@Html.IsActive("Socials", "Event")'>
                             @Html.ActionLink("Events", "Socials", "Event")
@@ -134,7 +134,7 @@ window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]
                     else
                     {
                         <li class='@Html.IsActive("Classes", "Event")'>
-                            @Html.ActionLink("Classes", "Classes", "Event")
+                            @Html.ActionLink("Classes", "Classes", "Event", new { Location = "" })
                         </li>
                         <li class='@Html.IsActive("Socials", "Event")'>
                             @Html.ActionLink("Events", "Socials", "Event")

@@ -210,7 +210,7 @@ input[type="number"].securitycode::-webkit-inner-spin-button {
                             }
                             else
                             {
-                                @Html.ActionLink("Cancel Order", "View", "School", new { id = Model.School.Id }, new { @class = "btn btn-warning" })
+                                @Html.ActionLink("Cancel Order", "View", "School", new { id = Model.School.Id, school = EDR.Utilities.ApplicationUtility.ToUrlSlug(Model.School.Name), location = EDR.Utilities.ApplicationUtility.ToUrlSlug(Model.School.City) }, new { @class = "btn btn-warning" })
                             }
                         </div>
                         <div class="col-sm-6 text-right">

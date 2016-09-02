@@ -35,7 +35,7 @@
                                 @Model.Team.City, @Model.Team.State
                             </p>
                             <p>
-                                @@ @Html.ActionLink(Model.Team.School.Name, "View", "School", new { id = Model.Team.SchoolId }, new { @class = "lead" })
+                                @@ @Html.ActionLink(Model.Team.School.Name, "View", "School", new { id = Model.Team.SchoolId, school = EDR.Utilities.ApplicationUtility.ToUrlSlug(Model.Team.School.Name), location = EDR.Utilities.ApplicationUtility.ToUrlSlug(Model.Team.School.City) }, new { @class = "lead" })
                             </p>
                             <p>
                                 <span class="label label-success">

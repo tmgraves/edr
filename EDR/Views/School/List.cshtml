@@ -99,7 +99,7 @@
                 icon: "../../Content/images/MapMarker.png"
             });
 
-            attachMessage(map, marker, '@s.Id', '@s.Name', '@s.Address', '@(s.City + ", " + s.State + " " + s.Zip)', '<a href="@Url.Action("View", "School", new { id = s.Id })">' + '@s.Name' + '</a>');
+            attachMessage(map, marker, '@s.Id', '@s.Name', '@s.Address', '@(s.City + ", " + s.State + " " + s.Zip)', '<a href="@Url.Action("View", "School", new { id = s.Id, school = EDR.Utilities.ApplicationUtility.ToUrlSlug(s.Name), location = EDR.Utilities.ApplicationUtility.ToUrlSlug(s.City) })">' + '@s.Name' + '</a>');
             markers.push(marker);
             </text>
     }

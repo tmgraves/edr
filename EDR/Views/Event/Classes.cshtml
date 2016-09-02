@@ -1,7 +1,14 @@
 ﻿@model EDR.Models.ViewModels.LearnViewModel
 
 @{
-    ViewBag.Title = "Find Dance Classes";
+    if (Model.Location != null)
+    {
+        ViewBag.Title = "Dance Classes in " + Model.Location;
+    }
+    else
+    {
+        ViewBag.Title = "Find Dance Classes";
+    }
     ViewBag.Keywords = "Social Dance Class Workshop " + String.Join(" ", Model.Styles);
     ViewBag.Description = "Find dance classes/workshops in your area.  Sign up for group classes or private lessons.  Learn your favorite style today: " + String.Join(", ", Model.Styles);
 }
@@ -242,10 +249,13 @@
     var markers = [];
     var infowindows = [];
     $(function () {
+        var location = '@Model.Location';
         //  Map Marker Containers
         //  Map Marker Containers
         //  Build up the Markers
+
         var map = $(".locationsearch").geocomplete("map");
+        //  $(".locationsearch").geocomplete("find", "Detroit");
 
         @foreach(var s in Model.Classes.OrderBy(c => c.NextDate))
         {

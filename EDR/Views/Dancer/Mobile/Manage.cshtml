@@ -391,9 +391,7 @@
                                                 }
                                                 else
                                                 {
-                                                    <a href="@Url.Action("View", "School", new { id = item.Ticket.SchoolId })">
-                                                        @item.Ticket.School.Name
-                                                    </a>
+                                                    @Html.ActionLink(item.Ticket.School.Name, "View", "School", new { id = item.Ticket.SchoolId, school = EDR.Utilities.ApplicationUtility.ToUrlSlug(item.Ticket.School.Name), location = EDR.Utilities.ApplicationUtility.ToUrlSlug(item.Ticket.School.City) }, null)
                                                 }
                                             </p>
                                             @(String.Format("{0:N0}", item.Ticket.Quantity) + " tix for " + String.Format("{0:C}", item.Ticket.Price))
@@ -434,9 +432,7 @@
                                                 }
                                                 else
                                                 {
-                                                    <a href="@Url.Action("View", "School", new { id = item.Ticket.SchoolId })">
-                                                        @item.Ticket.School.Name
-                                                    </a>
+                                                    @Html.ActionLink(item.Ticket.School.Name, "View", "School", new { id = item.Ticket.SchoolId, school = EDR.Utilities.ApplicationUtility.ToUrlSlug(item.Ticket.School.Name), location = EDR.Utilities.ApplicationUtility.ToUrlSlug(item.Ticket.School.City) }, null)
                                                 }
                                             </p>
                                             @(String.Format("{0:N0}", item.Ticket.Quantity) + " tix for " + String.Format("{0:C}", item.Ticket.Price))

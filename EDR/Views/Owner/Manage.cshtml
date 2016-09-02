@@ -149,7 +149,7 @@
                     foreach (var sch in Model.Schools.OrderBy(s => s.Name))
                     {
                         <div class="row" style="padding: 2px;">
-                            @Html.ActionLink(sch.Name, "View", "School", new { id = sch.Id }, new { @class = "btn btn-link" })
+                            @Html.ActionLink(sch.Name, "View", "School", new { id = sch.Id, school = EDR.Utilities.ApplicationUtility.ToUrlSlug(sch.Name), location = EDR.Utilities.ApplicationUtility.ToUrlSlug(sch.City) }, new { @class = "btn btn-link oneline" })
                         </div>
                     }
                 }

@@ -142,11 +142,7 @@
                                 School:
                             </dt>
                             <dd>
-                                <a href="@Url.Action("View", "School", new { id = Model.SchoolId })">
-                                    <div class="item-short">
-                                        @(((EDR.Models.Class)Model.Event).School.Name)
-                                    </div>
-                                </a>
+                                @Html.ActionLink(((EDR.Models.Class)Model.Event).School.Name, "View", "School", new { id = ((EDR.Models.Class)Model.Event).SchoolId, school = EDR.Utilities.ApplicationUtility.ToUrlSlug(((EDR.Models.Class)Model.Event).School.Name), location = EDR.Utilities.ApplicationUtility.ToUrlSlug(((EDR.Models.Class)Model.Event).School.City) }, new { @class = "oneline" })
                             </dd>
                         </dl>
                     }

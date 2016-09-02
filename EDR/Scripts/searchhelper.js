@@ -5,30 +5,6 @@
  */
 
 $(function () {
-    if ($('.locationsearch').length != 0) {
-        var options = {
-            map: ".map_canvas"
-        };
-        $(".locationsearch").geocomplete(options)
-            .on("geocode:result", function (event, result) {
-            });
-    }
-});
-
-$(function () {
-    if ($('.locationsearch').length != 0)
-    {
-        var map = $('.locationsearch').geocomplete("map");
-        if ($('.czoomfield').val() != "") {
-            map.setZoom(parseInt($('.czoomfield').val()));
-        }
-        else {
-            map.setZoom(10);
-        }
-    }
-});
-
-$(function () {
     if ($('.map_canvas').length != 0)
     {
         if (navigator.geolocation) {
@@ -51,6 +27,8 @@ $(function () {
         if ($('.locationsearch').length != 0)
         {
             var map = $('.locationsearch').geocomplete("map");
+            $(".locationsearch").geocomplete("find", $('.locationsearch').val());
+
             map.setCenter(loc);
 
             google.maps.event.addListenerOnce(map, 'idle', function () {
@@ -103,6 +81,30 @@ $(function () {
             });
         }
     };
+});
+
+$(function () {
+    if ($('.locationsearch').length != 0) {
+        var options = {
+            map: ".map_canvas"
+        };
+        $(".locationsearch").geocomplete(options)
+            .on("geocode:result", function (event, result) {
+            });
+    }
+
+});
+
+$(function () {
+    if ($('.locationsearch').length != 0) {
+        var map = $('.locationsearch').geocomplete("map");
+        if ($('.czoomfield').val() != "") {
+            map.setZoom(parseInt($('.czoomfield').val()));
+        }
+        else {
+            map.setZoom(10);
+        }
+    }
 });
 
 $('.stylesearch').autocomplete({

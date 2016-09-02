@@ -22,6 +22,7 @@ namespace EDR.Controllers
     public class EventController : BaseController
     {
         [Route("Classes")]
+        [Route("Classes/{Location}")]
         public ActionResult Classes(LearnViewModel model)
         {
             SearchClasses(model);
@@ -55,7 +56,11 @@ namespace EDR.Controllers
             {
                 model.Classes = model.Classes.Where(c => c.Teachers.Select(t => t.ApplicationUser.Id).Contains(model.TeacherId));
             }
-
+            if (model.Location != null)
+            {
+                var add = Geolocation.ParseAddress(model.Location);
+                model.Classes = model.Classes.Where(e => (e.Place.Longitude >= add.Longitude - .5 && e.Place.Longitude <= add.Longitude + .5) && (e.Place.Latitude >= add.Latitude - .5 && e.Place.Latitude <= add.Latitude + .5)).ToList();
+            }
             if (model.NELat != null && model.SWLng != null)
             {
                 model.Classes = model.Classes.Where(c => c.Place.Longitude >= model.SWLng && c.Place.Longitude <= model.NELng && c.Place.Latitude >= model.SWLat && c.Place.Latitude <= model.NELat);
@@ -77,6 +82,7 @@ namespace EDR.Controllers
         }
 
         [Route("Events")]
+        [Route("Events/{Location}")]
         public ActionResult Socials(SocialViewModel model)
         {
             SearchSocials(model);
@@ -238,7 +244,7 @@ namespace EDR.Controllers
         //    return View(model);
         //}
 
-        [Route("Class/{id}/{eventname}/{location}")]
+        [Route("Class/{id}/{eventname}/{location}", Order=2)]
         public ActionResult Class(int? id, int? instanceId)
         {
             if (!id.HasValue)
