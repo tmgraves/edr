@@ -34,15 +34,15 @@
                             <div>
                                 @if (Model.Promoter.Facebook != null)
                                 {
-                                    <a class="img-thumbnail" href='@Model.Promoter.Facebook' target="_blank" title="Visit Me On Facebook"><img src="@Url.Content("~/Content/images/facebookSmall.png")" /></a>
+                                    <a rel="nofollow" class="img-thumbnail" href='@Model.Promoter.Facebook' target="_blank" title="Visit Me On Facebook"><img src="@Url.Content("~/Content/images/facebookSmall.png")" /></a>
                                 }
                                 @if (Model.Promoter.Website != null)
                                 {
-                                    <a class="img-thumbnail" href='@Model.Promoter.Website' target="_blank" title="Visit Me On the Web"><img src="@Url.Content("~/Content/images/web.png")" /></a>
+                                    <a rel="nofollow" class="img-thumbnail" href='@Model.Promoter.Website' target="_blank" title="Visit Me On the Web"><img src="@Url.Content("~/Content/images/web.png")" /></a>
                                 }
                                 @if (Model.Promoter.ContactEmail != null)
                                 {
-                                    <a class="img-thumbnail" href='mailto:@Model.Promoter.ContactEmail' title="Email Me"><img src="@Url.Content("~/Content/images/email.png")" /></a>
+                                    <a rel="nofollow" class="img-thumbnail" href='mailto:@Model.Promoter.ContactEmail' title="Email Me"><img src="@Url.Content("~/Content/images/email.png")" /></a>
                                 }
                             </div>
                         </div>

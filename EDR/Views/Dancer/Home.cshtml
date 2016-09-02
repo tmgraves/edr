@@ -50,13 +50,13 @@
                             <div>
                                 @if (Model.Dancer.FacebookUsername != null)
             {
-                                    <a class="img-thumbnail" href='https://www.facebook.com/@Model.Dancer.FacebookUsername' target="_blank" title="Visit Me On Facebook">
+                                    <a rel="nofollow" class="img-thumbnail" href='https://www.facebook.com/@Model.Dancer.FacebookUsername' target="_blank" title="Visit Me On Facebook">
                                         <img class="img-rounded" src="@Url.Content("~/Content/images/facebookSmall.png")" style="height: 30px;" />
                                     </a>
                                 }
                                 @if (Model.Dancer.InstagramUsername != null)
             {
-                                    <a class="img-thumbnail" href='https://www.instagram.com/@Model.Dancer.InstagramUsername' target="_blank" title="Link to your Instagram">
+                                    <a rel="nofollow" class="img-thumbnail" href='https://www.instagram.com/@Model.Dancer.InstagramUsername' target="_blank" title="Link to your Instagram">
                                         <img class="img-rounded" style="height: 30px;" src="@Url.Content("~/Content/images/instagram.png")" />
                                     </a>
                                 }

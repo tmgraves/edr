@@ -30,7 +30,7 @@
                         </span>
                     </div>
                     <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 text-center">
-                        <a class="btn btn-warning" href='https://www.facebook.com/events/@ev.Id' target="_blank" title="Visit Me On Facebook">Open Event</a>
+                        <a rel="nofollow" class="btn btn-warning" href='https://www.facebook.com/events/@ev.Id' target="_blank" title="Visit Me On Facebook">Open Event</a>
                         @Html.ActionLink("Add Class", "AddFacebookClass", "Teacher", new { id = ev.Id, returnUrl = Url.Action(ViewContext.RouteData.Values["action"].ToString(), ViewContext.RouteData.Values["controller"].ToString()) }, htmlAttributes: new { @class = "btn btn-primary", @style = "margin: 5px" })
                     </div>
                 </div>

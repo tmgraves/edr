@@ -34,7 +34,7 @@
                 }
                 else if (Model.Target == MediaTarget.Event)
                 {
-                    <text>Source: </text><a href="@Model.SourceLink" target="_blank">@Model.SourceName.PadRight(20, ' ').Substring(0, 20)</a>
+                    <text>Source: </text><a rel="nofollow" href="@Model.SourceLink" target="_blank">@Model.SourceName.PadRight(20, ' ').Substring(0, 20)</a>
                     <br />
                     <text>Posted by: </text><a href="@Url.Action("Home", "Dancer", new { username = Model.Author.UserName })" style="text-decoration: none;">
                         <span class="text-primary" style="vertical-align: top;">
@@ -92,7 +92,7 @@
         }
         else if (Model.MediaType == MediaType.Picture)
         {
-            <a target="_blank" href="@Url.Content(Model.Link)">
+            <a rel="nofollow" target="_blank" href="@Url.Content(Model.Link)">
                 <div class="croppedpic" style="height: 150px;">
                     <img src="@Url.Content(Model.PhotoUrl)" alt="@Model.Text" />
                 </div>

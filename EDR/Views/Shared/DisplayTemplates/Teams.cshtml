@@ -51,10 +51,10 @@
                         </a>
                     </div>
                     <div class="small">
-                            <a target="_blank" href="https://www.google.com/maps/place/@item.Address,+@item.City,+@item.State+@item.Zip">
-                                <i class="glyphicon glyphicon-map-marker"></i>
-                                @item.City, @item.State.Substring(0, 2).ToUpper()
-                            </a>
+                        <a rel="nofollow" target="_blank" href="https://www.google.com/maps/place/@item.Address,+@item.City,+@item.State+@item.Zip">
+                            <i class="glyphicon glyphicon-map-marker"></i>
+                            @item.City, @item.State.Substring(0, 2).ToUpper()
+                        </a>
                         </div>
                         <div class="small">
                             Teacher(s): @Html.DisplayFor(m => item.Teachers, "TeacherLinks")

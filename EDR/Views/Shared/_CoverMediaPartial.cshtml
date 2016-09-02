@@ -9,7 +9,7 @@
 else if (Model.Picture != null)
 {
     <div class="croppedpic" style="max-height: 200px;">
-        <a target="_blank" href="@Url.Content(Model.Picture.Filename)">
+        <a rel="nofollow" target="_blank" href="@Url.Content(Model.Picture.Filename)">
             <img style="max-width: 100%;" src="@Url.Content(Model.Picture.Filename)" />
         </a>
     </div>

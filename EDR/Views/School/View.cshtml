@@ -80,7 +80,7 @@
         <div class="col-lg-6 col-md-6">
             <div class="panel panel-default">
                 <div class="panel-body nospace">
-                    <a target="_blank" href="https://maps.google.com/?q=@Model.School.Latitude,@Model.School.Longitude">
+                    <a rel="nofollow" target="_blank" href="https://maps.google.com/?q=@Model.School.Latitude,@Model.School.Longitude">
                         <img style="width: 100%;" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.School.Latitude,@Model.School.Longitude&zoom=10&size=500x200&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.School.Latitude, @Model.School.Longitude&key=@System.Configuration.ConfigurationManager.AppSettings["GoogleAPIKey"]" title="@Model.School.City, @Model.School.State">
                     </a>
                     <div class="row" style="padding: 5px;">
@@ -107,7 +107,7 @@
                     <div class="text-center" style="padding: 5px !important;">
                         @if (Model.School.FacebookLink != null)
                         {
-                            <a class="img-rounded" href='@Model.School.FacebookLink' target="_blank" title="Visit Me On Facebook"><img src="@Url.Content("~/Content/images/facebookSmall.png")" /></a>
+                            <a rel="nofollow" class="img-rounded" href='@Model.School.FacebookLink' target="_blank" title="Visit Me On Facebook"><img src="@Url.Content("~/Content/images/facebookSmall.png")" /></a>
                         }
                     </div>
                 </div>

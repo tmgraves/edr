@@ -64,7 +64,7 @@
                             <div>
                                 @if (Model.Team.FacebookLink != null)
                                 {
-                                    <a class="img-thumbnail" href='@Model.Team.FacebookLink' target="_blank" title="Visit Me On Facebook"><img src="@Url.Content("~/Content/images/facebookSmall.png")" /></a>
+                                    <a rel="nofollow" class="img-thumbnail" href='@Model.Team.FacebookLink' target="_blank" title="Visit Me On Facebook"><img src="@Url.Content("~/Content/images/facebookSmall.png")" /></a>
                                 }
                                 @*@if (Model.School.Website != null)
                     {
@@ -258,7 +258,7 @@
                             "<div class='col-lg-4 col-md-4'>" +
                                 "<div class='buttonoverlay_container'>" +
                                     "<img class='img-rounded' src='http://img.youtube.com/vi/" + item.Id + "/0.jpg' />" +
-                                    "<a class='btn btn-danger videoplayer' target='_blank' href='" + item.VideoUrl + "' title='" + item.Title + "'>" +
+                                    "<a rel='nofollow' class='btn btn-danger videoplayer' target='_blank' href='" + item.VideoUrl + "' title='" + item.Title + "'>" +
                                         "<i class='glyphicon glyphicon-play'></i>" +
                                     "</a>" +
                                     "<div class='item-short'><b>" + item.Title + "</b></div>" +
@@ -317,7 +317,7 @@
                 var mapid = '@System.Configuration.ConfigurationManager.AppSettings["GoogleAPIKey"]';
 
                 $('#caladdressdiv').html(
-                    '<a target="_blank" href="https://www.google.com/maps/place/' + calEvent.place + '+' + calEvent.address + ',+' + calEvent.city + ',+' + calEvent.state + '+' + calEvent.zip + '">' +
+                    '<a rel="nofollow" target="_blank" href="https://www.google.com/maps/place/' + calEvent.place + '+' + calEvent.address + ',+' + calEvent.city + ',+' + calEvent.state + '+' + calEvent.zip + '">' +
                         '<img style="width: 100%;" src="https://maps.googleapis.com/maps/api/staticmap?center=' + calEvent.lat + ',' + calEvent.lng + '&zoom=10&size=300x150&maptype=roadmap&markers=color:red%7Clabel:A%7C ' + calEvent.lat + ', ' + calEvent.lng + '&key=' + mapid + '" title="' + calEvent.address + ', ' + calEvent.state + '">' +
                     '</a>'
                     );

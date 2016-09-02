@@ -28,7 +28,7 @@
                     <img src="@g.Icon" />
                     @g.Name.PadRight(30, ' ').Substring(0, 30)<br />
                 </div>
-                <a class="btn btn-warning" href="@g.Link" title="Open in Facebook">Open</a>
+                <a rel="nofollow" class="btn btn-warning" href="@g.Link" title="Open in Facebook">Open</a>
                 @Html.ActionLink("Link", "LinkFacebookGroup", "Event", new { id = g.Id, eventId = Model.Event.Id }, htmlAttributes: new { @class = "btn btn-primary", @style = "margin: 5px" })
             </div>
         }

@@ -130,7 +130,7 @@
                                     @Html.Label("Facebook Link", htmlAttributes: new { @class = "control-label col-md-2" })
                                 </dt>
                                 <dd>
-                                    <a href="@Model.Teacher.FacebookLink" title="Facebook Page" style="width: 150px;" target="_blank">
+                                    <a rel="nofollow" href="@Model.Teacher.FacebookLink" title="Facebook Page" style="width: 150px;" target="_blank">
                                         <div class="item-short">@Model.Teacher.FacebookLink</div>
                                     </a>
                                 </dd>
@@ -140,7 +140,7 @@
                                     @Html.LabelFor(model => model.Teacher.Website, htmlAttributes: new { @class = "control-label col-md-2" })
                                 </dt>
                                 <dd>
-                                    <a href="@Model.Teacher.Website" title="Website" style="width: 150px;" target="_blank">
+                                    <a rel="nofollow" href="@Model.Teacher.Website" title="Website" style="width: 150px;" target="_blank">
                                         <div class="item-short">@Model.Teacher.Website</div>
                                     </a>
                                 </dd>

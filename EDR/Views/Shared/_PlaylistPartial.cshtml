@@ -1,6 +1,6 @@
 ﻿@model EDR.Models.EventPlaylist
 
-<a target="_blank" href="@Model.YouTubeUrl" title="@Model.Title (@Model.PublishDate.ToShortDateString())">
+<a rel="nofollow" target="_blank" href="@Model.YouTubeUrl" title="@Model.Title (@Model.PublishDate.ToShortDateString())">
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="videocontainer" style="height: 120px;">
         <div id="playlistimage">
             <img src="@Html.DisplayFor(s => Model.CoverPhoto)" />

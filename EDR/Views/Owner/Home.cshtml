@@ -35,17 +35,17 @@
                             <div>
                                 @if (Model.Owner.Facebook != null)
                                 {
-                                    <a class="img-thumbnail" href='@Model.Owner.Facebook' target="_blank" title="Visit Me On Facebook">
+                                    <a rel="nofollow" class="img-thumbnail" href='@Model.Owner.Facebook' target="_blank" title="Visit Me On Facebook">
                                         <img class="img-rounded" src="@Url.Content("~/Content/images/facebookSmall.png")" style="height: 30px;" />
                                     </a>
                                 }
                                 @if (Model.Owner.Website != null)
                                 {
-                                    <a class="img-thumbnail" href='@Model.Owner.Website' target="_blank" title="Visit Me On the Web"><img src="@Url.Content("~/Content/images/web.png")" /></a>
+                                    <a rel="nofollow" class="img-thumbnail" href='@Model.Owner.Website' target="_blank" title="Visit Me On the Web"><img src="@Url.Content("~/Content/images/web.png")" /></a>
                                 }
                                 @if (Model.Owner.ContactEmail != null)
                                 {
-                                    <a class="img-thumbnail" href='mailto:@Model.Owner.ContactEmail' title="Email Me"><img src="@Url.Content("~/Content/images/email.png")" /></a>
+                                    <a rel="nofollow" class="img-thumbnail" href='mailto:@Model.Owner.ContactEmail' title="Email Me"><img src="@Url.Content("~/Content/images/email.png")" /></a>
                                 }
                             </div>
                         </div>

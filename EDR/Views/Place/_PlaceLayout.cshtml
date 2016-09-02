@@ -47,7 +47,7 @@
             <div>
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <p>
-                        <a href="https://www.google.com/maps/place/3rd+Street+Dance/@("@" + Model.Place.Latitude),@Model.Place.Longitude,17z" target="_blank">
+                        <a rel="nofollow" href="https://www.google.com/maps/place/3rd+Street+Dance/@("@" + Model.Place.Latitude),@Model.Place.Longitude,17z" target="_blank">
                             <img src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Place.Latitude,@Model.Place.Longitude&zoom=10&size=250x100&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Place.Latitude, @Model.Place.Longitude">
                         </a>
                     </p>
@@ -59,7 +59,7 @@
                 <div class="row text-center">
                     @if (Model.Place.FacebookId != null)
                     {
-                        <a class="img-thumbnail" href='https://www.facebook.com/@Model.Place.FacebookId' target="_blank" title="Visit On Facebook">
+                        <a rel="nofollow" class="img-thumbnail" href='https://www.facebook.com/@Model.Place.FacebookId' target="_blank" title="Visit On Facebook">
                             <img class="img-rounded" src="@Url.Content("~/Content/images/facebookSmall.png")" style="height: 30px;" />
                         </a>
                     }
