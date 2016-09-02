@@ -1,4 +1,5 @@
 ﻿@model EDR.Models.Team
+@using EDR.Utilities
 
 <div class="row" style="padding: 5px !important; height: 150px;">
     <div class="box-default" style="padding: 5px; height: 100%;">
@@ -39,7 +40,7 @@
                 </div>
             </div>
             <div class="item-title text-primary">
-                <a href="@Url.Action("View", "Team", new { id = Model.Id })" onmouseover="openEvent(@Model.Id, @Model.Latitude, @Model.Longitude); return false;">
+                <a href="@Url.Action("View", "Team", new { id = Model.Id, team = ApplicationUtility.ToUrlSlug(Model.Name), location = ApplicationUtility.ToUrlSlug(Model.City) })" onmouseover="openEvent(@Model.Id, @Model.Latitude, @Model.Longitude); return false;">
                     @Model.Name
                 </a>
             </div>

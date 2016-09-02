@@ -40,7 +40,7 @@
                                             <p>
                                                 @if (Model.FacebookEvents != null)
                                                 {
-                                                    @Html.DropDownListFor(model => model.FacebookId, Model.FacebookEvents.Select(e => new SelectListItem() { Text = e.Name, Value = e.Id }), null, new { @class = "form-control" })
+                                                    @Html.DropDownListFor(model => model.FacebookId, Model.FacebookEvents.Select(e => new SelectListItem() { Text = e.StartTime.ToShortDateString() + " - " + e.Name, Value = e.Id }), null, new { @class = "form-control" })
                                                 }
                                             </p>
                                             <p>
@@ -55,7 +55,6 @@
                                     @Html.HiddenFor(m => m.CreateAction)
                                     @Html.HiddenFor(m => m.Role)
                                     @Html.HiddenFor(m => m.EventType)
-                                    @Html.HiddenFor(m => m.SchoolId)
                                     @Html.HiddenFor(x => x.Event.PhotoUrl)
                                     @Html.HiddenFor(x => x.Event.FacebookLink)
                                     @Html.HiddenFor(x => x.Event.FacebookId)
@@ -90,6 +89,12 @@
                                             </div>
                                             @if (Model.EventType == EventType.Class)
                                             {
+                                                <div id="school" class="row" style="margin-bottom: 5px;">
+                                                    @Html.DropDownListFor(m => m.SchoolId,
+                                                                        Model.Schools.Select(g => new SelectListItem() { Text = g.Name, Value = g.Id.ToString() }),
+                                                                        new { @class = "form-control" })
+                                                    @Html.ValidationMessageFor(m => m.SchoolId, "", new { @class = "text-danger" })
+                                                </div>
                                                 <div id="skilllevel" class="row" style="margin-bottom: 5px;">
                                                     @Html.DropDownListFor(m => m.SkillLevel,
                                                                             new SelectList(new List<SelectListItem> {
@@ -99,6 +104,7 @@
                                                                                 new SelectListItem() { Text = "Intermediate", Value = "3" },
                                                                                 new SelectListItem() { Text = "Intermediate/Advanced", Value = "4" },
                                                                                 new SelectListItem() { Text = "Advanced", Value = "5" },
+                                                                                new SelectListItem() { Text = "Open Level", Value = "6" },
                                                                             }, "Value", "Text"), new { @class = "form-control" })
                                                     @Html.ValidationMessageFor(m => m.SkillLevel, "", new { @class = "text-danger" })
                                                 </div>
@@ -252,7 +258,7 @@
                                         </div>
                                         <div id="wizlocationdiv" class="step" style="display:none">
                                             <h3>Step: Location</h3>
-                                            <div class="row" style="margin-bottom: 5px;">
+                                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 nospace" style="margin-bottom: 5px;">
                                                 @Html.HiddenFor(model => model.Event.Place.Address)
                                                 @Html.HiddenFor(model => model.Event.Place.Address2)
                                                 @Html.HiddenFor(model => model.Event.Place.City)
@@ -298,24 +304,19 @@
                                                         </div>
                                                     </div>
                                                     <div id="ticketsdiv">
-                                                        @if (Model.EventType == EventType.Class)
-                                                        {
-                                                            <div class="row text-left" style="margin-bottom: 5px;">
-                                                                <div class="col-lg-8">
-                                                                    @Html.LabelFor(m => m.UseSchoolTickets, new { @class = "left pull-left" })
+                                                        <div class="row text-left" style="margin-bottom: 5px;">
+                                                            <div class="col-lg-8">
+                                                                @Html.LabelFor(m => m.UseSchoolTickets, new { @class = "left pull-left" })
+                                                            </div>
+                                                            <div class="col-lg-4 pull-right text-right">
+                                                                <div id="schoolticketsdiv">
+                                                                    @Html.CheckBoxFor(m => m.UseSchoolTickets, new { @class = "pull-right right text-right", @data_toggle = "toggle", @data_on = "Yes", @data_off = "No" })
                                                                 </div>
-                                                                <div class="col-lg-4 pull-right text-right">
-                                                                    @if (Model.School.Tickets.Count() != 0)
-                                                                    {
-                                                                        @Html.CheckBoxFor(m => m.UseSchoolTickets, new { @class = "pull-right right text-right", @data_toggle = "toggle", @data_on = "Yes", @data_off = "No" })
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        @:No
-                                                                }
+                                                                <div id="noschoolticketsdiv">
+                                                                    No
                                                                 </div>
                                                             </div>
-                                                        }
+                                                        </div>
                                                         @*@Html.DropDownListFor(m => m.UseSchoolTickets, new SelectList(new List<SelectListItem>() { new SelectListItem() { Text = "Use Existing School Tickets", Value = "true" }, new SelectListItem() { Text = "Set up New Ticket for this Event", Value = "false" } }, "Value", "Text").AsEnumerable(), null, new { @class = "form-control" })*@
                                                         <div id="newticketdiv" class="panel panel-success" style="margin-top: 20px;">
                                                             <div class="panel-body">
@@ -347,7 +348,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        @if (Model.EventType == EventType.Class)
+                                                        @*@if (Model.EventType == EventType.Class)
                                                         {
                                                             <div id="existingticketsdiv" class="panel panel-success" style="margin-top: 20px; display: none;">
                                                                 <div class="panel-body">
@@ -369,7 +370,7 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        }
+                                                        }*@
                                                     </div>
                                                 </div>
                                             </div>
@@ -424,6 +425,66 @@
     $.validator.setDefaults({
         ignore: ""
     })
+
+    @if (Model.School == null || Model.School.Tickets.Count() == 0)
+    {
+        <text>
+        $('#noschoolticketsdiv').show();
+        $('#schoolticketsdiv').hide();
+        </text>
+    }
+    else
+    {
+        <text>
+        $('#noschoolticketsdiv').hide();
+        $('#schoolticketsdiv').show();
+        </text>
+    }
+
+    $(function () {
+        $('#SchoolId').change(function () {
+            var schoolid = $("#SchoolId option:selected").val();
+            setTicketButton(schoolid);
+        });
+    });
+
+    function setTicketButton(id) {
+        $.ajax({
+            url: '@Url.Action("GetSchoolJSON", "Event")',
+            data: { 'id': id },
+            dataType: 'json',
+            type: 'GET',
+            success: function (data) {
+                if (data.HasTickets)
+                {
+                    $('#noschoolticketsdiv').hide();
+                    $('#schoolticketsdiv').show();
+                }
+                else
+                {
+                    $('#noschoolticketsdiv').show();
+                    $('#schoolticketsdiv').hide();
+                }
+                //var row = ""
+                //$.each(data, function (index, item) {
+                //    row +=
+                //        "<div class='col-lg-3 col-md-3'>" +
+                //            "<a target='_blank' href='" + item.FileName + "' style='text-align: left;' title='" + item.Title + "'>" +
+                //                "<div class='croppedpic' style='height: 100px;'>" +
+                //                    "<img src='" + item.ThumbnailFilename + "' alt='" + item.Title + "' />" +
+                //                "</div>" +
+                //            "</a>" +
+                //        "</div>"
+                //});
+                //// alert(row);
+                //$("#pictures").html(row);
+                //$(row).find('.pickfbpic').click(function () {
+                //    alert("here");
+                //}).end();
+            }
+        })
+    }
+
     function submitForm() {
         $('#TicketPrice').toNumber();
         if (!$('#createform.main').valid()) {
@@ -486,7 +547,7 @@
     $('.stylesearch').autocomplete({
         source: function (request, response) {
             $.ajax({
-                url: '../DanceStyle/Search',
+                url: '@Url.Action("Search", "DanceStyle")',
                 data: { searchString: request.term },
                 dataType: 'json',
                 type: 'GET',
@@ -585,15 +646,13 @@
             var allinputs = $(":input", $('.step.active', wizard));
             var valid = true;
             allinputs.each(function (index, element) {
-                if (!$(this).valid())
-                {
+                if (!$(this).valid()) {
                     alert($(this).prop('name'));
                     valid = false;
                 }
             });
 
-            if (valid)
-            {
+            if (valid) {
                 $('.step.active', wizard).hide();
                 var currentStep = $('.step.active', wizard);
                 currentStep.hide();
@@ -618,8 +677,7 @@
         //  Wizard Navigation
 
         function SetFirstScreen(action) {
-            if (action == "New")
-            {
+            if (action == "New") {
                 $('#CreateAction').prop("value", "New");
                 var createevent = $('#createevent');
                 $('.step.active', createevent).hide();
@@ -631,8 +689,7 @@
                 $('.prev', wizard).hide();
                 $('.finish', wizard).hide();
             }
-            else
-            {
+            else {
                 $('#CreateAction').prop("value", "Facebook");
                 var createevent = $('#createevent');
                 $('.pickfacebook', createevent).addClass('active');
@@ -705,9 +762,9 @@
             }
         });
     });
+
     $(document).ready(function () {
-        function SetEventType(eventtype)
-        {
+        function SetEventType(eventtype) {
             //  Class Type
             if (eventtype == "1") {
                 $('#classtype').show();
@@ -741,8 +798,7 @@
             }
         }
 
-        if ('@Model.Event.FacebookId' != "")
-        {
+        if ('@Model.Event.FacebookId' != "") {
             var createevent = $('#createevent');
             $('.step.active', createevent).hide();
 
@@ -791,19 +847,16 @@
             $('#socialtype').hide();
         }
 
-        if ('@Model.EventType' != "")
-        {
+        if ('@Model.EventType' != "") {
             var dd = $('#EventTypeDD');
             var eventType = '@Model.EventType' == "Social" ? "0" : "1";
             dd.prop("disabled", true);
-            if ('@Model.EventType' == "Social")
-            {
+            if ('@Model.EventType' == "Social") {
                 dd.prop('selectedIndex', 1);
                 $('#UseSchoolTickets').prop('disabled', true);
                 $('#newticketdiv').show();
             }
-            else
-            {
+            else {
                 dd.prop('selectedIndex', 2);
             }
             SetEventType(eventType);

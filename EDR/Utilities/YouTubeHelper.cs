@@ -99,15 +99,28 @@ namespace EDR.Utilities
                 listVideos.MaxResults = 50;
 
                 var response = listVideos.Execute();
-                List<YouTubeVideo> vidList = response.Items.Select(i => new YouTubeVideo() { Id = i.Snippet.ResourceId.VideoId, PubDate = Convert.ToDateTime(i.Snippet.PublishedAt), Title = i.Snippet.Title, Thumbnail = new Uri(i.Snippet.Thumbnails.Default.Url), VideoLink = new Uri("https://youtu.be/" + i.Snippet.ResourceId.VideoId) }).ToList();
-                
-                foreach (var playlistItem in response.Items)
+                var vidList = new List<YouTubeVideo>();
+                foreach (var i in response.Items)
                 {
-                    // Print information about each video.
-                    var title = playlistItem.Snippet.Title;
-                    var vidid = playlistItem.Snippet.ResourceId.VideoId;
-                    var path = "https://youtu.be/" + playlistItem.Snippet.ResourceId.VideoId;
+                    try
+                    {
+                        vidList.Add(new YouTubeVideo() { Id = i.Snippet.ResourceId.VideoId, PubDate = Convert.ToDateTime(i.Snippet.PublishedAt), Title = i.Snippet.Title, Thumbnail = new Uri(i.Snippet.Thumbnails.Default.Url), VideoLink = new Uri("https://youtu.be/" + i.Snippet.ResourceId.VideoId) });
+                    }
+                    catch(Exception e)
+                    {
+                        var err = e.Message;
+                    }
                 }
+
+                //  List<YouTubeVideo> vidList = response.Items.Select(i => new YouTubeVideo() { Id = i.Snippet.ResourceId.VideoId, PubDate = Convert.ToDateTime(i.Snippet.PublishedAt), Title = i.Snippet.Title, Thumbnail = new Uri(i.Snippet.Thumbnails.Default.Url), VideoLink = new Uri("https://youtu.be/" + i.Snippet.ResourceId.VideoId) }).ToList();
+                
+                //foreach (var playlistItem in response.Items)
+                //{
+                //    // Print information about each video.
+                //    var title = playlistItem.Snippet.Title;
+                //    var vidid = playlistItem.Snippet.ResourceId.VideoId;
+                //    var path = "https://youtu.be/" + playlistItem.Snippet.ResourceId.VideoId;
+                //}
 
                 //  List<YouTubeVideo> vidList = new List<YouTubeVideo>();
 

@@ -23,6 +23,12 @@
                     <i class="glyphicon glyphicon-remove-circle"></i>
                 </a>
             }
+            else if (Model.Organization is EDR.Models.PromoterGroup)
+            {
+                <a class="text-danger" title="Delete" href="@Url.Action("RemoveMember", "Promoter", new { id = Model.OrganizationId, memberid = Model.UserId })">
+                    <i class="glyphicon glyphicon-remove-circle"></i>
+                </a>
+            }
         }
     </td>
 </tr>

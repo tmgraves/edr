@@ -93,6 +93,7 @@ namespace EDR.Models.ViewModels
 
         public List<PromoterGroup> PromoterGroups { get; set; }
         public int? PromoterGroupId { get; set; }
+        public List<School> Schools { get; set; }
 
         //[Range(1, 12)]
         //public int StartHour { get; set; }
@@ -132,7 +133,7 @@ namespace EDR.Models.ViewModels
             //  New Event
             if (eventType == EDR.Enums.EventType.Class)
             {
-                Event = new Class() { StartDate = DateTime.Today, EndDate = DateTime.Today, StartTime = DateTime.Today.Add(new TimeSpan(20, 00, 0)), EndTime = DateTime.Today.Add(new TimeSpan(21, 00, 0)), Place = new Place(), SchoolId = (int)schoolId };
+                Event = new Class() { StartDate = DateTime.Today, EndDate = DateTime.Today, StartTime = DateTime.Today.Add(new TimeSpan(20, 00, 0)), EndTime = DateTime.Today.Add(new TimeSpan(21, 00, 0)), Place = new Place(), SchoolId = schoolId ?? 0 };
             }
             else
             {
@@ -255,7 +256,7 @@ namespace EDR.Models.ViewModels
         public IEnumerable<LinkedFacebookObject> LinkedFacebookObjects { get; set; }
         public RoleName Role { get; set; }
         public int AvailableTickets { get; set; }
-        public IEnumerable<Ticket> Tickets { get; set; }
+        public List<Ticket> Tickets { get; set; }
         public Review Review { get; set; }
         public EventInstance CurrentInstance { get; set; }
 
@@ -296,6 +297,8 @@ namespace EDR.Models.ViewModels
         public MusicType MusicType { get; set; }
         public List<PromoterGroup> PromoterGroups { get; set; }
         public int? PromoterGroupId { get; set; }
+        public SocialType SocialType { get; set; }
+        public ClassType ClassType { get; set; }
 
         public EventManageViewModel()
         {

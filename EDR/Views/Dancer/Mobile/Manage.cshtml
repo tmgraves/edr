@@ -652,7 +652,7 @@
         $('.stylesearch').autocomplete({
         source: function (request, response) {
             $.ajax({
-                url: '../DanceStyle/Search',
+                url: '@Url.Action("Search", "DanceStyle")',
                 data: { searchString: request.term },
                 dataType: 'json',
                 type: 'GET',
@@ -759,7 +759,7 @@
                 try {
                     var imageData = $("#image").cropper("getCroppedCanvas").toDataURL('png', 1);
                     $.ajax({
-                        url: "../../Dancer/UploadImageAsync",
+                        url: "@Url.Action("UploadImageAsync", "Dancer")",
                         type: 'POST',
                         data: { 'imageData': imageData },
                         dataType: 'json',

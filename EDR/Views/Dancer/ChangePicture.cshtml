@@ -294,7 +294,7 @@
                 try {
                     var imageData = $("#image").cropper("getCroppedCanvas").toDataURL('png', 1);
                     $.ajax({
-                        url: "../../Dancer/UploadImageAsync",
+                        url: "@Url.Action("UploadImageAsync", "Dancer")",
                         type: 'POST',
                         data: { 'imageData': imageData },
                         dataType: 'json',
@@ -393,7 +393,7 @@
             //    try {
             //        var imageData = $("#facebookpic").cropper("getCroppedCanvas").toDataURL('png', 1);
             //        $.ajax({
-            //            url: "../../Dancer/UploadImageAsync",
+            //            url: "@Url.Action("UploadImageAsync", "Dancer")",
             //            type: 'POST',
             //            data: { 'imageData': imageData },
             //            dataType: 'json',

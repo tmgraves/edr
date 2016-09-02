@@ -18,7 +18,11 @@ namespace EDR.Models
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
             var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
 
-            // Add custom user claims here
+            // Add custom user claims here => this.OrganizationId is a value stored in database against the user
+            userIdentity.AddClaim(new Claim("PhotoUrl", this.PhotoUrl ?? ""));
+            userIdentity.AddClaim(new Claim("FirstName", this.FirstName ?? ""));
+            userIdentity.AddClaim(new Claim("LastName", this.LastName ?? ""));
+            userIdentity.AddClaim(new Claim("NewPassword", this.NewPassword.ToString()));
             return userIdentity;
         }
 
@@ -45,6 +49,12 @@ namespace EDR.Models
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? StartDate { get; set; }
         public string PhotoUrl { get; set; }
+        private bool _newpassword = false;
+        public bool NewPassword
+        {
+            get { return _newpassword; }
+            set { _newpassword = value; }
+        }
 
         public string FacebookUsername { get; set; }
         public string FacebookToken { get; set; }
@@ -72,6 +82,7 @@ namespace EDR.Models
         //  Twitter Variables
 
         public IdentityRole CurrentRole { get; set; }
+//          public string ConfirmCode { get; set; }
 
         [Display(Name = "Full Name")]
         public string FullName

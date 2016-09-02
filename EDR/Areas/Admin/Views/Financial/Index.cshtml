@@ -4,100 +4,170 @@
     ViewBag.Title = "Index";
 }
 
-@using (Html.BeginForm("Index", "Financial", FormMethod.Post, new { @class = "formmain" }))
+<div class="container-fluid" style="padding-top: 10px;">
+    <div class="panel with-nav-tabs panel-default">
+        <div class="panel-heading nospace" style="border-bottom: none !important;">
+            <ul class="nav nav-pills nav-justified nospace">
+                <li class="nospace active"><a href="#tabpartners" data-toggle="tab">Partners</a></li>
+                <li class="nospace"><a href="#tabsettlementbatches" data-toggle="tab">Settlement Batches</a></li>
+            </ul>
+        </div>
+        <div class="panel-body">
+            <div class="tab-content">
+                <div class="tab-pane fade in active" id="tabpartners">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            @using (Html.BeginForm("Index", "Financial", FormMethod.Post, new { @class = "formmain" }))
 {
-    <h2>Partners</h2>
-    <div class="bg-info text-center" style="padding: 0px !important;">
-        <div class="form-inline">
-            <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
-                <div class="form-group">
-                    @Html.TextBoxFor(m => m.AmountDue, new { placeholder = "Amount Due", @class = "form-control" })
+                                <h2>Partners</h2>
+                                <div class="bg-info text-center" style="padding: 0px !important;">
+                                    <div class="form-inline">
+                                        <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
+                                            <div class="form-group">
+                                                @Html.TextBoxFor(m => m.AmountDue, new { placeholder = "Amount Due", @class = "form-control" })
+                                            </div>
+                                            <div class="form-group">
+                                                <input type="submit" value="Search Partners" class="btn btn-warning" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                <input type="checkbox" name="select-all" id="select-all" />
+                                            </th>
+                                            <th>
+                                                Partner
+                                            </th>
+                                            <th class="text-right">
+                                                Balance
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    @foreach (var p in Model.Partners)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox" name="PartnerIds" id="PartnerIds" value="@p.Id" />
+                                            </td>
+                                            <td>
+                                                @p.Name
+                                            </td>
+                                            <td class="text-right">
+                                                <input type="hidden" class="partnerid" value="@p.Id" />
+                                                <input type="hidden" class="partnertype" value="@(p is EDR.Models.School ? "School" : "PromoterGroup")" />
+                                                <a class="opentransbtn" href="#" data-toggle="modal" data-target="#modalTransactions">
+                                                    @if (p is EDR.Models.School)
+                                                    {
+                                                        @(((EDR.Models.School)p).FinancialTransactions.Where(t => t.Valid).Sum(f => f.Amount).ToString("C"))
+                                                    }
+                                                    else
+                                                    {
+                                                        @(((EDR.Models.PromoterGroup)p).FinancialTransactions.Where(t => t.Valid).Sum(f => f.Amount).ToString("C"))
+                                                    }
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </table>
+                            }
+                            @Html.ActionLink("Create Batch", "CreateBatch", null, new { @class = "btn btn-primary" })
+                            <h3>Payment Batches</h3>
+                            <div class="col-md-10 col-lg-10 input-group">
+                                @Html.DropDownList("PaymentBatchId",
+                                                Model.PaymentBatches.OrderByDescending(b => b.BatchDate).Select(b => new SelectListItem() { Text = b.BatchDate.ToLongDateString(), Value = b.Id.ToString() }), "Select a Batch Date",
+                                                new { @class = "form-control", @style = "display: inline-block;" })
+                                @*<a id="btncombatch" class="btn btn-primary" href="@Url.Action("CommitBatch", new { batchId = 0, Area = "Admin" })">Commit Batch</a>
+                                    <a id="btndelbatch" class="btn btn-primary" href="@Url.Action("DeleteBatch", new { batchId = 0, Area = "Admin" })">Delete Batch</a>*@
+                                <a id="btncombatch" class="btn btn-primary" href="">Commit Batch</a>
+                                <a id="btndelbatch" class="btn btn-danger" href="">Delete Batch</a>
+                            </div>
+
+                            <div id="batchtransactionsdiv">
+                            </div>
+
+                            <!-- Modal Transactions -->
+                            <div class="modal fade" id="modalTransactions" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                                <div class="modal-dialog modal-lg" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h3 class="modal-title">Transactions</h3>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div id="transdiv" style="overflow: auto; overflow-x: hidden;"></div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                            <button id="btnupload" class="btn btn-danger" data-dismiss="modal" style="display: none;">Upload</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <input type="submit" value="Search Partners" class="btn btn-warning" />
+                <div class="tab-pane fade in" id="tabsettlementbatches">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <p>
+                                @Html.ActionLink("Get Batches", "GetSettlementBatches", null, new { @class = "btn btn-primary" })
+                            </p>
+                            <h1>Settlement Batches</h1>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Id
+                                        </th>
+                                        <th>
+                                            Batch Date
+                                        </th>
+                                        <th>
+                                            Status
+                                        </th>
+                                        <th>
+                                            Transactions
+                                        </th>
+                                    </tr>
+                                    @foreach(var i in Model.SettlementBatches.OrderByDescending(b => b.BatchDate))
+                                    {
+                                        <tr>
+                                            <td>
+                                                @i.GatewayBatchId
+                                            </td>
+                                            <td>
+                                                @i.BatchDate
+                                            </td>
+                                            <td>
+                                                @i.Status
+                                            </td>
+                                            <td>
+                                                <input type="hidden" class="settlementbatchid" value="@i.Id" />
+                                                <a class="opensettlementitemsbtn btn btn-primary col-lg-4 col-md-4" href="#">
+                                                    @i.SettlementBatchItems.Count()
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </thead>
+                            </table>
+                            <h3>Transactions</h3>
+                            <div id="settlementtransactionsdiv">
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>
-                    <input type="checkbox" name="select-all" id="select-all" />
-                </th>
-                <th>
-                    Partner
-                </th>
-                <th class="text-right">
-                    Balance
-                </th>
-            </tr>
-        </thead>
-        @foreach (var p in Model.Partners)
-        {
-            <tr>
-                <td>
-                    <input type="checkbox" name="PartnerIds" id="PartnerIds" value="@p.Id" />
-                </td>
-                <td>
-                    @p.Name
-                </td>
-                <td class="text-right">
-                    <input type="hidden" class="partnerid" value="@p.Id" />
-                    <input type="hidden" class="partnertype" value="@(p is EDR.Models.School ? "School" : "PromoterGroup")" />
-                    <a class="opentransbtn" href="#" data-toggle="modal" data-target="#modalTransactions">
-                        @if (p is EDR.Models.School)
-                        {
-                            @(((EDR.Models.School)p).FinancialTransactions.Where(t => t.Committed != null).Sum(f => f.Amount).ToString("C"))
-                        }
-                        else
-                        {
-                            @(((EDR.Models.PromoterGroup)p).FinancialTransactions.Where(t => t.Committed != null).Sum(f => f.Amount).ToString("C"))
-                        }
-                    </a>
-                </td>
-            </tr>
-        }
-    </table>
-}
-@Html.ActionLink("Create Batch", "CreateBatch", null, new { @class = "btn btn-primary" })
-<h3>Payment Batches</h3>
-<div class="col-md-10 col-lg-10 input-group">
-    @Html.DropDownList("PaymentBatchId",
-                    Model.PaymentBatches.OrderByDescending(b => b.BatchDate).Select(b => new SelectListItem() { Text = b.BatchDate.ToLongDateString(), Value = b.Id.ToString() }), "Select a Batch Date",
-                    new { @class = "form-control", @style = "display: inline-block;" })
-    @*<a id="btncombatch" class="btn btn-primary" href="@Url.Action("CommitBatch", new { batchId = 0, Area = "Admin" })">Commit Batch</a>
-    <a id="btndelbatch" class="btn btn-primary" href="@Url.Action("DeleteBatch", new { batchId = 0, Area = "Admin" })">Delete Batch</a>*@
-    <a id="btncombatch" class="btn btn-primary" href="">Commit Batch</a>
-    <a id="btndelbatch" class="btn btn-danger" href="">Delete Batch</a>
 </div>
-
-<div id="batchtransactionsdiv">
-</div>
-
-<!-- Modal Transactions -->
-<div class="modal fade" id="modalTransactions" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h3 class="modal-title">Transactions</h3>
-            </div>
-            <div class="modal-body">
-                <div id="transdiv" style="overflow: auto; overflow-x: hidden;"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button id="btnupload" class="btn btn-danger" data-dismiss="modal" style="display: none;">Upload</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 
 @section Scripts
 {
-    <script>
+                <script>
         $(document).ready(function () {
             $(window).resize(function () {
                 var bodyheight = $(this).height() - 340;
@@ -121,6 +191,11 @@
             LoadPartnerTransactions(id, type);
         });
 
+        $('.opensettlementitemsbtn').click(function () {
+            var par = $(this).parent();
+            var id = par.find('.settlementbatchid').val();
+            LoadSettlementBatchItems(id);
+        });
 
         // Listen for click on toggle checkbox
         $('#select-all').click(function (event) {
@@ -154,11 +229,17 @@
             }
             else
             {
-                $.get('@Url.Action("PartnerTransactionsPartial", "Financial")', { 'partnergroupId': id }, function (data) {
+                $.get('@Url.Action("PartnerTransactionsPartial", "Financial")', { 'promotergroupId': id }, function (data) {
                     $("#transdiv").empty();
                     $("#transdiv").html(data);
                 });
             }
+        };
+        function LoadSettlementBatchItems(id) {
+            $.get('@Url.Action("SettlementBatchItemsPartial", "Financial")', { 'batchId': id }, function (data) {
+                $("#settlementtransactionsdiv").empty();
+                $("#settlementtransactionsdiv").html(data);
+            });
         };
     </script>
 }

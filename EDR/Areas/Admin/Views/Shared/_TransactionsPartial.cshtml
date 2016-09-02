@@ -1,6 +1,9 @@
 ﻿@model List<EDR.Models.FinancialTransaction>
 
 <h4>Batch Details</h4>
+@{ 
+    var total = Model.Sum(t => t.Amount);
+}
 <table class="table table-striped">
     <thead>
         <tr>
@@ -14,13 +17,16 @@
                 Transaction Type
             </th>
             <th>
-                Amount
-            </th>
-            <th>
                 Payment Type
             </th>
             <th>
                 Commit Date
+            </th>
+            <th>
+                Amount
+            </th>
+            <th>
+                Balance
             </th>
         </tr>
     </thead>
@@ -44,14 +50,18 @@
                 @t.TranType
             </td>
             <td>
-                @t.Amount.ToString("C")
-            </td>
-            <td>
                 @EDR.Utilities.ApplicationUtility.GetDisplayName(t.PaymentType)
             </td>
             <td>
                 @t.Committed
             </td>
+            <td>
+                @t.Amount.ToString("C")
+            </td>
+            <td>
+                @total.ToString("C")
+            </td>
         </tr>
+        total -= t.Amount;
     }
 </table>

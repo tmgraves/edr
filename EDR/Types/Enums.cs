@@ -102,7 +102,9 @@ namespace EDR.Enums
         [Display(Name = "Intermediate/Advanced")]
         IntermediateAdvanced = 4,
         [Display(Name = "Advanced")]
-        Advanced = 5
+        Advanced = 5,
+        [Display(Name = "Open Level")]
+        Open = 6
     }
 
     public enum SocialType

@@ -1,0 +1,227 @@
+﻿@model EDR.Models.ViewModels.BlogIndexViewModel
+
+@{
+    ViewBag.Title = "Dance Blog Posts";
+}
+
+<style>
+    #image{
+        max-height: 200px;
+        max-width: 100%;
+    }
+</style>
+<div>
+    <h1>Blog</h1>
+    @if (User.IsInRole("Blogger") || User.IsInRole("Admin"))
+    {
+        <button id="btnPostBlog" type="button" class="btn btn-primary textoverlay topright" data-toggle="modal" data-target="#modalBlog">
+            Post Blog
+        </button>
+    }
+</div>
+@if (Model.PostStatus != null)
+{
+    if (Model.PostStatus == "Success")
+    {
+        <h4 class="text-success">@Model.Message</h4>
+    }
+    else
+    {
+        <h4 class="text-danger">@Model.Message</h4>
+    }
+}
+
+<div class="container-fluid">
+@foreach (var b in Model.Blogs.OrderByDescending(b => b.BlogDate))
+{
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+        <div class="panel panel-default buttoncontainer">
+            @if (User.IsInRole("Blogger") || User.IsInRole("Admin"))
+            {
+                <a class="btn btn-danger actionbutton" href='@Url.Action("Delete", "Blog", new { id = b.Id })' onclick="return confirm('Are you sure you want to DELETE this Blog?')">Delete Blog</a>
+            }
+            <div class="panel-heading">
+                <h4 class="nospace oneline">@b.Title</h4>
+                <p>
+                    @b.City, @b.State @b.Country
+                </p>
+                <p>
+                    <img class="img-circle" style="vertical-align:middle; max-width: 22px; max-height: 22px;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(b.Author.PhotoUrl))" />
+                    @b.Author.FullName - @b.BlogDate.ToShortDateString() @b.BlogDate.ToShortTimeString()
+                </p>
+            </div>
+            <div class="panel-body">
+                <img class="img-thumbnail" style="width: 100%;" id="blogpic" src="@Url.Content(b.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
+                <p>
+                    @b.Description
+                </p>
+            </div>
+        </div>
+    </div>
+}
+</div>
+
+<!-- Modal Post Blog -->
+@using (Html.BeginForm("PostBlog", "Blog", FormMethod.Post, new { @id = "blogform", @class = "main" }))
+{
+<div class="modal fade" id="modalBlog" tabindex="-1" role="dialog" aria-labelledby="myBlog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h2 class="modal-title">Post Blog</h2>
+            </div>
+            <div class="modal-body">
+                <div class="text-center">
+                    <div class="center-block col-lg-10 col-md-10 text-center" style="float: none;">
+                        <div class="panel panel-default">
+                            <div class="panel-body bg-info">
+                                    @Html.HiddenFor(model => model.NewBlog.UserId)
+                                    @Html.HiddenFor(model => model.NewBlog.City)
+                                    @Html.HiddenFor(model => model.NewBlog.State)
+                                    @Html.HiddenFor(model => model.NewBlog.Country)
+                                    @Html.HiddenFor(model => model.NewBlog.Latitude)
+                                    @Html.HiddenFor(model => model.NewBlog.Longitude)
+                                    @Html.HiddenFor(model => model.NewImage)
+                                    <div class="form-horizontal centerform">
+                                        <div class="form-group">
+                                            <div class="col-lg-10 center-block text-info">
+                                                <div id="divUploadPic">
+                                                    <label for="imgInp" class="btn btn-primary btn-lg">
+                                                        Upload Image
+                                                    </label>
+                                                    <input id="imgInp" type="file" accept="image/*" />
+                                                </div>
+                                                <div class="row" id="croppic" style="display: none;">
+                                                    <img class="img-responsive" id="image" alt="">
+                                                </div>
+                                                <div id="blogpic" style="display: none;">
+                                                    <img id="blogpic" src="@Url.Content("~/Content/images/NoProfilePic.gif")" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-lg-10 center-block text-info">
+                                                @Html.TextBoxFor(m => m.NewBlog.Title, new { @class = "form-control", @placeholder = "Blog Title" })
+                                                @Html.ValidationMessageFor(model => model.NewBlog.Title, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-lg-10 center-block text-info">
+                                                @Html.TextAreaFor(m => m.NewBlog.Description, 10, 50, new { @class = "form-control", @placeholder = "Enter your Blog text" })
+                                                @Html.ValidationMessageFor(model => model.NewBlog.Description, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-lg-10 center-block text-info">
+                                                <input id="location" type="text" class="form-control locationsearch" placeholder="Location" />
+                                            </div>
+                                        </div>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnpost" type="submit" class="btn btn-primary">Post Blog</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+}
+<!-- Modal Post Blog -->
+
+@section Scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/GeoComplete")
+    <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places&key=@System.Configuration.ConfigurationManager.AppSettings["GoogleAPIKey"]"></script>
+    <link href="../../Content/cropper.css" rel="stylesheet">
+    <script src="../../Scripts/cropper.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(success);
+            }
+
+            function success(position) {
+                var loc = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                //  LoadEvents(loc.lat(), loc.lng());
+                //  alert(JSON.stringify(loc));
+                //  buildLocation(loc);
+                buildLocation(position.coords.latitude.toString() + ", " + position.coords.longitude.toString());
+            }
+
+            function buildLocation(loc) {
+                //  alert("search");
+                var options = {
+                    location: loc
+                };
+
+                $("#location").geocomplete(options)
+                .bind("geocode:result", function (event, result) {
+                    var city;
+                    var state;
+                    var country;
+                    $('#NewBlog_Latitude').prop("value", result.geometry.location.lat());
+                    $('#NewBlog_Longitude').prop("value", result.geometry.location.lng());
+                    $.each(result.address_components, function (i, address_component) {
+                        if (address_component.types[0] == "locality") {
+                            city = address_component.long_name;
+                            $('#NewBlog_City').prop("value", address_component.long_name);
+                        }
+                        else if (address_component.types[0] == "administrative_area_level_1") {
+                            state = address_component.long_name;
+                            $('#NewBlog_State').prop("value", address_component.long_name);
+                        }
+                        else if (address_component.types[0] == "country") {
+                            country = address_component.short_name;
+                            $('#NewBlog_Country').prop("value", address_component.long_name);
+                        }
+                    });
+
+                    //  alert(city + ", " + state + ", " + country);
+                    $('#location').prop('value', city + ", " + state + ", " + country);
+                    LoadEvents(result.geometry.location.lat(), result.geometry.location.lng());
+                });
+            }
+
+        });
+
+        function loadImage(input) {
+            if (input.files && input.files[0]) {
+                if (input.files[0].size < 2000000) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        $('#image').cropper({
+                            aspectRatio: 3 / 1,
+                            zoomable: true,
+                            viewMode: 2,
+                        });
+                        $("#image").cropper('replace', e.target.result);
+                        $("#btnupload").show();
+                    }
+
+                    reader.readAsDataURL(input.files[0]);
+                }
+                else {
+                    alert("Pick a smaller file");
+                }
+            }
+        }
+
+        $("#imgInp").change(function () {
+            loadImage(this);
+            $("#croppic").show();
+            $('#divUploadPic').hide();
+        });
+
+        $('#blogform.main').submit(function () {
+            $('#NewImage').val($("#image").cropper("getCroppedCanvas").toDataURL('png', 1));
+        });
+    </script>
+}

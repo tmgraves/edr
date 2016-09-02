@@ -8,13 +8,29 @@ using System.Web.Routing;
 
 namespace EDR
 {
+    public class NotEqual : IRouteConstraint
+    {
+        private string _match = String.Empty;
+
+        public NotEqual(string match)
+        {
+            _match = match;
+        }
+
+        public bool Match(HttpContextBase httpContext, Route route, string parameterName, RouteValueDictionary values, RouteDirection routeDirection)
+        {
+            return String.Compare(values[parameterName].ToString(), _match, true) != 0;
+        }
+    }
+
     public class RouteConfig
     {
         public static void RegisterRoutes(RouteCollection routes)
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
-            //  routes.MapMvcAttributeRoutes();
+            routes.MapMvcAttributeRoutes();
+
             routes.MapRoute(
                 name: "ClassActionId",
                 url: "Class/{action}/{id}",
@@ -45,20 +61,86 @@ namespace EDR
                 defaults: new { controller = "DanceStyle", action = "List"},
                 namespaces: new[] { "EDR.Controllers" }
             );
+            //routes.MapRoute(
+            //    name: "DancerHome",
+            //    url: "Dancer/{action}/{username}",
+            //    defaults: new { controller = "Dancer", action = "List" },
+            //    namespaces: new[] { "EDR.Controllers" }
+            //);
+            //routes.MapRoute(
+            //    name: "TeacherHome",
+            //    url: "Teacher/{action}/{username}",
+            //    defaults: new { controller = "Teacher", action = "List" },
+            //    namespaces: new[] { "EDR.Controllers" }
+            //);
+            //routes.MapRoute(
+            //    name: "PromoterHome",
+            //    url: "Promoter/{action}/{username}",
+            //    defaults: new { controller = "Promoter", action = "List" },
+            //    namespaces: new[] { "EDR.Controllers" }
+            //);
+            //routes.MapRoute(
+            //    name: "OwnerHome",
+            //    url: "Owner/{action}/{username}",
+            //    defaults: new { controller = "Owner", action = "List" },
+            //    namespaces: new[] { "EDR.Controllers" }
+            //);
 
             routes.MapRoute(
                 name: "Generic",
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional },
-                namespaces: new[] { "EDR.Controllers" }
+                namespaces: new[] { "EDR.Controllers" },
+                //  constraints: new { controller = new NotEqual("Dancer") }
+                constraints: new { controller = @"Account|Base|Checkout|DanceStyle|Home|Event|Place|School|ShoppingCart|Store|Team|Visitor" }
             );
 
-            routes.MapRoute(
-                name: "GenericNoID",
-                url: "{controller}/{action}",
-                defaults: new { controller = "Home", action = "Index" },
-                namespaces: new[] { "EDR.Controllers" }
-            );
+            //routes.MapRoute(
+            //    name: "DancerGetClassesPartial",
+            //    url: "Dancer/GetClassesPartial",
+            //    defaults: new { controller = "Dancer", action = "GetClassesPartial", username = UrlParameter.Optional },
+            //    namespaces: new[] { "EDR.Controllers" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "TeacherAction",
+            //    url: "Teacher/{action}/{id}",
+            //    defaults: new { controller = "Teacher", action = "", username = UrlParameter.Optional, id = UrlParameter.Optional },
+            //    namespaces: new[] { "EDR.Controllers" },
+            //    constraints: new { controller = @"Teacher", action = @"GetClassesPartial|GetSocialsPartial|Manage" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "TeacherName",
+            //    url: "Teacher/{username}",
+            //    defaults: new { controller = "Teacher", action = "Home", username = UrlParameter.Optional },
+            //    namespaces: new[] { "EDR.Controllers" },
+            //    constraints: new { controller = @"Teacher", action = "Home" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "DancerAction",
+            //    url: "Dancer/{action}/{id}",
+            //    defaults: new { controller = "Dancer", action = "", username = UrlParameter.Optional, id = UrlParameter.Optional },
+            //    namespaces: new[] { "EDR.Controllers" },
+            //    constraints: new { controller = @"Dancer", action = @"GetClassesPartial|GetSocialsPartial|Manage" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "DancerName",
+            //    url: "{username}",
+            //    defaults: new { controller = "Dancer", action = "Home", username = UrlParameter.Optional },
+            //    namespaces: new[] { "EDR.Controllers" },
+            //    constraints: new { controller = @"Dancer", action = "Home" }
+            //);
+
+            //routes.MapRoute(
+            //    name: "GenericNoID",
+            //    url: "{controller}/{action}",
+            //    defaults: new { controller = "Home", action = "Index" },
+            //    namespaces: new[] { "EDR.Controllers" },
+            //    constraints: new { controllers = @"(none)"}
+            //);
 
             //routes.MapRoute(
             //    name: "Test",

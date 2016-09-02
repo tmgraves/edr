@@ -13,6 +13,7 @@ using AuthorizeNet.Api.Controllers;
 using AuthorizeNet.Api.Contracts.V1;
 using AuthorizeNet.Api.Controllers.Bases;
 using EDR.Enums;
+using System.Configuration;
 
 namespace EDR.Models
 {
@@ -156,6 +157,185 @@ namespace EDR.Models
         [ForeignKey("PaymentBatchId")]
         public virtual PaymentBatch PaymentBatch { get; set; }
         public DateTime? Committed { get; set; }
+        public int? SettlementBatchItemId { get; set; }
+        [ForeignKey("SettlementBatchItemId")]
+        public virtual SettlementBatchItem SettlementBatchItem { get; set; }
+        public string SettlementStatus { get; set; }
+        public DateTime? SettlementDate { get; set; }
+        public bool Valid
+        {
+            get
+            {
+                if (TranType == "Purchase Order" && Committed != null && SettlementDate != null && SettlementDate <= DateTime.Today.AddDays(-GlobalVariables.SettlementPeriod))
+                {
+                    return true;
+                }
+                else if (TranType != "Purchase Order" && Committed != null)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+    }
+
+    [Bind(Exclude = "Id")]
+    public class SettlementBatch : Entity
+    {
+        [Required]
+        public string GatewayBatchId { get; set; }
+        [Required]
+        public DateTime BatchDate { get; set; }
+        public string Status { get; set; }
+        public virtual ICollection<SettlementBatchItem> SettlementBatchItems { get; set; }
+
+        [Authorize(Roles = "Admin")]
+        public static ANetApiResponse GetBatches()
+        {
+            ApplicationDbContext context = new ApplicationDbContext();
+            if (context.FinancialTransactions.Where(t => t.SettlementStatus == null && t.TranType == "Purchase Order").Count() > 0)
+            {
+                if (ConfigurationManager.AppSettings["AuthorizeEnvironment"] == "Production")
+                {
+                    ApiOperationBase<ANetApiRequest, ANetApiResponse>.RunEnvironment = AuthorizeNet.Environment.PRODUCTION;
+                }
+                else
+                {
+                    ApiOperationBase<ANetApiRequest, ANetApiResponse>.RunEnvironment = AuthorizeNet.Environment.SANDBOX;
+                }
+                // define the merchant information (authentication / transaction id)
+                ApiOperationBase<ANetApiRequest, ANetApiResponse>.MerchantAuthentication = new merchantAuthenticationType()
+                {
+                    name = ConfigurationManager.AppSettings["AuthorizeNetApiLoginID"],
+                    ItemElementName = ItemChoiceType.transactionKey,
+                    Item = ConfigurationManager.AppSettings["AuthorizeNetApiTransactionKey"],
+                };
+
+                //Get today's date
+                //  Made some hacks to accomodate for different time zones
+                var start = context.FinancialTransactions.Where(t => t.SettlementStatus == null && t.TranType == "Purchase Order").Min(d => d.TranDate).AddDays(-2);
+                var firstSettlementDate = new DateTime(start.Year, start.Month, start.Day).ToLocalTime();
+                var lastSettlementDate = DateTime.Today.ToLocalTime();
+                //Console.WriteLine("First settlement date: {0} Last settlement date:{1}", firstSettlementDate,
+                //    lastSettlementDate);
+
+                var request = new getSettledBatchListRequest();
+                request.firstSettlementDate = firstSettlementDate;
+                request.lastSettlementDate = lastSettlementDate;
+                request.includeStatistics = true;
+
+                // instantiate the controller that will call the service
+                var controller = new getSettledBatchListController(request);
+                controller.Execute();
+
+                // get the response from the service (errors contained if any)
+                var response = controller.GetApiResponse();
+
+                if (response != null && response.messages.resultCode == messageTypeEnum.Ok)
+                {
+                    if (response.batchList == null)
+                        return response;
+
+                    foreach (var batch in response.batchList)
+                    {
+                        if (context.SettlementBatches.Where(b => b.GatewayBatchId == batch.batchId).Count() == 0)
+                        {
+                            var bch = new SettlementBatch() { GatewayBatchId = batch.batchId, BatchDate = batch.settlementTimeLocal, Status = batch.settlementState };
+                            context.SettlementBatches.Add(bch);
+                            context.SaveChanges();
+
+                            bch.SettlementBatchItems = new List<SettlementBatchItem>();
+
+                            var listrequest = new getTransactionListRequest();
+                            listrequest.batchId = batch.batchId;
+
+                            var listcontroller = new getTransactionListController(listrequest);
+                            listcontroller.Execute();
+
+                            var listresponse = listcontroller.GetApiResponse();
+
+                            if (listresponse != null && listresponse.messages.resultCode == messageTypeEnum.Ok)
+                            {
+                                if (listresponse.transactions != null)
+                                {
+                                    foreach (var transaction in listresponse.transactions)
+                                    {
+                                        bch.SettlementBatchItems.Add(new SettlementBatchItem() { TranId = transaction.transId, Amount = transaction.settleAmount, FirstName = transaction.firstName, LastName = transaction.lastName, Status = transaction.transactionStatus, SubmitDate = transaction.submitTimeLocal });
+                                        context.Entry(bch).State = EntityState.Modified;
+
+                                        //Console.WriteLine("Transaction Id: {0}", transaction.transId);
+                                        //Console.WriteLine("Submitted on (Local): {0}", transaction.submitTimeLocal);
+                                        //Console.WriteLine("Status: {0}", transaction.transactionStatus);
+                                        //Console.WriteLine("Settle amount: {0}", transaction.settleAmount);
+                                    }
+                                    context.SaveChanges();
+
+                                    //  Update Transaction Items
+                                    var items = context.SettlementBatchItems.Where(i => i.SettlementBatchId == bch.Id).ToList();
+                                    foreach (var i in items)
+                                    {
+                                        var tran = context.FinancialTransactions.Where(t => t.OrderTransactionId == i.TranId).FirstOrDefault();
+                                        tran.SettlementBatchItemId = i.Id;
+                                        tran.SettlementStatus = i.Status;
+                                        tran.SettlementDate = batch.settlementTimeLocal;
+                                        context.Entry(tran).State = EntityState.Modified;
+                                    }
+                                    context.SaveChanges();
+                                }
+                            }
+                            else if (listresponse != null)
+                            {
+                                //Console.WriteLine("Error: " + listresponse.messages.message[0].code + "  " +
+                                //                  listresponse.messages.message[0].text);
+                            }
+                        }
+                        //Console.WriteLine("Batch Id: {0}", batch.batchId);
+                        //Console.WriteLine("Batch settled on (UTC): {0}", batch.settlementTimeUTC);
+                        //Console.WriteLine("Batch settled on (Local): {0}", batch.settlementTimeLocal);
+                        //Console.WriteLine("Batch settlement state: {0}", batch.settlementState);
+                        //Console.WriteLine("Batch market type: {0}", batch.marketType);
+                        //Console.WriteLine("Batch product: {0}", batch.product);
+                        //foreach (var statistics in batch.statistics)
+                        //{
+                        //    Console.WriteLine(
+                        //        "Account type: {0} Total charge amount: {1} Charge count: {2} Refund amount: {3} Refund count: {4} Void count: {5} Decline count: {6} Error amount: {7}",
+                        //        statistics.accountType, statistics.chargeAmount, statistics.chargeCount,
+                        //        statistics.refundAmount, statistics.refundCount,
+                        //        statistics.voidCount, statistics.declineCount, statistics.errorCount);
+                        //}
+                    }
+                }
+                else if (response != null)
+                {
+                    //Console.WriteLine("Error: " + response.messages.message[0].code + "  " +
+                    //                  response.messages.message[0].text);
+                }
+
+                return response;
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
+
+    [Bind(Exclude = "Id")]
+    public class SettlementBatchItem : Entity
+    {
+        [Required]
+        public int SettlementBatchId { get; set; }
+        [ForeignKey("SettlementBatchId")]
+        public virtual SettlementBatch SettlementBatch { get; set; }
+        public string TranId { get; set; }
+        public DateTime SubmitDate { get; set; }
+        public string Status { get; set; }
+        public decimal Amount { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
     }
 
     [Bind(Exclude = "Id")]

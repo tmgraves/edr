@@ -16,6 +16,7 @@ namespace EDR.Controllers
 {
     public class PromoterController : BaseController
     {
+        [Route("Promoter/Manage")]
         [AccessDeniedAuthorize(Roles = "Promoter", AccessDeniedAction = "Apply", AccessDeniedController = "Promoter")]
         public ActionResult Manage()
         {
@@ -28,6 +29,7 @@ namespace EDR.Controllers
             return View(model);
         }
 
+        [Route("Promoter/Manage")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Promoter")]
@@ -44,20 +46,23 @@ namespace EDR.Controllers
             return View(model);
         }
 
-        [Authorize(Roles = "Promoter")]
-        public ActionResult ManageGroup(int id, int promoterid)
+        [Route("Promoter/ManageGroup")]
+        [Authorize]
+        public ActionResult ManageGroup(int id)
         {
             var userid = User.Identity.GetUserId();
-            var model = new PromoterGroupManageViewModel();
-            model.Promoter = DataContext.Promoters.Single(p => p.Id == promoterid);
-            model.PromoterGroup = DataContext.PromoterGroups
-                                .Include("Promoters")
-                                .Include("Socials.EventInstances.EventRegistrations")
-                                .Include("Socials.Tickets.UserTickets")
-                                .Single(s => s.Id == id);
+            var group = DataContext.PromoterGroups
+                                    .Include("Promoters")
+                                    .Include("Socials.EventInstances.EventRegistrations")
+                                    .Include("Socials.Tickets.UserTickets")
+                                    .Include("Members")
+                                .Where(g => g.Id == id).FirstOrDefault();
 
-            if (model.PromoterGroup.Promoters.Where(p => p.ApplicationUser.Id == userid).Count() != 0)
+            if (group.Promoters.Where(p => p.ApplicationUser.Id == userid).Count() > 0 || group.Members.Where(p => p.UserId == userid && p.Admin).Count() > 0 || User.IsInRole("Admin"))
             {
+                var model = new PromoterGroupManageViewModel();
+                var admin = User.IsInRole("Admin");
+                model.PromoterGroup = group;
                 return View(model);
             }
             else
@@ -67,15 +72,16 @@ namespace EDR.Controllers
             }
         }
 
+        [Route("Promoter/ManageGroup")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Promoter")]
+        [Authorize]
         public ActionResult ManageGroup(PromoterGroupManageViewModel model)
         {
             var userid = User.Identity.GetUserId();
+            var group = DataContext.PromoterGroups.Include("Promoters").Include("Members").Where(g => g.Id == model.PromoterGroup.Id).FirstOrDefault();
 
-            var group = DataContext.PromoterGroups.Include("Promoters").Single(g => g.Id == model.PromoterGroup.Id);
-            if (group.Promoters.Where(p => p.ApplicationUser.Id == userid).Count() != 0)
+            if (group.Promoters.Where(p => p.ApplicationUser.Id == userid).Count() > 0 || group.Members.Where(p => p.UserId == userid && p.Admin).Count() > 0 || User.IsInRole("Admin"))
             {
                 if (ModelState.IsValidField("PromoterGroup"))
                 {
@@ -92,9 +98,9 @@ namespace EDR.Controllers
                     //  UpdateModel(group, "PromoterGroup");
                     DataContext.Entry(group).State = EntityState.Modified;
                     DataContext.SaveChanges();
-                    return RedirectToAction("ManageGroup", new { id = model.PromoterGroup.Id, promoterid = model.Promoter.Id });
+                    return RedirectToAction("ManageGroup", new { id = model.PromoterGroup.Id });
                 }
-                return RedirectToAction("ManageGroup", new { id = model.PromoterGroup.Id, promoterid = model.Promoter.Id });
+                return RedirectToAction("ManageGroup", new { id = model.PromoterGroup.Id });
             }
             else
             {
@@ -103,29 +109,124 @@ namespace EDR.Controllers
             }
         }
 
+        [Route("Promoter/AddMember")]
+        [Authorize(Roles = "Teacher,Owner")]
+        [HttpPost]
+        public ActionResult AddMember(PromoterGroupManageViewModel model)
+        {
+            var userid = User.Identity.GetUserId();
+            var group = DataContext.PromoterGroups.Include("Promoters").Include("Members").Where(g => g.Id == model.PromoterGroup.Id).FirstOrDefault();
+
+            if (group.Promoters.Where(p => p.ApplicationUser.Id == userid).Count() > 0 || group.Members.Where(p => p.UserId == userid && p.Admin).Count() > 0 || User.IsInRole("Admin"))
+            {
+                if (DataContext.OrganizationMembers.Where(m => m.OrganizationId == model.PromoterGroup.Id && m.UserId == model.NewMemberId).Count() == 0)
+                {
+                    DataContext.OrganizationMembers.Add(new OrganizationMember() { OrganizationId = model.PromoterGroup.Id, UserId = model.NewMemberId, Admin = false });
+                    DataContext.SaveChanges();
+                }
+                return RedirectToAction("ManageGroup", new { id = model.PromoterGroup.Id });
+            }
+            else
+            {
+                ViewBag.Message = "Not Authorized";
+                return View("Error");
+            }
+        }
+
+        [Route("Promoter/UpdateMembers")]
+        // POST: School
+        [HttpPost]
+        [Authorize(Roles = "Teacher,Owner")]
+        public ActionResult UpdateMembers(PromoterGroupManageViewModel model)
+        {
+            var userid = User.Identity.GetUserId();
+            var group = DataContext.PromoterGroups.Include("Promoters").Include("Members").Where(g => g.Id == model.PromoterGroup.Id).FirstOrDefault();
+
+            if (group.Promoters.Where(p => p.ApplicationUser.Id == userid).Count() > 0 || group.Members.Where(p => p.UserId == userid && p.Admin).Count() > 0 || User.IsInRole("Admin"))
+            {
+                foreach (var m in model.PromoterGroup.Members)
+                {
+                    var mem = DataContext.OrganizationMembers.Where(om => om.Id == m.Id).FirstOrDefault();
+                    mem.Admin = m.Admin;
+                }
+                DataContext.SaveChanges();
+                return RedirectToAction("ManageGroup", new { id = model.PromoterGroup.Id });
+            }
+            else
+            {
+                ViewBag.Message = "Not Authorized";
+                return View("Error");
+            }
+        }
+
+        [Route("Promoter/RemoveMember")]
+        [Authorize]
+        public ActionResult RemoveMember(int id, string memberid)
+        {
+            var userid = User.Identity.GetUserId();
+            var group = DataContext.PromoterGroups.Include("Promoters").Include("Members").Where(g => g.Id == id).FirstOrDefault();
+
+            if (group.Promoters.Where(p => p.ApplicationUser.Id == userid).Count() > 0 || group.Members.Where(p => p.UserId == userid && p.Admin).Count() > 0 || User.IsInRole("Admin"))
+            {
+                DataContext.OrganizationMembers.Remove(DataContext.OrganizationMembers.Single(m => m.OrganizationId == id && m.UserId == memberid));
+                DataContext.SaveChanges();
+                return RedirectToAction("ManageGroup", new { id = id });
+            }
+            else
+            {
+                ViewBag.Message = "Not Authorized";
+                return View("Error");
+            }
+        }
+
+        [Route("Promoter/AddGroupPromoter")]
         [Authorize(Roles = "Promoter,Owner,Admin")]
         [HttpPost]
         public ActionResult AddGroupPromoter(FormCollection formCollection)
         {
+            var userid = User.Identity.GetUserId();
             int id = Convert.ToInt32(formCollection["id"]);
             string promid = formCollection["promoterid"];
-            string promoterid = formCollection["rpromoterid"];
-            if (DataContext.PromoterGroups.Where(c => c.Id == id && c.Promoters.Any(t => t.ApplicationUser.Id == promid)).Count() == 0)
+
+            var group = DataContext.PromoterGroups.Include("Promoters").Include("Members").Where(g => g.Id == id).FirstOrDefault();
+
+            if (group.Promoters.Where(p => p.ApplicationUser.Id == userid).Count() > 0 || group.Members.Where(p => p.UserId == userid && p.Admin).Count() > 0 || User.IsInRole("Admin"))
             {
-                DataContext.PromoterGroups.Single(s => s.Id == id).Promoters.Add(DataContext.Promoters.Single(t => t.ApplicationUser.Id == promid));
-                DataContext.SaveChanges();
+                if (DataContext.PromoterGroups.Where(c => c.Id == id && c.Promoters.Any(t => t.ApplicationUser.Id == promid)).Count() == 0)
+                {
+                    DataContext.PromoterGroups.Single(s => s.Id == id).Promoters.Add(DataContext.Promoters.Single(t => t.ApplicationUser.Id == promid));
+                    DataContext.SaveChanges();
+                }
+                return RedirectToAction("ManageGroup", new { id = id });
             }
-            return RedirectToAction("ManageGroup", new { id = id, promoterid = promoterid });
+            else
+            {
+                ViewBag.Message = "Not Authorized";
+                return View("Error");
+            }
         }
 
-        [Authorize(Roles = "Promoter,Owner,Admin")]
-        public ActionResult RemoveGroupPromoter(int id, int promoterid, int rpromoterid)
+        [Route("Promoter/RemoveGroupPromoter")]
+        [Authorize]
+        public ActionResult RemoveGroupPromoter(int id, int promoterid)
         {
-            DataContext.PromoterGroups.Where(s => s.Id == id).Include("Promoters").FirstOrDefault().Promoters.Remove(DataContext.Promoters.Single(t => t.Id == promoterid));
-            DataContext.SaveChanges();
-            return RedirectToAction("ManageGroup", new { id = id, promoterid = rpromoterid });
+            var userid = User.Identity.GetUserId();
+
+            var group = DataContext.PromoterGroups.Include("Promoters").Include("Members").Where(g => g.Id == id).FirstOrDefault();
+            if (group.Promoters.Where(p => p.ApplicationUser.Id == userid).Count() > 0 || group.Members.Where(p => p.UserId == userid && p.Admin).Count() > 0 || User.IsInRole("Admin"))
+            {
+                DataContext.PromoterGroups.Where(s => s.Id == id).Include("Promoters").FirstOrDefault().Promoters.Remove(DataContext.Promoters.Single(t => t.Id == promoterid));
+                DataContext.SaveChanges();
+                return RedirectToAction("ManageGroup", new { id = id });
+            }
+            else
+            {
+                ViewBag.Message = "Not Authorized";
+                return View("Error");
+            }
         }
 
+        [Route("Promoter/AddGroup")]
         [HttpPost]
         [Authorize(Roles = "Promoter")]
         public ActionResult AddGroup(PromoterManageViewModel model)
@@ -147,19 +248,32 @@ namespace EDR.Controllers
             return RedirectToAction("View", model.Promoter.Id);
         }
 
+        [Route("Promoter/DeleteGroup")]
         // GET: School
         [Authorize(Roles = "Teacher")]
-        public ActionResult DeleteGroup(int id, int promoterId)
+        public ActionResult DeleteGroup(int id)
         {
-            var group = DataContext.PromoterGroups.Where(s => s.Id == id).FirstOrDefault();
-            group.Promoters.Clear();
-            DataContext.PromoterGroups.Remove(group);
-            DataContext.SaveChanges();
-            return RedirectToAction("Manage", new { id = promoterId });
+            var userid = User.Identity.GetUserId();
+
+            var group = DataContext.PromoterGroups.Include("Promoters").Include("Members").Where(g => g.Id == id).FirstOrDefault();
+            if (group.Promoters.Where(p => p.ApplicationUser.Id == userid).Count() > 0 || group.Members.Where(p => p.UserId == userid && p.Admin).Count() > 0 || User.IsInRole("Admin"))
+            {
+                group.Promoters.Clear();
+                DataContext.PromoterGroups.Remove(group);
+                DataContext.SaveChanges();
+                return RedirectToAction("Manage");
+            }
+            else
+            {
+                ViewBag.Message = "Not Authorized";
+                return View("Error");
+            }
         }
 
+        [Route("Promoter/List")]
         public ActionResult List(PromoterListViewModel model)
         {
+            model.DanceStyles = DataContext.DanceStyles.Select(s => s.Name).ToArray();
             model.Promoters = DataContext.Promoters
                                     .Include("DanceStyles")
                                     .Include("ApplicationUser");
@@ -185,6 +299,7 @@ namespace EDR.Controllers
             return View(model);
         }
 
+        [Route("Promoter/LoadPromoter")]
         private PromoterViewViewModel LoadPromoter(string username)
         {
             // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE TeacherViewModel)
@@ -242,6 +357,7 @@ namespace EDR.Controllers
             return viewModel;
         }
 
+        [Route("Promoter/GetSocialsPartial")]
         [HttpGet]
         public virtual ActionResult GetSocialsPartial(int id)
         {
@@ -256,42 +372,44 @@ namespace EDR.Controllers
             return PartialView("~/Views/Shared/_EventsPartial.cshtml", socials);
         }
 
-        [Authorize]
-        public ActionResult View(string username)
-        {
-            if (String.IsNullOrWhiteSpace(username))
-            {
-                if (User != null)
-                {
-                    username = User.Identity.Name;
-                }
-                else
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
-            }
+        //[Route("Promoter/View")]
+        //[Authorize]
+        //public ActionResult View(string username)
+        //{
+        //    if (String.IsNullOrWhiteSpace(username))
+        //    {
+        //        if (User != null)
+        //        {
+        //            username = User.Identity.Name;
+        //        }
+        //        else
+        //        {
+        //            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //        }
+        //    }
 
-            var promoter = DataContext.Promoters
-                .Where(x => x.ApplicationUser.UserName == username)
-                .FirstOrDefault();
+        //    var promoter = DataContext.Promoters
+        //        .Where(x => x.ApplicationUser.UserName == username)
+        //        .FirstOrDefault();
 
-            if (promoter == null || promoter.Approved == null)
-            {
-                if (username == User.Identity.Name && !User.IsInRole("Promoter"))
-                {
-                    return RedirectToAction("Apply", "Promoter");
-                }
-                else 
-                {
-                    return HttpNotFound();
-                }
-            }
+        //    if (promoter == null || promoter.Approved == null)
+        //    {
+        //        if (username == User.Identity.Name && !User.IsInRole("Promoter"))
+        //        {
+        //            return RedirectToAction("Apply", "Promoter");
+        //        }
+        //        else 
+        //        {
+        //            return HttpNotFound();
+        //        }
+        //    }
 
-            var viewModel = LoadPromoter(username);
+        //    var viewModel = LoadPromoter(username);
 
-            return View(viewModel);
-        }
+        //    return View(viewModel);
+        //}
 
+        [Route("Promoter/{username}")]
         [Authorize]
         public ActionResult Home(string username)
         {
@@ -378,6 +496,7 @@ namespace EDR.Controllers
             return View(viewModel);
         }
 
+        [Route("Promoter/GetSocialInstances")]
         public JsonResult GetSocialInstances(int promoterId, DateTime start, DateTime end)
         {
             var instances = DataContext.Socials.Where(c => c.Promoters.Any(t => t.Id == promoterId)).SelectMany(c => c.EventInstances).Where(i => i.DateTime >= start && i.DateTime <= end).ToList();
@@ -395,79 +514,81 @@ namespace EDR.Controllers
                         }), JsonRequestBehavior.AllowGet);
         }
 
-        [Authorize]
-        public ActionResult MySocials(string username)
-        {
-            if (String.IsNullOrWhiteSpace(username))
-            {
-                if (User != null)
-                {
-                    username = User.Identity.Name;
-                }
-                else
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
-            }
+        //[Route("Promoter/MySocials")]
+        //[Authorize]
+        //public ActionResult MySocials(string username)
+        //{
+        //    if (String.IsNullOrWhiteSpace(username))
+        //    {
+        //        if (User != null)
+        //        {
+        //            username = User.Identity.Name;
+        //        }
+        //        else
+        //        {
+        //            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //        }
+        //    }
 
-            var promoter = DataContext.Promoters
-                .Where(x => x.ApplicationUser.UserName == username)
-                .FirstOrDefault();
+        //    var promoter = DataContext.Promoters
+        //        .Where(x => x.ApplicationUser.UserName == username)
+        //        .FirstOrDefault();
 
-            if (promoter == null || promoter.Approved == null)
-            {
-                if (username == User.Identity.Name && !User.IsInRole("Promoter"))
-                {
-                    return RedirectToAction("Apply", "Promoter");
-                }
-                else
-                {
-                    return HttpNotFound();
-                }
-            }
+        //    if (promoter == null || promoter.Approved == null)
+        //    {
+        //        if (username == User.Identity.Name && !User.IsInRole("Promoter"))
+        //        {
+        //            return RedirectToAction("Apply", "Promoter");
+        //        }
+        //        else
+        //        {
+        //            return HttpNotFound();
+        //        }
+        //    }
 
-            var viewModel = LoadPromoter(username);
+        //    var viewModel = LoadPromoter(username);
 
-            return View(viewModel);
-        }
+        //    return View(viewModel);
+        //}
 
-        [Authorize]
-        public ActionResult Edit()
-        {
-            var id = User.Identity.GetUserId();
-            var promoter = DataContext.Promoters
-                .Where(x => x.ApplicationUser.Id == id)
-                .FirstOrDefault();
+        //[Authorize]
+        //public ActionResult Edit()
+        //{
+        //    var id = User.Identity.GetUserId();
+        //    var promoter = DataContext.Promoters
+        //        .Where(x => x.ApplicationUser.Id == id)
+        //        .FirstOrDefault();
 
-            if (promoter == null)
-            {
-                return HttpNotFound();
-            }
+        //    if (promoter == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
 
-            var viewModel = new PromoterEditViewModel();
-            viewModel.Promoter = promoter;
+        //    var viewModel = new PromoterEditViewModel();
+        //    viewModel.Promoter = promoter;
 
-            return View(viewModel);
-        }
+        //    return View(viewModel);
+        //}
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(PromoterEditViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var promoter = DataContext.Promoters.Where(x => x.ApplicationUser.Id == model.Promoter.ApplicationUser.Id).Include("ApplicationUser").FirstOrDefault();
-                promoter.ContactEmail = model.Promoter.ContactEmail;
-                promoter.Website = model.Promoter.Website;
-                promoter.Facebook = model.Promoter.Facebook;
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Edit(PromoterEditViewModel model)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        var promoter = DataContext.Promoters.Where(x => x.ApplicationUser.Id == model.Promoter.ApplicationUser.Id).Include("ApplicationUser").FirstOrDefault();
+        //        promoter.ContactEmail = model.Promoter.ContactEmail;
+        //        promoter.Website = model.Promoter.Website;
+        //        promoter.Facebook = model.Promoter.Facebook;
 
-                DataContext.Entry(promoter).State = EntityState.Modified;
-                DataContext.SaveChanges();
-                return RedirectToAction("MySocials", "Promoter", new { username = promoter.ApplicationUser.UserName });
-            }
-            return View(model);
-        }
+        //        DataContext.Entry(promoter).State = EntityState.Modified;
+        //        DataContext.SaveChanges();
+        //        return RedirectToAction("MySocials", "Promoter", new { username = promoter.ApplicationUser.UserName });
+        //    }
+        //    return View(model);
+        //}
 
+        [Route("Promoter/Apply")]
         [Authorize]
         public ActionResult Apply()
         {
@@ -488,6 +609,7 @@ namespace EDR.Controllers
         }
 
         // POST: Promoter Apply
+        [Route("Promoter/Apply")]
         [HttpPost]
         public ActionResult Apply(PromoterApplyViewModel model)
         {
@@ -529,6 +651,7 @@ namespace EDR.Controllers
         }
 
         #region JSON
+        [Route("Promoter/GetSocials")]
         [Authorize(Roles = "Teacher")]
         public JsonResult GetSocials()
         {
@@ -545,6 +668,7 @@ namespace EDR.Controllers
             }
         }
 
+        [Route("Promoter/GetUpdates")]
         public ActionResult GetUpdates(string username)
         {
             var evts = DataContext.Events.OfType<Social>().Where(s => s.Promoters.Any(p => p.ApplicationUser.UserName == username))
@@ -564,6 +688,8 @@ namespace EDR.Controllers
             //  Media Updates
 
         }
+
+        [Route("Promoter/Search")]
         public JsonResult Search(string searchString)
         {
             var promoters = DataContext.Promoters.Where(t => (t.ApplicationUser.FirstName + " " + t.ApplicationUser.LastName).ToLower().Contains(searchString.ToLower())).Select(s => new { Id = s.ApplicationUser.Id, Name = s.ApplicationUser.FirstName + " " + s.ApplicationUser.LastName }).ToList();

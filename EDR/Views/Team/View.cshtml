@@ -2,7 +2,9 @@
 @using Microsoft.AspNet.Identity
 
 @{
-    ViewBag.Title = Model.Team.Name + " Details";
+    ViewBag.Title = Model.Team.Name;
+    ViewBag.Keywords = "Dance Performance Team " + String.Join(" ", Model.Team.DanceStyles.Select(s => s.Name).ToArray()) + " " + Model.Team.City + " " + Model.Team.State;
+    ViewBag.Description = "Home page for the " + Model.Team.Name + " in " + Model.Team.City + ", " + Model.Team.State + ". " + String.Join(" ", Model.Team.DanceStyles.Select(s => s.Name).ToArray()) + ".";
 }
 
 <ol class="breadcrumb">
@@ -28,7 +30,7 @@
                             </div>
                         </div>
                         <div class="col-lg-8 col-md-4 nospace">
-                            <h2>@Model.Team.Name</h2>
+                            <h1>@Model.Team.Name</h1>
                             <p>
                                 @Model.Team.City, @Model.Team.State
                             </p>
@@ -203,9 +205,9 @@
 
 @section Scripts
 {
+@Scripts.Render("~/bundles/jqueryval")
+@Scripts.Render("~/bundles/jqueryUI")
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
-    @Scripts.Render("~/bundles/jqueryval")
-    @Scripts.Render("~/bundles/jqueryUI")
     <link rel="stylesheet" href="~/Content/jquery.rateyo.css" />
     <script src="~/Scripts/jquery.rateyo.js"></script>
     <script src="~/Scripts/jquery-simple-pagination-plugin.js"></script>
@@ -285,7 +287,7 @@
             editable: false,
             eventLimit: true, // allow "more" link when too many events
             events: {
-                url: '../../Team/GetEventInstances',
+                url: '@Url.Action("GetEventInstances", "Team")',
                 traditional: true,
                 data: {
                     teamId: $('#Team_Id').val(),

@@ -17,6 +17,7 @@ namespace EDR.Controllers
     {
         public ActionResult List(PlaceListViewModel model)
         {
+            model.DanceStyles = DataContext.DanceStyles.Select(s => s.Name).ToArray();
             if (model.TypeParam != null)
             {
                 model.Type = model.TypeParam;

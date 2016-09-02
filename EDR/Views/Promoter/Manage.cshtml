@@ -10,16 +10,19 @@
     <li class="active">Manage Profile</li>
 </ol>
 
-<h2 class="page-header">
+<h1 class="page-header">
     Manage Promoter Profile
-</h2>
+</h1>
 
 <div class="container-fluid">
-    <div class="row" style="padding-bottom: 10px;">
-        <div class="col-xs-12">
-            <a href="#" style="width: 100% !important;" class="btn btn-success" data-uri="scan://scan" onclick="clickHandler(this.dataset.uri)"><i class="glyphicon glyphicon-screenshot"></i> Open Code Scanner</a>
+    @if (Request.Browser.IsMobileDevice)
+    {
+        <div class="row" style="padding-bottom: 10px;">
+            <div class="col-xs-12 col-sm-12">
+                <a href="#" style="width: 100% !important;" class="btn btn-success" data-uri="scan://scan" onclick="clickHandler(this.dataset.uri)"><i class="glyphicon glyphicon-screenshot"></i> Open Code Scanner</a>
+            </div>
         </div>
-    </div>
+    }
     <div class="row">
         <div class="col-lg-6 col-md-6">
             <div class="panel panel-default">
@@ -223,8 +226,8 @@
                                     @item.Promoters.Count()
                                 </td>
                                 <td>
-                                    @Html.ActionLink("View Group", "ManageGroup", "Promoter", new { id = item.Id, promoterid = Model.Promoter.Id }, new { @class = "btn btn-primary" })
-                                    @Html.ActionLink("Delete", "DeleteGroup", "Promoter", new { id = item.Id, promoterId = Model.Promoter.Id }, new { @class = "btn btn-danger" })
+                                    @Html.ActionLink("View Group", "ManageGroup", "Promoter", new { id = item.Id }, new { @class = "btn btn-primary" })
+                                    @Html.ActionLink("Delete", "DeleteGroup", "Promoter", new { id = item.Id }, new { @class = "btn btn-danger" })
                                 </td>
                             </tr>
                         }
@@ -377,6 +380,11 @@
             }
         });
 
+        function clickHandler(uri) {
+            deeplink.open(uri);
+            return false;
+        }
+
         $(function () {
             $("#NewPromoterGroup_PayeeAddress").geocomplete({
                 details: "form",
@@ -413,11 +421,6 @@
                 //  console.log(result);
             });
         });
-
-        function clickHandler(uri) {
-            deeplink.open(uri);
-            return false;
-        }
 
         $(function () {
         LoadClasses();

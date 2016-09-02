@@ -298,18 +298,21 @@
     <Compile Include="Areas\Admin\Controllers\DanceStyleController.cs" />
     <Compile Include="Areas\Admin\Controllers\EmailController.cs" />
     <Compile Include="Areas\Admin\Controllers\FinancialController.cs" />
+    <Compile Include="Areas\Admin\Controllers\HomeController.cs" />
     <Compile Include="Areas\Admin\Controllers\RolesController.cs" />
     <Compile Include="Areas\Admin\Models\ViewModels\DanceStyleViewModels.cs" />
     <Compile Include="Areas\Admin\Models\ViewModels\FinancialViewModels.cs" />
     <Compile Include="Areas\Admin\Models\ViewModels\RolesViewModels.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\BlogController.cs" />
     <Compile Include="Controllers\CheckoutController.cs" />
     <Compile Include="Controllers\ClassSeriesController.cs" />
     <Compile Include="Controllers\DanceStyleController.cs" />
     <Compile Include="Controllers\DayPilotController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\NameController.cs" />
     <Compile Include="Controllers\SchoolController.cs" />
     <Compile Include="Controllers\ShoppingCartController.cs" />
     <Compile Include="Controllers\SocialMediaController.cs" />
@@ -328,6 +331,7 @@
     <Compile Include="Data\ApplicationDbInitializer.cs" />
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Address.cs" />
+    <Compile Include="Models\Blog.cs" />
     <Compile Include="Models\Email.cs" />
     <Compile Include="Models\EventInviations.cs" />
     <Compile Include="Models\EventMember.cs" />
@@ -353,6 +357,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Models\Video.cs" />
+    <Compile Include="Models\ViewModels\BlogViewModels.cs" />
     <Compile Include="Models\ViewModels\DancerListViewModel.cs" />
     <Compile Include="Models\ViewModels\DancerViewModels.cs" />
     <Compile Include="Models\ViewModels\DanceStyleViewModels.cs" />
@@ -440,6 +445,7 @@
     <Content Include="App_Data\Templates\NewVideo.txt" />
     <Content Include="App_Data\Templates\NewRoleUser.txt" />
     <Content Include="App_Data\Templates\ForgotPassword.txt" />
+    <Content Include="App_Data\Templates\NewAccount.txt" />
     <Content Include="App_Data\Templates\OrderConfirmation.txt" />
     <Content Include="Areas\Admin\Views\Roles\Index.cshtml">
       <SubType>Code</SubType>
@@ -476,6 +482,7 @@
     <Content Include="Content\images\dancers.png" />
     <Content Include="Content\images\eatdancerepeat.png" />
     <Content Include="Content\images\Eat_Dance_Repeat.png" />
+    <Content Include="Content\images\Eat_Dance_Repeat_Small.png" />
     <Content Include="Content\images\email.png" />
     <Content Include="Content\images\facebooklogin.png" />
     <Content Include="Content\images\facebookSmall.png" />
@@ -614,6 +621,9 @@
     <Content Include="Areas\Admin\Views\Email\Dashboard.cshtml" />
     <Content Include="Areas\Admin\Views\Financial\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Shared\_TransactionsPartial.cshtml" />
+    <Content Include="Areas\Admin\Views\Financial\_SettlementBatchItemsPartial.cshtml" />
+    <Content Include="Areas\Admin\Views\Home\Photos.cshtml" />
+    <Content Include="Areas\Admin\Views\Roles\CheckRoles.cshtml" />
     <None Include="Properties\PublishProfiles\SmarterASP.pubxml" />
     <None Include="Properties\PublishProfiles\SmarterASP_FTP.pubxml" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
@@ -1001,6 +1011,13 @@
     <Content Include="Views\School\Mobile\List.cshtml" />
     <Content Include="Views\School\Mobile\View.cshtml" />
     <Content Include="Views\Promoter\ManageGroup.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\PromoterLinks.cshtml" />
+    <Content Include="Views\Event\Classes.cshtml" />
+    <Content Include="Views\Event\Socials.cshtml" />
+    <Content Include="Views\DanceStyle\List.cshtml" />
+    <Content Include="Views\Blog\Index.cshtml" />
+    <Content Include="Views\Account\EmailConfirmed.cshtml" />
+    <Content Include="Views\Account\ChangePassword.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>
@@ -1127,8 +1144,10 @@
     <Content Include="Views\Shared\_ProfilePicturePartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Areas\Admin\Views\Utility\" />
     <Folder Include="Views\Facebook\" />
     <Folder Include="Views\Instagram\" />
+    <Folder Include="Views\Name\" />
     <Folder Include="Views\Series\" />
     <Folder Include="Views\Shared\Dancer\" />
     <Folder Include="Views\Shared\Teacher\" />

@@ -4,6 +4,8 @@
 
 @{
     ViewBag.Title = Model.Promoter.ApplicationUser.FullName + " - Promoter";
+    ViewBag.Keywords = "Social Dance Promoter " + String.Join(" ", Model.Promoter.Socials.SelectMany(s => s.DanceStyles).Distinct().Select(d => d.Name).ToArray()) + " " + Model.Promoter.ApplicationUser.City + " " + Model.Promoter.ApplicationUser.State;
+    ViewBag.Description = "Home page for " + Model.Promoter.ApplicationUser.FullName + ". " + String.Join(", ", Model.Promoter.Socials.SelectMany(s => s.DanceStyles).Distinct().Select(d => d.Name).ToArray()) + " teacher.";
 }
 
 <ol class="breadcrumb">
@@ -13,7 +15,7 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-lg-6">
+        <div class="col-lg-6 col-md-6">
             <div class="panel panel-default" style="margin-top: 20px; margin-bottom: 20px;">
                 <div class="panel-body bg-info buttoncontainer">
                     @if (User.Identity.Name == Model.Promoter.ApplicationUser.UserName)
@@ -25,7 +27,7 @@
                             <img style="max-width: 100%; max-height: 100%;" src="@Url.Content(Model.Promoter.ApplicationUser.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
                         </div>
                         <div class="col-lg-8 col-xs-8 col-sm-8 col-md-8">
-                            <h2 class="nospace">@Model.Promoter.ApplicationUser.FullName</h2>
+                            <h1 class="nospace">@Model.Promoter.ApplicationUser.FullName</h1>
                             <p>
                                 @Model.Promoter.ApplicationUser.Location
                             </p>
@@ -67,7 +69,7 @@
             </div>
 
             <div class="row">
-                <div class="col-lg-12">
+                <div class="col-lg-12 col-md-12">
                     @if (Model.Promoter.ApplicationUser.SpotifyUri != null)
             {
                         <iframe class="spotifyplayer" src="https://embed.spotify.com/?uri=@Model.Promoter.ApplicationUser.SpotifyUri" width="500" height="280" frameborder="0" allowtransparency="true"></iframe>

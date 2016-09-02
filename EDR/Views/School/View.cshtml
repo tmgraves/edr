@@ -1,7 +1,9 @@
 ﻿@model EDR.Models.ViewModels.ViewSchoolViewModel
 
 @{
-    ViewBag.Title = Model.School.Name;
+    ViewBag.Title = Model.School.Name + " - " + Model.School.City + ", " + Model.School.State;
+    ViewBag.Keywords = "Dance School " + String.Join(" ", Model.School.Classes.SelectMany(s => s.DanceStyles).Select(d => d.Name).Distinct().ToArray()) + " " + Model.School.City + " " + Model.School.State;
+    ViewBag.Description = "Home page for " + Model.School.Name + " in " + Model.School.City + ", " + Model.School.State + ". Learn " + String.Join(", ", Model.School.Classes.SelectMany(s => s.DanceStyles).Select(d => d.Name).Distinct().ToArray()) + " here.";
 }
 <style>
     .profilecontainer {
@@ -38,10 +40,10 @@
         <div class="col-lg-6 col-md-6">
             <div class="row" style="padding-bottom: 20px;">
                 <div class="col-lg-10 col-md-10">
-                    <h2 class="item-short" style="margin: 0px !important;">@Model.School.Name</h2>
+                    <h1 class="item-short" style="margin: 0px !important;">@Model.School.Name</h1>
                 </div>
                 <div class="col-lg-2 col-md-2 text-right">
-                    @if (Model.Member != null && Model.Member.Admin)
+                    @if ((Model.Member != null && Model.Member.Admin) || User.IsInRole("Admin"))
                     {
                         <a class="btn btn-warning" title="Edit" href="@Url.Action("Manage", "School", new { id = Model.School.Id })">
                             <i class="glyphicon glyphicon-edit"></i>
@@ -56,7 +58,7 @@
                     <div class="bg-warning text-center" style="padding: 5px; border: 1px solid #aaa;">
                         <h4>You have <b>(@Convert.ToInt32(Model.UserTickets != null ? Model.UserTickets.Sum(t => t.Quantity * t.Ticket.Quantity) - Model.UserTickets.Sum(t => t.EventRegistrations.Count()) : 0))</b> Tickets Available to Use at this School</h4>
                     </div>
-                    <h3>Avaiable Tickets for Purchase</h3>
+                    <h3>Available Tickets for Purchase</h3>
                     @foreach (var item in Model.School.Tickets.Where(t => t.EventId == null).OrderBy(t => t.Quantity))
                     {
                         <div class="row" style="padding: 5px;">
@@ -229,7 +231,7 @@ $(document).ready(function () {
         eventLimit: true, // allow "more" link when too many events
         eventSources:[
             {
-                url: '../../School/GetClasses',
+                url: '@Url.Action("GetClasses", "School")',
                 traditional: true,
                 data: {
                     schoolId: $('#School_Id').val(),
@@ -239,7 +241,7 @@ $(document).ready(function () {
                 }
             },
             {
-                url: '../../School/GetAuditions',
+                url: '@Url.Action("GetAuditions", "School")',
                 traditional: true,
                 data: {
                     schoolId: $('#School_Id').val(),
@@ -249,7 +251,7 @@ $(document).ready(function () {
                 }
             },
             {
-                url: '../../School/GetPerformances',
+                url: '@Url.Action("GetPerformances", "School")',
                 traditional: true,
                 data: {
                     schoolId: $('#School_Id').val(),

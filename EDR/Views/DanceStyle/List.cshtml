@@ -1,0 +1,120 @@
+﻿@model EDR.Models.ViewModels.HomeExploreViewModel
+
+@{
+    ViewBag.Title = "Explore Dancing";
+    ViewBag.Keywords = String.Join(" ", Model.DanceStyles.Select(s => s.Name).ToArray());
+    ViewBag.Description = "Explore different dance styles.  Read about the dances.  Find instructors.  Listen to the music.  We have information on all of these dances: " + String.Join(", ", Model.DanceStyles.Select(s => s.Name).ToArray());
+}
+
+<style>
+#stylesList-nav .ln-letters {
+    margin: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: #eee;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    border: 1px solid #ccc;
+}
+
+#stylesList-nav .ln-letters a{
+    margin: 2px;
+    border:none;
+    font-weight: bold;
+    border-top: none;
+    font-size: 12pt;
+}
+#stylesList-nav .ln-letters a.ln-disabled:hover{
+    color:white;
+}
+/*#demoThree-nav .ln-letters a.ln-last{
+    border-right:none;
+}
+#demoThree-nav .ln-letters a:hover,#demoThree-nav .ln-letters a.ln-selected{
+    border-top:none;
+    background-color:pink;
+    color:White !important;
+}
+#demoThree-nav .ln-letters a.ln-disabled{
+    color:pink;
+}*/
+/*#demoThree-nav .ln-letter-count{
+    display: none;
+    color:red;
+}*/
+/*#demoThree li{
+    color:pink;
+
+}
+#demoThree li a{
+    color:red;
+    text-decoration:none;
+
+}
+#demoThree li a:hover{
+    text-decoration:underline;
+
+}*/
+</style>
+
+<h1 class="text-center">Dance Styles</h1>
+
+<div class="row">
+    <div class="">
+        <ul id="stylesList" class="list-unstyled">
+            @foreach (var item in Model.DanceStyles.OrderBy(x => x.Name))
+            {
+                <li>
+                    <div class="col-lg-6 col-md-6" style="height: 220px; padding: 10px;">
+                        @Html.DisplayFor(m => item, "DanceStyleMedium")
+                    </div>
+                </li>
+            }
+        </ul>
+    </div>
+</div>
+
+@section Scripts
+{
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    @Scripts.Render("~/bundles/jqueryUI")
+    <script src="~/Scripts/jquery-listnav.js"></script>
+    <link href="~/Content/listnav.css" rel="stylesheet" />
+    
+    <script>
+        $(function () {
+            $('#stylesList').listnav({
+                includeNums: false,
+                showCounts: false,
+            });
+        });
+    </script>
+}
+@*<div class="col-xs-12 col-sm-12 col-md-6 col-lg-4">
+    <div class="thumbnail">
+        <div class="row">
+            <div class="croppedpic col-lg-4 col-md-4 col-sm-12 col-xs-12" style="height: 100px;">
+                @if (item.PhotoUrl != null)
+                {
+                    <img style="max-width: 100%;" src="@Url.Content(item.PhotoUrl)" />
+                }
+                else
+                {
+                    <img style="max-width: 100%;" src="~/Content/images/NoImage.png" />
+                }
+            </div>
+            <div class="caption col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                <h3 class="group inner list-group-item-heading">
+                    @item.Name.PadRight(15, ' ').Substring(0, 15)<br />
+                    <span class="small">@item.Dancers.Count() Dancer(s)</span>
+                </h3>
+                <p>
+                </p>
+                <a href="@Url.Action("Details", "DanceStyle", new { styleName = item.Name }, null)" class="btn btn-primary col-lg-10 col-md-10">
+                    Explore @item.Name.PadRight(15, ' ').Substring(0, 15)
+                </a>
+            </div>
+        </div>
+    </div>
+</div>*@

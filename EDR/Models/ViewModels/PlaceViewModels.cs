@@ -56,6 +56,7 @@ namespace EDR.Models.ViewModels
         public PlaceType? TypeParam { get; set; }
         [Display(Name = "Place Type:")]
         public PlaceType? Type { get; set; }
+        public string[] DanceStyles { get; set; }
 
         //  Map Settings
         public double? NELat { get; set; }

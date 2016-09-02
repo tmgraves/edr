@@ -50,7 +50,7 @@
                     <span style="line-height: 100%; vertical-align: middle;"></span><img style="max-width: 100%; max-height: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.Event.PhotoUrl))" />
                 </div>
                 <div class="textoverlay topleft text-left" style="width: 100%;">
-                    <h3 class="oneline" style="color: #fff;">@Model.Event.Name</h3>
+                    <h1 class="oneline" style="color: #fff;">@Model.Event.Name</h1>
                     <h3 class="nospace" style="color: #fff;">
                         @Model.CurrentInstance.DateTime.ToString("ddd, MMM\nd") @@@(((DateTime)Model.CurrentInstance.StartTime).ToShortTimeString())
                         @*@if (instance != null)
@@ -73,13 +73,16 @@
                         {
                             @:Free
                         }
-                        else if (Model.Event.Tickets.Count() != 0)
+                        else if (Model.Tickets.Count() != 0)
                         {
-                            @Model.Event.Tickets.Where(t => (t.Start == null || t.Start <= DateTime.Today) && (t.End == null || t.End >= DateTime.Today)).Min(t => t.Price).ToString("C0")
-                        }
-                        else if (Model.Event is Class)
-                        {
-                            @(((Class)Model.Event).School.Tickets.Where(t => (t.Start == null || t.Start <= DateTime.Today) && (t.End == null || t.End >= DateTime.Today)).Min(t => t.Price).ToString("C0"))
+                            if (Model.Tickets.Where(t => (t.Start == null || t.Start <= DateTime.Today) && (t.End == null || t.End >= DateTime.Today)).Count() > 0)
+                            {
+                                @Model.Tickets.Where(t => (t.Start == null || t.Start <= DateTime.Today) && (t.End == null || t.End >= DateTime.Today)).Min(t => t.Price).ToString("C0")
+                            }
+                            else
+                            {
+                                @Model.Tickets.Min(t => t.Price).ToString("C0")
+                            }
                         }
                         else
                         {
@@ -149,9 +152,18 @@
                                 @foreach (var i in Model.Event.EventInstances.Where(ei => ei.DateTime >= DateTime.Today))
                                 {
                                     <li>
-                                        <a class="large" style="padding: 0px 50px 0px 50px;" href="@Url.Action("View", "Event", new { id = Model.Event.Id, eventType = Model.EventType, instanceId = i.Id })">
-                                            @i.DateTime.ToString("ddd, MMM d, yyyy") at @Convert.ToDateTime(i.StartTime).ToShortTimeString()
-                                        </a>
+                                        @if (Model.EventType == EDR.Enums.EventType.Class)
+                                        {
+                                            <a class="large" style="padding: 0px 50px 0px 50px;" href="@Url.Action("Class", "Event", new { id = Model.Event.Id, eventname = ApplicationUtility.ToUrlSlug(Model.Event.Name), location = ApplicationUtility.ToUrlSlug(Model.Event.Place.City), instanceId = i.Id })">
+                                                @i.DateTime.ToString("ddd, MMM d, yyyy") at @Convert.ToDateTime(i.StartTime).ToShortTimeString()
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a class="large" style="padding: 0px 50px 0px 50px;" href="@Url.Action("Social", "Event", new { id = Model.Event.Id, eventname = ApplicationUtility.ToUrlSlug(Model.Event.Name), location = ApplicationUtility.ToUrlSlug(Model.Event.Place.City), instanceId = i.Id })">
+                                                @i.DateTime.ToString("ddd, MMM d, yyyy") at @Convert.ToDateTime(i.StartTime).ToShortTimeString()
+                                            </a>
+                                        }
                                     </li>
                                 }
                             </ul>
@@ -193,7 +205,15 @@
                                     }
                                     else
                                     {
-                                        @Html.ActionLink("Buy Credits", "Register", new { id = Model.CurrentInstance.Id }, new { @class = "btn btn-primary btn-lg", @style = "width: 100%;" })
+                                        var today = DateTime.Today;
+                                        if (Model.Tickets.Where(t => (t.Start == null || t.Start <= DateTime.Today) && (t.End == null || t.End >= DateTime.Today)).Count() > 0)
+                                        {
+                                            @Html.ActionLink("Purchase", "Register", new { id = Model.CurrentInstance.Id }, new { @class = "btn btn-primary btn-lg", @style = "width: 100%;" })
+                                        }
+                                        else
+                                        {
+                                            <a class="btn btn-default btn-lg">Tickets Not Available</a>
+                                        }
                                     }
                                 }
                             }

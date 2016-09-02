@@ -1,12 +1,15 @@
 ﻿@model EDR.Models.ViewModels.TeamIndexViewModel
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Search Performance Dance Teams";
+    ViewBag.Keywords = "Dance Performance Team " + String.Join(" ", Model.DanceStyles);
+    ViewBag.Description = "Search for " + String.Join(", ", Model.DanceStyles) + " performance teams.";
 }
 
 <ol class="breadcrumb">
     <li class="active">Find a Dance Team</li>
 </ol>
+<h1 class="text-center">Find a Dance Team</h1>
 @using (Html.BeginForm("Index", "Team", FormMethod.Post, new { @class = "formmain" }))
 {
     @Html.HiddenFor(m => m.SearchAddress.Latitude, new { Name = "lat", @class = "latfield" })
@@ -90,7 +93,7 @@
 <script>
     $(document).ready(function() {
         $(window).resize(function() {
-            var bodyheight = $(this).height() - 550;
+            var bodyheight = $(this).height() - 600;
             //alert($(this).height());
             //alert(bodyheight);
             $("#teamsdiv").height(bodyheight);
@@ -122,7 +125,7 @@
         eventLimit: true, // allow "more" link when too many events
         eventSources: [
             {
-                url: '../../Team/GetAuditionInstances',
+                url: '@Url.Action("GetAuditionInstances", "Team")',
                 traditional: true,
                 data: {
                         neLat: $('.nelatfield').val(),
@@ -138,7 +141,7 @@
                 }
             },
             {
-                url: '../../Team/GetPerformanceInstances',
+                url: '@Url.Action("GetPerformanceInstances", "Team")',
                 traditional: true,
                 data: {
                     neLat: $('.nelatfield').val(),
@@ -199,7 +202,7 @@
                 content: '<div id="content" class="text-center" style="width: 200px;">' +
                 '<div id="siteNotice">' +
                 '</div>' +
-                '<div style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
+                '<div class="large" style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold;">' +
                 link +
                 '</div>' +
                 '<div id="bodyContent">' +

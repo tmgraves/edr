@@ -1,5 +1,9 @@
-﻿@{
-    ViewBag.Title = "Eat.Dance.Repeat.";
+﻿@model EDR.Models.ViewModels.HomeIndexViewModel
+
+@{
+    ViewBag.Title = "Social Dancing Classes & Events";
+    ViewBag.Keywords = "Social Dance Classes Workshops Events " + String.Join(" ", Model.DanceStyles.Select(d => d.Name).ToArray());
+    ViewBag.Description = "Eat Dance Repeat is your source for all social dance events and classes.  Explore " + String.Join(", ", Model.DanceStyles.Select(d => d.Name).ToArray()) + ".";
 }
 
 <h1 class="text-center">Eat.Dance.Repeat.</h1>
@@ -70,3 +74,22 @@
         </a>
     </div>
 </div>
+<div class="row">
+    <div class="text-center col-lg-12 col-md-12 col-sm-12 col-xs-12" style="padding: 10px;">
+        <ul class="nav nav-pills nav-justified" role="tablist">
+            <li>
+                <div class="fb-like" data-href="https://developers.facebook.com/eatdancerepeat" data-layout="button_count" data-action="like" data-size="small" data-show-faces="true" data-share="true"></div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div id="fb-root"></div>
+<script>
+(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.7&appId=729899787046926";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>

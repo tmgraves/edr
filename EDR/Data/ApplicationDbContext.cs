@@ -135,6 +135,8 @@ namespace EDR.Data
             modelBuilder.Entity<UserTicket>().ToTable("UserTickets");
             modelBuilder.Entity<FinancialTransaction>().ToTable("FinancialTransactions");
             modelBuilder.Entity<PaymentBatch>().ToTable("PaymentBatches");
+            modelBuilder.Entity<SettlementBatch>().ToTable("SettlementBatches");
+            modelBuilder.Entity<SettlementBatchItem>().ToTable("SettlementBatchItems");
 
             //Organizations
             modelBuilder.Entity<Organization>().ToTable("Organizations");
@@ -142,6 +144,10 @@ namespace EDR.Data
 
             //  Email
             modelBuilder.Entity<Email>().ToTable("Emails");
+
+            //  Blog
+            modelBuilder.Entity<Blog>().ToTable("Blogs");
+            modelBuilder.Entity<BlogReply>().ToTable("BlogReplies");
         }
 
         public DbSet<Place> Places { get; set; }
@@ -192,6 +198,8 @@ namespace EDR.Data
         public DbSet<DancePack> DancePacks { get; set; }
         public DbSet<FinancialTransaction> FinancialTransactions { get; set; }
         public DbSet<PaymentBatch> PaymentBatches { get; set; }
+        public DbSet<SettlementBatch> SettlementBatches { get; set; }
+        public DbSet<SettlementBatchItem> SettlementBatchItems { get; set; }
 
         //Organization
         public DbSet<Organization> Organizations { get; set; }
@@ -202,6 +210,11 @@ namespace EDR.Data
 
         //  Email
         public DbSet<Email> Emails { get; set; }
+
+        //  Blog
+        public DbSet<Blog> Blogs { get; set; }
+        public DbSet<BlogReply> BlogReplies { get; set; }
+
         //// TODO: REMOVE THESE DBSETS
         //public DbSet<Class> Classes { get; set; }
         //public DbSet<ClassSeries> ClassSeries { get; set; }

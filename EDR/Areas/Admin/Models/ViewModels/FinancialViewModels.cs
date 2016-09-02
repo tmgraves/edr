@@ -13,5 +13,6 @@ namespace EDR.Areas.Admin.Models.ViewModels
         public decimal? AmountDue { get; set; }
         public List<Organization> Partners { get; set; }
         public List<PaymentBatch> PaymentBatches { get; set; }
+        public List<SettlementBatch> SettlementBatches { get; set; }
     }
 }

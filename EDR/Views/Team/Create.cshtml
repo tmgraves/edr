@@ -13,12 +13,19 @@
                 @using (Html.BeginForm())
                 {
                     @Html.AntiForgeryToken()
-                    @Html.HiddenFor(x => x.Team.SchoolId)
                     @Html.HiddenFor(model => model.Team.Latitude)
                     @Html.HiddenFor(model => model.Team.Longitude)
                     @Html.HiddenFor(model => model.Team.Public, new { @Value = "true" })
                     <div class="form-horizontal centerform">
                         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div class="form-group">
+                            <div class="col-lg-8 center-block">
+                                @Html.DropDownListFor(m => m.Team.SchoolId,
+                                                Model.Schools.Select(g => new SelectListItem() { Text = g.Name, Value = g.Id.ToString() }),
+                                                new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Team.SchoolId, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
                         <div class="form-group">
                             <div class="col-lg-8 center-block">
                                 @Html.EditorFor(model => model.Team.Name, new { htmlAttributes = new { @class = "form-control", @placeholder = "Team Name" } })

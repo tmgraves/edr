@@ -15,8 +15,10 @@ namespace EDR.Controllers
     public class SchoolController : BaseController
     {
         // GET: School
+        [Route("Schools")]
         public ActionResult List(ListSchoolViewModel model)
         {
+            model.DanceStyles = DataContext.DanceStyles.Select(d => d.Name).ToArray();
             model.Schools = DataContext.Schools
                                 .Include("Teachers.ApplicationUser")
                                 .Include("Classes.DanceStyles")
@@ -100,6 +102,7 @@ namespace EDR.Controllers
         }
 
         // GET: School
+        [Route("School/{id}/{school}/{location}")]
         public ActionResult View(int? id)
         {
             if (!id.HasValue)
@@ -136,8 +139,8 @@ namespace EDR.Controllers
             }
         }
 
-        [Authorize(Roles = "Teacher,Owner")]
         // GET: School
+        [Authorize]
         public ActionResult Manage(int? id)
         {
             if (!id.HasValue)
@@ -146,8 +149,9 @@ namespace EDR.Controllers
             }
 
             var userid = User.Identity.GetUserId();
-            var admin = DataContext.OrganizationMembers.Where(m => m.OrganizationId == id && m.UserId == userid && m.Admin).Count() != 0 ? true : false;
-            if (admin)
+            var admin = User.IsInRole("Admin");
+            var schooladmin = DataContext.OrganizationMembers.Where(m => m.OrganizationId == id && m.UserId == userid && m.Admin).Count() != 0 ? true : false;
+            if (schooladmin || admin)
             {
                 var model = new ManageSchoolViewModel(
                             DataContext.Schools

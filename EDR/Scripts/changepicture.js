@@ -1,4 +1,4 @@
-﻿var uploadImageUrl; //  "../../School/UploadImageAsync"
+﻿var uploadImageUrl; //  "@Url.Action("UploadImageAsync", "School")"
 var id; //  SchoolId
 var imagesize = 4000000;
 var aspectratio = 10 / 10;

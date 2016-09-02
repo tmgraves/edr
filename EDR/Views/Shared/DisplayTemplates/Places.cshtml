@@ -1,6 +1,5 @@
 ﻿@model IEnumerable<EDR.Models.Place>
 
-<div class="container">
     @{
         int rowNo = 0;
     }
@@ -9,12 +8,12 @@
         foreach (var item in Model.OrderBy(m => m.Name))
         {
             <text>
-                <div class="col-lg-6" style="padding: 5px !important;">
-                    <div class="box-default col-lg-12 nospace" style="padding: 5px !important;">
-                        <div class="col-lg-3 bg-success helper">
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="padding: 5px !important;">
+                    <div class="box-default col-lg-12 col-md-12 col-sm-12 col-xs-12 nospace" style="padding: 5px !important;">
+                        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 bg-success helper">
                             <span></span><img src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(item.ThumbnailFilename))" />
                         </div>
-                        <div class="col-lg-6 text-left">
+                        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 text-left">
                             <div id="parentc">
                                 <input id="rv" type="hidden" value="@(item.GoogleRating != null ? item.GoogleRating : 0)" class="ratingval" />
                                 <div id="cont" class="rateYo"></div>
@@ -29,7 +28,7 @@
                                 @Html.DisplayFor(modelItem => item.City), @Html.DisplayFor(modelItem => item.State) @Html.DisplayFor(modelItem => item.Zip)
                             </div>
                         </div>
-                        <div class="text-right col-lg-3" style="padding: 0px !important; margin-top: 2px; white-space: normal;">
+                        <div class="text-right col-lg-3 col-md-3 col-sm-3 col-xs-3" style="padding: 0px !important; margin-top: 2px; white-space: normal;">
                             @foreach (var s in item.Events.SelectMany(e => e.DanceStyles).Distinct().OrderBy(s => s.Name))
                             {
                                 <span class="label label-default pull-right" style="margin: 1px;">@s.Name</span><text> </text>
@@ -45,4 +44,3 @@
     {
         <h4 class="text-center">No Places Found</h4>
     }
-</div>

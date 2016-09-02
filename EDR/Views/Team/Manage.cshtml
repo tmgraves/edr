@@ -17,11 +17,11 @@
 </style>
 
 <div class="buttoncontainer">
-    <h2>Manage: <span class="text-info">@Model.Team.Name</span></h2>
+    <h1>Manage: <span class="text-info">@Model.Team.Name</span></h1>
     <hr />
     <a style="display: block !important;" class="btn btn-danger actionbutton" title="Delete Event" href="@Url.Action("Delete", "Team", new { id = Model.Team.Id })" onclick="return confirm('Are you sure you want to DELETE this Team?')">
         <i class="glyphicon glyphicon-remove"></i>
-        Delete Event
+        Delete Team
     </a>
 
 </div>
@@ -1327,7 +1327,7 @@
                 try {
                     var imageData = $("#image").cropper("getCroppedCanvas").toDataURL('png', 1);
                     $.ajax({
-                        url: "../../Team/UploadImageAsync",
+                        url: "@Url.Action("UploadImageAsync", "Team")",
                         type: 'POST',
                         data: { 'imageData': imageData, 'id' : '@Model.Team.Id' },
                         dataType: 'json',

@@ -12,6 +12,8 @@ using EDR.Enums;
 using System.Net;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
+using System.Drawing.Imaging;
+using System.Drawing;
 
 namespace EDR.Utilities
 {
@@ -99,18 +101,28 @@ namespace EDR.Utilities
             {
                 //  string dataWithoutJpegMarker = imageData.Replace("data:png;base64,", String.Empty);
                 newFile.FileName = Guid.NewGuid().ToString() + ".png";
+                newFile.FilePath = "~/MyUploads/" + newFile.FileName;
                 string imageDataClean = imageData.Split(',')[1];
                 byte[] filebytes = Convert.FromBase64String(imageDataClean);
-                string writePath = Path.Combine(HttpContext.Current.Server.MapPath("~/MyUploads"), newFile.FileName);
-                using (FileStream fs = new FileStream(writePath,
-                                                FileMode.OpenOrCreate,
-                                                FileAccess.Write,
-                                                FileShare.None))
+
+                var fullpath = HttpContext.Current.Server.MapPath(newFile.FilePath);
+                //  Compress and Write File
+                using (var ms = new MemoryStream(filebytes))
                 {
-                    fs.Write(filebytes, 0, filebytes.Length);
+                    var img = Image.FromStream(ms);
+                    CompressImage(img, 20, fullpath);
                 }
-                newFile.FilePath = "~/MyUploads/" + newFile.FileName;
+
+                //  string writePath = Path.Combine(HttpContext.Current.Server.MapPath("~/MyUploads"), newFile.FileName);
+                //using (FileStream fs = new FileStream(writePath,
+                //                                FileMode.OpenOrCreate,
+                //                                FileAccess.Write,
+                //                                FileShare.None))
+                //{
+                //    fs.Write(filebytes, 0, filebytes.Length);
+                //}
                 newFile.UploadStatus = "Success";
+                //  var image = Image.FromFile(fullpath);
                 return newFile;
             }
             catch (Exception ex)
@@ -143,6 +155,42 @@ namespace EDR.Utilities
             //    var t = ex.Message;
             //    return newFile;
             //}
+        }
+
+        public static void CompressImage(Image sourceImage, int imageQuality, string savePath)
+        {
+            try
+            {
+                //Create an ImageCodecInfo-object for the codec information
+                ImageCodecInfo jpegCodec = null;
+
+                //Set quality factor for compression
+                EncoderParameter imageQualitysParameter = new EncoderParameter(
+                            Encoder.Quality, imageQuality);
+
+                //List all avaible codecs (system wide)
+                ImageCodecInfo[] alleCodecs = ImageCodecInfo.GetImageEncoders();
+
+                EncoderParameters codecParameter = new EncoderParameters(1);
+                codecParameter.Param[0] = imageQualitysParameter;
+
+                //Find and choose JPEG codec
+                for (int i = 0; i < alleCodecs.Length; i++)
+                {
+                    if (alleCodecs[i].MimeType == "image/jpeg")
+                    {
+                        jpegCodec = alleCodecs[i];
+                        break;
+                    }
+                }
+
+                //Save compressed image
+                sourceImage.Save(savePath, jpegCodec, codecParameter);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
         public static UploadFile LoadPicture(HttpPostedFileBase file)
@@ -326,6 +374,47 @@ namespace EDR.Utilities
                            .First()
                            .GetCustomAttribute<DisplayAttribute>()
                            .Name;
+        }
+
+        public static string IsActive(this HtmlHelper html,
+                                      string action,
+                                      string control)
+        {
+            var routeData = html.ViewContext.RouteData;
+
+            var routeAction = (string)routeData.Values["action"];
+            var routeControl = (string)routeData.Values["controller"];
+
+            // both must match
+            var returnActive = control == routeControl &&
+                               action == routeAction;
+
+            return returnActive ? "active" : "";
+        }
+
+        public static string ToUrlSlug(string value)
+        {
+            ////First to lower case 
+            //value = value.ToLowerInvariant();
+
+            //Remove all accents
+            var bytes = System.Text.Encoding.GetEncoding("Cyrillic").GetBytes(value);
+
+            value = System.Text.Encoding.ASCII.GetString(bytes);
+
+            //Replace spaces 
+            value = Regex.Replace(value, @"\s", "-", RegexOptions.Compiled);
+
+            //Remove invalid chars 
+            value = Regex.Replace(value, @"[^\w\s\p{Pd}]", "", RegexOptions.Compiled);
+
+            //Trim dashes from end 
+            value = value.Trim('-', '_');
+
+            //Replace double occurences of - or \_ 
+            value = Regex.Replace(value, @"([-_]){2,}", "$1", RegexOptions.Compiled);
+
+            return value;
         }
     }
 }

@@ -1,13 +1,15 @@
 ﻿@model EDR.Models.ViewModels.TeamIndexViewModel
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Search Performance Dance Teams";
+    ViewBag.Keywords = "Dance Performance Team " + String.Join(" ", Model.DanceStyles);
+    ViewBag.Description = "Search for " + String.Join(", ", Model.DanceStyles) + " performance teams.";
 }
 
 <ol class="breadcrumb">
     <li class="active">All Teams</li>
 </ol>
-<h2 class="text-center">Find a Dance Team</h2>
+<h1 class="text-center">Find a Dance Team</h1>
 
 <div class="container">
     <div class="center-block col-md-6 nospace" style="float: none;">
@@ -139,7 +141,7 @@
 			editable: false,
 			eventLimit: true, // allow "more" link when too many events
 		    events: {
-		        url: '../../Home/GetClasses',
+		        url: '@Url.Action("GetClasses", "Home")',
                 traditional: true,
 		        data: {
 		            neLat: $('.nelatfield').val(),
@@ -226,7 +228,7 @@
                 content: '<div id="content" class="text-center" style="width: 200px;">' +
                 '<div id="siteNotice">' +
                 '</div>' +
-                '<div style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
+                '<div class="large" style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold;">' +
                 link +
                 '</div>' +
                 '<div id="bodyContent">' +

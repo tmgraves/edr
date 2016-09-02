@@ -140,6 +140,17 @@ namespace EDR.Areas.Admin.Controllers
 
                         return RedirectToAction("Index", new { message = user.FullName + " was added to Admin Role" });
                     }
+                    else if (role == "Blogger")
+                    {
+                        if (!UserManager.IsInRole(id, "Blogger"))
+                        {
+                            UserManager.AddToRole(id, "Blogger");
+                        }
+                        //  Notify User
+                        EmailProcess.NewRoleuser(id, role);
+
+                        return RedirectToAction("Index", new { message = user.FullName + " was added to Blogger Role" });
+                    }
                 }
             }
             catch (DbEntityValidationException e)
@@ -299,6 +310,22 @@ namespace EDR.Areas.Admin.Controllers
                     return View();
                 }
             }
+            return View();
+        }
+
+        [Authorize(Roles = "Admin")]
+        public ActionResult CheckRoles()
+        {
+            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(DataContext));
+
+            if (!roleManager.RoleExists("Blogger"))
+            {
+                // first we create Admin rool   
+                var role = new Microsoft.AspNet.Identity.EntityFramework.IdentityRole();
+                role.Name = "Blogger";
+                roleManager.Create(role);
+            }
+
             return View();
         }
     }

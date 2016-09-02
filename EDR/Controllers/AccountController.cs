@@ -59,13 +59,19 @@ namespace EDR.Controllers
                     if (!await UserManager.IsEmailConfirmedAsync(user.Id))
                     {
                         ViewBag.errorMessage = "You must have a confirmed email to log on.";
-                        string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Eat. Dance. Repeat. - Confirm your account");
+                        string callbackUrl = SendEmailConfirmationToken(user.Id);
+                        //  string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Eat. Dance. Repeat. - Confirm your account");
                         ViewBag.Message = "Check your email and confirm your account, you must be confirmed "
                                                  + "before you can log in.";
 
                         return View("Info"); 
                     }
-                    
+                    else if (User.Identity.GetNewPassword())
+                    {
+                        await SignInAsync(user, model.RememberMe);
+                        return RedirectToAction("ChangePassword");
+                    }
+
                     await SignInAsync(user, model.RememberMe);
 
                     //  Migrate the Shopping Cart
@@ -104,8 +110,11 @@ namespace EDR.Controllers
         {
             if (ModelState.IsValid)
             {
+                //  Create User
                 var user = new ApplicationUser() { UserName = model.UserName, Email = model.Email, FirstName = model.FirstName, LastName = model.LastName, Location = model.Location, Latitude = model.Latitude, Longitude = model.Longitude };
                 IdentityResult result = await UserManager.CreateAsync(user, model.Password);
+                //  Create User
+
                 //  Migrate the Shopping Cart
                 MigrateShoppingCart(model.UserName);
                 if (result.Succeeded)
@@ -114,9 +123,11 @@ namespace EDR.Controllers
 
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
-                    string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    await UserManager.SendEmailAsync(user.Id, "Eat. Dance. Repeat. - Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                    //string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                    //var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                    //await UserManager.SendEmailAsync(user.Id, "Eat. Dance. Repeat. - Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                    //  string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Eat. Dance. Repeat. - Confirm your account");
+                    string callbackUrl = SendEmailConfirmationToken(user.Id);
 
                     // Uncomment to debug locally 
                     // TempData["ViewBagLink"] = callbackUrl;
@@ -137,25 +148,88 @@ namespace EDR.Controllers
             return View(model);
         }
 
-        //
-        // GET: /Account/ConfirmEmail
-        [AllowAnonymous]
-        public async Task<ActionResult> ConfirmEmail(string userId, string code)
+        public string CreateUser(ApplicationUser user, string password)
         {
-            if (userId == null || code == null) 
+            IdentityResult result = UserManager.Create(user, password);
+            string callbackUrl = SendEmailConfirmationToken(user.Id);
+            return user.Id;
+        }
+
+        ////
+        //// GET: /Account/ConfirmEmail
+        //[AllowAnonymous]
+        //public async Task<ActionResult> ConfirmEmailAsync(string userId, string code)
+        //{
+        //    if (userId == null || code == null) 
+        //    {
+        //        return View("Error");
+        //    }
+
+        //    IdentityResult result = await UserManager.ConfirmEmailAsync(userId, code);
+        //    if (result.Succeeded)
+        //    {
+        //        return View("ConfirmEmail");
+        //    }
+        //    else
+        //    {
+        //        AddErrors(result);
+        //        return View();
+        //    }
+        //}
+
+        [AllowAnonymous]
+        public ActionResult ConfirmEmail(string userId, string code)
+        {
+            var model = new ConfirmEmailViewModel();
+            model.Code = code;
+            model.UserId = userId;
+
+            return View(model);
+        }
+
+        //[AllowAnonymous]
+        //[HttpPost]
+        //public ActionResult ConfirmEmail(ConfirmEmailViewModel model)
+        //{
+        //    if (model.UserId == null || model.Code == null)
+        //    {
+        //        return View("Error");
+        //    }
+
+        //    IdentityResult result = UserManager.ConfirmEmail(model.UserId, model.Code);
+        //    if (result.Succeeded)
+        //    {
+        //        ViewBag.Message = "Success";
+        //        return View("EmailConfirmed");
+        //    }
+        //    else
+        //    {
+        //        ViewBag.Message = "Failure";
+        //        return View("ConfirmEmail");
+        //    }
+        //}
+
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<ActionResult> ConfirmEmailAsync(ConfirmEmailViewModel model)
+        {
+            if (model.UserId == null || model.Code == null)
             {
                 return View("Error");
             }
 
-            IdentityResult result = await UserManager.ConfirmEmailAsync(userId, code);
+            IdentityResult result = await UserManager.ConfirmEmailAsync(model.UserId, model.Code);
             if (result.Succeeded)
             {
-                return View("ConfirmEmail");
+                var user = UserManager.FindById(model.UserId);
+                await SignInAsync(user, isPersistent: false);
+                ViewBag.Message = "Success";
+                return View("EmailConfirmed");
             }
             else
             {
-                AddErrors(result);
-                return View();
+                ViewBag.Message = "Failure";
+                return View("ConfirmEmail");
             }
         }
 
@@ -184,7 +258,8 @@ namespace EDR.Controllers
                 }
                 else if (!await UserManager.IsEmailConfirmedAsync(user.Id))
                 {
-                    string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Eat. Dance. Repeat. - Confirm your account");
+                    //  string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Eat. Dance. Repeat. - Confirm your account");
+                    string callbackUrl = SendEmailConfirmationToken(user.Id);
                     ViewBag.Message = "Check your email and confirm your account, you must be confirmed "
                                              + "before you can log in.";
 
@@ -312,6 +387,64 @@ namespace EDR.Controllers
         public ActionResult ResetPasswordConfirmation()
         {
             return View();
+        }
+
+        // GET: /Account/ResetPassword
+        public async Task<ActionResult> ChangePassword()
+        {
+            var model = new ChangePasswordViewModel();
+            if (User.Identity.GetNewPassword())
+            {
+                var userid = User.Identity.GetUserId();
+                string code = await UserManager.GeneratePasswordResetTokenAsync(userid);
+                model.ResetPasswordCode = code;
+            }
+            return View(model);
+        }
+
+        // POST: /Account/ResetPassword
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var userid = User.Identity.GetUserId();
+                var user = await UserManager.FindByIdAsync(userid);
+                if (user == null)
+                {
+                    ViewBag.Message = "No user found.";
+                    return View();
+                }
+
+                IdentityResult result = new IdentityResult();
+                //  New Password
+                if (User.Identity.GetNewPassword())
+                {
+                    result = await UserManager.ResetPasswordAsync(userid, model.ResetPasswordCode, model.NewPassword);
+                    DataContext.Users.Single(u => u.Id == userid).NewPassword = false;
+                    await DataContext.SaveChangesAsync();
+                }
+                //  Change Password
+                else
+                {
+                    result = await UserManager.ChangePasswordAsync(userid, model.OldPassword, model.NewPassword);
+                }
+
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("ResetPasswordConfirmation", "Account");
+                    //  return RedirectToAction("Manage", new { Message = ManageMessageId.ChangePasswordSuccess });
+                }
+                else
+                {
+                    ViewBag.Message = result.Errors.FirstOrDefault();
+                    return View();
+                }
+            }
+
+            // If we got this far, something failed, redisplay form
+            return View(model);
         }
 
         //
@@ -727,13 +860,25 @@ namespace EDR.Controllers
             return View(teacher);
         }
 
-        private async Task<string> SendEmailConfirmationTokenAsync(string userID, string subject)
+        public async Task<string> SendEmailConfirmationTokenAsync(string userID)
         {
             string code = await UserManager.GenerateEmailConfirmationTokenAsync(userID);
-            var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = userID, code = code }, protocol: Request.Url.Scheme);
-            await UserManager.SendEmailAsync(userID, subject, "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+            var result = EmailProcess.NewAccount(userID, code);
+            return result;
+            //var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = userID, code = code }, protocol: Request.Url.Scheme);
+            //await UserManager.SendEmailAsync(userID, subject, "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-            return callbackUrl;
+            //return callbackUrl;
+        }
+
+        public string SendEmailConfirmationToken(string userID)
+        {
+            string code = UserManager.GenerateEmailConfirmationToken(userID);
+            //  var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = userID, code = code }, protocol: Request.Url.Scheme);
+            //  UserManager.SendEmail(userID, subject, "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+            var result = EmailProcess.NewAccount(userID, code);
+
+            return result;
         }
 
         private void MigrateShoppingCart(string UserName)

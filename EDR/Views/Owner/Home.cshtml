@@ -5,6 +5,8 @@
 
 @{
     ViewBag.Title = Model.Owner.ApplicationUser.FullName + " - Owner";
+    ViewBag.Keywords = "Social Dance Owner " + String.Join(" ", Model.Owner.Socials.SelectMany(s => s.DanceStyles).Select(d => d.Name).Distinct().ToArray()) + " " + String.Join(" ", Model.Owner.Classes.SelectMany(s => s.DanceStyles).Select(d => d.Name).ToArray()) + " " + Model.Owner.ApplicationUser.City + " " + Model.Owner.ApplicationUser.State;
+    ViewBag.Description = "Home page for " + Model.Owner.ApplicationUser.FullName + ". " + String.Join(" ", Model.Owner.Socials.SelectMany(s => s.DanceStyles).Distinct().Select(d => d.Name).ToArray()) + " " + String.Join(" ", Model.Owner.Classes.SelectMany(s => s.DanceStyles).Select(d => d.Name).ToArray()) + " owner.";
 }
 
 <ol class="breadcrumb">
@@ -14,7 +16,7 @@
 
 <div class="container-fluid">
     <div class="row" style="margin-top: 20px; margin-bottom: 20px;">
-        <div class="col-lg-6">
+        <div class="col-lg-6 col-md-6">
             <div class="panel panel-default">
                 <div class="panel-body bg-info buttoncontainer">
                     @if (User.Identity.Name == Model.Owner.ApplicationUser.UserName)
@@ -26,7 +28,7 @@
                             <img style="max-width: 100%; max-height: 100%;" src="@Url.Content(Model.Owner.ApplicationUser.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
                         </div>
                         <div class="col-lg-8 col-xs-8 col-sm-8 col-md-8">
-                            <h2 class="nospace">@Model.Owner.ApplicationUser.FullName</h2>
+                            <h1 class="nospace">@Model.Owner.ApplicationUser.FullName</h1>
                             <p>
                                 @Model.Owner.ApplicationUser.Location
                             </p>
@@ -73,9 +75,9 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-6">
+        <div class="col-lg-6 col-md-6">
             <div class="row">
-                <div class="col-lg-12">
+                <div class="col-lg-12 col-md-12">
                     @if (Model.Owner.ApplicationUser.SpotifyUri != null)
                     {
                         <iframe class="spotifyplayer" src="https://embed.spotify.com/?uri=@Model.Owner.ApplicationUser.SpotifyUri" width="500" height="280" frameborder="0" allowtransparency="true"></iframe>

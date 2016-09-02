@@ -15,6 +15,8 @@ using System.Web.Security;
 using System.Collections.ObjectModel;
 using Microsoft.AspNet.Identity.EntityFramework;
 using EDR.Enums;
+using System.Xml.Linq;
+using System.Reflection;
 
 namespace EDR.Controllers
 {
@@ -25,13 +27,21 @@ namespace EDR.Controllers
     //    public string Description { get; set; }
     //    public long Quantity { get; set; }
     //}
+    public class ControllerView
+    {
+        public string Controller { get; set; }
+        public string Action { get; set; }
+        public string Attributes { get; set; }
+        public string ReturnType { get; set; }
+    }
+
 
     public class HomeController : BaseController
     {
         public ActionResult Index()
         {
             var model = new HomeIndexViewModel();
-            model.DanceStyles = DataContext.DanceStyles.OrderByDescending(s => s.Events.Count()).Take(4).ToList();
+            model.DanceStyles = DataContext.DanceStyles.Include("Events").ToList();
             if (HttpContext.Request.Browser.IsMobileDevice)
             {
                 return View("Mobile/Index", model);
@@ -40,6 +50,19 @@ namespace EDR.Controllers
             {
                 return View(model);
             }
+        }
+
+        public ActionResult SitePages()
+        {
+            Assembly asm = Assembly.GetAssembly(typeof(EDR.MvcApplication));
+
+            var controlleractionlist = asm.GetTypes()
+                    .Where(type => typeof(System.Web.Mvc.Controller).IsAssignableFrom(type))
+                    .SelectMany(type => type.GetMethods(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public))
+                    .Where(m => !m.GetCustomAttributes(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), true).Any())
+                    .Select(x => new ControllerView() { Controller = x.DeclaringType.Name, Action = x.Name, ReturnType = x.ReturnType.Name, Attributes = String.Join(",", x.GetCustomAttributes().Select(a => a.GetType().Name.Replace("Attribute", ""))) })
+                    .OrderBy(x => x.Controller).ThenBy(x => x.Action).ToList();
+            return View(controlleractionlist);
         }
 
         public ActionResult Test()
@@ -257,6 +280,7 @@ namespace EDR.Controllers
         public ActionResult Learn(LearnViewModel model)
         {
             SearchClasses(model);
+            model.Styles = DataContext.DanceStyles.Select(s => s.Name).ToArray();
             if (HttpContext.Request.Browser.IsMobileDevice)
             {
                 return View("Mobile/Learn", model);
@@ -310,6 +334,7 @@ namespace EDR.Controllers
         public ActionResult Social(SocialViewModel model)
         {
             SearchSocials(model);
+            model.Styles = DataContext.DanceStyles.Select(s => s.Name).ToArray();
             if (HttpContext.Request.Browser.IsMobileDevice)
             {
                 return View("Mobile/Social", model);
@@ -497,6 +522,102 @@ namespace EDR.Controllers
                                         && e.EventInstances.Any(i => i.DateTime >= start)
                                         ).AsEnumerable());
             return PartialView("~/Views/Shared/Home/_IndexEventsPartial.cshtml", events);
+        }
+
+        [Route("sitemap.xml")]
+        public ActionResult SiteMap()
+        {
+            XNamespace ns = "http://www.sitemaps.org/schemas/sitemap/0.9";
+            const string url = "https://www.eatdancerepeat.com{0}";
+            var pages = new List<string>();
+            pages.Add("/Account/ConfirmEmail");
+            pages.Add("/Account/Disassociate");
+            pages.Add("/Account/ExternalLogin");
+            pages.Add("/Account/ForgotPassword");
+            pages.Add("/Account/LinkLogin");
+            pages.Add("/Account/LinkLoginCallback");
+            pages.Add("/Account/Login");
+            pages.Add("/Account/LogOff");
+            pages.Add("/Account/Register");
+            pages.Add("/Account/ResetPassword");
+            pages.Add("/Dancer/List");
+            pages.Add("/DanceStyle/Index");
+            pages.Add("/Event/Create");
+            //pages.Add("/Event/Register");
+            //pages.Add("/Event/ScanRegistrants");
+            //pages.Add("/Event/View");
+            pages.Add("/Home/Contact");
+            pages.Add("/Home/Explore");
+            pages.Add("/Home/FAQ");
+            pages.Add("/Home/Index");
+            pages.Add("/Home/Learn");
+            pages.Add("/Home/PrivacyPolicy");
+            pages.Add("/Home/Social");
+            pages.Add("/Home/TermsofService");
+            pages.Add("/Owner/Apply");
+            pages.Add("/Owner/List");
+            pages.Add("/Place/Details");
+            pages.Add("/Place/List");
+            pages.Add("/Promoter/Apply");
+            pages.Add("/Promoter/List");
+            pages.Add("/School/Create");
+            pages.Add("/School/List");
+            pages.Add("/Store/Attendees");
+            pages.Add("/Store/BuyTicket");
+            pages.Add("/Teacher/Apply");
+            pages.Add("/Teacher/List");
+            pages.Add("/Team/Create");
+            pages.Add("/Team/Index");
+
+            var date = DateTime.Today;
+            foreach (var c in DataContext.Classes.Where(e => e.EventInstances.Any(i => i.DateTime >= date)).ToList())
+            {
+                //  pages.Add(Url.Action("View", "Event", new { id = c.Id, eventType = EventType.Class }));
+                pages.Add(Url.Action("Class", "Event", new { id = c.Id, eventname = ApplicationUtility.ToUrlSlug(c.Name), location = ApplicationUtility.ToUrlSlug(c.Place.City) }));
+            }
+            foreach (var s in DataContext.Socials.Where(e => e.EventInstances.Any(i => i.DateTime >= date)).ToList())
+            {
+                //  pages.Add(Url.Action("View", "Event", new { id = s.Id, eventType = EventType.Social }));
+                pages.Add(Url.Action("Social", "Event", new { id = s.Id, eventname = ApplicationUtility.ToUrlSlug(s.Name), location = ApplicationUtility.ToUrlSlug(s.Place.City) }));
+            }
+            foreach (var t in DataContext.Teams.ToList())
+            {
+                pages.Add(Url.Action("View", "Team", new { id = t.Id, team = ApplicationUtility.ToUrlSlug(t.Name), location = ApplicationUtility.ToUrlSlug(t.City) }));
+            }
+            foreach (var sc in DataContext.Schools.ToList())
+            {
+                pages.Add(Url.Action("View", "School", new { id = sc.Id, school = ApplicationUtility.ToUrlSlug(sc.Name), location = ApplicationUtility.ToUrlSlug(sc.City) }));
+            }
+            foreach (var st in DataContext.DanceStyles.ToList())
+            {
+                pages.Add(Url.Action("Details", "DanceStyle", new { styleName = st.Name }));
+            }
+            foreach (var t in DataContext.Teachers.ToList())
+            {
+                pages.Add(Url.Action("Home", "Teacher", new { username = t.ApplicationUser.UserName }));
+            }
+            foreach (var t in DataContext.Promoters.ToList())
+            {
+                pages.Add(Url.Action("Home", "Promoter", new { username = t.ApplicationUser.UserName }));
+            }
+            foreach (var t in DataContext.Owners.ToList())
+            {
+                pages.Add(Url.Action("Home", "Owner", new { username = t.ApplicationUser.UserName }));
+            }
+
+            var sitemap = new XDocument(
+            new XDeclaration("1.0", "utf-8", "yes"),
+            new XElement(ns + "urlset",
+                from i in pages
+                select
+                new XElement(ns + "url",
+                    new XElement(ns + "loc", string.Format(url, i)),
+                    new XElement(ns + "lastmod", String.Format("{0:yyyy-MM-dd}", DateTime.Now)),
+                    new XElement(ns + "changefreq", "always"),
+                    new XElement(ns + "priority", "0.5")
+            )));
+
+            return Content("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + sitemap.ToString(), "text/xml");
         }
 
         #region JSON

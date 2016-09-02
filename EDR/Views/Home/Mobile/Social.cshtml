@@ -1,10 +1,12 @@
 ﻿@model EDR.Models.ViewModels.SocialViewModel
 
 @{
-    ViewBag.Title = "Social";
+    ViewBag.Title = "Find Dance Events";
+    ViewBag.Keywords = "Social Dance Events " + String.Join(" ", Model.Styles);
+    ViewBag.Description = "Find social dance events in your area.  Dance socials, concerts, congresses, festivals, parties, etc.";
 }
 
-<h2>Dance Events</h2>
+<h1>Dance Events</h1>
 <div class="container">
     <div class="center-block col-md-6 nospace" style="float: none;">
         <div class="row" style="padding: 5px;">
@@ -143,7 +145,7 @@
                 editable: true,
                 eventLimit: true, // allow "more" link when too many events
                 events: {
-                    url: '../../Home/GetSocials',
+                    url: '@Url.Action("GetSocials", "Home")',
                     traditional: true,
                     data: {
                         neLat: $('.nelatfield').val(),
@@ -203,7 +205,7 @@
                     content: '<div id="content" class="text-center" style="width: 200px;">' +
                     '<div id="siteNotice">' +
                     '</div>' +
-                    '<div style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
+                    '<div class="large" style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold;">' +
                     link +
                     '</div>' +
                     '<div id="bodyContent">' +
@@ -248,5 +250,16 @@
             return false;
         };
 
+        $(function () {
+            $(".rateYo").rateYo({
+                starWidth: "15px",
+                onInit: function (rating, rateYoInstance) {
+                    //  alert("init");
+                    var t = $(this);
+                    $(this).rateYo("option", "rating", t.parent('div').find('.ratingval').prop('value'));
+                    $(this).rateYo("option", "readOnly", true);
+                }
+            });
+        });
 </script>
 }

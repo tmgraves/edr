@@ -1,13 +1,15 @@
 ﻿@model EDR.Models.ViewModels.LearnViewModel
 
 @{
-    ViewBag.Title = "Learn";
+    ViewBag.Title = "Find Dance Classes";
+    ViewBag.Keywords = "Social Dance Class Workshop " + String.Join(" ", Model.Styles);
+    ViewBag.Description = "Find dance classes/workshops in your area.  Sign up for group classes or private lessons.  Learn your favorite style today: " + String.Join(", ", Model.Styles);
 }
 
 <ol class="breadcrumb">
     <li class="active">Search Classes/Workshops</li>
 </ol>
-@*<h1 class="text-center">Find a Class/Workshop</h1>*@
+<h1 class="text-center">Classes/Workshops</h1>
 @*<div class="text-center" style="padding: 10px;">
     @Html.ActionLink("Teachers", "List", "Teacher", null, new { @class = "btn btn-primary" })
     @Html.ActionLink("Schools", "List", "School", null, new { @class = "btn btn-primary" })
@@ -146,7 +148,7 @@
 <script>
     $(document).ready(function() {
         $(window).resize(function() {
-            var bodyheight = $(this).height() - 540;
+            var bodyheight = $(this).height() - 590;
             //alert($(this).height());
             //alert(bodyheight);
             $("#classesdiv").height(bodyheight);
@@ -183,7 +185,7 @@
 			editable: false,
 			eventLimit: true, // allow "more" link when too many events
 		    events: {
-		        url: '../../Home/GetClasses',
+		        url: '@Url.Action("GetClasses", "Home")',
                 traditional: true,
 		        data: {
 		            neLat: $('.nelatfield').val(),
@@ -270,7 +272,7 @@
                 content: '<div id="content" class="text-center" style="width: 200px;">' +
                 '<div id="siteNotice">' +
                 '</div>' +
-                '<div style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
+                '<div class="large" style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold;">' +
                 link +
                 '</div>' +
                 '<div id="bodyContent">' +

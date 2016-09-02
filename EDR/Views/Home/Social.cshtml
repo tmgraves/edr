@@ -1,14 +1,16 @@
 ﻿@model EDR.Models.ViewModels.SocialViewModel
 
 @{
-    ViewBag.Title = "Find a Dance Social";
+    ViewBag.Title = "Find Dance Events";
+    ViewBag.Keywords = "Social Dance Events " + String.Join(" ", Model.Styles);
+    ViewBag.Description = "Find social dance events in your area.  Dance socials, concerts, congresses, festivals, parties, etc.";
 }
 
     <ol class="breadcrumb">
         <li class="active">Search Dance Events</li>
     </ol>
 
-    @*<h1 class="text-center">Social Dance Events</h1>*@
+    <h1 class="text-center">Social Dance Events</h1>
 
     @*<div class="text-center" style="padding: 10px;">
         @Html.ActionLink("Venues", "List", "Place", new { }, new { @class = "btn btn-primary" })
@@ -125,7 +127,7 @@
 <script>
     $(document).ready(function() {
         $(window).resize(function() {
-            var bodyheight = $(this).height() - 540;
+            var bodyheight = $(this).height() - 590;
             //  alert($(this).height());
             //alert(bodyheight);
             $("#socialsdiv").height(bodyheight);
@@ -176,7 +178,7 @@
                 content: '<div id="content" class="text-center" style="width: 200px;">' +
                 '<div id="siteNotice">' +
                 '</div>' +
-                '<div style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
+                '<div class="large" style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold;">' +
                 link +
                 '</div>' +
                 '<div id="bodyContent">' +
@@ -250,7 +252,7 @@
             editable: true,
             eventLimit: true, // allow "more" link when too many events
             events: {
-                url: '../../Home/GetSocials',
+                url: '@Url.Action("GetSocials", "Home")',
                 traditional: true,
                 data: {
                     neLat: $('.nelatfield').val(),

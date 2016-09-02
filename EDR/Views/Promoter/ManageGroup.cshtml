@@ -6,14 +6,14 @@
 
 <ol class="breadcrumb">
     <li>@Html.ActionLink("All Promoters", "List", "Promoter")</li>
-    <li>@Html.ActionLink("Promoter Profile", "Home", "Promoter", new { username = Model.Promoter.ApplicationUser.UserName }, null)</li>
-    <li>@Html.ActionLink("Manage Promoter", "Manage", "Promoter", new { username = Model.Promoter.ApplicationUser.UserName }, null)</li>
+    <li>@Html.ActionLink("Promoter Profile", "Home", "Promoter", new { username = User.Identity.Name }, null)</li>
+    <li>@Html.ActionLink("Manage Promoter", "Manage", "Promoter", new { username = User.Identity.Name }, null)</li>
     <li class="active">Manage Promoter Group</li>
 </ol>
 
 <div class="container-fluid">
     <div class="col-lg-12 col-md-12">
-        <h2><span class="text-info">@Model.PromoterGroup.Name</span></h2>
+        <h1><span class="text-info">@Model.PromoterGroup.Name</span></h1>
         @if (Model.PromoterGroup.PayeeName == null || Model.PromoterGroup.PayeeAddress == null || Model.PromoterGroup.PayeeCity == null || Model.PromoterGroup.PayeeState == null || Model.PromoterGroup.PayeeZip == null || Model.PromoterGroup.BankName == null || Model.PromoterGroup.BankAccount == null || Model.PromoterGroup.RoutingNumber == null)
         {
             <h4 class="bg-danger">**Please fill in your Financial information so you can get paid for your Ticket Sales</h4>
@@ -40,10 +40,9 @@
                                     <div class="panel-body">
                                         @Html.ValidationSummary("", new { @class = "text-danger" })
                                         @using (Html.BeginForm("ManageGroup", "Promoter", FormMethod.Post, new { @id = "addgroupform", @class = "main" }))
-                                    {
+                                        {
                                             @Html.AntiForgeryToken()
                                             @Html.HiddenFor(x => x.PromoterGroup.Id)
-                                            @Html.HiddenFor(x => x.Promoter.Id)
                                             <dl class="dl-horizontal">
                                                 <dt>
                                                     @Html.LabelFor(model => model.PromoterGroup.Name, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -62,15 +61,15 @@
                                                     @Html.ValidationMessageFor(model => model.PromoterGroup.PayeeName, "", new { @class = "text-danger" })
                                                 </dd>
                                             </dl>
-                                                <dl class="dl-horizontal">
-                                                    <dt>
-                                                        @Html.LabelFor(model => model.PromoterGroup.PayeeAddress, htmlAttributes: new { @class = "control-label col-md-2" })
-                                                    </dt>
-                                                    <dd>
-                                                        @Html.TextBoxFor(m => m.PromoterGroup.PayeeAddress, new { @class = "form-control" })
-                                                        @Html.ValidationMessageFor(model => model.PromoterGroup.PayeeAddress, "", new { @class = "text-danger" })
-                                                    </dd>
-                                                </dl>
+                                            <dl class="dl-horizontal">
+                                                <dt>
+                                                    @Html.LabelFor(model => model.PromoterGroup.PayeeAddress, htmlAttributes: new { @class = "control-label col-md-2" })
+                                                </dt>
+                                                <dd>
+                                                    @Html.TextBoxFor(m => m.PromoterGroup.PayeeAddress, new { @class = "form-control" })
+                                                    @Html.ValidationMessageFor(model => model.PromoterGroup.PayeeAddress, "", new { @class = "text-danger" })
+                                                </dd>
+                                            </dl>
                                                 <dl class="dl-horizontal">
                                                     <dt>
                                                         @Html.LabelFor(model => model.PromoterGroup.PayeeCity, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -98,15 +97,6 @@
                                                         @Html.ValidationMessageFor(model => model.PromoterGroup.PayeeZip, "", new { @class = "text-danger" })
                                                     </dd>
                                                 </dl>
-                                                @*<dl class="dl-horizontal">
-                                    <dt>
-                                        @Html.LabelFor(model => model.PromoterGroup.PaymentInformation, htmlAttributes: new { @class = "control-label col-md-2" })
-                                    </dt>
-                                    <dd>
-                                        @Html.TextBoxFor(m => m.PromoterGroup.PaymentInformation, new { @class = "form-control" })
-                                        @Html.ValidationMessageFor(model => model.PromoterGroup.PaymentInformation, "", new { @class = "text-danger" })
-                                    </dd>
-                                </dl>*@
                                                 <dl class="dl-horizontal">
                                                     <dt>
                                                         @Html.LabelFor(model => model.PromoterGroup.BankName, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -137,7 +127,7 @@
                                                 <div class="text-right" style="padding-bottom: 10px;">
                                                     <input type="submit" id="btnsaveaudition" value="Save" class="btn btn-primary" />
                                                 </div>
-                                    }
+                                        }
                                     </div>
                                 </div>
                             </div>
@@ -149,15 +139,14 @@
                                     <div class="panel-body">
                                         <div>
                                             @using (Html.BeginForm("AddGroupPromoter", "Promoter", FormMethod.Post))
-                                        {
+                                            {
                                                 <input type="hidden" id="id" name="id" value="@Model.PromoterGroup.Id" />
-                                                <input type="hidden" id="rpromoterid" name="rpromoterid" value="@Model.Promoter.Id" />
-                                                    <input type="hidden" class="promotersearchid" id="promoterid" name="promoterid" />
+                                                <input type="hidden" class="promotersearchid" id="promoterid" name="promoterid" />
                                                     <div class="col-lg-12 col-md-12 input-group">
                                                         <input type="text" class="promotersearch form-control" placeholder="Type in a Promoter Name" style="display: inline-block;" />
                                                         <button type="submit" class="btn btn-primary" style="display: inline-block;">Add Promoter</button>
                                                     </div>
-                                        }
+                                            }
                                         </div>
                                         <table class="table" style="width: 100%;">
                                             <tr>
@@ -168,22 +157,55 @@
                                                 </th>
                                             </tr>
                                             @foreach (var t in Model.PromoterGroup.Promoters)
-                                        {
+                                            {
                                                 <tr>
                                                     <td>
                                                         @Html.DisplayFor(model => t.ApplicationUser.FullName)
                                                     </td>
                                                     <td class="text-right">
                                                         @if (t.ApplicationUser.UserName != User.Identity.Name)
-                                                    {
-                                                            <a class="btn btn-link text-danger" title="Remove" href="@Url.Action("RemoveGroupPromoter", new { id = Model.PromoterGroup.Id, promoterid = t.Id, rpromoterid = Model.Promoter.Id })" onclick="return confirm('Are you sure you want to remove this Promoter?')">
+                                                        {
+                                                            <a class="btn btn-link text-danger" title="Remove" href="@Url.Action("RemoveGroupPromoter", new { id = Model.PromoterGroup.Id, promoterid = t.Id })" onclick="return confirm('Are you sure you want to remove this Promoter?')">
                                                                 <i class="text-danger glyphicon glyphicon-remove-circle"></i>
                                                             </a>
-                                                    }
+                                                        }
                                                     </td>
                                                 </tr>
-                                        }
+                                            }
                                         </table>
+                                    </div>
+                                </div>
+                                <div class="panel panel-success">
+                                    <div class="panel-heading">
+                                        <h2 class="panel-title">Members</h2>
+                                    </div>
+                                    <div class="panel-body">
+                                        @using (Html.BeginForm("AddMember", "Promoter", FormMethod.Post))
+                                        {
+                                            @Html.HiddenFor(model => model.PromoterGroup.Id)
+                                            @Html.HiddenFor(m => m.NewMemberId)
+                                            <input type="text" id="newmember" placeholder="Search for a User" required class="form-control" style="display: inline-block;" />
+                                            <input type="submit" value="Add Member" style="display: inline-block;" class="btn btn-sm btn-primary" />
+                                        }
+                                        <div id="membersdiv">
+                                            @using (Html.BeginForm("UpdateMembers", "Promoter", FormMethod.Post))
+                                            {
+                                                @Html.HiddenFor(model => model.PromoterGroup.Id)
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Name</th>
+                                                            <th>Admin</th>
+                                                            <th></th>
+                                                        </tr>
+                                                    </thead>
+                                                    @Html.EditorFor(model => model.PromoterGroup.Members)
+                                                </table>
+                                                <div>
+                                                    <input type="submit" value="Update Members" style="display: inline-block;" class="btn btn-sm btn-primary" />
+                                                </div>
+                                            }
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -408,8 +430,24 @@
     <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places&key=@System.Configuration.ConfigurationManager.AppSettings["GoogleAPIKey"]"></script>
     <script src="../../Scripts/jquery.geocomplete.js"></script>
     <script src="~/Scripts/searchhelper.js"></script>
+    <script src="~/Scripts/browser-deeplink.js"></script>
 
     <script>
+        deeplink.setup({
+            iOS: {
+                appId: "698925807",
+                appName: "QR Code Reader",
+            },
+            android: {
+                appId: "me.scan.android.client"
+            }
+        });
+
+        function clickHandler(uri) {
+            deeplink.open(uri);
+            return false;
+        }
+
         LoadSocials();
 
         function LoadSocials() {
@@ -423,6 +461,31 @@
                 //});
             });
         };
+
+        $('#newmember').autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '@Url.Action("Search", "Dancer")',
+                    data: { searchString: request.term },
+                    dataType: 'json',
+                    type: 'GET',
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return {
+                                label: item.Name,
+                                value: item.Id
+                            }
+                        }));
+                    }
+                })
+            },
+            select: function (event, ui) {
+                $('#newmember').val(ui.item.label);
+                $('#NewMemberId').val(ui.item.value);
+                return false;
+            },
+            minLength: 1
+        });
 
         $(function () {
             $("#PromoterGroup_PayeeAddress").geocomplete({

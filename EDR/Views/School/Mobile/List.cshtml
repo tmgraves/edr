@@ -1,13 +1,15 @@
 ﻿@model EDR.Models.ViewModels.ListSchoolViewModel
 
 @{
-    ViewBag.Title = "All Schools";
+    ViewBag.Title = "Search Dance Schools";
+    ViewBag.Keywords = "Dance Schools " + String.Join(" ", Model.DanceStyles);
+    ViewBag.Description = "Find dance schools for " + String.Join(", ", Model.DanceStyles) + ".";
 }
 
 <ol class="breadcrumb">
     <li class="active">All Schools</li>
 </ol>
-<h2 class="text-center">Search Schools</h2>
+<h1 class="text-center">Search Schools</h1>
 
 @if (User.IsInRole("Teacher"))
 {
@@ -83,7 +85,7 @@
                         <div class="tab-pane fade in active" id="tabmap">
                             <div class="map_canvas" style="height: 400px;"></div>
                         </div>
-                        <div class="tab-pane fade" id="tablist">
+                        <div class="tab-pane fade nospace" id="tablist">
                             @Html.DisplayFor(m => m.Schools, "Schools")
                         </div>
                     </div>
@@ -148,7 +150,7 @@
                     content: '<div id="content" class="text-center" style="width: 200px;">' +
                     '<div id="siteNotice">' +
                     '</div>' +
-                    '<div style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
+                    '<div class="large" style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold;">' +
                     link +
                     '</div>' +
                     '<div id="bodyContent">' +

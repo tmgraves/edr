@@ -5,6 +5,8 @@
 
 @{
     ViewBag.Title = Model.Teacher.ApplicationUser.FullName + " - Teacher";
+    ViewBag.Keywords = "Social Dance Teacher " + String.Join(" ", Model.Teacher.Classes.SelectMany(s => s.DanceStyles).Distinct().Select(d => d.Name).ToArray()) + " " + Model.Teacher.ApplicationUser.City + " " + Model.Teacher.ApplicationUser.State;
+    ViewBag.Description = "Home page for " + Model.Teacher.ApplicationUser.FullName + ". " + String.Join(", ", Model.Teacher.Classes.SelectMany(s => s.DanceStyles).Distinct().Select(d => d.Name).ToArray()) + " teacher.";
 }
 
 <style>
@@ -44,7 +46,7 @@
                             <img style="max-width: 100%; max-height: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(Model.Teacher.ApplicationUser.PhotoUrl))" />
                         </div>
                         <div class="col-lg-8 col-xs-8">
-                            <h2 class="nospace">@Model.Teacher.ApplicationUser.FullName</h2>
+                            <h1 class="nospace">@Model.Teacher.ApplicationUser.FullName</h1>
                             <p>
                                 @Model.Teacher.ApplicationUser.Location
                             </p>
@@ -72,7 +74,7 @@
                         <div class="row">
                             @Html.Label("Dance Styles:", new { @class = "form-label col-md-4 col-sm-4 col-xs-5" })
                             <div class="col-lg-8 col-md-8 col-sm-8 col-xs-7 nospace">
-                                @Html.DisplayFor(m => Model.Teacher.ApplicationUser.DanceStyles, "DanceStyleLabels")
+                                @Html.DisplayFor(m => Model.Teacher.DanceStyles, "DanceStyleLabels")
                             </div>
                         </div>
                         @*<div class="row">

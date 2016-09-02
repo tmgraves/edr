@@ -40,6 +40,9 @@
                     User
                 </th>
                 <th>
+                    Email
+                </th>
+                <th>
                     Location
                 </th>
                 <th>
@@ -53,6 +56,9 @@
                             <img id="profilepic" src="@Url.Content(u.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
                         </div>
                         <span class="text-primary" style="vertical-align: top;">@u.FullName</span>
+                    </td>
+                    <td>
+                        @u.Email
                     </td>
                     <td>
                         @u.Address @u.City, @u.State @u.ZipCode

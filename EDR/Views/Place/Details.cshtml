@@ -13,17 +13,17 @@
     <li class="active">Place Details</li>
 </ol>
 
-<div class="container">
-    <div class="row" style="margin-bottom: 20px;">
-        <div class="col-lg-4 nospace">
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-4 col-lg-4">
             <div id="dimg" style="height: 250px; width: 100%; background-repeat: no-repeat; background-image: url(@Model.Place.Filename)">
                 @*<a id="limg" target="_blank" href="https://maps.google.com/?q=@Model.Place.Latitude,@Model.Place.Longitude">
-                <img class="fitpicture" id="pimg" />
-            </a>*@
+                    <img class="fitpicture" id="pimg" />
+                </a>*@
             </div>
         </div>
-        <div class="col-lg-8">
-            <h2>@Model.Place.Name</h2>
+        <div class="col-md-8 col-lg-8">
+            <h1 class="nospace">@Model.Place.Name</h1>
             <h4>@Model.Place.PlaceType</h4>
             <p>
                 <div id="parentc">
@@ -44,8 +44,8 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-lg-4 nospace">
-            <div class="col-lg-12 nospace panel panel-default" style="margin-bottom: 20px !important;">
+        <div class="col-md-4 col-lg-4">
+            <div class="col-lg-12 col-md-12 nospace panel panel-default" style="margin-bottom: 20px !important;">
                 <img style="max-width: 100%;" src="https://maps.googleapis.com/maps/api/staticmap?center=@Model.Place.Latitude,@Model.Place.Longitude&zoom=10&size=450x150&maptype=roadmap&markers=color:red%7Clabel:A%7C @Model.Place.Latitude, @Model.Place.Longitude&key=@System.Configuration.ConfigurationManager.AppSettings["GoogleAPIKey"]" title="@Model.Place.City, @Model.Place.State">
                 <div class="panel-body">
                     <p class="text-primary">
@@ -55,40 +55,40 @@
                     </p>
                 </div>
             </div>
-            <div class="col-lg-12 nospace" style="margin-bottom: 20px !important;">
+            <div class="col-lg-12 col-md-12" style="margin-bottom: 20px !important;">
                 <h4>Dancers</h4>
                 <div class="row">
                     <div id="dancers"></div>
                 </div>
                 <hr />
             </div>
-            <div class="col-lg-12 nospace" style="margin-bottom: 20px !important;">
+            <div class="col-lg-12 col-md-12" style="margin-bottom: 20px !important;">
                 <h4>Teachers</h4>
                 <div class="row">
                     <div id="teachers"></div>
                 </div>
                 <hr />
             </div>
-            <div class="col-lg-12 nospace" style="margin-bottom: 20px !important;">
+            <div class="col-lg-12 col-md-12" style="margin-bottom: 20px !important;">
                 <h4>Promoters</h4>
                 <div class="row">
                     <div id="promoters"></div>
                 </div>
                 <hr />
             </div>
-            <div class="col-lg-12 nospace" style="margin-bottom: 20px !important;">
+            <div class="col-lg-12 col-md-12" style="margin-bottom: 20px !important;">
                 <h4>Owners</h4>
                 <div class="row">
                     <div id="owners"></div>
                 </div>
                 <hr />
             </div>
-            <div class="col-lg-12 nospace panel panel-default" style="margin-bottom: 20px !important;">
+            <div class="col-lg-12 col-md-12 panel panel-default" style="margin-bottom: 20px !important;">
                 <h4>Schools</h4>
                 <div id="schools">
                 </div>
             </div>
-            <div class="col-lg-12 nospace panel panel-default" style="margin-bottom: 20px !important;">
+            <div class="col-lg-12 col-md-12 panel panel-default" style="margin-bottom: 20px !important;">
                 <div class="panel-body">
                     <h4>Performance Teams</h4>
                     <div id="teams">
@@ -96,28 +96,17 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-8 nospace">
-            <div class="col-lg-12" style="margin-bottom: 20px;">
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        <h3>Classes/Workshops</h3>
-                        <div id="classes">
-                        </div>
-                    </div>
-                </div>
+        <div class="col-md-8 col-lg-8">
+            <h3>Classes/Workshops</h3>
+            <div id="classes">
             </div>
-            <div class="col-lg-12" style="margin-bottom: 20px;">
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        <h3>Socials</h3>
-                        <div id="socials">
-                        </div>
-                    </div>
-                </div>
+            <h3>Socials</h3>
+            <div id="socials">
             </div>
         </div>
     </div>
 </div>
+
 <div id="map"></div>
 @section Scripts
 {

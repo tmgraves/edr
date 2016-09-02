@@ -7,7 +7,7 @@
 <ol class="breadcrumb">
     <li class="active">All Owners</li>
 </ol>
-<h2 class="text-center">Owners</h2>
+<h1 class="text-center">Owners</h1>
 
 @using (Html.BeginForm("List", "Owner", FormMethod.Post, new { @class = "formmain" }))
 {
@@ -20,7 +20,7 @@
     @Html.HiddenFor(m => m.CenterLat, new { @class = "clatfield" })
     @Html.HiddenFor(m => m.CenterLng, new { @class = "clngfield" })
     @Html.HiddenFor(m => m.Zoom, new { @class = "czoomfield" })
-    <div class="container bg-info text-center" style="padding: 0px !important;">
+    <div class="container-fluid bg-info text-center" style="padding: 0px !important;">
         <div class="form-inline">
             <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
                 <div class="form-group">
@@ -39,7 +39,9 @@
     </div>
 }
 
-@Html.DisplayFor(m => m.Owners, "Owners")
+<div id="listdiv" style="overflow: auto; overflow-x: hidden; margin-top: 5px;">
+    @Html.DisplayFor(m => m.Owners, "Owners")
+</div>
 
 @section Scripts
 {
@@ -53,6 +55,15 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="../../Scripts/jquery.geocomplete.js"></script>
     <script>
+        $(document).ready(function() {
+            $(window).resize(function() {
+                var bodyheight = $(this).height() - 550;
+                //alert($(this).height());
+                //alert(bodyheight);
+                $("#listdiv").height(bodyheight);
+            }).resize();
+        });
+
         //  Map Marker Containers
         var markers = [];
         var infowindows = [];

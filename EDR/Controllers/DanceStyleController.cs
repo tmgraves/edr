@@ -14,7 +14,20 @@ namespace EDR.Controllers
 {
     public class DanceStyleController : BaseController
     {
+        [Route("Styles")]
+        public ActionResult List()
+        {
+            var viewModel = new HomeExploreViewModel();
+            viewModel.DanceStyles = DataContext.DanceStyles
+                                        .Include("Dancers")
+                                        .Include("Teachers")
+                                        .Include("Events")
+                                        .ToList();
+            return View(viewModel);
+        }
+
         // GET: DanceStyle/Details/5
+        [Route("Style/{styleName}")]
         public ActionResult Details(string styleName)
         {
             styleName = styleName.Replace('_', ' ');
@@ -30,6 +43,7 @@ namespace EDR.Controllers
         }
 
         // GET: DanceStyle/Create
+        [Route("Style/Create")]
         public ActionResult Create()
         {
             return View();
@@ -38,6 +52,7 @@ namespace EDR.Controllers
         // POST: DanceStyle/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Route("Style/Create")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,Name,Description,YouTubeVideoID")] DanceStyle danceStyle)
@@ -53,6 +68,7 @@ namespace EDR.Controllers
         }
 
         // GET: DanceStyle/Edit/5
+        [Route("Style/Edit")]
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -70,6 +86,7 @@ namespace EDR.Controllers
         // POST: DanceStyle/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Route("Style/Edit")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,Name,Description,YouTubeVideoID")] DanceStyle danceStyle)
@@ -84,6 +101,7 @@ namespace EDR.Controllers
         }
 
         // GET: DanceStyle/Delete/5
+        [Route("Style/Delete")]
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -99,6 +117,7 @@ namespace EDR.Controllers
         }
 
         // POST: DanceStyle/Delete/5
+        [Route("Style/Delete")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
@@ -118,6 +137,7 @@ namespace EDR.Controllers
             base.Dispose(disposing);
         }
 
+        [Route("Style/Index")]
         public ActionResult Index()
         {
             NewStyleViewModel viewModel = new NewStyleViewModel
@@ -128,6 +148,7 @@ namespace EDR.Controllers
             return View(viewModel);
         }
 
+        [Route("Style/Index_AddItem")]
         public ActionResult Index_AddItem(NewStyleViewModel viewModel)
         {
             var x = ModelState.IsValid;
@@ -137,12 +158,14 @@ namespace EDR.Controllers
             return PartialView("_DanceStyleListPartial", DataContext.DanceStyles);
         }
 
+        [Route("Style/Search")]
         public JsonResult Search(string searchString)
         {
             var styles = DataContext.DanceStyles.Where(s => s.Name.Contains(searchString)).Select(s => new { Id = s.Id, Name = s.Name }).ToList();
             return Json(styles, JsonRequestBehavior.AllowGet);
         }
 
+        [Route("Style/GetTeachersPartial")]
         [HttpGet]
         public virtual ActionResult GetTeachersPartial(int id)
         {
@@ -150,6 +173,7 @@ namespace EDR.Controllers
             return PartialView("~/Views/Shared/DisplayTemplates/TeacherThumbLinks.cshtml", teachers);
         }
 
+        [Route("Style/GetSchoolsPartial")]
         [HttpGet]
         public virtual ActionResult GetSchoolsPartial(int id)
         {
@@ -157,6 +181,7 @@ namespace EDR.Controllers
             return PartialView("~/Views/Shared/DisplayTemplates/SchoolLinks.cshtml", schools);
         }
 
+        [Route("Style/GetTeamsPartial")]
         [HttpGet]
         public virtual ActionResult GetTeamsPartial(int id)
         {

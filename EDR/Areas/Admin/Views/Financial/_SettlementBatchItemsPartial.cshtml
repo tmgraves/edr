@@ -1,0 +1,49 @@
+﻿@model List<EDR.Models.SettlementBatchItem>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>
+                Id
+            </th>
+            <th>
+                TranId
+            </th>
+            <th>
+                Submit Date
+            </th>
+            <th>
+                Name
+            </th>
+            <th>
+                Amount
+            </th>
+            <th>
+                Status
+            </th>
+        </tr>
+    </thead>
+    @foreach(var i in Model.OrderByDescending(t => t.SubmitDate))
+    {
+        <tr>
+            <td>
+                @i.Id
+            </td>
+            <td>
+                @i.TranId
+            </td>
+            <td>
+                @i.SubmitDate
+            </td>
+            <td>
+                @i.FirstName @i.LastName
+            </td>
+            <td>
+                @i.Amount.ToString("C")
+            </td>
+            <td>
+                @i.Status
+            </td>
+        </tr>
+    }
+</table>

@@ -1,10 +1,12 @@
 ﻿@model EDR.Models.ViewModels.LearnViewModel
 
 @{
-    ViewBag.Title = "Learn";
+    ViewBag.Title = "Find Dance Classes";
+    ViewBag.Keywords = "Social Dance Class Workshop " + String.Join(" ", Model.Styles);
+    ViewBag.Description = "Find dance classes/workshops in your area.  Sign up for group classes or private lessons.  Learn your favorite style today: " + String.Join(", ", Model.Styles);
 }
 
-<h2>Classes/Workshops</h2>
+<h1>Classes/Workshops</h1>
 
 <div class="container">
     <div class="center-block col-md-6 nospace" style="float: none;">
@@ -161,7 +163,7 @@
 			editable: false,
 			eventLimit: true, // allow "more" link when too many events
 		    events: {
-		        url: '../../Home/GetClasses',
+		        url: '@Url.Action("GetClasses", "Home")',
                 traditional: true,
 		        data: {
 		            neLat: $('.nelatfield').val(),
@@ -248,7 +250,7 @@
                 content: '<div id="content" class="text-center" style="width: 200px;">' +
                 '<div id="siteNotice">' +
                 '</div>' +
-                '<div style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
+                '<div class="large" style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold;">' +
                 link +
                 '</div>' +
                 '<div id="bodyContent">' +

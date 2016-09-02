@@ -23,6 +23,7 @@ namespace EDR.Models.ViewModels
         public int[] SkillLevel { get; set; }
         public DayOfWeek[] Days { get; set; }
         public int? SchoolId { get; set; }
+        public string[] Styles { get; set; }
 
         //  Map Settings
         public double? NELat { get; set; }
@@ -51,6 +52,7 @@ namespace EDR.Models.ViewModels
         [Display(Name = "Skill Level:")]
         public int? SkillLevel { get; set; }
         public DayOfWeek[] Days { get; set; }
+        public string[] Styles { get; set; }
 
         //  Map Settings
         public double? NELat { get; set; }

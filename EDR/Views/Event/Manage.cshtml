@@ -27,7 +27,15 @@
     <li>@Html.ActionLink("View " + Model.EventType, "View", "Event", new { id = Model.Event.Id, eventType = eventType }, null)</li>
     <li class="active">Manage @Model.EventType</li>
 </ol>
-<h2>Manage @Model.Event.Name</h2>
+<h1>Manage @Model.Event.Name</h1>
+@if (Request.Browser.IsMobileDevice)
+{
+    <div class="row" style="padding-bottom: 10px;">
+        <div class="col-xs-12 col-sm-12">
+            <a href="#" style="width: 100% !important;" class="btn btn-success" data-uri="scan://scan" onclick="clickHandler(this.dataset.uri)"><i class="glyphicon glyphicon-screenshot"></i> Open Code Scanner</a>
+        </div>
+    </div>
+}
 
 <p>
     <a class="btn btn-danger" title="Delete" href="@Url.Action("Delete", "Event", new { id = Model.Event.Id, eventType = Model.EventType, returnUrl = Model.ReturnUrl })" onclick="return confirm('Are you sure you want to DELETE this Event?')">
@@ -123,6 +131,14 @@
                     {
                         <dl class="dl-horizontal">
                             <dt>
+                                Class Type:
+                            </dt>
+                            <dd>
+                                @((Model.Event as Class).ClassType)
+                            </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>
                                 School:
                             </dt>
                             <dd>
@@ -136,6 +152,14 @@
                     }
                     @if (Model.EventType == EDR.Enums.EventType.Social)
                     {
+                        <dl class="dl-horizontal">
+                            <dt>
+                                Social Type:
+                            </dt>
+                            <dd>
+                                @((Model.Event as Social).SocialType)
+                            </dd>
+                        </dl>
                         <dl class="dl-horizontal">
                             <dt>
                                 Promoter Group:
@@ -278,6 +302,15 @@
                         {
                             <dl class="dl-horizontal">
                                 <dt>
+                                    @Html.DisplayName("Social Type:")
+                                </dt>
+                                <dd>
+                                    @Html.EnumDropDownListFor(model => model.SocialType, htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.SocialType, "", new { @class = "text-danger" })
+                                </dd>
+                            </dl>
+                            <dl class="dl-horizontal">
+                                <dt>
                                     @Html.DisplayName("Promoter Group:")
                                 </dt>
                                 <dd>
@@ -295,7 +328,19 @@
                                 @Html.EnumDropDownListFor(model => ((EDR.Models.Social)model.Event).MusicType, new { @class = "form-control" })
                             </dd>
                         </dl>
-                    }
+                        }
+                        else
+                        {
+                            <dl class="dl-horizontal">
+                                <dt>
+                                    @Html.DisplayName("Class Type:")
+                                </dt>
+                                <dd>
+                                    @Html.EnumDropDownListFor(model => model.ClassType, htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.ClassType, "", new { @class = "text-danger" })
+                                </dd>
+                            </dl>
+                        }
                     <dl class="dl-horizontal">
                         <dt>
                             @Html.DisplayNameFor(model => model.Event.StartDate)
@@ -532,7 +577,7 @@
                                         @Html.DisplayFor(model => t.ApplicationUser.FullName)
                                     </td>
                                     <td class="text-right">
-                                        @if (t.ApplicationUser.UserName != User.Identity.Name)
+                                        @if (t.ApplicationUser.UserName != User.Identity.Name || User.IsInRole("Admin"))
                                         {
                                             <a class="btn btn-link text-danger" title="Remove" href="@Url.Action("RemoveTeacher", new { id = Model.Event.Id, teacherid = t.Id })" onclick="return confirm('Are you sure you want to remove this Teacher?')">
                                                 <i class="text-danger glyphicon glyphicon-remove-circle"></i>
@@ -593,7 +638,7 @@
         <div class="panel panel-default">
             <div class="panel-body ">
                 <h3>Registrations</h3>
-                @foreach (var i in Model.Event.EventInstances.Where(i => i.DateTime <= DateTime.Today).OrderByDescending(i => i.DateTime))
+                @foreach (var i in Model.Event.EventInstances.OrderByDescending(i => i.DateTime))
                 {
                     @i.DateTime.ToShortDateString()
                     <table class="table table-condensed">
@@ -1062,11 +1107,27 @@
     <script src="~/Scripts/changepicture.js"></script>
     <script src="~/Scripts/jquery.mousewheel.js"></script>
 <script src="~/Scripts/searchhelper.js"></script>
+<script src="~/Scripts/browser-deeplink.js"></script>
 
     <script type="text/javascript">
     $.validator.setDefaults({
         ignore: ""
     })
+
+    deeplink.setup({
+        iOS: {
+            appId: "698925807",
+            appName: "QR Code Reader",
+        },
+        android: {
+            appId: "me.scan.android.client"
+        }
+    });
+
+    function clickHandler(uri) {
+        deeplink.open(uri);
+        return false;
+    }
 
     $('#eventCount').spinner({
         min: 1,

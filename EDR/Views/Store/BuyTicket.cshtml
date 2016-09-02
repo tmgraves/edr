@@ -35,11 +35,11 @@ input[type="number"].securitycode::-webkit-inner-spin-button {
     <div class="container-fluid">
         <div class="container">
             <div class="col-lg-6 col-md-6 col-lg-offset-3 col-md-offset-3">
-                <h2 class="text-center">Your Order</h2>
+                <h1 class="text-center">Your Order</h1>
             </div>
             <div class="col-lg-6 col-md-6 col-lg-offset-3 col-md-offset-3 bg-info">
                 <div class="col-lg-8 col-md-8 col-lg-offset-2 col-md-offset-2 text-center">
-                    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                    @*@Html.ValidationSummary(false, "", new { @class = "text-danger" })*@
                     @if(Model.Result != "" && Model.Result != null)
                     {
                         <span class="text-danger">@Model.Message</span>
@@ -82,7 +82,34 @@ input[type="number"].securitycode::-webkit-inner-spin-button {
                                 </div>
                                 <div class="col-xs-5 col-sm-5 col-md-4 col-lg-4 input-group nospace">
                                     <div class="input-group-addon">Qty</div>
-                                    @Html.TextBoxFor(t => t.Quantity, htmlAttributes: new { @class = "form-control text-right", @type = "number", @min = "1", @autocomplete = "off" })
+                                    @Html.DropDownListFor(m => m.Quantity,
+                                                                new SelectList(new List<SelectListItem> {
+                                                                    new SelectListItem() { Text = "1", Value = "1" },
+                                                                    new SelectListItem() { Text = "2", Value = "2" },
+                                                                    new SelectListItem() { Text = "3", Value = "3" },
+                                                                    new SelectListItem() { Text = "4", Value = "4" },
+                                                                    new SelectListItem() { Text = "5", Value = "5" },
+                                                                    new SelectListItem() { Text = "6", Value = "6" },
+                                                                    new SelectListItem() { Text = "7", Value = "7" },
+                                                                    new SelectListItem() { Text = "8", Value = "8" },
+                                                                    new SelectListItem() { Text = "9", Value = "9" },
+                                                                    new SelectListItem() { Text = "10", Value = "10" },
+                                                                    new SelectListItem() { Text = "11", Value = "11" },
+                                                                    new SelectListItem() { Text = "12", Value = "12" },
+                                                                    new SelectListItem() { Text = "13", Value = "13" },
+                                                                    new SelectListItem() { Text = "14", Value = "14" },
+                                                                    new SelectListItem() { Text = "15", Value = "15" },
+                                                                    new SelectListItem() { Text = "16", Value = "16" },
+                                                                    new SelectListItem() { Text = "17", Value = "17" },
+                                                                    new SelectListItem() { Text = "18", Value = "18" },
+                                                                    new SelectListItem() { Text = "19", Value = "19" },
+                                                                    new SelectListItem() { Text = "20", Value = "20" },
+                                                                }, "Value", "Text"), new { @class = "form-control" })
+                                    @*@Html.TextBoxFor(t => t.Quantity, htmlAttributes: new { @class = "form-control text-right", @type = "number", @min = "1", @autocomplete = "off" })*@
+                                </div>
+                                <div>
+                                    @Html.ValidationMessageFor(model => model.TicketId, "", new { @class = "text-danger" })
+                                    @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
                                 </div>
                             </div>
                             <div>
@@ -93,6 +120,7 @@ input[type="number"].securitycode::-webkit-inner-spin-button {
                     <h4 class="text-center">Billing Info</h4>
                     <div class="form-group form-group-sm">
                         @Html.TextBoxFor(m => m.CCNumber, htmlAttributes: new { @class = "form-control", @size = "20", @autocomplete = "off", @placeholder = "Card Number" })
+                        @Html.ValidationMessageFor(model => model.CCNumber, "", new { @class = "text-danger" })
                     </div>
                     <div class="form-group form-group-sm">
                         <div class="row">
@@ -124,32 +152,52 @@ input[type="number"].securitycode::-webkit-inner-spin-button {
                                     @Html.TextBoxFor(m => m.SecurityCode, htmlAttributes: new { @class = "form-control securitycode", @type = "number", @size = "4", @min = "0", @autocomplete = "off", @placeholder = "CVV" })
                                 </div>
                             </div>
+                            <div>
+                                @Html.ValidationMessageFor(model => model.CCMonth, "", new { @class = "text-danger" })
+                                @Html.ValidationMessageFor(model => model.CCYear, "", new { @class = "text-danger" })
+                                @Html.ValidationMessageFor(model => model.SecurityCode, "", new { @class = "text-danger" })
+                            </div>
                         </div>
                     </div>
                     <div class="form-group form-group-sm">
                         @Html.TextBoxFor(m => m.Order.FirstName, htmlAttributes: new { @class = "form-control", @placeholder = "First Name" })
+                        @Html.ValidationMessageFor(model => model.Order.FirstName, "", new { @class = "text-danger" })
                     </div>
                     <div class="form-group form-group-sm">
                         @Html.TextBoxFor(m => m.Order.LastName, htmlAttributes: new { @class = "form-control", @placeholder = "Last Name" })
+                        @Html.ValidationMessageFor(model => model.Order.LastName, "", new { @class = "text-danger" })
                     </div>
                     <div class="form-group form-group-sm">
                         @Html.TextBoxFor(m => m.Order.Address, htmlAttributes: new { @class = "form-control", @placeholder = "Address" })
+                        @Html.ValidationMessageFor(model => model.Order.Address, "", new { @class = "text-danger" })
                     </div>
                     <div class="form-group form-group-sm">
                         @Html.TextBoxFor(m => m.Order.City, htmlAttributes: new { @class = "form-control", @placeholder = "City" })
+                        @Html.ValidationMessageFor(model => model.Order.City, "", new { @class = "text-danger" })
                     </div>
                     <div class="form-group form-group-sm">
                         @Html.TextBoxFor(m => m.Order.State, htmlAttributes: new { @class = "form-control", @placeholder = "State" })
+                        @Html.ValidationMessageFor(model => model.Order.State, "", new { @class = "text-danger" })
                     </div>
                     <div class="form-group form-group-sm">
                         @Html.TextBoxFor(m => m.Order.PostalCode, htmlAttributes: new { @class = "form-control", @placeholder = "Zipcode" })
+                        @Html.ValidationMessageFor(model => model.Order.PostalCode, "", new { @class = "text-danger" })
                     </div>
                     <div class="form-group form-group-sm">
                         @Html.TextBoxFor(m => m.Order.Country, htmlAttributes: new { @class = "form-control", @placeholder = "Country" })
+                        @Html.ValidationMessageFor(model => model.Order.Country, "", new { @class = "text-danger" })
                     </div>
                     <div class="form-group form-group-sm">
-                        @Html.TextBoxFor(m => m.Order.Email, htmlAttributes: new { @class = "form-control", @placeholder = "Email" })
+                        @Html.TextBoxFor(m => m.Email, htmlAttributes: new { @class = "form-control", @placeholder = "Email" })
+                        @Html.HiddenFor(m => m.Order.Email)
+                        @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
                     </div>
+                    <div class="form-group form-group-sm">
+                        @Html.TextBoxFor(m => m.ConfirmEmail, htmlAttributes: new { @class = "form-control", @placeholder = "Confirm Email" })
+                        @Html.ValidationMessageFor(model => model.ConfirmEmail, "", new { @class = "text-danger" })
+                    </div>
+                    @Html.HiddenFor(m => m.Lat)
+                    @Html.HiddenFor(m => m.Lng)
                 </div>
             </div>
             <div class="col-lg-6 col-md-6 col-lg-offset-3 col-md-offset-3">
@@ -203,7 +251,11 @@ input[type="number"].securitycode::-webkit-inner-spin-button {
         //        //  myJsFunction();
         //    });
         //});
-        
+
+        $("#Email").change(function () {
+            $('#Order_Email').val($(this).val());
+        });
+
         $(function () {
             $("#Order_Address").geocomplete({
                 details: "form",
@@ -216,7 +268,8 @@ input[type="number"].securitycode::-webkit-inner-spin-button {
                 var street_num;
                 var street_name;
                 $.each(result.address_components, function (i, address_component) {
-
+                    $('#Lat').prop("value", result.geometry.location.lat());
+                    $('#Lng').prop("value", result.geometry.location.lng());
                     //alert(address_component.types[0]);
                     //alert(address_component.long_name);
                     if (address_component.types[0] == "street_number") {

@@ -19,8 +19,10 @@ namespace EDR.Controllers
     public class TeamController : BaseController
     {
         // GET: Team
+        [Route("Teams")]
         public ActionResult Index(TeamIndexViewModel model)
         {
+            model.DanceStyles = DataContext.DanceStyles.Select(s => s.Name).ToArray();
             model.Teams = DataContext.Teams
                                 .Include("Teachers.ApplicationUser")
                                 .Include("DanceStyles")
@@ -58,6 +60,7 @@ namespace EDR.Controllers
         }
 
         // GET: Team/Details/5
+        [Route("Team/{id}/{team}/{location}")]
         public ActionResult View(int? id)
         {
             var userid = User.Identity.GetUserId();
@@ -88,6 +91,7 @@ namespace EDR.Controllers
             }
         }
 
+        [Route("Team/Manage")]
         [Authorize(Roles = "Teacher")]
         public ActionResult Manage(int? id)
         {
@@ -116,6 +120,7 @@ namespace EDR.Controllers
             return View(model);
         }
 
+        [Route("Team/AddMember")]
         [Authorize(Roles = "Teacher,Owner")]
         [HttpPost]
         public ActionResult AddMember(TeamManageViewModel model)
@@ -128,6 +133,7 @@ namespace EDR.Controllers
             return RedirectToAction("Manage", new { id = model.Team.Id });
         }
 
+        [Route("Team/Manage")]
         [Authorize(Roles = "Teacher")]
         [HttpPost]
         public ActionResult Manage(TeamManageViewModel model)
@@ -145,14 +151,18 @@ namespace EDR.Controllers
         }
 
         // GET: Team/Create
+        [Route("Team/Create")]
         [Authorize(Roles = "Teacher")]
         public ActionResult Create(int? schoolId)
         {
+            var userid = User.Identity.GetUserId();
             var model = new TeamCreateViewModel();
             model.Team.SchoolId = schoolId;
+            model.Schools = DataContext.Schools.Where(g => g.Teachers.Any(p => p.ApplicationUser.Id == userid) || g.Owners.Any(p => p.ApplicationUser.Id == userid) || g.Members.Any(p => p.UserId == userid)).ToList();
             return View(model);
         }
 
+        [Route("Team/Delete")]
         [Authorize(Roles ="Teacher, Admin")]
         public ActionResult Delete(int id)
         {
@@ -188,6 +198,7 @@ namespace EDR.Controllers
         // POST: Team/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Route("Team/Create")]
         [Authorize(Roles = "Teacher")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -210,6 +221,7 @@ namespace EDR.Controllers
         }
 
         // GET: Team/Edit/5
+        [Route("Team/Edit")]
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -227,6 +239,7 @@ namespace EDR.Controllers
         // POST: Team/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Route("Team/Edit")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,Name,Description,FacebookLink,Public,DateStarted,Address,Address2,City,State,Zip,Country,Latitude,Longitude")] Team team)
@@ -257,6 +270,7 @@ namespace EDR.Controllers
         //}
 
         // POST: Team/Delete/5
+        [Route("Team/DeleteConfirmed")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
@@ -267,6 +281,7 @@ namespace EDR.Controllers
             return RedirectToAction("Index");
         }
 
+        [Route("Team/AddTeacher")]
         [Authorize(Roles = "Teacher,Owner")]
         [HttpPost]
         public ActionResult AddTeacher(FormCollection formCollection)
@@ -281,6 +296,7 @@ namespace EDR.Controllers
             return RedirectToAction("Manage", new { id = id });
         }
 
+        [Route("Team/RemoveTeacher")]
         [Authorize(Roles = "Teacher,Owner")]
         public ActionResult RemoveTeacher(int id, int teacherid)
         {
@@ -302,6 +318,7 @@ namespace EDR.Controllers
             base.Dispose(disposing);
         }
 
+        [Route("Team/AddRehearsal")]
         [Authorize(Roles = "Teacher")]
         [HttpPost]
         public ActionResult AddRehearsal(TeamManageViewModel model)
@@ -326,6 +343,7 @@ namespace EDR.Controllers
             }
         }
 
+        [Route("Team/DeleteRehearsal")]
         [Authorize(Roles = "Teacher")]
         public ActionResult DeleteRehearsal(int id)
         {
@@ -340,6 +358,7 @@ namespace EDR.Controllers
             return RedirectToAction("Manage", new { id = teamId });
         }
 
+        [Route("Team/AddAudition")]
         [Authorize(Roles = "Teacher")]
         [HttpPost]
         public ActionResult AddAudition(TeamManageViewModel model)
@@ -382,6 +401,7 @@ namespace EDR.Controllers
             //}
         }
 
+        [Route("Team/ImportAudition")]
         [Authorize(Roles = "Teacher")]
         [HttpPost]
         public ActionResult ImportAudition(TeamManageViewModel model)
@@ -454,6 +474,7 @@ namespace EDR.Controllers
             //}
         }
 
+        [Route("Team/DeleteAudition")]
         [Authorize(Roles = "Teacher")]
         public ActionResult DeleteAudition(int id)
         {
@@ -468,6 +489,7 @@ namespace EDR.Controllers
             return RedirectToAction("Manage", new { id = teamId });
         }
 
+        [Route("Team/AddPerformance")]
         [Authorize(Roles = "Teacher")]
         [HttpPost]
         public ActionResult AddPerformance(TeamManageViewModel model)
@@ -497,6 +519,7 @@ namespace EDR.Controllers
             }
         }
 
+        [Route("Team/DeletePerformance")]
         [Authorize(Roles = "Teacher")]
         public ActionResult DeletePerformance(int id)
         {
@@ -511,6 +534,7 @@ namespace EDR.Controllers
             return RedirectToAction("Manage", new { id = teamId });
         }
 
+        [Route("Team/AddStyle")]
         [Authorize(Roles = "Owner,Teacher")]
         public PartialViewResult AddStyle(TeamManageViewModel model)
         {
@@ -523,6 +547,7 @@ namespace EDR.Controllers
             return PartialView("~/Views/Team/Partial/_DanceStylesPartial.cshtml", new TeamDanceStylesPartialViewModel() { DanceStyles = team.DanceStyles, TeamId = team.Id });
         }
 
+        [Route("Team/DeleteStyle")]
         [Authorize(Roles = "Owner,Promoter,Teacher")]
         public ActionResult DeleteStyle(int id, int styleId)
         {
@@ -531,6 +556,7 @@ namespace EDR.Controllers
             return RedirectToAction("Manage", new { id = id });
         }
 
+        [Route("Team/GetAuditionsPartial")]
         [HttpGet]
         public virtual ActionResult GetAuditionsPartial(int id)
         {
@@ -544,6 +570,7 @@ namespace EDR.Controllers
             return PartialView("~/Views/Shared/_EventsPartial.cshtml", auditions);
         }
 
+        [Route("Team/GetPerformancesPartial")]
         [HttpGet]
         public virtual ActionResult GetPerformancesPartial(int id)
         {
@@ -557,6 +584,7 @@ namespace EDR.Controllers
             return PartialView("~/Views/Shared/_EventsPartial.cshtml", performances);
         }
 
+        [Route("Team/GetRehearsalsPartial")]
         [HttpGet]
         public virtual ActionResult GetRehearsalsPartial(int id)
         {
@@ -569,6 +597,7 @@ namespace EDR.Controllers
             return PartialView("~/Views/Shared/_EventsPartial.cshtml", rehearsals);
         }
 
+        [Route("Team/GetRehearsalDatesPartial")]
         [HttpGet]
         public virtual ActionResult GetRehearsalDatesPartial(int id)
         {
@@ -592,6 +621,7 @@ namespace EDR.Controllers
             }
         }
 
+        [Route("Team/AddRehearsalDates")]
         [Authorize(Roles = "Owner,Teacher")]
         [HttpPost]
         public virtual ActionResult AddRehearsalDates(int rehearsalId, int eventCount)
@@ -619,6 +649,7 @@ namespace EDR.Controllers
             return RedirectToAction("Manage", new { id = reh.TeamId });
         }
 
+        [Route("Team/AddTeamAJAX")]
         [Authorize(Roles = "Owner,Teacher")]
         [HttpPost]
         public ActionResult AddTeamAJAX(TeamCreateViewModel model)
@@ -653,6 +684,7 @@ namespace EDR.Controllers
 
         }
 
+        [Route("Team/SearchGroupJSON")]
         [Authorize(Roles = "Owner,Promoter,Teacher")]
         public JsonResult SearchGroupJSON(Uri search)
         {
@@ -679,6 +711,7 @@ namespace EDR.Controllers
             }
         }
 
+        [Route("Team/Search")]
         [Authorize]
         public JsonResult Search(string searchString)
         {
@@ -716,6 +749,7 @@ namespace EDR.Controllers
 
         //}
 
+        [Route("Team/GetEventInstances")]
         public JsonResult GetEventInstances(DateTime start, DateTime end, int teamId)
         {
             var instances = new List<EventInstance>();
@@ -752,6 +786,7 @@ namespace EDR.Controllers
                         }), JsonRequestBehavior.AllowGet);
         }
 
+        [Route("Team/GetAuditionInstances")]
         public JsonResult GetAuditionInstances(double? neLat, double? neLng, double? swLat, double? swLng, int? styleId, string teacherId, int[] skillLevel, DateTime start, DateTime end)
         {
             var auditions = DataContext.Auditions
@@ -793,6 +828,7 @@ namespace EDR.Controllers
                         ), JsonRequestBehavior.AllowGet);
         }
 
+        [Route("Team/GetPerformanceInstances")]
         public JsonResult GetPerformanceInstances(double? neLat, double? neLng, double? swLat, double? swLng, int? styleId, string teacherId, int[] skillLevel, DateTime start, DateTime end)
         {
             var performances = DataContext.Performances
@@ -835,6 +871,7 @@ namespace EDR.Controllers
         }
 
         // POST: Team
+        [Route("Team/UpdateMembers")]
         [HttpPost]
         [Authorize]
         public ActionResult UpdateMembers(TeamManageViewModel model)
@@ -851,6 +888,7 @@ namespace EDR.Controllers
             return RedirectToAction("Manage", new { id = model.Team.Id });
         }
 
+        [Route("Team/RemoveMember")]
         [Authorize(Roles = "Teacher")]
         public ActionResult RemoveMember(int id, string memberid)
         {
@@ -859,6 +897,7 @@ namespace EDR.Controllers
             return RedirectToAction("Manage", new { id = id });
         }
 
+        [Route("Team/UploadImageAsync")]
         [Authorize]
         [HttpPost]
         public JsonResult UploadImageAsync(string imageData, int id)
@@ -894,6 +933,7 @@ namespace EDR.Controllers
             return Json(objUpload, JsonRequestBehavior.AllowGet);
         }
 
+        [Route("Team/AddYouTubePlaylist")]
         [Authorize(Roles = "Teacher")]
         public PartialViewResult AddYouTubePlaylist(TeamManageViewModel model)
         {
@@ -913,6 +953,7 @@ namespace EDR.Controllers
             return PartialView("~/Views/Shared/Team/_ManagePlaylistsPartial.cshtml", team.Playlists);
         }
 
+        [Route("Team/DeletePlaylist")]
         [Authorize(Roles = "Teacher")]
         public PartialViewResult DeletePlaylist(int id, int playListId)
         {
@@ -923,6 +964,7 @@ namespace EDR.Controllers
             return PartialView("~/Views/Shared/Team/_ManagePlaylistsPartial.cshtml", playlists);
         }
 
+        [Route("Team/AddYouTubeVideo")]
         [Authorize(Roles = "Teacher")]
         public PartialViewResult AddYouTubeVideo(TeamManageViewModel model)
         {
@@ -942,6 +984,7 @@ namespace EDR.Controllers
             return PartialView("~/Views/Shared/Team/_ManageVideosPartial.cshtml", team.Videos);
         }
 
+        [Route("Team/DeleteVideo")]
         [Authorize(Roles = "Teacher")]
         public PartialViewResult DeleteVideo(int id, int videoId)
         {
@@ -975,6 +1018,7 @@ namespace EDR.Controllers
             return videos;
         }
 
+        [Route("Team/GetVideosJSON")]
         public JsonResult GetVideosJSON(int id)
         {
             //  Get Linked Objects Videos

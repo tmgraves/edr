@@ -418,6 +418,28 @@ namespace EDR.Models
             }
         }
 
+        public static string NewAccount(string userId, string code)
+        {
+            try
+            {
+                ApplicationDbContext context = new ApplicationDbContext();
+                var requestContext = HttpContext.Current.Request.RequestContext;
+
+                var user = context.Users.Where(u => u.Id == userId).FirstOrDefault();
+
+                var confirmemail = new UrlHelper(requestContext).Action("ConfirmEmail", "Account", new { userId = user.Id, code = code, Area = "" }, protocol: HttpContext.Current.Request.Url.Scheme);
+                var messagebody = LoadTemplate("NewAccount.txt", user.FullName, confirmemail, confirmemail);
+                context.Emails.Add(new Email() { ToEmail = user.Email, Subject = "Your New Account", Body = messagebody });
+                context.SaveChanges();
+
+                return "success";
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
         public static void ProcessEmails()
         {
             ApplicationDbContext context = new ApplicationDbContext();

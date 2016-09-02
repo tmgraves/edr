@@ -30,6 +30,7 @@ namespace EDR.Models.ViewModels
         public string Location { get; set; }
         [Display(Name = "Skill Level:")]
         public int? SkillLevel { get; set; }
+        public string[] DanceStyles { get; set; }
 
         //  Map Settings
         public double? NELat { get; set; }
@@ -81,6 +82,7 @@ namespace EDR.Models.ViewModels
         public Uri FacebookLink { get; set; }
         public string FacebookId { get; set; }
         public string[] DanceStyleId { get; set; }
+        public List<School> Schools { get; set; }
         public TeamCreateViewModel()
         {
             Team = new Team();

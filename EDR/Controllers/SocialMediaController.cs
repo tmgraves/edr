@@ -16,15 +16,18 @@ using TweetSharp;
 
 namespace EDR.Controllers
 {
+    [RoutePrefix("SocialMedia")]
     public class SocialMediaController : BaseController
     {
         // GET: Instagram
+        [Route("Index")]
         public ActionResult Index()
         {
             return View();
         }
 
         //  Get Auth Token
+        [Route("AddInstagram")]
         [Authorize]
         public ActionResult AddInstagram()
         {
@@ -33,6 +36,7 @@ namespace EDR.Controllers
             return Redirect("https://api.instagram.com/oauth/authorize/?client_id=" + client_id + "&redirect_uri=" + redirect_uri + "&response_type=code");  
         }
 
+        [Route("Authenticate")]
         [Authorize]
         public ActionResult Authenticate(string code)
         {
@@ -66,6 +70,7 @@ namespace EDR.Controllers
         }
 
         //  Get Auth Token
+        [Route("AddSpotify")]
         [Authorize]
         public ActionResult AddSpotify()
         {
@@ -76,6 +81,7 @@ namespace EDR.Controllers
             return Redirect("https://accounts.spotify.com/en/authorize/?client_id=" + client_id + "&redirect_uri=" + redirect_uri + "&response_type=code&scope=playlist-read-private%20playlist-modify-public");
         }
 
+        [Route("AuthenticateSpotify")]
         [Authorize]
         public ActionResult AuthenticateSpotify(string code)
         {
@@ -97,6 +103,7 @@ namespace EDR.Controllers
         }
 
         //  Twitter Authentication
+        [Route("AddTwitter")]
         [Authorize]
         public ActionResult AddTwitter()
         {
@@ -126,6 +133,7 @@ namespace EDR.Controllers
             //return View();
         }
 
+        [Route("AuthenticateTwitter")]
         public ActionResult AuthenticateTwitter(string oauth_token, string oauth_verifier)
         {
             var requestToken = new OAuthRequestToken { Token = oauth_token };

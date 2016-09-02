@@ -3,6 +3,7 @@
 @using EDR.Models
 @using EDR.Data
 @using System.Data.Entity
+@using EDR.Utilities;
 
 @if (Request.IsAuthenticated)
 {
@@ -18,7 +19,12 @@
 
         <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="glyphicon glyphicon-user"></i> @User.Identity.Name<span class="caret"></span></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    <img class="img-circle" style="vertical-align:middle; max-width: 22px; max-height: 22px;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(User.Identity.GetPhotoUrl()))" />
+                    <div style='vertical-align:middle; display:inline; padding-left: 5px;'>
+                        <b>@User.Identity.GetFirstName()</b> <span class="caret"></span>
+                    </div>
+                </a>
                 <ul class="dropdown-menu" style="width: 200px !important;">
                     <li><a href="@Url.Action("Manage", "Dancer", new { Area = "" })"><b>My Account</b> <i class="glyphicon glyphicon-cog"></i></a></li>
                     <li role="separator" class="divider"></li>

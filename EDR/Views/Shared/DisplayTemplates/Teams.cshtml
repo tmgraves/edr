@@ -46,7 +46,7 @@
                         </div>
                     </div>
                     <div class="item-title text-primary">
-                        <a href="@Url.Action("View", "Team", new { id = item.Id })" onmouseover="openEvent(@item.Id, @item.Latitude, @item.Longitude); return false;">
+                        <a href="@Url.Action("View", "Team", new { id = item.Id, team = EDR.Utilities.ApplicationUtility.ToUrlSlug(item.Name), location = EDR.Utilities.ApplicationUtility.ToUrlSlug(item.City) })" onmouseover="openEvent(@item.Id, @item.Latitude, @item.Longitude); return false;">
                             @item.Name
                         </a>
                     </div>

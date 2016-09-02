@@ -1,4 +1,5 @@
 ﻿@model EDR.Models.ViewModels.ConfirmationViewModel
+@using EDR.Utilities
 
 @{
     ViewBag.Title = "Confirmation";
@@ -7,7 +8,7 @@
 <div class="container-fluid">
     <div class="container">
         <div class="col-lg-6 col-lg-offset-3">
-            <h2 class="text-center">Your Order is Complete!</h2>
+            <h1 class="text-center">Your Order is Complete!</h1>
         </div>
         <div class="col-lg-6 col-lg-offset-3 bg-info">
             <div class="col-lg-8 col-lg-offset-2 text-center" style="padding: 10px;">
@@ -75,7 +76,14 @@
                 <div class="form-group text-center">
                     @if (Model.Order.EventInstance != null)
                     {
-                        @Html.ActionLink("Return to " + Model.Order.EventInstance.Event.Name, "View", "Event", new { id = Model.Order.EventInstance.EventId, eventType = Model.Order.EventInstance.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social, Model.Order.EventInstanceId }, new { @class = "btn btn-primary" })
+                        if (Model.Order.EventInstance.Event is EDR.Models.Class)
+                        {
+                            @Html.ActionLink("Return to " + Model.Order.EventInstance.Event.Name, "Class", "Event", new { id = Model.Order.EventInstance.EventId, instanceId = Model.Order.EventInstanceId, eventname = ApplicationUtility.ToUrlSlug(Model.Order.EventInstance.Event.Name), location = ApplicationUtility.ToUrlSlug(Model.Order.EventInstance.Event.Place.City) }, new { @class = "btn btn-primary" })
+                        }
+                        else
+                        {
+                            @Html.ActionLink("Return to " + Model.Order.EventInstance.Event.Name, "Social", "Event", new { id = Model.Order.EventInstance.EventId, instanceId = Model.Order.EventInstanceId, eventname = ApplicationUtility.ToUrlSlug(Model.Order.EventInstance.Event.Name), location = ApplicationUtility.ToUrlSlug(Model.Order.EventInstance.Event.Place.City) }, new { @class = "btn btn-primary" })
+                        }
                     }
                     else
                     {

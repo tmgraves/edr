@@ -59,8 +59,8 @@
 }
 <div class="row" style="padding: 5px !important; height: 150px;">
     <div class="box-default" style="padding: 5px; height: 100%;">
-        <div class="col-lg-4 col-xs-4 nospace helper text-center" style="height: 100%; background-color: #000;">
-            <div class="col-lg-2 col-xs-3 nospace text-center" style="height: 100%;">
+        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 nospace helper text-center" style="height: 100%; background-color: #000;">
+            <div class="col-lg-2 col-md-2 col-sm-3 col-xs-3 nospace text-center" style="height: 100%;">
                 <div class="@(Model is EDR.Models.Class ? "btn-success" : Model is EDR.Models.Social ? "btn-info" : Model is EDR.Models.Performance ? "btn-warning" : Model is EDR.Models.Rehearsal ? "btn-danger" : "btn-primary") text-center vertical-container">
                     <div style="font-weight: bolder;">
                         @if (cls != null || soc != null)
@@ -74,7 +74,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-10 col-xs-9 nospace text-left textoverlaycontainer" style="height: 100%;">
+            <div class="col-lg-10 col-md-10 col-sm-9 col-xs-9 nospace text-left textoverlaycontainer" style="height: 100%;">
                 <div style="opacity:0.7;filter:alpha(opacity=70); height: 100%;">
                     <span style="line-height: 100%; vertical-align: middle;"></span><img style="max-width: 100%; max-height: 100%;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(imgsrc))" />
                 </div>
@@ -96,26 +96,40 @@
                         <h3 class="nospace" style="color: #fff;">
                             @if (Model.Free)
                             {
-                            @:Free
+                                @:Free
                             }
                             else if (Model.Tickets.Count() != 0)
                             {
-                            @Model.Tickets.Where(t => (t.Start == null || t.Start <= DateTime.Today) && (t.End == null || t.End >= DateTime.Today)).Min(t => t.Price).ToString("C0")
+                                if (Model.Tickets.Where(t => (t.Start == null || t.Start <= DateTime.Today) && (t.End == null || t.End >= DateTime.Today)).Count() > 0)
+                                {
+                                    @Model.Tickets.Where(t => (t.Start == null || t.Start <= DateTime.Today) && (t.End == null || t.End >= DateTime.Today)).Min(t => t.Price).ToString("C0")
+                                }
+                                else
+                                {
+                                    @Model.Tickets.Min(t => t.Price).ToString("C0")
+                                }
                             }
                             else if (Model is EDR.Models.Class)
                             {
-                            @(((EDR.Models.Class)Model).School.Tickets.Where(t => (t.Start == null || t.Start <= DateTime.Today) && (t.End == null || t.End >= DateTime.Today)).Min(t => t.Price).ToString("C0"))
+                                if (((EDR.Models.Class)Model).School.Tickets.Where(t => (t.Start == null || t.Start <= DateTime.Today) && (t.End == null || t.End >= DateTime.Today)).Count() > 0)
+                                {
+                                    @(((EDR.Models.Class)Model).School.Tickets.Where(t => (t.Start == null || t.Start <= DateTime.Today) && (t.End == null || t.End >= DateTime.Today)).Min(t => t.Price).ToString("C0"))
+                                }
+                                else
+                                {
+                                    @(((EDR.Models.Class)Model).School.Tickets.Min(t => t.Price).ToString("C0"))
+                                }
                             }
                             else
                             {
-                            @:Free
+                                @:Free
                             }
                         </h3>
                     }
                 </div>
             </div>
         </div>
-        <div class="col-lg-8 col-xs-8 text-left" style="height: 100%;">
+        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8 text-left" style="height: 100%;">
             <div class="row">
                 @if (cls != null || soc != null)
                 {
@@ -151,13 +165,19 @@
                                 }
                             </span>
                         </div>
-                                    }
+                        }
                 </div>
             </div>
             <div class="item-title text-primary">
-                @if (Model is EDR.Models.Class || Model is EDR.Models.Social)
+                @if (Model is EDR.Models.Class)
                 {
-                    <a href="@Url.Action("View", "Event", new { id = Model.Id, eventType = Model is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social })" onmouseover="openEvent(@Model.Id, @Model.Place.Latitude, @Model.Place.Longitude); return false;">
+                    <a href="@Url.Action("Class", "Event", new { id = Model.Id, eventname = EDR.Utilities.ApplicationUtility.ToUrlSlug(Model.Name), location = EDR.Utilities.ApplicationUtility.ToUrlSlug(Model.Place.City) })" onmouseover="openEvent(@Model.Id, @Model.Place.Latitude, @Model.Place.Longitude); return false;">
+                        @Model.Name
+                    </a>
+                }
+                else if (Model is EDR.Models.Social)
+                {
+                    <a href="@Url.Action("Social", "Event", new { id = Model.Id, eventname = EDR.Utilities.ApplicationUtility.ToUrlSlug(Model.Name), location = EDR.Utilities.ApplicationUtility.ToUrlSlug(Model.Place.City) })" onmouseover="openEvent(@Model.Id, @Model.Place.Latitude, @Model.Place.Longitude); return false;">
                         @Model.Name
                     </a>
                 }

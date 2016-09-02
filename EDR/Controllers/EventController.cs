@@ -21,6 +21,103 @@ namespace EDR.Controllers
 {
     public class EventController : BaseController
     {
+        [Route("Classes")]
+        public ActionResult Classes(LearnViewModel model)
+        {
+            SearchClasses(model);
+            model.Styles = DataContext.DanceStyles.Select(s => s.Name).ToArray();
+            if (HttpContext.Request.Browser.IsMobileDevice)
+            {
+                return View("Mobile/Classes", model);
+            }
+            else
+            {
+                return View(model);
+            }
+        }
+
+        private void SearchClasses(LearnViewModel model)
+        {
+            model.Classes = DataContext.Classes
+                                .Include("Teachers.ApplicationUser")
+                                .Include("DanceStyles")
+                                .Include("Place")
+                                .Include("EventMembers.Member")
+                                .Include("Reviews")
+                                .Include("EventInstances")
+                                .Where(c => c.EventInstances.Any(i => i.DateTime >= DateTime.Today))
+                                .AsQueryable();
+            if (model.DanceStyleId != null)
+            {
+                model.Classes = model.Classes.Where(c => c.DanceStyles.Select(st => st.Id).Contains((int)model.DanceStyleId));
+            }
+            if (model.TeacherId != null && model.TeacherId != "")
+            {
+                model.Classes = model.Classes.Where(c => c.Teachers.Select(t => t.ApplicationUser.Id).Contains(model.TeacherId));
+            }
+
+            if (model.NELat != null && model.SWLng != null)
+            {
+                model.Classes = model.Classes.Where(c => c.Place.Longitude >= model.SWLng && c.Place.Longitude <= model.NELng && c.Place.Latitude >= model.SWLat && c.Place.Latitude <= model.NELat);
+            }
+            if (model.SkillLevel != null)
+            {
+                model.Classes = model.Classes.Where(x => model.SkillLevel.Contains(x.SkillLevel));
+            }
+            if (model.Days != null)
+            {
+                model.Classes = model.Classes.Where(x => model.Days.Contains(x.Day));
+            }
+            if (model.SchoolId != null)
+            {
+                model.Classes = model.Classes.Where(c => c.SchoolId == model.SchoolId);
+            }
+
+            model.Classes = model.Classes.ToList().Take(100);
+        }
+
+        [Route("Events")]
+        public ActionResult Socials(SocialViewModel model)
+        {
+            SearchSocials(model);
+            model.Styles = DataContext.DanceStyles.Select(s => s.Name).ToArray();
+            if (HttpContext.Request.Browser.IsMobileDevice)
+            {
+                return View("Mobile/Socials", model);
+            }
+            else
+            {
+                return View(model);
+            }
+        }
+
+        private void SearchSocials(SocialViewModel model)
+        {
+            model.Socials = DataContext.Socials
+                                .Include("DanceStyles")
+                                .Include("Place")
+                                .Include("EventMembers.Member")
+                                .Include("Reviews")
+                                .Include("EventInstances")
+                                .Where(c => c.EventInstances.Any(i => i.DateTime >= DateTime.Today))
+                                .AsQueryable();
+            if (model.DanceStyleId != null)
+            {
+                model.Socials = model.Socials.Where(c => c.DanceStyles.Select(st => st.Id).Contains((int)model.DanceStyleId));
+            }
+
+            if (model.NELat != null && model.SWLng != null)
+            {
+                model.Socials = model.Socials.Where(c => c.Place.Longitude >= model.SWLng && c.Place.Longitude <= model.NELng && c.Place.Latitude >= model.SWLat && c.Place.Latitude <= model.NELat);
+            }
+            if (model.Days != null)
+            {
+                model.Socials = model.Socials.Where(x => model.Days.Contains(x.Day));
+            }
+
+            model.Socials = model.Socials.ToList().Take(100);
+        }
+
         #region reviews
         public ActionResult Reviews(int id, EventType eventType)
         {
@@ -141,6 +238,86 @@ namespace EDR.Controllers
         //    return View(model);
         //}
 
+        [Route("Class/{id}/{eventname}/{location}")]
+        public ActionResult Class(int? id, int? instanceId)
+        {
+            if (!id.HasValue)
+            {
+                return RedirectToAction("Classes", "Event", null);
+            }
+            var userid = User.Identity.GetUserId();
+
+            var model = LoadEvent((int)id, EventType.Class, instanceId);
+
+            if (model.Event == null)
+            {
+                return RedirectToAction("Classes", "Event", null);
+            }
+
+            if (User.Identity.IsAuthenticated)
+            {
+                model.Review = model.Event.Reviews.Where(r => r.Author.Id == userid).FirstOrDefault();
+            }
+            else
+            {
+                model.Review = new Review();
+            }
+
+            if (model.Event == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (HttpContext.Request.Browser.IsMobileDevice)
+            {
+                return View("Mobile/View", model);
+            }
+            else
+            {
+                return View("View", model);
+            }
+        }
+
+        [Route("Social/{id}/{eventname}/{location}")]
+        public ActionResult Social(int? id, int? instanceId)
+        {
+            if (!id.HasValue)
+            {
+                return RedirectToAction("Socials", "Event", null);
+            }
+            var userid = User.Identity.GetUserId();
+
+            var model = LoadEvent((int)id, EventType.Social, instanceId);
+
+            if (model.Event == null)
+            {
+                return RedirectToAction("Socials", "Event", null);
+            }
+
+            if (User.Identity.IsAuthenticated)
+            {
+                model.Review = model.Event.Reviews.Where(r => r.Author.Id == userid).FirstOrDefault();
+            }
+            else
+            {
+                model.Review = new Review();
+            }
+
+            if (model.Event == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (HttpContext.Request.Browser.IsMobileDevice)
+            {
+                return View("Mobile/View", model);
+            }
+            else
+            {
+                return View("View", model);
+            }
+        }
+
         public ActionResult View(int? id, EventType eventType, int? instanceId)
         {
             if (!id.HasValue)
@@ -189,7 +366,7 @@ namespace EDR.Controllers
             }
         }
 
-        [Authorize(Roles = "Owner,Promoter,Teacher")]
+        [Authorize]
         public ActionResult Manage(int? id, EventType eventType)
         {
             if (!id.HasValue)
@@ -200,11 +377,12 @@ namespace EDR.Controllers
 
             var userid = User.Identity.GetUserId();
             var user = DataContext.Users.Single(u => u.Id == userid);
+            var admin = User.IsInRole("Admin");
             var model = new EventManageViewModel();
             if (eventType == EventType.Class)
             {
-                model.Event =
-                    DataContext.Events.OfType<Class>()
+                var cls =
+                    DataContext.Classes
                     .Include("Tickets.UserTickets.EventRegistrations")
                     .Include("EventInstances.EventRegistrations.User")
                     .Include("Pictures.PostedBy")
@@ -214,12 +392,14 @@ namespace EDR.Controllers
                     .Include("DanceStyles")
                     .Include("Place")
                     .Include("LinkedMedia")
-                    .SingleOrDefault(e => e.Id == id && (e.Teachers.Any(t => t.ApplicationUser.Id == userid) || e.Owners.Any(t => t.ApplicationUser.Id == userid)));
+                    .SingleOrDefault(e => e.Id == id && (e.Teachers.Any(t => t.ApplicationUser.Id == userid) || e.Owners.Any(t => t.ApplicationUser.Id == userid) || e.School.Members.Any(m => m.UserId == userid && m.Admin) || admin));
+                model.Event = cls;
+                model.ClassType = cls.ClassType;
             }
             else
             {
                 var soc =
-                DataContext.Events.OfType<Social>()
+                DataContext.Socials
                         .Include("Tickets.UserTickets.EventRegistrations")
                         .Include("EventInstances.EventRegistrations.User")
                         .Include("Pictures.PostedBy")
@@ -230,10 +410,11 @@ namespace EDR.Controllers
                         .Include("Place")
                         .Include("LinkedMedia")
                         .Include("PromoterGroup")
-                        .SingleOrDefault(e => e.Id == id && (e.Promoters.Any(t => t.ApplicationUser.Id == userid) || e.Owners.Any(t => t.ApplicationUser.Id == userid)));
+                        .SingleOrDefault(e => e.Id == id && (e.Promoters.Any(t => t.ApplicationUser.Id == userid) || e.Owners.Any(t => t.ApplicationUser.Id == userid) || e.PromoterGroup.Members.Any(m => m.UserId == userid && m.Admin) || admin));
                 model.Event = soc;
                 model.MusicType = soc.MusicType;
                 model.PromoterGroups = DataContext.PromoterGroups.Where(g => g.Promoters.Any(p => p.ApplicationUser.Id == userid)).ToList();
+                model.SocialType = soc.SocialType;
             }
 
             if (model.Event == null)
@@ -369,6 +550,13 @@ namespace EDR.Controllers
             //  Get Instagram Post Pictures
             var pictures = GetPictures(id);
             return Json(pictures.Select(p => new { FileName = p.Filename, Title = p.Title, ThumbnailFilename = p.ThumbnailFilename }), JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetSchoolJSON(int id)
+        {
+            //  Get Instagram Post Pictures
+            var school = DataContext.Schools.Include("Tickets").Single(s => s.Id == id);
+            return Json(new { school.Id, school.Name, HasTickets=school.Tickets.Count() > 0 }, JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult GetVideosJSON(int id)
@@ -1041,7 +1229,7 @@ namespace EDR.Controllers
             //})
             //.FirstOrDefault();
 
-            if(eventType == EventType.Class)
+            if (eventType == EventType.Class)
             {
                 model.Event =
                 DataContext.Classes.Where(x => x.Id == id)
@@ -1055,6 +1243,7 @@ namespace EDR.Controllers
                 //.Include("EventInstances.EventRegistrations.UserTicket.Ticket")
                 .Include("Tickets")
                 .Include("LinkedMedia")
+                .Include("School.Members")
                 .FirstOrDefault();
             }
             else
@@ -1071,6 +1260,7 @@ namespace EDR.Controllers
                 //.Include("EventInstances.EventRegistrations.UserTicket.Ticket")
                 .Include("Tickets")
                 .Include("LinkedMedia")
+                .Include("PromoterGroup.Members")
                 .FirstOrDefault();
             }
             if (instanceId != null)
@@ -1101,11 +1291,15 @@ namespace EDR.Controllers
             //            select t;
             //}
 
+            model.Tickets = new List<Ticket>();
             if (model.CurrentInstance != null)
             {
                 //  Event Tickets
                 if (model.Event.Tickets.Count() != 0)
                 {
+                    //  Fill Tickets
+                    model.Tickets.AddRange(model.Event.Tickets);
+
                     var tix = DataContext.UserTickets
                             .Include("EventRegistrations")
                             .Where(ut =>
@@ -1199,6 +1393,9 @@ namespace EDR.Controllers
                 }
                 else
                 {
+                    //  Fill Tickets
+                    model.Tickets.AddRange((model.Event as Class).School.Tickets);
+
                     var tix = DataContext.UserTickets
                             .Include("EventRegistrations")
                             .Where(ut =>
@@ -1962,11 +2159,13 @@ namespace EDR.Controllers
             }
         }
 
-        [Authorize]
         public ActionResult Register(int id)
         {
-            var userid = User.Identity.GetUserId();
-            var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+            var userid = "";
+            if (User.Identity.IsAuthenticated)
+            {
+                userid = User.Identity.GetUserId();
+            }
 
             //  CHECK TO REMOVE SINCE ATTENDEES GETS CALLED FROM EVENTS VIEW
             var einstance = DataContext.EventInstances.Where(i => i.Id == id).FirstOrDefault();
@@ -2020,6 +2219,7 @@ namespace EDR.Controllers
                 //  Does user have tickets?
                 if (utix.Count() != 0)
                 {
+                    var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
                     RegisterDancer(userid, id, null, user.FirstName, user.LastName);
                     //DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = id, UserTicketId = utix.FirstOrDefault().Id, FirstName = user.FirstName, LastName = user.LastName });
                     //DataContext.SaveChanges();
@@ -2038,7 +2238,11 @@ namespace EDR.Controllers
             {
                 try
                 {
-                    RegisterDancer(userid, id, null, user.FirstName, user.LastName);
+                    if (User.Identity.IsAuthenticated)
+                    {
+                        var user = DataContext.Users.Where(u => u.Id == userid).FirstOrDefault();
+                        RegisterDancer(userid, id, null, user.FirstName, user.LastName);
+                    }
                     //DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = id, FirstName = user.FirstName, LastName = user.LastName });
                     //DataContext.SaveChanges();
                 }
@@ -2244,6 +2448,9 @@ namespace EDR.Controllers
                 model.School = DataContext.Schools.Single(s => s.Id == model.SchoolId);
             }
             //  Load School
+            //  Load Promoter Groups
+            model.Schools = DataContext.Schools.Where(g => g.Teachers.Any(p => p.ApplicationUser.Id == userid) || g.Owners.Any(p => p.ApplicationUser.Id == userid) || g.Members.Any(p => p.UserId == userid)).ToList();
+            //  Load Promoter Groups
 
             //  Load Promoter Groups
             model.PromoterGroups = DataContext.PromoterGroups.Where(g => g.Promoters.Any(p => p.ApplicationUser.Id == userid)).ToList();
@@ -2830,14 +3037,14 @@ namespace EDR.Controllers
                     var evnt = new Event();
                     if (model.EventType == EventType.Class)
                     {
-                        evnt = DataContext.Events.OfType<Class>()
+                        evnt = DataContext.Classes
                                         .Include("Place")
                                         .Include("EventInstances")
                                         .Single(s => s.Id == model.Event.Id);
                     }
                     else
                     {
-                        evnt = DataContext.Events.OfType<Social>()
+                        evnt = DataContext.Socials
                                         .Include("Place")
                                         .Include("EventInstances")
                                         .Single(s => s.Id == model.Event.Id);
@@ -2853,6 +3060,11 @@ namespace EDR.Controllers
                     {
                         ((Social)evnt).MusicType = model.MusicType;
                         ((Social)evnt).PromoterGroupId = model.PromoterGroupId;
+                        ((Social)evnt).SocialType = model.SocialType;
+                    }
+                    else
+                    {
+                        ((Class)evnt).ClassType = model.ClassType;
                     }
 
                     if (model.NewPlace.GooglePlaceId != null)

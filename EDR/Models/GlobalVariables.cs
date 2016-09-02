@@ -22,6 +22,15 @@ public static class GlobalVariables
         }
     }
 
+    //  # of Days to allow deposit
+    public static int SettlementPeriod
+    {
+        get
+        {
+            return 3;
+        }
+    }
+
     //// read-write variable
     //public static string Bar
     //{

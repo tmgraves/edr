@@ -1,0 +1,19 @@
+﻿@model IEnumerable<EDR.Controllers.ControllerView>
+
+@{
+    ViewBag.Title = "SitePages";
+}
+
+<table>
+    @foreach (var i in Model.Where(i => (i.ReturnType == "Task`1" || i.ReturnType == "ActionResult") && !i.Action.ToString().Contains("Test")).Select(a => new { a.Controller, a.Action }).Distinct())
+    {
+        <tr>
+            <td>
+                pages.Add("@i.Controller.Replace("Controller", "")/@i.Action");
+            </td>
+        </tr>
+    }
+</table>
+
+<h2>SitePages</h2>
+

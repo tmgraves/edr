@@ -75,6 +75,7 @@ namespace EDR.Models.ViewModels
 
     public class ListSchoolViewModel
     {
+        public string[] DanceStyles { get; set; }
         public IEnumerable<School> Schools { get; set; }
         [Display(Name = "Teacher:")]
         public string TeacherId { get; set; }

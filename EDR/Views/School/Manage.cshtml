@@ -1,5 +1,6 @@
 ﻿@model EDR.Models.ViewModels.ManageSchoolViewModel
 @using Microsoft.AspNet.Identity
+@using EDR.Utilities
 
 @{
     ViewBag.Title = "Manage " + Model.School.Name;
@@ -7,12 +8,12 @@
 
 <ol class="breadcrumb">
     <li>@Html.ActionLink("All Schools", "List", "School")</li>
-    <li>@Html.ActionLink("School Page", "View", "School", new { id = Model.School.Id }, null)</li>
+    <li>@Html.ActionLink("School Page", "View", "School", new { id = Model.School.Id, school = ApplicationUtility.ToUrlSlug(Model.School.Name), location = ApplicationUtility.ToUrlSlug(Model.School.City) }, null)</li>
     <li class="active">Manage School</li>
 </ol>
 
-<h2><span class="text-info">@Model.School.Name</span></h2>
-@if(Model.School.PayeeName == null || Model.School.PayeeAddress == null || Model.School.PayeeCity == null || Model.School.PayeeState == null || Model.School.PayeeZip == null || Model.School.BankName == null || Model.School.BankAccount == null || Model.School.RoutingNumber == null)
+<h1><span class="text-info">@Model.School.Name</span></h1>
+@if (Model.School.PayeeName == null || Model.School.PayeeAddress == null || Model.School.PayeeCity == null || Model.School.PayeeState == null || Model.School.PayeeZip == null || Model.School.BankName == null || Model.School.BankAccount == null || Model.School.RoutingNumber == null)
 {
     <h4 class="bg-danger">**Please fill in your Financial information so you can get paid for your Ticket Sales</h4>
 }
@@ -30,6 +31,14 @@
 
 </style>
 
+@if (Request.Browser.IsMobileDevice)
+{
+    <div class="row" style="padding-bottom: 10px;">
+        <div class="col-xs-12 col-sm-12">
+            <a href="#" style="width: 100% !important;" class="btn btn-success" data-uri="scan://scan" onclick="clickHandler(this.dataset.uri)"><i class="glyphicon glyphicon-screenshot"></i> Open Code Scanner</a>
+        </div>
+    </div>
+}
 <div class="panel with-nav-tabs panel-default">
     <div class="panel-heading nospace" style="border-bottom: none !important;">
         <ul class="nav nav-pills nav-justified nospace">
@@ -296,7 +305,7 @@
                                                     @Html.DisplayFor(model => t.ApplicationUser.FullName)
                                                 </td>
                                                 <td class="text-right">
-                                                    @if (t.ApplicationUser.UserName != User.Identity.Name)
+                                                    @if (t.ApplicationUser.UserName != User.Identity.Name || User.IsInRole("Admin"))
                                                     {
                                                         <a class="btn btn-link text-danger" title="Remove" href="@Url.Action("RemoveTeacher", new { id = Model.School.Id, teacherid = t.Id })" onclick="return confirm('Are you sure you want to remove this Teacher?')">
                                                             <i class="text-danger glyphicon glyphicon-remove-circle"></i>
@@ -675,9 +684,25 @@
 <script src="~/Scripts/searchhelper.js"></script>
 <script src="~/Scripts/changepicture.js"></script>
 <script src="~/Scripts/readmore.js"></script>
+<script src="~/Scripts/browser-deeplink.js"></script>
 
 <script>
-    uploadImageUrl = "../../School/UploadImageAsync";
+    deeplink.setup({
+        iOS: {
+            appId: "698925807",
+            appName: "QR Code Reader",
+        },
+        android: {
+            appId: "me.scan.android.client"
+        }
+    });
+
+    function clickHandler(uri) {
+        deeplink.open(uri);
+        return false;
+    }
+
+    uploadImageUrl = "@Url.Action("UploadImageAsync", "School")";
                             id = '@Model.School.Id'; //  SchoolId
                             aspectratio = 16 / 9;
 
@@ -752,7 +777,7 @@
                 try {
                     var imageData = $("#image").cropper("getCroppedCanvas").toDataURL('png', 1);
                     $.ajax({
-                        url: "../../School/UploadImageAsync",
+                        url: "@Url.Action("UploadImageAsync", "School")",
                         type: 'POST',
                         data: { 'imageData': imageData, 'id' : '@Model.School.Id' },
                         dataType: 'json',

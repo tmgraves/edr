@@ -101,20 +101,33 @@ namespace EDR
             app.UseHangfireDashboard();
             app.UseHangfireServer();
 
-            ////  Recurring Job to refresh Facebook events
-            //RecurringJob.AddOrUpdate(() => FacebookHelper.RefreshEvents(), Cron.Daily);
+            try
+            {
+                ////  Recurring Job to refresh Facebook events
+                //RecurringJob.AddOrUpdate(() => FacebookHelper.RefreshEvents(), Cron.Daily);
 
-            //  Recurring Job to send emails in queue
-            RecurringJob.AddOrUpdate(() => EmailProcess.ProcessEmails(), Cron.Hourly);
+                //  Recurring Job to send emails in queue
+                RecurringJob.AddOrUpdate(() => EmailProcess.ProcessEmails(), Cron.Hourly);
 
-            //  Recurring Job - Expiring Events
-            RecurringJob.AddOrUpdate(() => EmailProcess.ExpiringEvents(), Cron.Daily);
+                //  Recurring Job - Expiring Events
+                RecurringJob.AddOrUpdate(() => EmailProcess.ExpiringEvents(), Cron.Daily);
 
-            //  Recurring Job - Daily Dancer Summary
-            RecurringJob.AddOrUpdate(() => EmailProcess.DailyDancerSummaries(), Cron.Daily);
+                //  Recurring Job - Confirm Events
+                RecurringJob.AddOrUpdate(() => EmailProcess.SendConfirmEmails(), Cron.Daily);
 
-            //  Recurring Job - Daily Dancer Summary
-            RecurringJob.AddOrUpdate(() => EmailProcess.EventSummaries(), Cron.Daily);
+                //  Recurring Job - Daily Dancer Summary
+                RecurringJob.AddOrUpdate(() => EmailProcess.DailyDancerSummaries(), Cron.Daily);
+
+                //  Recurring Job - Daily Dancer Summary
+                RecurringJob.AddOrUpdate(() => EmailProcess.EventSummaries(), Cron.Daily);
+
+                //  Recurring Job - Batch Summaries
+                RecurringJob.AddOrUpdate(() => SettlementBatch.GetBatches(), Cron.Daily);
+            }
+            catch(Exception ex)
+            {
+                var message = ex.Message;
+            }
         }
     }
 }

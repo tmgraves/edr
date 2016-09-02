@@ -1,10 +1,31 @@
-﻿<!DOCTYPE html>
+﻿@using EDR.Utilities
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - Eat. Dance. Repeat.</title>
-    @Styles.Render("~/Content/css")
+    <title>@ViewBag.Title | Eat.Dance.Repeat.</title>
+        @Styles.Render("~/Content/css")
+    <meta name="keywords" content="@ViewBag.Keywords" />
+    <meta name="description" content="@ViewBag.Description" />
+    <link rel="apple-touch-icon" sizes="57x57" href="~/Content/favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="~/Content/favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="~/Content/favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="~/Content/favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="~/Content/favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="~/Content/favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="~/Content/favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="~/Content/favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="~/Content/favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="~/Content/favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="~/Content/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="~/Content/favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="~/Content/favicon/favicon-16x16.png">
+    <link rel="manifest" href="~/Content/favicon/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="~/Content/favicon/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
 </head>
 <body>
     <div id="fb-root"></div>
@@ -56,8 +77,12 @@ window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]
                     @if (User.Identity.IsAuthenticated)
                     {
                         @*<li>@Html.ActionLink("Explore", "Explore", "Home")</li>*@
-                        <li>@Html.ActionLink("Classes", "Learn", "Home")</li>
-                        <li>@Html.ActionLink("Events", "Social", "Home")</li>
+                        <li class='@Html.IsActive("Classes", "Event")'>
+                            @Html.ActionLink("Classes", "Classes", "Event")
+                        </li>
+                        <li class='@Html.IsActive("Socials", "Event")'>
+                            @Html.ActionLink("Events", "Socials", "Event")
+                        </li>
                         @*<li class="mainnav dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Learn<span class="caret"></span></a>
                             <ul class="mainnav dropdown-menu" role="menu">
@@ -86,7 +111,12 @@ window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]
                                 <li>@Html.ActionLink("Promoters", "List", "Promoter")</li>
                             </ul>
                         </li>*@
-                        <li>@Html.ActionLink("Perform", "Index", "Team")</li>
+                        <li class='@Html.IsActive("List", "School")'>
+                            @Html.ActionLink("Schools", "List", "School")
+                        </li>
+                        <li class='@Html.IsActive("Index", "Team")'>
+                            @Html.ActionLink("Perform", "Index", "Team")
+                        </li>
                         @*<li class="mainnav dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Performance<span class="caret"></span></a>
                             <ul class="mainnav dropdown-menu">
@@ -94,12 +124,31 @@ window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]
                                 <li><a href="#">Performances</a></li>
                             </ul>
                         </li>*@
+                        <li class='@Html.IsActive("List", "DanceStyle")'>
+                            @Html.ActionLink("Styles", "List", "DanceStyle")
+                        </li>
+                        <li class='@Html.IsActive("Index", "Blog")'>
+                            @Html.ActionLink("Blog", "Index", "Blog")
+                        </li>
                     }
                     else
                     {
-                        <li>@Html.ActionLink("Classes", "Learn", "Home")</li>
-                        <li>@Html.ActionLink("Events", "Social", "Home")</li>
+                        <li class='@Html.IsActive("Classes", "Event")'>
+                            @Html.ActionLink("Classes", "Classes", "Event")
+                        </li>
+                        <li class='@Html.IsActive("Socials", "Event")'>
+                            @Html.ActionLink("Events", "Socials", "Event")
+                        </li>
                         @*<li>@Html.ActionLink("Explore", "Explore", "Home")</li>*@
+                        <li class='@Html.IsActive("List", "School")'>
+                            @Html.ActionLink("Schools", "List", "School")
+                        </li>
+                        <li class='@Html.IsActive("List", "DanceStyle")'>
+                            @Html.ActionLink("Styles", "List", "DanceStyle")
+                        </li>
+                        <li class='@Html.IsActive("Index", "Blog")'>
+                            @Html.ActionLink("Blog", "Index", "Blog")
+                        </li>
                     }
                 </ul>
                 <div style="margin-right: 50px;">
@@ -127,13 +176,13 @@ window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]
 
 
     <div class="container-fluid">
-        <div class="col-lg-12 nospace">
+        <div class="col-lg-12 col-md-12 nospace">
             <div>
                 @RenderBody()
             </div>
             <hr />
             <footer>
-                <div class="text-center col-lg-8 col-lg-offset-2">
+                <div class="text-center col-lg-8 col-md-8 col-lg-offset-2 col-md-offset-2">
                     <ul class="nav nav-pills nav-justified" role="tablist">
                         <li>
                             <a href="@Url.Action("PrivacyPolicy", "Home")" class="btn btn-link">
@@ -157,7 +206,7 @@ window.twttr = (function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]
                         </li>
                     </ul>
                 </div>
-                <div class="col-lg-12">
+                <div class="col-lg-12 col-md-12">
                     <p>&copy; @DateTime.Now.Year - Eat. Dance. Repeat.</p>
                 </div>
             </footer>

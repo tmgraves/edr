@@ -49,6 +49,16 @@ namespace EDR.Models.ViewModels
         public int? SchoolId { get; set; }
         public School School { get; set; }
         public Order Order { get; set; }
+        [Required(ErrorMessage = "Email Address is required")]
+        [DisplayName("Email Address")]
+        [RegularExpression(@"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}", ErrorMessage = "Email is is not valid.")]
+        [DataType(DataType.EmailAddress)]
+        public string Email { get; set; }
+        [Required]
+        [EmailAddress]
+        [Display(Name = "Confirm Email")]
+        [Compare("Email", ErrorMessage = "The Email and Confirm Email do not match.")]
+        public string ConfirmEmail { get; set; }
         [Required(ErrorMessage = "Please enter a Credit Card Number")]
         [Display(Name = "Credit Card Number:")]
         public string CCNumber { get; set; }
@@ -66,6 +76,8 @@ namespace EDR.Models.ViewModels
         public decimal Amount { get; set; }
         public string Result { get; set; }
         public string Message { get; set; }
+        public double Lat { get; set; }
+        public double Lng { get; set; }
 
         //public OrderViewModel(List<Ticket> tickets)
         //{

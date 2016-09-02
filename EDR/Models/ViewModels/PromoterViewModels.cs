@@ -33,6 +33,7 @@ namespace EDR.Models.ViewModels
         public string Style { get; set; }
         public Address SearchAddress { get; set; }
         public string Location { get; set; }
+        public string[] DanceStyles { get; set; }
 
         //  Map Settings
         public double? NELat { get; set; }
@@ -55,7 +56,7 @@ namespace EDR.Models.ViewModels
 
     public class PromoterGroupManageViewModel
     {
-        public Promoter Promoter { get; set; }
         public PromoterGroup PromoterGroup { get; set; }
+        public string NewMemberId { get; set; }
     }
 }

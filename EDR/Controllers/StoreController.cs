@@ -13,6 +13,7 @@ using System.Configuration;
 using System.Data.Entity;
 using System.Globalization;
 using EDR.Enums;
+using System.Threading.Tasks;
 
 namespace EDR.Controllers
 {
@@ -33,7 +34,11 @@ namespace EDR.Controllers
         [Authorize]
         private void LoadOrderModel(OrderViewModel model)
         {
-            var userid = User.Identity.GetUserId();
+            var userid = "";
+            if (User.Identity.IsAuthenticated)
+            {
+                userid = User.Identity.GetUserId();
+            }
             model.Years = new List<string>();
             for (int i = DateTime.Today.Year; i <= DateTime.Today.Year + 10; i++)
             {
@@ -42,12 +47,16 @@ namespace EDR.Controllers
 
             if (model.EventInstanceId != null)
             {
-                model.EventInstance = DataContext.EventInstances.Include("Event").Include("Event.Tickets").Include("Event.Place").Single(e => e.Id == (int)model.EventInstanceId);
+                model.EventInstance = DataContext.EventInstances
+                                        .Include("Event")
+                                        .Include("Event.Tickets.UserTickets")
+                                        .Include("Event.Place")
+                                        .Single(e => e.Id == (int)model.EventInstanceId);
 
                 var tickets = new List<Ticket>();
                 if (model.EventInstance.Event.Tickets.Count() != 0)
                 {
-                    tickets = model.EventInstance.Event.Tickets.Where(t => t.Limit == null || (t.UserTickets != null && t.UserTickets.Where(ut => ut.UserId == userid).Count() < t.Limit)).ToList();
+                    tickets = model.EventInstance.Event.Tickets.Where(t => t.Limit == null || (t.UserTickets.Count() > 0 && t.UserTickets.Where(ut => ut.UserId == userid).Count() < t.Limit) || t.UserTickets.Count() == 0).ToList();
                 }
                 else
                 {
@@ -58,7 +67,7 @@ namespace EDR.Controllers
                              join t in DataContext.Tickets
                              on c.SchoolId equals t.SchoolId
                              where i.Id == model.EventInstanceId
-                             && (t.Limit == null || (t.UserTickets != null && t.UserTickets.Where(ut => ut.UserId == userid).Count() < t.Limit))
+                             && (t.Limit == null || (t.UserTickets.Count() != 0 && t.UserTickets.Where(ut => ut.UserId == userid).Count() < t.Limit) || t.UserTickets.Count() == 0)
                              select t).Distinct().ToList();
                 }
                 model.Tickets = tickets;
@@ -74,7 +83,6 @@ namespace EDR.Controllers
             }
         }
 
-        [Authorize]
         public ActionResult BuyTicket(int? instanceId, int? schoolId)
         {
             var model = new OrderViewModel();
@@ -181,10 +189,13 @@ namespace EDR.Controllers
         [Authorize]
         public void RegisterDancer(string userid, int instanceid, int? userTicketId, string firstName, string lastName)
         {
-            var registration = new EventRegistration() { UserId = userid, UserTicketId = userTicketId, EventInstanceId = instanceid, FirstName = firstName, LastName = lastName };
-            DataContext.EventRegistrations.Add(registration);
-            DataContext.SaveChanges();
-            EmailProcess.NewEventRegistration(registration.Id);
+            if (DataContext.EventRegistrations.Where(r => r.EventInstanceId == instanceid && r.UserId == userid && r.FirstName == firstName && r.LastName == lastName).Count() == 0)
+            {
+                var registration = new EventRegistration() { UserId = userid, UserTicketId = userTicketId, EventInstanceId = instanceid, FirstName = firstName, LastName = lastName };
+                DataContext.EventRegistrations.Add(registration);
+                DataContext.SaveChanges();
+                EmailProcess.NewEventRegistration(registration.Id);
+            }
         }
 
         // GET: School
@@ -231,7 +242,6 @@ namespace EDR.Controllers
         }
 
         // GET: School
-        [Authorize(Roles = "Teacher,Owner")]
         public ActionResult Confirmation(int id)
         {
             var model = new ConfirmationViewModel();
@@ -251,7 +261,6 @@ namespace EDR.Controllers
         //    return RedirectToAction("Test3", "Home");
         //}
 
-        [Authorize]
         [HttpPost]
         public ActionResult BuyTicket(OrderViewModel model)
         {
@@ -259,7 +268,30 @@ namespace EDR.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var userid = User.Identity.GetUserId();
+                    var userid = "";
+                    if (User.Identity.IsAuthenticated)
+                    {
+                        userid = User.Identity.GetUserId();
+                    }
+                    else
+                    {
+                        var user = DataContext.Users.Where(u => u.Email == model.Order.Email).FirstOrDefault();
+
+                        if (user == null)
+                        {
+                            Random r = new Random();
+                            var pwd = "Password" + r.Next().ToString();
+                            user = new ApplicationUser() { UserName = model.Order.Email, Email = model.Order.Email, FirstName = model.Order.FirstName, LastName = model.Order.LastName, Location = model.Order.City + ", " + model.Order.State, Latitude = model.Lat, Longitude = model.Lng, NewPassword = true };
+                            IdentityResult result = UserManager.Create(user, pwd);
+                            string code = UserManager.GenerateEmailConfirmationToken(user.Id);
+                            var emailresult = EmailProcess.NewAccount(user.Id, code);
+
+                            //  var controller = new AccountController();
+                            //  controller.CreateUser(user, pwd);
+                            //  var emailresult = await controller.SendEmailConfirmationTokenAsync(user.Id);
+                        }
+                        userid = user.Id;
+                    }
                     //  Create Order and Details
                     model.Order.EventInstanceId = model.EventInstanceId;
                     model.Order.UserId = userid;
@@ -381,7 +413,6 @@ namespace EDR.Controllers
         //}
         //  Event Ticket?
 
-        [Authorize]
         public static ANetApiResponse PostTransaction(OrderViewModel model)
         {
             //  Console.WriteLine("Charge Credit Card Sample");

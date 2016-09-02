@@ -1,20 +1,22 @@
 ﻿@model EDR.Models.ViewModels.ListSchoolViewModel
 
 @{
-    ViewBag.Title = "All Schools";
+    ViewBag.Title = "Search Dance Schools";
+    ViewBag.Keywords = "Dance Schools " + String.Join(" ", Model.DanceStyles);
+    ViewBag.Description = "Find dance schools for " + String.Join(", ", Model.DanceStyles) + ".";
 }
 
 <ol class="breadcrumb">
     <li class="active">All Schools</li>
 </ol>
-<h2 class="text-center">All Schools</h2>
+<h1 class="text-center">All Schools</h1>
 
-@if (User.IsInRole("Teacher"))
+@*@if (User.IsInRole("Teacher"))
 {
     <p class="text-center">
         @Html.ActionLink("Create New School", "Create")
     </p>
-}
+}*@
 
 @using (Html.BeginForm("List", "School", FormMethod.Post, new { @class = "formmain" }))
 {
@@ -51,7 +53,9 @@
     </div>
 }
 
-@Html.DisplayFor(m => m.Schools, "Schools")
+<div id="listdiv" style="overflow: auto; overflow-x: hidden; margin-top: 5px;">
+    @Html.DisplayFor(m => m.Schools, "Schools")
+</div>
 
 @section Scripts
 {
@@ -68,6 +72,15 @@
     <script src="~/Scripts/jquery.rateyo.js"></script>
 
     <script>
+        $(document).ready(function() {
+            $(window).resize(function() {
+                var bodyheight = $(this).height() - 590;
+                //alert($(this).height());
+                //alert(bodyheight);
+                $("#listdiv").height(bodyheight);
+            }).resize();
+        });
+
         //  Map Marker Containers
         var markers = [];
         var infowindows = [];
@@ -99,7 +112,7 @@
                     content: '<div id="content" class="text-center" style="width: 200px;">' +
                     '<div id="siteNotice">' +
                     '</div>' +
-                    '<div style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
+                    '<div class="large" style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold;">' +
                     link +
                     '</div>' +
                     '<div id="bodyContent">' +

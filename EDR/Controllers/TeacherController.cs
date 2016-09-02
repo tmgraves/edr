@@ -19,6 +19,7 @@ namespace EDR.Controllers
 {
     public class TeacherController : BaseController
     {
+        [Route("Teacher/Manage")]
         [AccessDeniedAuthorize(Roles = "Teacher", AccessDeniedAction = "Apply", AccessDeniedController = "Teacher")]
         public ActionResult Manage()
         {
@@ -31,6 +32,7 @@ namespace EDR.Controllers
             return View(model);
         }
 
+        [Route("Teacher/Manage")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Teacher")]
@@ -47,6 +49,7 @@ namespace EDR.Controllers
             return View(model);
         }
 
+        [Route("Teacher/List")]
         public ActionResult List(TeacherListViewModel model)
         {
             model.Teachers = DataContext.Teachers
@@ -140,6 +143,7 @@ namespace EDR.Controllers
             return viewModel;
         }
 
+        [Route("Teacher/AddStyle")]
         [Authorize]
         public PartialViewResult AddStyle(TeacherManageViewModel model)
         {
@@ -153,6 +157,7 @@ namespace EDR.Controllers
             return PartialView("~/Views/Shared/_DancerStylesPartial.cshtml", new DancerStylesViewModel() { Id = model.Teacher.ApplicationUser.Id, Styles = styles, Controller = "Teacher" });
         }
 
+        [Route("Teacher/DeleteStyle")]
         [Authorize]
         public PartialViewResult DeleteStyle(string id, int styleId)
         {
@@ -162,12 +167,14 @@ namespace EDR.Controllers
             return PartialView("~/Views/Shared/_DancerStylesPartial.cshtml", new DancerStylesViewModel() { Id = id, Styles = teacher.DanceStyles.ToList(), Controller = "Teacher" });
         }
 
+        [Route("Teacher/Search")]
         public JsonResult Search(string searchString)
         {
             var teachers = DataContext.Teachers.Where(t => (t.ApplicationUser.FirstName + " " + t.ApplicationUser.LastName).ToLower().Contains(searchString.ToLower())).Select(s => new { Id = s.ApplicationUser.Id, Name = s.ApplicationUser.FirstName + " " + s.ApplicationUser.LastName }).ToList();
             return Json(teachers, JsonRequestBehavior.AllowGet);
         }
 
+        [Route("Teacher/GetStudentsPartial")]
         [HttpGet]
         public virtual ActionResult GetStudentsPartial(string id)
         {
@@ -212,6 +219,7 @@ namespace EDR.Controllers
         //    return View(viewModel);
         //}
 
+        [Route("Teacher/{username}")]
         public ActionResult Home(string username)
         {
             if (String.IsNullOrWhiteSpace(username))
@@ -313,6 +321,7 @@ namespace EDR.Controllers
             return View(viewModel);
         }
 
+        [Route("Teacher/GetUpdates")]
         public ActionResult GetUpdates(string username)
         {
             var evt = DataContext.Events.OfType<Class>().Where(c => c.Teachers.Any(t => t.ApplicationUser.UserName == username))
@@ -333,94 +342,94 @@ namespace EDR.Controllers
 
         }
 
-        [Authorize]
-        public ActionResult MyTeach(string username)
-        {
-            Session["ReturnUrl"] = Url.Action("MyTeach", "Teacher", new { username = User.Identity.Name });
-            if (String.IsNullOrWhiteSpace(username))
-            {
-                if (User != null)
-                {
-                    username = User.Identity.GetUserName();
-                }
-                else
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
-            }
+        //[Authorize]
+        //public ActionResult MyTeach(string username)
+        //{
+        //    Session["ReturnUrl"] = Url.Action("MyTeach", "Teacher", new { username = User.Identity.Name });
+        //    if (String.IsNullOrWhiteSpace(username))
+        //    {
+        //        if (User != null)
+        //        {
+        //            username = User.Identity.GetUserName();
+        //        }
+        //        else
+        //        {
+        //            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //        }
+        //    }
 
-            var teacher = DataContext.Teachers
-                .Where(x => x.ApplicationUser.UserName == username)
-                .FirstOrDefault();
+        //    var teacher = DataContext.Teachers
+        //        .Where(x => x.ApplicationUser.UserName == username)
+        //        .FirstOrDefault();
 
-            if (teacher == null || teacher.Approved == null)
-            {
-                if (username == User.Identity.Name && !User.IsInRole("Teacher"))
-                {
-                    return RedirectToAction("Apply", "Teacher");
-                }
-                else
-                {
-                    return HttpNotFound();
-                }
-            }
+        //    if (teacher == null || teacher.Approved == null)
+        //    {
+        //        if (username == User.Identity.Name && !User.IsInRole("Teacher"))
+        //        {
+        //            return RedirectToAction("Apply", "Teacher");
+        //        }
+        //        else
+        //        {
+        //            return HttpNotFound();
+        //        }
+        //    }
 
-            var viewModel = LoadTeacher(username);
-            viewModel.Events.ReturnUrl = Url.Action("MyTeach", "Teacher", new { id = teacher.Id });
+        //    var viewModel = LoadTeacher(username);
+        //    viewModel.Events.ReturnUrl = Url.Action("MyTeach", "Teacher", new { id = teacher.Id });
 
-            return View(viewModel);
-        }
+        //    return View(viewModel);
+        //}
 
-        [Authorize]
-        public ActionResult Resume(string username)
-        {
-            Session["ReturnUrl"] = Url.Action("Resume", "Teacher", new { username = User.Identity.Name });
-            if (String.IsNullOrWhiteSpace(username))
-            {
-                if (User != null)
-                {
-                    username = User.Identity.GetUserName();
-                }
-                else
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
-            }
+        //[Authorize]
+        //public ActionResult Resume(string username)
+        //{
+        //    Session["ReturnUrl"] = Url.Action("Resume", "Teacher", new { username = User.Identity.Name });
+        //    if (String.IsNullOrWhiteSpace(username))
+        //    {
+        //        if (User != null)
+        //        {
+        //            username = User.Identity.GetUserName();
+        //        }
+        //        else
+        //        {
+        //            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //        }
+        //    }
 
-            var teacher = DataContext.Teachers
-                .Where(x => x.ApplicationUser.UserName == username)
-                .FirstOrDefault();
+        //    var teacher = DataContext.Teachers
+        //        .Where(x => x.ApplicationUser.UserName == username)
+        //        .FirstOrDefault();
 
-            if (teacher == null || teacher.Approved == null)
-            {
-                if (username == User.Identity.Name && !User.IsInRole("Teacher"))
-                {
-                    return RedirectToAction("Apply", "Teacher");
-                }
-                else
-                {
-                    return HttpNotFound();
-                }
-            }
+        //    if (teacher == null || teacher.Approved == null)
+        //    {
+        //        if (username == User.Identity.Name && !User.IsInRole("Teacher"))
+        //        {
+        //            return RedirectToAction("Apply", "Teacher");
+        //        }
+        //        else
+        //        {
+        //            return HttpNotFound();
+        //        }
+        //    }
 
-            var viewModel = LoadTeacher(username);
+        //    var viewModel = LoadTeacher(username);
 
-            return View(viewModel);
-        }
+        //    return View(viewModel);
+        //}
 
-        [Authorize]
-        public ActionResult Edit()
-        {
-            var viewModel = new TeacherEditViewModel();
-            LoadStyles(viewModel);
+        //[Authorize]
+        //public ActionResult Edit()
+        //{
+        //    var viewModel = new TeacherEditViewModel();
+        //    LoadStyles(viewModel);
 
-            if (viewModel.Teacher == null)
-            {
-                return HttpNotFound();
-            }
+        //    if (viewModel.Teacher == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
 
-            return View(viewModel);
-        }
+        //    return View(viewModel);
+        //}
 
         private void LoadStyles(TeacherEditViewModel model)
         {
@@ -442,42 +451,43 @@ namespace EDR.Controllers
             model.AvailableStyles = styles.OrderBy(x => x.Name);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(TeacherEditViewModel model)
-        {
-            try
-            {
-                var teacher = DataContext.Teachers.Where(x => x.ApplicationUser.Id == model.Teacher.ApplicationUser.Id).Include("ApplicationUser").Include("DanceStyles").FirstOrDefault();
-                teacher.StartDate = model.Teacher.StartDate;
-                teacher.FacebookLink = model.Teacher.FacebookLink;
-                teacher.Resume = model.Teacher.Resume;
-                teacher.Website = model.Teacher.Website;
-                teacher.ContactEmail = model.Teacher.ContactEmail;
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Edit(TeacherEditViewModel model)
+        //{
+        //    try
+        //    {
+        //        var teacher = DataContext.Teachers.Where(x => x.ApplicationUser.Id == model.Teacher.ApplicationUser.Id).Include("ApplicationUser").Include("DanceStyles").FirstOrDefault();
+        //        teacher.StartDate = model.Teacher.StartDate;
+        //        teacher.FacebookLink = model.Teacher.FacebookLink;
+        //        teacher.Resume = model.Teacher.Resume;
+        //        teacher.Website = model.Teacher.Website;
+        //        teacher.ContactEmail = model.Teacher.ContactEmail;
 
-                if (model.PostedStyles != null)
-                {
-                    var styles = DataContext.DanceStyles.Where(x => model.PostedStyles.DanceStyleIds.Contains(x.Id.ToString())).ToList();
+        //        if (model.PostedStyles != null)
+        //        {
+        //            var styles = DataContext.DanceStyles.Where(x => model.PostedStyles.DanceStyleIds.Contains(x.Id.ToString())).ToList();
 
-                    teacher.DanceStyles.Clear();
+        //            teacher.DanceStyles.Clear();
 
-                    foreach (DanceStyle s in styles)
-                    {
-                        teacher.DanceStyles.Add(s);
-                    }
-                }
+        //            foreach (DanceStyle s in styles)
+        //            {
+        //                teacher.DanceStyles.Add(s);
+        //            }
+        //        }
 
-                DataContext.Entry(teacher).State = EntityState.Modified;
-                DataContext.SaveChanges();
-                return RedirectToAction("MyTeach", "Teacher", new { username = teacher.ApplicationUser.UserName });
-            }
-            catch(Exception ex)
-            {
-                LoadStyles(model);
-                return View(model);
-            }
-        }
+        //        DataContext.Entry(teacher).State = EntityState.Modified;
+        //        DataContext.SaveChanges();
+        //        return RedirectToAction("MyTeach", "Teacher", new { username = teacher.ApplicationUser.UserName });
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        LoadStyles(model);
+        //        return View(model);
+        //    }
+        //}
 
+        [Route("Teacher/Apply")]
         [Authorize]
         public ActionResult Apply()
         {
@@ -498,6 +508,7 @@ namespace EDR.Controllers
         }
 
         // POST: Teacher Apply
+        [Route("Teacher/Apply")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
@@ -539,6 +550,7 @@ namespace EDR.Controllers
             }
         }
 
+        [Route("Teacher/GetClassesPartial")]
         [HttpGet]
         public virtual ActionResult GetClassesPartial(string id)
         {
@@ -557,6 +569,7 @@ namespace EDR.Controllers
         }
 
         #region JSON
+        [Route("Teacher/GetSchools")]
         [Authorize(Roles = "Teacher")]
         public JsonResult GetSchools()
         {
@@ -573,6 +586,7 @@ namespace EDR.Controllers
             }
         }
 
+        [Route("Teacher/GetTeams")]
         [Authorize(Roles = "Teacher")]
         public JsonResult GetTeams()
         {
@@ -588,6 +602,8 @@ namespace EDR.Controllers
                 return null;
             }
         }
+
+        [Route("Teacher/GetClasses")]
         public JsonResult GetClasses(int teacherId, DateTime start, DateTime end)
         {
             var instances = DataContext.Classes.Where(c => c.Teachers.Any(t => t.Id == teacherId)).SelectMany(c => c.EventInstances).Where(i => i.DateTime >= start && i.DateTime <= end).ToList();

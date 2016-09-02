@@ -108,7 +108,7 @@ $(function () {
 $('.stylesearch').autocomplete({
     source: function (request, response) {
         $.ajax({
-            url: '../DanceStyle/Search',
+            url: '../Style/Search',
             data: { searchString: request.term },
             dataType: 'json',
             type: 'GET',

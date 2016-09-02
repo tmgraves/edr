@@ -1,7 +1,9 @@
 ﻿@model EDR.Models.ViewModels.PlaceListViewModel
 
 @{
-    ViewBag.Title = "Places for Class and Dancing";
+    ViewBag.Title = "Dance Class and Event Places";
+    ViewBag.Keywords = "Dance Venues " + String.Join(" ", Model.DanceStyles);
+    ViewBag.Description = "Search dance venues for " + String.Join(" ", Model.DanceStyles) + ".";
 }
 
 <ol class="breadcrumb">
@@ -20,7 +22,7 @@
     @Html.HiddenFor(m => m.CenterLat, new { @class = "clatfield" })
     @Html.HiddenFor(m => m.CenterLng, new { @class = "clngfield" })
     @Html.HiddenFor(m => m.Zoom, new { @class = "czoomfield" })
-    <div class="container bg-info text-center" style="padding: 0px !important;">
+    <div class="container-fluid bg-info text-center" style="padding: 0px !important;">
         <div class="form-inline">
             <div class="row" style="padding-top: 5px; padding-bottom: 5px;">
                 <div class="form-group">
@@ -47,8 +49,9 @@
     </div>
 }
 
-
-@Html.DisplayFor(m => m.Places, "Places")
+<div class="col-lg-12" id="listdiv" style="overflow: auto; overflow-x: hidden;">
+    @Html.DisplayFor(m => m.Places, "Places")
+</div>
 
 @section Scripts
 {
@@ -64,6 +67,15 @@
     <link rel="stylesheet" href="~/Content/jquery.rateyo.css" />
     <script src="~/Scripts/jquery.rateyo.js"></script>
 <script>
+    $(document).ready(function() {
+        $(window).resize(function() {
+            var bodyheight = $(this).height() - 540;
+            //alert($(this).height());
+            //alert(bodyheight);
+            $("#listdiv").height(bodyheight);
+        }).resize();
+    });
+
     //  Map Marker Containers
     var markers = [];
     var infowindows = [];
@@ -94,7 +106,7 @@
                 content: '<div id="content" class="text-center" style="width: 200px;">' +
                 '<div id="siteNotice">' +
                 '</div>' +
-                '<div style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">' +
+                '<div class="large" style="display: block;white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold;">' +
                 link +
                 '</div>' +
                 '<div id="bodyContent">' +

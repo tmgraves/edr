@@ -14,8 +14,10 @@ using EDR.Attributes;
 
 namespace EDR.Controllers
 {
+    [RoutePrefix("Owner")]
     public class OwnerController : BaseController
     {
+        [Route("Manage")]
         [AccessDeniedAuthorize(Roles="Owner", AccessDeniedAction = "Apply", AccessDeniedController = "Owner")]
         public ActionResult Manage()
         {
@@ -25,6 +27,7 @@ namespace EDR.Controllers
             return View(model);
         }
 
+        [Route("Manage")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Owner")]
@@ -41,6 +44,7 @@ namespace EDR.Controllers
             return View(model);
         }
 
+        [Route("", Order=1)]
         public ActionResult List(OwnerListViewModel model)
         {
             model.Owners = DataContext.Owners.Include("ApplicationUser");
@@ -140,6 +144,7 @@ namespace EDR.Controllers
         //    return View(viewModel);
         //}
 
+        [Route("{username}")]
         [Authorize]
         public ActionResult Home(string username)
         {
@@ -188,80 +193,81 @@ namespace EDR.Controllers
             return View(viewModel);
         }
 
-        [Authorize]
-        public ActionResult MyPlaces(string username)
-        {
-            if (String.IsNullOrWhiteSpace(username))
-            {
-                if (User != null)
-                {
-                    username = User.Identity.GetUserName();
-                }
-                else
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
-            }
+        //[Authorize]
+        //public ActionResult MyPlaces(string username)
+        //{
+        //    if (String.IsNullOrWhiteSpace(username))
+        //    {
+        //        if (User != null)
+        //        {
+        //            username = User.Identity.GetUserName();
+        //        }
+        //        else
+        //        {
+        //            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //        }
+        //    }
 
-            var owner = DataContext.Owners
-                .Where(x => x.ApplicationUser.UserName == username)
-                .FirstOrDefault();
+        //    var owner = DataContext.Owners
+        //        .Where(x => x.ApplicationUser.UserName == username)
+        //        .FirstOrDefault();
 
-            if (owner == null || owner.Approved == null)
-            {
-                if (username == User.Identity.Name && !User.IsInRole("Owner"))
-                {
-                    return RedirectToAction("Apply", "Owner");
-                }
-                else
-                {
-                    return HttpNotFound();
-                }
-            }
+        //    if (owner == null || owner.Approved == null)
+        //    {
+        //        if (username == User.Identity.Name && !User.IsInRole("Owner"))
+        //        {
+        //            return RedirectToAction("Apply", "Owner");
+        //        }
+        //        else
+        //        {
+        //            return HttpNotFound();
+        //        }
+        //    }
 
-            var viewModel = LoadOwner(username);
+        //    var viewModel = LoadOwner(username);
 
-            return View(viewModel);
-        }
+        //    return View(viewModel);
+        //}
 
-        [Authorize]
-        public ActionResult Edit()
-        {
-            var id = User.Identity.GetUserId();
-            var owner = DataContext.Owners
-                .Where(x => x.ApplicationUser.Id == id)
-                .Include("ApplicationUser")
-                .FirstOrDefault();
+        //[Authorize]
+        //public ActionResult Edit()
+        //{
+        //    var id = User.Identity.GetUserId();
+        //    var owner = DataContext.Owners
+        //        .Where(x => x.ApplicationUser.Id == id)
+        //        .Include("ApplicationUser")
+        //        .FirstOrDefault();
 
-            if (owner == null)
-            {
-                return HttpNotFound();
-            }
+        //    if (owner == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
 
-            var viewModel = new OwnerEditViewModel();
-            viewModel.Owner = owner;
+        //    var viewModel = new OwnerEditViewModel();
+        //    viewModel.Owner = owner;
 
-            return View(viewModel);
-        }
+        //    return View(viewModel);
+        //}
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(OwnerEditViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var owner = DataContext.Owners.Where(x => x.ApplicationUser.Id == model.Owner.ApplicationUser.Id).Include("ApplicationUser").FirstOrDefault();
-                owner.ContactEmail = model.Owner.ContactEmail;
-                owner.Website = model.Owner.Website;
-                owner.Facebook = model.Owner.Facebook;
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Edit(OwnerEditViewModel model)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        var owner = DataContext.Owners.Where(x => x.ApplicationUser.Id == model.Owner.ApplicationUser.Id).Include("ApplicationUser").FirstOrDefault();
+        //        owner.ContactEmail = model.Owner.ContactEmail;
+        //        owner.Website = model.Owner.Website;
+        //        owner.Facebook = model.Owner.Facebook;
 
-                DataContext.Entry(owner).State = EntityState.Modified;
-                DataContext.SaveChanges();
-                return RedirectToAction("MyPlaces", "Owner", new { username = owner.ApplicationUser.UserName } );
-            }
-            return View(model);
-        }
+        //        DataContext.Entry(owner).State = EntityState.Modified;
+        //        DataContext.SaveChanges();
+        //        return RedirectToAction("MyPlaces", "Owner", new { username = owner.ApplicationUser.UserName } );
+        //    }
+        //    return View(model);
+        //}
 
+        [Route("Apply")]
         [Authorize]
         public ActionResult Apply()
         {
@@ -282,6 +288,7 @@ namespace EDR.Controllers
         }
 
         // POST: Owner Apply
+        [Route("Apply")]
         [HttpPost]
         public ActionResult Apply(OwnerApplyViewModel model)
         {
@@ -321,6 +328,7 @@ namespace EDR.Controllers
             }
         }
 
+        [Route("GetUpdates")]
         public ActionResult GetUpdates(string username)
         {
             var evt = DataContext.Events.Where(e => e.Place.Owners.Any(o => o.ApplicationUser.UserName == username))
@@ -340,6 +348,7 @@ namespace EDR.Controllers
 
         }
 
+        [Route("Search")]
         public JsonResult Search(string searchString)
         {
             var owners = DataContext.Owners.Where(t => (t.ApplicationUser.FirstName + " " + t.ApplicationUser.LastName).ToLower().Contains(searchString.ToLower())).Select(s => new { Id = s.ApplicationUser.Id, Name = s.ApplicationUser.FirstName + " " + s.ApplicationUser.LastName }).ToList();

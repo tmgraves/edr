@@ -36,17 +36,25 @@ namespace EDR.Controllers
 {
     public class DancerController : BaseController
     {
+        [Route("Manage")]
         [Authorize]
         public ActionResult Manage()
         {
             var model = LoadDancer();
-            if (HttpContext.Request.Browser.IsMobileDevice)
+            if (model.Dancer.NewPassword)
             {
-                return View("Mobile/Manage", model);
+                return RedirectToAction("ChangePassword", "Account");
             }
             else
             {
-                return View(model);
+                if (HttpContext.Request.Browser.IsMobileDevice)
+                {
+                    return View("Mobile/Manage", model);
+                }
+                else
+                {
+                    return View(model);
+                }
             }
         }
 
@@ -94,6 +102,7 @@ namespace EDR.Controllers
             return model;
         }
 
+        [Route("Manage")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
@@ -127,6 +136,7 @@ namespace EDR.Controllers
             }
         }
 
+        [Route("Dancer/List")]
         public ActionResult List()
         {
             var model = new DancerListViewModel();
@@ -187,6 +197,7 @@ namespace EDR.Controllers
             return viewModel;
         }
 
+        [Route("Dancer/Search")]
         [Authorize]
         public JsonResult Search(string searchString)
         {
@@ -199,6 +210,7 @@ namespace EDR.Controllers
             return Json(users, JsonRequestBehavior.AllowGet);
         }
 
+        [Route("Dancer/GetFacebookPictures")]
         [Authorize]
         public JsonResult GetFacebookPictures()
         {
@@ -212,6 +224,7 @@ namespace EDR.Controllers
             return Json(photos.Select(p => new { Url = p.LargeSource, Thumbnail = p.Source }), JsonRequestBehavior.AllowGet);
         }
 
+        [Route("Dancer/GetFacebookPicturesPartial")]
         [Authorize]
         [HttpGet]
         public virtual ActionResult GetFacebookPicturesPartial()
@@ -226,6 +239,7 @@ namespace EDR.Controllers
             return PartialView("~/Views/Shared/_PickFacebookPicturePartial.cshtml", photos);
         }
 
+        [Route("Dancer/GetClassesPartial")]
         [HttpGet]
         public virtual ActionResult GetClassesPartial(string id)
         {
@@ -241,6 +255,7 @@ namespace EDR.Controllers
             return PartialView("~/Views/Shared/_EventsPartial.cshtml", classes);
         }
 
+        [Route("Dancer/GetSocialsPartial")]
         [HttpGet]
         public virtual ActionResult GetSocialsPartial(string id)
         {
@@ -355,6 +370,8 @@ namespace EDR.Controllers
         //    return View(viewModel);
         //}
 
+        //  [Route("{username:regex(^(?!Owner))}", Order=1000)]
+        [Route("Dancer/{username}", Order = 1000)]
         [Authorize]
         public ActionResult Home(string username)
         {
@@ -434,6 +451,7 @@ namespace EDR.Controllers
             return View(viewModel);
         }
 
+        [Route("Dancer/GetUpdates")]
         public ActionResult GetUpdates(string username)
         {
             var evt = DataContext.Events.Where(e => e.EventMembers.Any(m => m.Member.UserName == username))
@@ -453,6 +471,7 @@ namespace EDR.Controllers
 
         }
 
+        [Route("Dancer/FacebookEventsPartial")]
         public ActionResult FacebookEventsPartial(string username, EventType? eventType, int? schoolId, int? promotergroupId, RoleName role)
         {
             var model = new FacebookEventsViewModel();
@@ -479,6 +498,7 @@ namespace EDR.Controllers
 
         }
 
+        [Route("Dancer/GetFacebookEvents")]
         public JsonResult GetFacebookEvents()
         {
             if (User.Identity.IsAuthenticated)
@@ -502,53 +522,55 @@ namespace EDR.Controllers
             }
         }
 
-        [Authorize]
-        public ActionResult MyLearn(string username)
-        {
-            var viewModel = LoadDancerModel(username);
+        //[Route("Dancer/MyLearn")]
+        //[Authorize]
+        //public ActionResult MyLearn(string username)
+        //{
+        //    var viewModel = LoadDancerModel(username);
 
-            if (viewModel.Dancer == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+        //    if (viewModel.Dancer == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
 
-            var today = DateTime.Today;
-            var id = User.Identity.GetUserId();
+        //    var today = DateTime.Today;
+        //    var id = User.Identity.GetUserId();
 
-            viewModel.Teachers = new List<Teacher>();
-            viewModel.Teachers = DataContext.Teachers.Where(x => x.Students.Any(s => s.DancerId == id))
-                                    .Include("ApplicationUser")
-                                    .Include("ApplicationUser.UserPictures")
-                                    .ToList();
-            viewModel.Classes = new EventListViewModel();
-            viewModel.Classes.EventType = EventType.Class;
-            var classes = DataContext.Events.OfType<Class>()
-                                    .Where(x => x.EventMembers.Any(u => u.Member.UserName == username))
-                                    .Include("EventMembers.Member")
-                                    .Include("Teachers")
-                                    .Include("DanceStyles")
-                                    .Include("Pictures")
-                                    .Include("Videos")
-                                    .Include("Reviews")
-                                    .Include("Place")
-                                    .ToList();
-            viewModel.Classes.Events = classes.Where(e => e.NextDate >= today);
-            viewModel.Classes.Location = new Address() { City = viewModel.Dancer.City, State = viewModel.Dancer.State, ZipCode = viewModel.Dancer.ZipCode, Longitude = viewModel.Dancer.Longitude, Latitude = viewModel.Dancer.Latitude };
+        //    viewModel.Teachers = new List<Teacher>();
+        //    viewModel.Teachers = DataContext.Teachers.Where(x => x.Students.Any(s => s.DancerId == id))
+        //                            .Include("ApplicationUser")
+        //                            .Include("ApplicationUser.UserPictures")
+        //                            .ToList();
+        //    viewModel.Classes = new EventListViewModel();
+        //    viewModel.Classes.EventType = EventType.Class;
+        //    var classes = DataContext.Events.OfType<Class>()
+        //                            .Where(x => x.EventMembers.Any(u => u.Member.UserName == username))
+        //                            .Include("EventMembers.Member")
+        //                            .Include("Teachers")
+        //                            .Include("DanceStyles")
+        //                            .Include("Pictures")
+        //                            .Include("Videos")
+        //                            .Include("Reviews")
+        //                            .Include("Place")
+        //                            .ToList();
+        //    viewModel.Classes.Events = classes.Where(e => e.NextDate >= today);
+        //    viewModel.Classes.Location = new Address() { City = viewModel.Dancer.City, State = viewModel.Dancer.State, ZipCode = viewModel.Dancer.ZipCode, Longitude = viewModel.Dancer.Longitude, Latitude = viewModel.Dancer.Latitude };
 
-            //var scheduler = new DHXScheduler(this) { Skin = DHXScheduler.Skins.Terrace };
-            //scheduler.Templates.map_time = "{start_date.toLocaleString()}"; //   "{start_date.toLocaleTimeString()}";    // "{start_date:date(%d.%m.%Y)}";
-            //scheduler.Views.Clear();
-            //scheduler.Views.Add(new MonthView());
-            //scheduler.Views.Add(new MapView());
-            //scheduler.InitialView = (new MonthView()).Name;
-            //scheduler.LoadData = true;
-            //scheduler.DataAction = "MapEvents";
+        //    //var scheduler = new DHXScheduler(this) { Skin = DHXScheduler.Skins.Terrace };
+        //    //scheduler.Templates.map_time = "{start_date.toLocaleString()}"; //   "{start_date.toLocaleTimeString()}";    // "{start_date:date(%d.%m.%Y)}";
+        //    //scheduler.Views.Clear();
+        //    //scheduler.Views.Add(new MonthView());
+        //    //scheduler.Views.Add(new MapView());
+        //    //scheduler.InitialView = (new MonthView()).Name;
+        //    //scheduler.LoadData = true;
+        //    //scheduler.DataAction = "MapEvents";
 
-            //viewModel.Scheduler = scheduler;
+        //    //viewModel.Scheduler = scheduler;
 
-            return View(viewModel);
-        }
+        //    return View(viewModel);
+        //}
 
+        [Route("Dancer/GetTeamsPartial")]
         [HttpGet]
         public virtual ActionResult GetTeamsPartial()
         {
@@ -557,82 +579,83 @@ namespace EDR.Controllers
             return PartialView("~/Views/Shared/DisplayTemplates/Teams.cshtml", teams);
         }
 
-        [Authorize]
-        public ActionResult MyFriends(string username)
-        {
-            var viewModel = LoadDancerModel(username);
+        //[Authorize]
+        //public ActionResult MyFriends(string username)
+        //{
+        //    var viewModel = LoadDancerModel(username);
 
-            if (viewModel.Dancer == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+        //    if (viewModel.Dancer == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
 
-            var today = DateTime.Today;
-            var id = User.Identity.GetUserId();
+        //    var today = DateTime.Today;
+        //    var id = User.Identity.GetUserId();
 
-            if (viewModel.Dancer.FacebookToken != null)
-            {
-                viewModel.FriendList = FacebookHelper.GetFriends(viewModel.Dancer.FacebookToken);
+        //    if (viewModel.Dancer.FacebookToken != null)
+        //    {
+        //        viewModel.FriendList = FacebookHelper.GetFriends(viewModel.Dancer.FacebookToken);
 
-                foreach (FacebookFriend f in viewModel.FriendList)
-                {
-                    var user = DataContext.Users.Where(x => x.FacebookUsername == f.Id).FirstOrDefault();
-                    if (user != null)
-                    {
-                        user.UserPictures = DataContext.Pictures.OfType<UserPicture>().Where(x => x.User.Id == user.Id).ToList();
-                        user.UserPictures.Add(ApplicationUtility.GetNoProfilePicture());
-                        f.User = user;
-                    }
-                }
-            }
+        //        foreach (FacebookFriend f in viewModel.FriendList)
+        //        {
+        //            var user = DataContext.Users.Where(x => x.FacebookUsername == f.Id).FirstOrDefault();
+        //            if (user != null)
+        //            {
+        //                user.UserPictures = DataContext.Pictures.OfType<UserPicture>().Where(x => x.User.Id == user.Id).ToList();
+        //                user.UserPictures.Add(ApplicationUtility.GetNoProfilePicture());
+        //                f.User = user;
+        //            }
+        //        }
+        //    }
 
-            return View(viewModel);
-        }
+        //    return View(viewModel);
+        //}
 
-        [Authorize]
-        public ActionResult MyDance(string username)
-        {
-            var viewModel = LoadDancerModel(username);
+        //[Authorize]
+        //public ActionResult MyDance(string username)
+        //{
+        //    var viewModel = LoadDancerModel(username);
 
-            if (viewModel.Dancer == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+        //    if (viewModel.Dancer == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
 
-            var today = DateTime.Today;
-            var id = User.Identity.GetUserId();
+        //    var today = DateTime.Today;
+        //    var id = User.Identity.GetUserId();
 
-            if (viewModel.Dancer.FacebookToken != null)
-            {
-                viewModel.FriendList = FacebookHelper.GetFriends(viewModel.Dancer.FacebookToken);
+        //    if (viewModel.Dancer.FacebookToken != null)
+        //    {
+        //        viewModel.FriendList = FacebookHelper.GetFriends(viewModel.Dancer.FacebookToken);
 
-                foreach (FacebookFriend f in viewModel.FriendList)
-                {
-                    var user = DataContext.Users.Where(x => x.FacebookUsername == f.Id).FirstOrDefault();
-                    if (user != null)
-                    {
-                        user.UserPictures = DataContext.Pictures.OfType<UserPicture>().Where(x => x.User.Id == user.Id).ToList();
-                        user.UserPictures.Add(ApplicationUtility.GetNoProfilePicture());
-                        f.User = user;
-                    }
-                }
-            }
+        //        foreach (FacebookFriend f in viewModel.FriendList)
+        //        {
+        //            var user = DataContext.Users.Where(x => x.FacebookUsername == f.Id).FirstOrDefault();
+        //            if (user != null)
+        //            {
+        //                user.UserPictures = DataContext.Pictures.OfType<UserPicture>().Where(x => x.User.Id == user.Id).ToList();
+        //                user.UserPictures.Add(ApplicationUtility.GetNoProfilePicture());
+        //                f.User = user;
+        //            }
+        //        }
+        //    }
 
-            viewModel.Socials = new EventListViewModel();
-            viewModel.Socials.EventType = EventType.Social;
-            viewModel.Socials.Events = DataContext.Events
-                                            .OfType<Social>()
-                                            .Include("Pictures")
-                                            .Include("EventMembers.Member")
-                                            .Include("Videos")
-                                            .Include("Reviews")
-                                            .Include("Place")
-                                            .Where(x => x.EventMembers.Any(m => m.Member.UserName == username)).ToList();
-            viewModel.Socials.Location = new Address() { City = viewModel.Dancer.City, State = viewModel.Dancer.State, ZipCode = viewModel.Dancer.ZipCode, Longitude = viewModel.Dancer.Longitude, Latitude = viewModel.Dancer.Latitude };
+        //    viewModel.Socials = new EventListViewModel();
+        //    viewModel.Socials.EventType = EventType.Social;
+        //    viewModel.Socials.Events = DataContext.Events
+        //                                    .OfType<Social>()
+        //                                    .Include("Pictures")
+        //                                    .Include("EventMembers.Member")
+        //                                    .Include("Videos")
+        //                                    .Include("Reviews")
+        //                                    .Include("Place")
+        //                                    .Where(x => x.EventMembers.Any(m => m.Member.UserName == username)).ToList();
+        //    viewModel.Socials.Location = new Address() { City = viewModel.Dancer.City, State = viewModel.Dancer.State, ZipCode = viewModel.Dancer.ZipCode, Longitude = viewModel.Dancer.Longitude, Latitude = viewModel.Dancer.Latitude };
 
-            return View(viewModel);
-        }
+        //    return View(viewModel);
+        //}
 
+        [Route("Dancer/MapEvents")]
         public ContentResult MapEvents()
         {
             var today = DateTime.Today;
@@ -650,81 +673,82 @@ namespace EDR.Controllers
             return data;
         }
 
-        [Authorize]
-        public ActionResult Dance(string username)
-        {
-            if (User.Identity.IsAuthenticated && username == "View")
-            {
-                username = User.Identity.Name;
-            }
-            if (String.IsNullOrWhiteSpace(username))
-            {
-                if (User != null)
-                {
-                    username = User.Identity.GetUserName();
-                }
-                else
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
-            }
+        //[Authorize]
+        //public ActionResult Dance(string username)
+        //{
+        //    if (User.Identity.IsAuthenticated && username == "View")
+        //    {
+        //        username = User.Identity.Name;
+        //    }
+        //    if (String.IsNullOrWhiteSpace(username))
+        //    {
+        //        if (User != null)
+        //        {
+        //            username = User.Identity.GetUserName();
+        //        }
+        //        else
+        //        {
+        //            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //        }
+        //    }
 
-            var dancer = DataContext.Users.Where(x => x.UserName == username).Include("DanceStyles").Include("UserPictures").FirstOrDefault();
-            if (dancer == null)
-            {
-                return HttpNotFound();
-            }
+        //    var dancer = DataContext.Users.Where(x => x.UserName == username).Include("DanceStyles").Include("UserPictures").FirstOrDefault();
+        //    if (dancer == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
 
-            var today = DateTime.Today;
+        //    var today = DateTime.Today;
 
-            var viewModel = new DancerViewViewModel();
-            viewModel.Dancer = dancer;
-            var location = Geolocation.ParseAddress(dancer.ZipCode);
+        //    var viewModel = new DancerViewViewModel();
+        //    viewModel.Dancer = dancer;
+        //    var location = Geolocation.ParseAddress(dancer.ZipCode);
 
-            if (dancer.ZipCode != null)
-            {
-                viewModel.Address = Geolocation.ParseAddress(dancer.ZipCode);
-            }
-            else
-            {
-                viewModel.Address = Geolocation.ParseAddress("90065");
-            }
+        //    if (dancer.ZipCode != null)
+        //    {
+        //        viewModel.Address = Geolocation.ParseAddress(dancer.ZipCode);
+        //    }
+        //    else
+        //    {
+        //        viewModel.Address = Geolocation.ParseAddress("90065");
+        //    }
 
-            return View(viewModel);
-        }
+        //    return View(viewModel);
+        //}
 
-        [Authorize]
-        public ActionResult SocialMedia(string username)
-        {
-            var viewModel = LoadDancerModel(username);
+        //[Authorize]
+        //public ActionResult SocialMedia(string username)
+        //{
+        //    var viewModel = LoadDancerModel(username);
 
-            if (viewModel.Dancer == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+        //    if (viewModel.Dancer == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
 
-            var today = DateTime.Today;
-            var id = User.Identity.GetUserId();
+        //    var today = DateTime.Today;
+        //    var id = User.Identity.GetUserId();
 
-            if (viewModel.Dancer.FacebookToken != null)
-            {
-                viewModel.FriendList = FacebookHelper.GetFriends(viewModel.Dancer.FacebookToken);
+        //    if (viewModel.Dancer.FacebookToken != null)
+        //    {
+        //        viewModel.FriendList = FacebookHelper.GetFriends(viewModel.Dancer.FacebookToken);
 
-                foreach (FacebookFriend f in viewModel.FriendList)
-                {
-                    var user = DataContext.Users.Where(x => x.FacebookUsername == f.Id).FirstOrDefault();
-                    if (user != null)
-                    {
-                        user.UserPictures = DataContext.Pictures.OfType<UserPicture>().Where(x => x.User.Id == user.Id).ToList();
-                        user.UserPictures.Add(ApplicationUtility.GetNoProfilePicture());
-                        f.User = user;
-                    }
-                }
-            }
+        //        foreach (FacebookFriend f in viewModel.FriendList)
+        //        {
+        //            var user = DataContext.Users.Where(x => x.FacebookUsername == f.Id).FirstOrDefault();
+        //            if (user != null)
+        //            {
+        //                user.UserPictures = DataContext.Pictures.OfType<UserPicture>().Where(x => x.User.Id == user.Id).ToList();
+        //                user.UserPictures.Add(ApplicationUtility.GetNoProfilePicture());
+        //                f.User = user;
+        //            }
+        //        }
+        //    }
 
-            return View(viewModel);
-        }
+        //    return View(viewModel);
+        //}
 
+        [Route("Dancer/ChangeSpotifyPlaylist")]
         [Authorize]
         public ActionResult ChangeSpotifyPlaylist(string username)
         {
@@ -801,6 +825,7 @@ namespace EDR.Controllers
             return View(viewModel);
         }
 
+        [Route("Dancer/UpdateSpotifyPlaylist")]
         [Authorize]
         public ActionResult UpdateSpotifyPlaylist(string playlistid)
         {
@@ -812,19 +837,19 @@ namespace EDR.Controllers
             return RedirectToAction("Home", "Dancer", new { username = user.UserName });
         }
 
-        [Authorize]
-        public ActionResult Edit()
-        {
-            // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE DancerViewModel)
-            var viewModel = GetInitialDancerEditViewModel();
+        //[Authorize]
+        //public ActionResult Edit()
+        //{
+        //    // TODO: FILL MORE VIEWMODEL PROPERTIES (SEE DancerViewModel)
+        //    var viewModel = GetInitialDancerEditViewModel();
 
-            if (viewModel.Dancer == null)
-            {
-                return HttpNotFound();
-            }
+        //    if (viewModel.Dancer == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
 
-            return View(viewModel);
-        }
+        //    return View(viewModel);
+        //}
 
         private DancerEditViewModel GetInitialDancerEditViewModel()
         {
@@ -852,47 +877,47 @@ namespace EDR.Controllers
             return model;
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize]
-        public ActionResult Edit(DancerEditViewModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                var dancer = DataContext.Users.Where(x => x.Id == model.Dancer.Id).Include("DanceStyles").Include("Parties").FirstOrDefault();
-                dancer.StartDate = model.Dancer.StartDate;
-                dancer.YouTubeUsername = model.Dancer.YouTubeUsername;
-                dancer.SpotifyUri = model.Dancer.SpotifyUri;
-                dancer.ZipCode = model.Dancer.ZipCode;
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //[Authorize]
+        //public ActionResult Edit(DancerEditViewModel model)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        var dancer = DataContext.Users.Where(x => x.Id == model.Dancer.Id).Include("DanceStyles").Include("Parties").FirstOrDefault();
+        //        dancer.StartDate = model.Dancer.StartDate;
+        //        dancer.YouTubeUsername = model.Dancer.YouTubeUsername;
+        //        dancer.SpotifyUri = model.Dancer.SpotifyUri;
+        //        dancer.ZipCode = model.Dancer.ZipCode;
 
-                if (model.Dancer.ZipCode != null)
-                {
-                    var address = Geolocation.ParseAddress(model.Dancer.ZipCode);
-                    dancer.City = address.City;
-                    dancer.State = address.State;
-                    dancer.Longitude = address.Longitude;
-                    dancer.Latitude = address.Latitude;
-                }
+        //        if (model.Dancer.ZipCode != null)
+        //        {
+        //            var address = Geolocation.ParseAddress(model.Dancer.ZipCode);
+        //            dancer.City = address.City;
+        //            dancer.State = address.State;
+        //            dancer.Longitude = address.Longitude;
+        //            dancer.Latitude = address.Latitude;
+        //        }
 
-                if (model.PostedStyles != null)
-                {
-                    var styles = DataContext.DanceStyles.Where(x => model.PostedStyles.DanceStyleIds.Contains(x.Id.ToString())).ToList();
+        //        if (model.PostedStyles != null)
+        //        {
+        //            var styles = DataContext.DanceStyles.Where(x => model.PostedStyles.DanceStyleIds.Contains(x.Id.ToString())).ToList();
 
-                    dancer.DanceStyles.Clear();
+        //            dancer.DanceStyles.Clear();
 
-                    foreach (DanceStyle s in styles)
-                    {
-                        dancer.DanceStyles.Add(s);
-                    }
+        //            foreach (DanceStyle s in styles)
+        //            {
+        //                dancer.DanceStyles.Add(s);
+        //            }
 
-                }
+        //        }
 
-                DataContext.Entry(dancer).State = EntityState.Modified;
-                DataContext.SaveChanges();
-                return RedirectToAction("Home", "Dancer", new { username = dancer.UserName });
-            }
-            return View(model);
-        }
+        //        DataContext.Entry(dancer).State = EntityState.Modified;
+        //        DataContext.SaveChanges();
+        //        return RedirectToAction("Home", "Dancer", new { username = dancer.UserName });
+        //    }
+        //    return View(model);
+        //}
 
         //[Authorize]
         //public JsonResult AddStyle(DancerManageViewModel model)
@@ -903,6 +928,7 @@ namespace EDR.Controllers
         //    return Json(styles.ToList(), JsonRequestBehavior.AllowGet); 
         //}
 
+        [Route("Dancer/AddStyle")]
         [Authorize]
         public PartialViewResult AddStyle(DancerManageViewModel model)
         {
@@ -916,6 +942,7 @@ namespace EDR.Controllers
             return PartialView("~/Views/Shared/_DancerStylesPartial.cshtml", new DancerStylesViewModel() { Id = model.Dancer.Id, Styles = styles, Controller = "Dancer" });
         }
 
+        [Route("Dancer/DeleteStyle")]
         [Authorize]
         public PartialViewResult DeleteStyle(string id, int styleId)
         {
@@ -950,35 +977,36 @@ namespace EDR.Controllers
             }
         }
 
-        [Authorize]
-        public ActionResult UploadPicture()
-        {
-            return View();
-        }
+        //[Authorize]
+        //public ActionResult UploadPicture()
+        //{
+        //    return View();
+        //}
 
-        [HttpPost]
-        [Authorize]
-        public ActionResult UploadPicture(HttpPostedFileBase file)
-        {
-            UploadFile newFile = ApplicationUtility.LoadPicture(file);
-            string message;
+        //[HttpPost]
+        //[Authorize]
+        //public ActionResult UploadPicture(HttpPostedFileBase file)
+        //{
+        //    UploadFile newFile = ApplicationUtility.LoadPicture(file);
+        //    string message;
 
-            if (newFile.UploadStatus == "Success")
-            {
-                var dancer = DataContext.Users.Where(x => x.UserName == User.Identity.Name).Include("UserPictures").FirstOrDefault();
-                var today = DateTime.Now;
-                dancer.UserPictures.Add(new UserPicture() { Title = newFile.FileName, Filename = newFile.FilePath, ThumbnailFilename = newFile.ThumbnailFilePath, PhotoDate = today });
-                DataContext.Entry(dancer).State = EntityState.Modified;
-                DataContext.SaveChanges();
-                message = "File was uploaded";
-            }
-            else
-            {
-                message = newFile.UploadStatus;
-            }
-            return RedirectToAction("ChangePicture", "Dancer", new { message = message });
-        }
+        //    if (newFile.UploadStatus == "Success")
+        //    {
+        //        var dancer = DataContext.Users.Where(x => x.UserName == User.Identity.Name).Include("UserPictures").FirstOrDefault();
+        //        var today = DateTime.Now;
+        //        dancer.UserPictures.Add(new UserPicture() { Title = newFile.FileName, Filename = newFile.FilePath, ThumbnailFilename = newFile.ThumbnailFilePath, PhotoDate = today });
+        //        DataContext.Entry(dancer).State = EntityState.Modified;
+        //        DataContext.SaveChanges();
+        //        message = "File was uploaded";
+        //    }
+        //    else
+        //    {
+        //        message = newFile.UploadStatus;
+        //    }
+        //    return RedirectToAction("ChangePicture", "Dancer", new { message = message });
+        //}
 
+        [Route("Dancer/UploadImageAsync")]
         [Authorize]
         [HttpPost]
         public JsonResult UploadImageAsync(string imageData)
@@ -1043,6 +1071,7 @@ namespace EDR.Controllers
         //    return Redirect(Request.UrlReferrer.AbsolutePath);
         //}
 
+        [Route("Dancer/DeletePicture")]
         public ActionResult DeletePicture(int pictureId)
         {
             var picture = DataContext.Pictures.Find(pictureId);
@@ -1066,6 +1095,7 @@ namespace EDR.Controllers
             }
         }
 
+        [Route("Dancer/GetEvents")]
         public JsonResult GetEvents(string id, DateTime start, DateTime end)
         {
             //  var instances = DataContext.Events.Where(e => e.EventInstances.Any(i => i.EventRegistrations.Any(r => r.UserId == id))).SelectMany(c => c.EventInstances).Where(i => i.DateTime >= start && i.DateTime <= end).ToList();
@@ -1084,6 +1114,7 @@ namespace EDR.Controllers
                         }), JsonRequestBehavior.AllowGet);
         }
 
+        [Route("Dancer/GetEventRegitrations")]
         [Authorize]
         public JsonResult GetEventRegitrations(string id, DateTime start, DateTime end)
         {
@@ -1102,6 +1133,7 @@ namespace EDR.Controllers
                         }), JsonRequestBehavior.AllowGet);
         }
 
+        [Route("Dancer/ChangePicture")]
         [Authorize]
         public ActionResult ChangePicture(string message)
         {
@@ -1120,6 +1152,7 @@ namespace EDR.Controllers
             return View(model);
         }
 
+        [Route("Dancer/ChangePicture")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
@@ -1128,6 +1161,7 @@ namespace EDR.Controllers
             return View(model);
         }
 
+        [Route("Dancer/ProfilePicture")]
         [Authorize]
         public ActionResult ProfilePicture(int id)
         {
@@ -1186,6 +1220,7 @@ namespace EDR.Controllers
             }
         }
 
+        [Route("Dancer/AddFacebookPicture")]
         [Authorize]
         public ActionResult AddFacebookPicture(string id, string album, string name, string largeSource, string link, DateTime photodate, string source)
         {
@@ -1204,6 +1239,7 @@ namespace EDR.Controllers
             }
         }
 
+        [Route("Dancer/Backend")]
         public ActionResult Backend()
         {
             return new Dpm().CallBack(this);
