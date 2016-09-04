@@ -394,27 +394,34 @@ namespace EDR.Utilities
 
         public static string ToUrlSlug(string value)
         {
-            ////First to lower case 
-            //value = value.ToLowerInvariant();
+            try
+            {
+                ////First to lower case 
+                //value = value.ToLowerInvariant();
 
-            //Remove all accents
-            var bytes = System.Text.Encoding.GetEncoding("Cyrillic").GetBytes(value);
+                //Remove all accents
+                var bytes = System.Text.Encoding.GetEncoding("Cyrillic").GetBytes(value);
 
-            value = System.Text.Encoding.ASCII.GetString(bytes);
+                value = System.Text.Encoding.ASCII.GetString(bytes);
 
-            //Replace spaces 
-            value = Regex.Replace(value, @"\s", "-", RegexOptions.Compiled);
+                //Replace spaces 
+                value = Regex.Replace(value, @"\s", "-", RegexOptions.Compiled);
 
-            //Remove invalid chars 
-            value = Regex.Replace(value, @"[^\w\s\p{Pd}]", "", RegexOptions.Compiled);
+                //Remove invalid chars 
+                value = Regex.Replace(value, @"[^\w\s\p{Pd}]", "", RegexOptions.Compiled);
 
-            //Trim dashes from end 
-            value = value.Trim('-', '_');
+                //Trim dashes from end 
+                value = value.Trim('-', '_');
 
-            //Replace double occurences of - or \_ 
-            value = Regex.Replace(value, @"([-_]){2,}", "$1", RegexOptions.Compiled);
+                //Replace double occurences of - or \_ 
+                value = Regex.Replace(value, @"([-_]){2,}", "$1", RegexOptions.Compiled);
 
-            return value;
+                return value;
+            }
+            catch(Exception ex)
+            {
+                return value;
+            }
         }
     }
 }

@@ -19,7 +19,7 @@ namespace EDR.Controllers
     public class TeamController : BaseController
     {
         // GET: Team
-        [Route("Teams")]
+        //  [Route("Teams")]
         public ActionResult Index(TeamIndexViewModel model)
         {
             model.DanceStyles = DataContext.DanceStyles.Select(s => s.Name).ToArray();

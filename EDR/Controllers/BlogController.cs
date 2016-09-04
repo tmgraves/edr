@@ -13,7 +13,7 @@ namespace EDR.Controllers
     public class BlogController : BaseController
     {
         // GET: Blog
-        [Route("Blog")]
+        //  [Route("Blog/{Location}", Order = 3)]
         public ActionResult Index(BlogIndexViewModel model)
         {
             model.Blogs = DataContext.Blogs.ToList();
@@ -40,7 +40,7 @@ namespace EDR.Controllers
         }
 
         [Authorize(Roles ="Admin,Blogger")]
-        [Route("Blog/PostBlog")]
+        [Route("Blog/PostBlog", Order = 1)]
         [HttpPost]
         public ActionResult PostBlog(BlogIndexViewModel model)
         {
@@ -74,7 +74,7 @@ namespace EDR.Controllers
         }
 
         [Authorize(Roles = "Admin,Blogger")]
-        [Route("Blog/Delete")]
+        [Route("Blog/Delete", Order = 2)]
         public ActionResult Delete(int id)
         {
             var blog = DataContext.Blogs.Single(b => b.Id == id);

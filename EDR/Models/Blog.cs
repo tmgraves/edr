@@ -39,6 +39,9 @@ namespace EDR.Models
         [Required]
         public double Longitude { get; set; }
         public virtual ICollection<DanceStyle> Styles { get; set; }
+        public int? EventId { get; set; }
+        [ForeignKey("EventId")]
+        public virtual Event Event { get; set; }
     }
 
     public class BlogReply : Entity

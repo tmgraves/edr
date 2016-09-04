@@ -465,6 +465,32 @@
     <Content Include="Content\Cerulean\bootstrap.css" />
     <Content Include="Content\Cerulean\bootstrap.min.css" />
     <Content Include="Content\cropper.css" />
+    <Content Include="Content\favicon\android-icon-144x144.png" />
+    <Content Include="Content\favicon\android-icon-192x192.png" />
+    <Content Include="Content\favicon\android-icon-36x36.png" />
+    <Content Include="Content\favicon\android-icon-48x48.png" />
+    <Content Include="Content\favicon\android-icon-72x72.png" />
+    <Content Include="Content\favicon\android-icon-96x96.png" />
+    <Content Include="Content\favicon\apple-icon-114x114.png" />
+    <Content Include="Content\favicon\apple-icon-120x120.png" />
+    <Content Include="Content\favicon\apple-icon-144x144.png" />
+    <Content Include="Content\favicon\apple-icon-152x152.png" />
+    <Content Include="Content\favicon\apple-icon-180x180.png" />
+    <Content Include="Content\favicon\apple-icon-57x57.png" />
+    <Content Include="Content\favicon\apple-icon-60x60.png" />
+    <Content Include="Content\favicon\apple-icon-72x72.png" />
+    <Content Include="Content\favicon\apple-icon-76x76.png" />
+    <Content Include="Content\favicon\apple-icon-precomposed.png" />
+    <Content Include="Content\favicon\apple-icon.png" />
+    <Content Include="Content\favicon\browserconfig.xml" />
+    <Content Include="Content\favicon\favicon-16x16.png" />
+    <Content Include="Content\favicon\favicon-32x32.png" />
+    <Content Include="Content\favicon\favicon-96x96.png" />
+    <Content Include="Content\favicon\favicon.ico" />
+    <Content Include="Content\favicon\ms-icon-144x144.png" />
+    <Content Include="Content\favicon\ms-icon-150x150.png" />
+    <Content Include="Content\favicon\ms-icon-310x310.png" />
+    <Content Include="Content\favicon\ms-icon-70x70.png" />
     <Content Include="Content\fullcalendar\fullcalendar.css" />
     <Content Include="Content\fullcalendar\fullcalendar.min.css" />
     <Content Include="Content\fullcalendar\fullcalendar.print.css" />
@@ -624,6 +650,7 @@
     <Content Include="Areas\Admin\Views\Financial\_SettlementBatchItemsPartial.cshtml" />
     <Content Include="Areas\Admin\Views\Home\Photos.cshtml" />
     <Content Include="Areas\Admin\Views\Roles\CheckRoles.cshtml" />
+    <Content Include="Content\favicon\manifest.json" />
     <None Include="Properties\PublishProfiles\SmarterASP.pubxml" />
     <None Include="Properties\PublishProfiles\SmarterASP_FTP.pubxml" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
@@ -1018,6 +1045,8 @@
     <Content Include="Views\Blog\Index.cshtml" />
     <Content Include="Views\Account\EmailConfirmed.cshtml" />
     <Content Include="Views\Account\ChangePassword.cshtml" />
+    <Content Include="Views\Event\Mobile\Classes.cshtml" />
+    <Content Include="Views\Event\Mobile\Socials.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

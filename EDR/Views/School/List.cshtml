@@ -1,9 +1,16 @@
 ﻿@model EDR.Models.ViewModels.ListSchoolViewModel
 
 @{
-    ViewBag.Title = "Search Dance Schools";
+    ViewBag.Title = "Dance Schools";
     ViewBag.Keywords = "Dance Schools " + String.Join(" ", Model.DanceStyles);
-    ViewBag.Description = "Find dance schools for " + String.Join(", ", Model.DanceStyles) + ".";
+    ViewBag.Description = "Find dance schools for " + String.Join(", ", Model.DanceStyles);
+
+    if (Model.Location != null)
+    {
+        ViewBag.Title = ViewBag.Title + " in " + Model.Location;
+        ViewBag.Keywords = ViewBag.Keywords + " in " + Model.Location;
+        ViewBag.Description = ViewBag.Description + " in " + Model.Location;
+    }
 }
 
 <ol class="breadcrumb">

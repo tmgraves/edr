@@ -604,6 +604,26 @@ namespace EDR.Controllers
             {
                 pages.Add(Url.Action("Home", "Owner", new { username = t.ApplicationUser.UserName }));
             }
+            foreach (var c in DataContext.Classes.Select(c => c.Place.City).Distinct())
+            {
+                pages.Add(Url.Action("Classes", "Event", new { Location = ApplicationUtility.ToUrlSlug(c) }));
+            }
+            foreach (var c in DataContext.Classes.Select(e => e.Place.City).Distinct())
+            {
+                pages.Add(Url.Action("Socials", "Event", new { Location = ApplicationUtility.ToUrlSlug(c) }));
+            }
+            foreach (var c in DataContext.Schools.Select(e => e.City).Distinct())
+            {
+                pages.Add(Url.Action("List", "School", new { Location = ApplicationUtility.ToUrlSlug(c) }));
+            }
+            foreach (var c in DataContext.Teams.Select(e => e.City).Distinct())
+            {
+                pages.Add(Url.Action("Index", "Team", new { Location = ApplicationUtility.ToUrlSlug(c) }));
+            }
+            foreach (var c in DataContext.Blogs.Select(e => e.City).Distinct())
+            {
+                pages.Add(Url.Action("Index", "Blog", new { Location = ApplicationUtility.ToUrlSlug(c) }));
+            }
 
             var sitemap = new XDocument(
             new XDeclaration("1.0", "utf-8", "yes"),

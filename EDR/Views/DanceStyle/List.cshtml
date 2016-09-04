@@ -1,7 +1,7 @@
 ﻿@model EDR.Models.ViewModels.HomeExploreViewModel
 
 @{
-    ViewBag.Title = "Explore Dancing";
+    ViewBag.Title = "Explore Dance Styles";
     ViewBag.Keywords = String.Join(" ", Model.DanceStyles.Select(s => s.Name).ToArray());
     ViewBag.Description = "Explore different dance styles.  Read about the dances.  Find instructors.  Listen to the music.  We have information on all of these dances: " + String.Join(", ", Model.DanceStyles.Select(s => s.Name).ToArray());
 }

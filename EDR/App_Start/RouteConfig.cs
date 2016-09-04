@@ -29,38 +29,73 @@ namespace EDR
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
-            routes.MapMvcAttributeRoutes();
+            routes.MapRoute(
+                name: "ClassesRoute",
+                url: "Classes/{Location}",
+                defaults: new { controller = "Event", action = "Classes", Location = UrlParameter.Optional },
+                namespaces: new[] { "EDR.Controllers" }
+            );
 
             routes.MapRoute(
-                name: "ClassActionId",
-                url: "Class/{action}/{id}",
-                defaults: new { controller = "Event", action = "View", eventType = EDR.Enums.EventType.Class },
+                name: "EventsRoute",
+                url: "Events/{Location}",
+                defaults: new { controller = "Event", action = "Socials", Location = UrlParameter.Optional },
                 namespaces: new[] { "EDR.Controllers" }
             );
+
             routes.MapRoute(
-                name: "ClassAction",
-                url: "Class/{action}",
-                defaults: new { controller = "Event", action = "View", eventType = EDR.Enums.EventType.Class },
+                name: "SchoolsRoute",
+                url: "Schools/{Location}",
+                defaults: new { controller = "School", action = "List", Location = UrlParameter.Optional },
                 namespaces: new[] { "EDR.Controllers" }
             );
+
             routes.MapRoute(
-                name: "SocialActionId",
-                url: "Social/{action}/{id}",
-                defaults: new { controller = "Event", action = "View", eventType = EDR.Enums.EventType.Social},
+                name: "TeamsRoute",
+                url: "Teams/{Location}",
+                defaults: new { controller = "Team", action = "Index", Location = UrlParameter.Optional },
                 namespaces: new[] { "EDR.Controllers" }
             );
+
             routes.MapRoute(
-                name: "SocialAction",
-                url: "Social/{action}",
-                defaults: new { controller = "Event", action = "View", eventType = EDR.Enums.EventType.Social },
+                name: "BlogRoute",
+                url: "Blog/{Location}",
+                defaults: new { controller = "Blog", action = "Index", Location = UrlParameter.Optional },
                 namespaces: new[] { "EDR.Controllers" }
             );
-            routes.MapRoute(
-                name: "DanceStyleAction",
-                url: "DanceStyle/{action}/{styleName}",
-                defaults: new { controller = "DanceStyle", action = "List"},
-                namespaces: new[] { "EDR.Controllers" }
-            );
+
+            routes.MapMvcAttributeRoutes();
+
+            //routes.MapRoute(
+            //    name: "ClassActionId",
+            //    url: "Class/{action}/{id}",
+            //    defaults: new { controller = "Event", action = "View", eventType = EDR.Enums.EventType.Class },
+            //    namespaces: new[] { "EDR.Controllers" }
+            //);
+            //routes.MapRoute(
+            //    name: "ClassAction",
+            //    url: "Class/{action}",
+            //    defaults: new { controller = "Event", action = "View", eventType = EDR.Enums.EventType.Class },
+            //    namespaces: new[] { "EDR.Controllers" }
+            //);
+            //routes.MapRoute(
+            //    name: "SocialActionId",
+            //    url: "Social/{action}/{id}",
+            //    defaults: new { controller = "Event", action = "View", eventType = EDR.Enums.EventType.Social},
+            //    namespaces: new[] { "EDR.Controllers" }
+            //);
+            //routes.MapRoute(
+            //    name: "SocialAction",
+            //    url: "Social/{action}",
+            //    defaults: new { controller = "Event", action = "View", eventType = EDR.Enums.EventType.Social },
+            //    namespaces: new[] { "EDR.Controllers" }
+            //);
+            //routes.MapRoute(
+            //    name: "DanceStyleAction",
+            //    url: "DanceStyle/{action}/{styleName}",
+            //    defaults: new { controller = "DanceStyle", action = "List"},
+            //    namespaces: new[] { "EDR.Controllers" }
+            //);
             //routes.MapRoute(
             //    name: "DancerHome",
             //    url: "Dancer/{action}/{username}",

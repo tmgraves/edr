@@ -1,9 +1,16 @@
 ﻿@model EDR.Models.ViewModels.TeamIndexViewModel
 
 @{
-    ViewBag.Title = "Search Performance Dance Teams";
-    ViewBag.Keywords = "Dance Performance Team " + String.Join(" ", Model.DanceStyles);
-    ViewBag.Description = "Search for " + String.Join(", ", Model.DanceStyles) + " performance teams.";
+    ViewBag.Title = "Dance Teams";
+    ViewBag.Keywords = "Dance Teams for " + String.Join(" ", Model.DanceStyles);
+    ViewBag.Description = "Search for " + String.Join(", ", Model.DanceStyles) + " dance performance teams.";
+
+    if (Model.Location != null)
+    {
+        ViewBag.Title = ViewBag.Title + " in " + Model.Location;
+        ViewBag.Keywords = ViewBag.Keywords + " in " + Model.Location;
+        ViewBag.Description = ViewBag.Description + " in " + Model.Location;
+    }
 }
 
 <ol class="breadcrumb">

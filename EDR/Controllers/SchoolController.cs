@@ -15,7 +15,7 @@ namespace EDR.Controllers
     public class SchoolController : BaseController
     {
         // GET: School
-        [Route("Schools")]
+        //  [Route("Schools")]
         public ActionResult List(ListSchoolViewModel model)
         {
             model.DanceStyles = DataContext.DanceStyles.Select(d => d.Name).ToArray();
