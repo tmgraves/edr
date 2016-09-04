@@ -12,8 +12,8 @@
 }
 
 <style>
-    .ui-autocomplete {
-        z-index: 5000;
+    ul.ui-autocomplete li.ui-menu-item{
+        text-align:left;
     }
 </style>
 
@@ -62,9 +62,25 @@
                     <img class="img-circle" style="vertical-align:middle; max-width: 22px; max-height: 22px;" src="@Url.Content(EDR.Utilities.ApplicationUtility.CheckImageLink(b.Author.PhotoUrl))" />
                     @b.Author.FullName - @b.BlogDate.ToShortDateString() @b.BlogDate.ToShortTimeString()
                 </p>
+                <p>
+                    @if (b.EventId != null)
+                    {
+                        if (b.Event is EDR.Models.Class)
+                        {
+                            @Html.ActionLink(b.Event.Name, "Class", "Event", new { id = b.EventId, eventname = EDR.Utilities.ApplicationUtility.ToUrlSlug(b.Event.Name), location = EDR.Utilities.ApplicationUtility.ToUrlSlug(b.Event.Place.City + ", " + b.Event.Place.State) }, null)
+                        }
+                        else
+                        {
+                            @Html.ActionLink(b.Event.Name, "Social", "Event", new { id = b.EventId, eventname = EDR.Utilities.ApplicationUtility.ToUrlSlug(b.Event.Name), location = EDR.Utilities.ApplicationUtility.ToUrlSlug(b.Event.Place.City + ", " + b.Event.Place.State) }, null)
+                        }
+                    }
+                </p>
             </div>
             <div class="panel-body">
-                <img class="img-thumbnail" style="width: 100%;" id="blogpic" src="@Url.Content(b.PhotoUrl ?? "~/Content/images/NoProfilePic.gif")" />
+                @if (b.PhotoUrl != null)
+                {
+                    <img class="img-thumbnail" style="width: 100%;" id="blogpic" src="@Url.Content(b.PhotoUrl ?? "~/Content/images/NoImageSmall.png")" />
+                }
                 <p>
                     @b.Description
                 </p>
@@ -89,6 +105,7 @@
                     <div class="center-block col-lg-10 col-md-10 text-center" style="float: none;">
                         <div class="panel panel-default">
                             <div class="panel-body bg-info">
+                                @Html.ValidationSummary("", new { @class = "text-danger" })
                                     @Html.HiddenFor(model => model.NewBlog.UserId)
                                     @Html.HiddenFor(model => model.NewBlog.City)
                                     @Html.HiddenFor(model => model.NewBlog.State)
@@ -120,8 +137,8 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <div class="col-lg-10 center-block text-info">
-                                                @Html.TextBoxFor(m => m.NewBlog.EventId)
+                                            <div class="col-lg-10 center-block text-info ui-front">
+                                                @Html.HiddenFor(m => m.NewBlog.EventId)
                                                 <input type="text" id="blogevent" placeholder="Search for an Event" required class="form-control" />
                                                 @Html.ValidationMessageFor(model => model.NewBlog.EventId, "", new { @class = "text-danger" })
                                             </div>
@@ -156,27 +173,16 @@
 @section Scripts
 {
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
-@Scripts.Render("~/bundles/jqueryval")
 @Scripts.Render("~/bundles/foolproof")
 @Scripts.Render("~/bundles/jqueryUI")
-@Scripts.Render("~/bundles/TimePicker")
-@Styles.Render("~/Content/TimePickercss")
 <script src="@Url.Content("~/Scripts/jquery.unobtrusive-ajax.min.js")" type="text/javascript"></script>
 <script src="@Url.Content("~/Scripts/jquery.form.js")" type="text/javascript"></script>
-@Scripts.Render("~/bundles/GeoComplete")
-<script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places&key=@System.Configuration.ConfigurationManager.AppSettings["GoogleAPIKey"]"></script>
-<link href="../../Content/cropper.css" rel="stylesheet">
-<script src="../../Scripts/cropper.js"></script>
-<script src="../../Scripts/bootstrap-toggle.js"></script>
-<link href="../../Content/bootstrap-toggle.css" rel="stylesheet">
-<script src="~/Scripts/searchhelper.js"></script>
-<script src="~/Scripts/jquery.mousewheel.js"></script>
 
-    @*@Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/GeoComplete")
     <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places&key=@System.Configuration.ConfigurationManager.AppSettings["GoogleAPIKey"]"></script>
     <link href="../../Content/cropper.css" rel="stylesheet">
-    <script src="../../Scripts/cropper.js"></script>*@
+    <script src="../../Scripts/cropper.js"></script>
 
     <script type="text/javascript">
         $(function () {
@@ -222,7 +228,6 @@
 
                     //  alert(city + ", " + state + ", " + country);
                     $('#location').prop('value', city + ", " + state + ", " + country);
-                    LoadEvents(result.geometry.location.lat(), result.geometry.location.lng());
                 });
             }
         });

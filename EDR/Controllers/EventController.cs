@@ -496,8 +496,9 @@ namespace EDR.Controllers
 
         public JsonResult Search(string searchString)
         {
-            var events = DataContext.Events.Where(e => e.StartDate >= DateTime.Today && (e.Name + " " + e.Description).Contains(searchString)).OrderBy(e => e.NextDate).Select(s => new { Id = s.Id, Name = s.NextDate.ToShortDateString()  + " - " + s.Name + " - " + s.Place.Address + " " + s.Place.City + ", " + s.Place.State + " " + s.Place.Zip }).ToList();
-            return Json(events, JsonRequestBehavior.AllowGet);
+            var today = DateTime.Today;
+            var events = DataContext.Events.Where(e => e is Class || e is Social).Where(e => e.EventInstances.Any(i => i.DateTime >= today) && (e.Name + " " + e.Description).Contains(searchString)).Select(s => new { Id = s.Id, NextDate = s.EventInstances.Where(i => i.DateTime >= today).Min(i => i.DateTime), Name = s.Name + " - " + s.Place.City + ", " + s.Place.State }).ToList();
+            return Json(events.OrderBy(e => e.NextDate).Select(e => new { Id = e.Id, Name = e.NextDate.ToShortDateString() + ": " + e.Name }), JsonRequestBehavior.AllowGet);
         }
 
         private List<EventVideo> GetVideos(int id)

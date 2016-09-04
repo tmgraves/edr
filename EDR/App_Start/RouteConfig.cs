@@ -59,7 +59,7 @@ namespace EDR
 
             routes.MapRoute(
                 name: "BlogRoute",
-                url: "Blog/{Location}",
+                url: "Blogs/{Location}",
                 defaults: new { controller = "Blog", action = "Index", Location = UrlParameter.Optional },
                 namespaces: new[] { "EDR.Controllers" }
             );

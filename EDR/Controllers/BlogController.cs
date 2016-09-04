@@ -46,24 +46,28 @@ namespace EDR.Controllers
         {
             if (ModelState.IsValidField("NewBlog"))
             {
-                dynamic obj = UploadImage(model.NewImage);
+                if (model.NewImage != null)
+                {
+                    dynamic obj = UploadImage(model.NewImage);
+                    if (obj.UploadStatus == "Success")
+                    {
+                        model.NewBlog.PhotoUrl = obj.FilePath;
+                    }
+                    else
+                    {
+                        model.PostStatus = "Failed";
+                        model.Message = "Blog post failed!";
+                        return RedirectToAction("Index", model);
+                    }
+                }
                 model.NewImage = null;
-                if (obj.UploadStatus == "Success")
-                {
-                    model.NewBlog.PhotoUrl = obj.FilePath;
-                    DataContext.Blogs.Add(model.NewBlog);
-                    DataContext.SaveChanges();
-                    model.Message = "Blog Posted!";
-                    model.PostStatus = "Success";
-                    model.Message = "Your Blog was posted!";
-                    return RedirectToAction("Index", model);
-                }
-                else
-                {
-                    model.PostStatus = "Failed";
-                    model.Message = "Blog post failed!";
-                    return RedirectToAction("Index", model);
-                }
+
+                DataContext.Blogs.Add(model.NewBlog);
+                DataContext.SaveChanges();
+                model.Message = "Blog Posted!";
+                model.PostStatus = "Success";
+                model.Message = "Your Blog was posted!";
+                return RedirectToAction("Index", model);
             }
             else
             {
