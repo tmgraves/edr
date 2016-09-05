@@ -101,6 +101,8 @@ namespace EDR.Models
         [DefaultValue(1)]
         [Range(1, 100)]
         public int Interval { get; set; }
+        public Gender? Gender { get; set; }
+
         public DayOfWeek Day
         {
             get

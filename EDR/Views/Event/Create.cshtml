@@ -120,6 +120,10 @@
                                                 @Html.HiddenFor(m => m.SkillLevel)
                                             }
                                             <div class="row" style="margin-bottom: 5px;">
+                                                @Html.EnumDropDownListFor(model => model.Event.Gender, "-- Gender --", htmlAttributes: new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.Event.Gender, "", new { @class = "text-danger" })
+                                            </div>
+                                            <div class="row" style="margin-bottom: 5px;">
                                                 @Html.TextBox("Style", "", new { @class = "form-control stylesearch", @placeholder = "Add Dance Style(s) for this Event" })
                                                 <div id="stylesdiv" style="text-align: left; background-color: #fff;"></div>
                                                 @Html.HiddenFor(m => m.StyleIds)

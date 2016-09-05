@@ -250,7 +250,16 @@ namespace EDR.Controllers
                                 .Include("EventInstance.Place")
                                 .Include("User")
                                 .Where(o => o.Id == id).FirstOrDefault();
-            return View(model);
+
+            if (model.Order.Id == Convert.ToInt32(Session["OrderId"]))
+            {
+                return View(model);
+            }
+            else
+            {
+                ViewBag.errorMessage = "Record not found";
+                return View("Error");
+            }
         }
 
         //[HttpPost]
@@ -357,11 +366,13 @@ namespace EDR.Controllers
                             //DataContext.SaveChanges();
 
                             //  Register User for Event
+                            Session["OrderId"] = model.Order.Id;
                             return RedirectToAction("Confirmation", "Store", new { id = model.Order.Id });
                         }
                         //  School Ticket
                         else
                         {
+                            Session["OrderId"] = model.Order.Id;
                             return RedirectToAction("Confirmation", "Store", new { id = model.Order.Id });
                         }
                     }

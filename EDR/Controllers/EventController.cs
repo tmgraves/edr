@@ -3066,6 +3066,7 @@ namespace EDR.Controllers
                     evnt.EndDate = model.Event.EndDate;
                     evnt.EndTime = model.Event.EndTime;
                     evnt.FacebookLink = model.Event.FacebookLink;
+                    evnt.Gender = model.Event.Gender;
                     if (evnt is Social)
                     {
                         ((Social)evnt).MusicType = model.MusicType;

@@ -327,4 +327,14 @@ namespace EDR.Enums
         [Display(Name = "Internal Charge/Credit")]
         Internal
     }
+
+    public enum Gender
+    {
+        [Display(Name = "Male/Female")]
+        Both,
+        [Display(Name = "Male")]
+        Male,
+        [Display(Name = "Female")]
+        Female
+    }
 }
