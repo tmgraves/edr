@@ -46,7 +46,8 @@
                 <div class="textoverlay bottomright">
                     <h4>
                         <span class="label label-success">
-                            @{
+                            @EDR.Utilities.ApplicationUtility.GetDisplayName((EDR.Enums.SkillLevel)Model.Team.SkillLevel)
+                            @*@{
                                 switch (Model.Team.SkillLevel)
                                 {
                                     case 1:
@@ -65,7 +66,7 @@
                                         <text>Advanced</text>;
                                         break;
                                 }
-                            }
+                            }*@
                         </span>
                     </h4>
                 </div>

@@ -143,7 +143,8 @@
                     {
                         <div>
                             <span class="label label-success">
-                                @{
+                                @EDR.Utilities.ApplicationUtility.GetDisplayName((EDR.Enums.SkillLevel)cls.SkillLevel)
+                                @*@{
                                     switch (cls.SkillLevel)
                                     {
                                         case 1:
@@ -165,7 +166,7 @@
                                             <text>Open-Level</text>;
                                             break;
                                     }
-                                }
+                                }*@
                             </span>
                         </div>
                         }

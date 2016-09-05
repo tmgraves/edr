@@ -87,9 +87,7 @@
                     }
                     else
                     {
-                        @{ 
-                            var det = Model.Order.OrderDetails.FirstOrDefault()
-                        }
+                        var det = Model.Order.OrderDetails.FirstOrDefault();
                         @Html.ActionLink("Return to " + det.Ticket.School.Name, "View", "School", new { id = det.Ticket.SchoolId, school = ApplicationUtility.ToUrlSlug(det.Ticket.School.Name), location = ApplicationUtility.ToUrlSlug(det.Ticket.School.City) }, new { @class = "btn btn-primary" })
                     }
                 </div>
