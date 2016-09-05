@@ -66,24 +66,24 @@ namespace EDR
 
             routes.MapMvcAttributeRoutes();
 
-            //routes.MapRoute(
-            //    name: "ClassActionId",
-            //    url: "Class/{action}/{id}",
-            //    defaults: new { controller = "Event", action = "View", eventType = EDR.Enums.EventType.Class },
-            //    namespaces: new[] { "EDR.Controllers" }
-            //);
+            routes.MapRoute(
+                name: "ClassActionId",
+                url: "Class/{action}/{id}",
+                defaults: new { controller = "Event", action = "View", eventType = EDR.Enums.EventType.Class },
+                namespaces: new[] { "EDR.Controllers" }
+            );
             //routes.MapRoute(
             //    name: "ClassAction",
             //    url: "Class/{action}",
             //    defaults: new { controller = "Event", action = "View", eventType = EDR.Enums.EventType.Class },
             //    namespaces: new[] { "EDR.Controllers" }
             //);
-            //routes.MapRoute(
-            //    name: "SocialActionId",
-            //    url: "Social/{action}/{id}",
-            //    defaults: new { controller = "Event", action = "View", eventType = EDR.Enums.EventType.Social},
-            //    namespaces: new[] { "EDR.Controllers" }
-            //);
+            routes.MapRoute(
+                name: "SocialActionId",
+                url: "Social/{action}/{id}",
+                defaults: new { controller = "Event", action = "View", eventType = EDR.Enums.EventType.Social},
+                namespaces: new[] { "EDR.Controllers" }
+            );
             //routes.MapRoute(
             //    name: "SocialAction",
             //    url: "Social/{action}",

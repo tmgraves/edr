@@ -564,7 +564,7 @@ namespace EDR.Controllers
                                 .Include("Reviews")
                                 .Include("Teachers.ApplicationUser")
                                 .Where(c => c.Teachers.Any(t => t.ApplicationUser.Id == id))
-                                .Where(c => c.EventInstances.Where(i => i.DateTime >= DateTime.Today).Count() != 0);
+                                .Where(c => c.EventInstances.Where(i => i.DateTime >= DateTime.Today).Count() != 0).ToList();
             return PartialView("~/Views/Shared/_EventsPartial.cshtml", classes);
         }
 
@@ -608,7 +608,7 @@ namespace EDR.Controllers
         {
             var instances = DataContext.Classes.Where(c => c.Teachers.Any(t => t.Id == teacherId)).SelectMany(c => c.EventInstances).Where(i => i.DateTime >= start && i.DateTime <= end).ToList();
 
-            return Json(instances.AsEnumerable().Select(s =>
+            var lst = instances.AsEnumerable().Select(s =>
                         new {
                             id = s.EventId,
                             title = s.Event.Name,
@@ -618,7 +618,8 @@ namespace EDR.Controllers
                             lng = s.Event.Place.Longitude,
                             color = "#65AE25",
                             url = Url.Action("View", "Event", new { id = s.EventId, eventType = EventType.Class })
-                        }), JsonRequestBehavior.AllowGet);
+                        });
+            return Json(lst, JsonRequestBehavior.AllowGet);
         }
         #endregion
 

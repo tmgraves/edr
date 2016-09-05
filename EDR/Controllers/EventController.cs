@@ -244,7 +244,7 @@ namespace EDR.Controllers
         //    return View(model);
         //}
 
-        [Route("Class/{id:int}/{eventname}/{location}")]
+        [Route("Class/{id:int}/{eventname?}/{location?}")]
         public ActionResult Class(int? id, int? instanceId)
         {
             if (!id.HasValue)
@@ -284,7 +284,7 @@ namespace EDR.Controllers
             }
         }
 
-        [Route("Social/{id}/{eventname}/{location}")]
+        [Route("Social/{id:int}/{eventname?}/{location?}")]
         public ActionResult Social(int? id, int? instanceId)
         {
             if (!id.HasValue)
