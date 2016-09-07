@@ -24,6 +24,11 @@ namespace EDR.Controllers
                                 .Include("Classes.DanceStyles")
                                 .Include("Reviews")
                                 .AsQueryable();
+            if (model.Location != null)
+            {
+                var add = EDR.Utilities.Geolocation.ParseAddress(model.Location);
+                model.Schools = model.Schools.Where(e => (e.Longitude >= add.Longitude - .5 && e.Longitude <= add.Longitude + .5) && (e.Latitude >= add.Latitude - .5 && e.Latitude <= add.Latitude + .5)).ToList();
+            }
             if (model.DanceStyleId != null)
             {
                 model.Schools = model.Schools.Where(s => s.Classes.Any(c => c.DanceStyles.Select(st => st.Id).Contains((int)model.DanceStyleId)));

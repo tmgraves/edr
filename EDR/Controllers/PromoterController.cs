@@ -270,7 +270,7 @@ namespace EDR.Controllers
             }
         }
 
-        [Route("Promoter/List")]
+        [Route("Promoters/{Location?}")]
         public ActionResult List(PromoterListViewModel model)
         {
             model.DanceStyles = DataContext.DanceStyles.Select(s => s.Name).ToArray();
@@ -278,6 +278,11 @@ namespace EDR.Controllers
                                     .Include("DanceStyles")
                                     .Include("ApplicationUser");
 
+            if (model.Location != null)
+            {
+                var add = Geolocation.ParseAddress(model.Location);
+                model.Promoters = model.Promoters.Where(e => (e.ApplicationUser.Longitude >= add.Longitude - .5 && e.ApplicationUser.Longitude <= add.Longitude + .5) && (e.ApplicationUser.Latitude >= add.Latitude - .5 && e.ApplicationUser.Latitude <= add.Latitude + .5)).ToList();
+            }
             if (model.PromoterId != null)
             {
                 model.Promoters = model.Promoters.Where(t => t.ApplicationUser.Id == model.PromoterId);

@@ -49,7 +49,7 @@ namespace EDR.Controllers
             return View(model);
         }
 
-        [Route("Teacher/List")]
+        [Route("Teachers/{Location?}")]
         public ActionResult List(TeacherListViewModel model)
         {
             model.Teachers = DataContext.Teachers
@@ -59,6 +59,11 @@ namespace EDR.Controllers
                                 .Include("Classes")
                                 .Include("Classes.Reviews");
 
+            if (model.Location != null)
+            {
+                var add = Geolocation.ParseAddress(model.Location);
+                model.Teachers = model.Teachers.Where(e => (e.ApplicationUser.Longitude >= add.Longitude - .5 && e.ApplicationUser.Longitude <= add.Longitude + .5) && (e.ApplicationUser.Latitude >= add.Latitude - .5 && e.ApplicationUser.Latitude <= add.Latitude + .5)).ToList();
+            }
             if (model.TeacherId != null)
             {
                 model.Teachers = model.Teachers.Where(t => t.ApplicationUser.Id == model.TeacherId);

@@ -29,6 +29,11 @@ namespace EDR.Controllers
                                 .Include("Reviews")
                                 .Include("Auditions")
                                 .AsQueryable();
+            if (model.Location != null)
+            {
+                var add = EDR.Utilities.Geolocation.ParseAddress(model.Location);
+                model.Teams = model.Teams.Where(e => (e.Longitude >= add.Longitude - .5 && e.Longitude <= add.Longitude + .5) && (e.Latitude >= add.Latitude - .5 && e.Latitude <= add.Latitude + .5)).ToList();
+            }
             if (model.DanceStyleId != null)
             {
                 model.Teams = model.Teams.Where(c => c.DanceStyles.Select(st => st.Id).Contains((int)model.DanceStyleId));

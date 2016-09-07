@@ -573,20 +573,20 @@ namespace EDR.Controllers
             foreach (var c in DataContext.Classes.Where(e => e.EventInstances.Any(i => i.DateTime >= date)).ToList())
             {
                 //  pages.Add(Url.Action("View", "Event", new { id = c.Id, eventType = EventType.Class }));
-                pages.Add(Url.Action("Class", "Event", new { id = c.Id, eventname = ApplicationUtility.ToUrlSlug(c.Name), location = ApplicationUtility.ToUrlSlug(c.Place.City) }));
+                pages.Add(Url.Action("Class", "Event", new { id = c.Id, eventname = ApplicationUtility.ToUrlSlug(c.Name), location = ApplicationUtility.ToUrlSlug(c.Place.City + ", " + c.Place.State) }));
             }
             foreach (var s in DataContext.Socials.Where(e => e.EventInstances.Any(i => i.DateTime >= date)).ToList())
             {
                 //  pages.Add(Url.Action("View", "Event", new { id = s.Id, eventType = EventType.Social }));
-                pages.Add(Url.Action("Social", "Event", new { id = s.Id, eventname = ApplicationUtility.ToUrlSlug(s.Name), location = ApplicationUtility.ToUrlSlug(s.Place.City) }));
+                pages.Add(Url.Action("Social", "Event", new { id = s.Id, eventname = ApplicationUtility.ToUrlSlug(s.Name), location = ApplicationUtility.ToUrlSlug(s.Place.City + ", " + s.Place.State) }));
             }
             foreach (var t in DataContext.Teams.ToList())
             {
-                pages.Add(Url.Action("View", "Team", new { id = t.Id, team = ApplicationUtility.ToUrlSlug(t.Name), location = ApplicationUtility.ToUrlSlug(t.City) }));
+                pages.Add(Url.Action("View", "Team", new { id = t.Id, team = ApplicationUtility.ToUrlSlug(t.Name), location = ApplicationUtility.ToUrlSlug(t.City + ", " + t.State) }));
             }
             foreach (var sc in DataContext.Schools.ToList())
             {
-                pages.Add(Url.Action("View", "School", new { id = sc.Id, school = ApplicationUtility.ToUrlSlug(sc.Name), location = ApplicationUtility.ToUrlSlug(sc.City) }));
+                pages.Add(Url.Action("View", "School", new { id = sc.Id, school = ApplicationUtility.ToUrlSlug(sc.Name), location = ApplicationUtility.ToUrlSlug(sc.City + ", " + sc.State) }));
             }
             foreach (var st in DataContext.DanceStyles.ToList())
             {
@@ -604,23 +604,23 @@ namespace EDR.Controllers
             {
                 pages.Add(Url.Action("Home", "Owner", new { username = t.ApplicationUser.UserName }));
             }
-            foreach (var c in DataContext.Classes.Select(c => c.Place.City).Distinct())
+            foreach (var c in DataContext.Classes.Select(c => c.Place.City + ", " + c.Place.State).Distinct())
             {
                 pages.Add(Url.Action("Classes", "Event", new { Location = ApplicationUtility.ToUrlSlug(c) }));
             }
-            foreach (var c in DataContext.Classes.Select(e => e.Place.City).Distinct())
+            foreach (var c in DataContext.Classes.Select(e => e.Place.City + ", " + e.Place.State).Distinct())
             {
                 pages.Add(Url.Action("Socials", "Event", new { Location = ApplicationUtility.ToUrlSlug(c) }));
             }
-            foreach (var c in DataContext.Schools.Select(e => e.City).Distinct())
+            foreach (var c in DataContext.Schools.Select(e => e.City + ", " + e.State).Distinct())
             {
                 pages.Add(Url.Action("List", "School", new { Location = ApplicationUtility.ToUrlSlug(c) }));
             }
-            foreach (var c in DataContext.Teams.Select(e => e.City).Distinct())
+            foreach (var c in DataContext.Teams.Select(e => e.City + ", " + e.State).Distinct())
             {
                 pages.Add(Url.Action("Index", "Team", new { Location = ApplicationUtility.ToUrlSlug(c) }));
             }
-            foreach (var c in DataContext.Blogs.Select(e => e.City).Distinct())
+            foreach (var c in DataContext.Blogs.Select(e => e.City + ", " + e.State).Distinct())
             {
                 pages.Add(Url.Action("Index", "Blog", new { Location = ApplicationUtility.ToUrlSlug(c) }));
             }
