@@ -77,7 +77,14 @@ namespace EDR.Controllers
             }
 
             model.Teachers = model.Teachers.ToList().Take(100);
-            return View(model);
+            if (HttpContext.Request.Browser.IsMobileDevice)
+            {
+                return View("Mobile/List", model);
+            }
+            else
+            {
+                return View(model);
+            }
         }
 
         private TeacherViewViewModel LoadTeacher(string username)
@@ -617,7 +624,7 @@ namespace EDR.Controllers
                             lat = s.Event.Place.Latitude,
                             lng = s.Event.Place.Longitude,
                             color = "#65AE25",
-                            url = Url.Action("View", "Event", new { id = s.EventId, eventType = EventType.Class })
+                            url = Url.Action("Class", "Event", new { id = s.EventId })
                         });
             return Json(lst, JsonRequestBehavior.AllowGet);
         }

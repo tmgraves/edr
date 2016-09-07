@@ -24,7 +24,7 @@
 </style>
 
 <ol class="breadcrumb">
-    <li>@Html.ActionLink("All Schools", "List", "School")</li>
+    <li>@Html.ActionLink("All Schools", "List", "School", new { location = "" }, null)</li>
     <li class="active">School Page</li>
 </ol>
 @Html.HiddenFor(x => x.School.Id)

@@ -587,7 +587,7 @@
                 }
                 else
                 {
-                    <a class="btn btn-lg btn-warning" href="@Url.Action("View", "Event", new { id = Model.Event.Id, eventType = Model.EventType })">Cancel</a>
+                    <a class="btn btn-lg btn-warning" href="@Url.Action(Model.EventType.ToString(), "Event", new { id = Model.Event.Id })">Cancel</a>
                 }
             </div>
         </div>

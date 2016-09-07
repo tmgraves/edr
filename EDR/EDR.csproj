@@ -1047,6 +1047,8 @@
     <Content Include="Views\Account\ChangePassword.cshtml" />
     <Content Include="Views\Event\Mobile\Classes.cshtml" />
     <Content Include="Views\Event\Mobile\Socials.cshtml" />
+    <Content Include="Views\Teacher\Mobile\List.cshtml" />
+    <Content Include="Views\Promoter\Mobile\List.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

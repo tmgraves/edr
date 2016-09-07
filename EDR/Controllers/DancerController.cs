@@ -1110,7 +1110,7 @@ namespace EDR.Controllers
                             lat = s.Event.Place.Latitude,
                             lng = s.Event.Place.Longitude,
                             color = s.Event is Class ? "#65AE25" : s.Event is Social ? "#006A90" : s.Event is Performance ? "#f0ad4e" : s.Event is Rehearsal ? "#d9534f" : "#428bca",
-                            url = Url.Action("View", "Event", new { id = s.EventId, eventType = s.Event is Class ? EventType.Class : EventType.Social })
+                            url = Url.Action(s.Event is Class ? EventType.Class.ToString() : EventType.Social.ToString(), "Event", new { id = s.EventId })
                         }), JsonRequestBehavior.AllowGet);
         }
 
@@ -1129,7 +1129,7 @@ namespace EDR.Controllers
                             lat = s.Event.Place.Latitude,
                             lng = s.Event.Place.Longitude,
                             color = s.Event is Class ? "#65AE25" : s.Event is Social ? "#006A90" : s.Event is Performance ? "#f0ad4e" : s.Event is Rehearsal ? "#d9534f" : "#428bca",
-                            url = Url.Action("View", "Event", new { id = s.EventId, eventType = s.Event is Class ? EventType.Class : EventType.Social })
+                            url = Url.Action(s.Event is Class ? EventType.Class.ToString() : EventType.Social.ToString(), "Event", new { id = s.EventId })
                         }), JsonRequestBehavior.AllowGet);
         }
 

@@ -60,7 +60,7 @@ namespace EDR.Controllers
         }
 
         // GET: Team/Details/5
-        [Route("Team/{id}/{team}/{location}")]
+        [Route("Team/{id}/{team?}/{location?}")]
         public ActionResult View(int? id)
         {
             var userid = User.Identity.GetUserId();

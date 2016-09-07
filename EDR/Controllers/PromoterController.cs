@@ -296,7 +296,14 @@ namespace EDR.Controllers
             }
 
             model.Promoters = model.Promoters.ToList().Take(100);
-            return View(model);
+            if (HttpContext.Request.Browser.IsMobileDevice)
+            {
+                return View("Mobile/List", model);
+            }
+            else
+            {
+                return View(model);
+            }
         }
 
         [Route("Promoter/LoadPromoter")]
@@ -510,7 +517,7 @@ namespace EDR.Controllers
                             lat = s.Event.Place.Latitude,
                             lng = s.Event.Place.Longitude,
                             color = "#006A90",
-                            url = Url.Action("View", "Event", new { id = s.EventId, eventType = EventType.Social })
+                            url = Url.Action("Social", "Event", new { id = s.EventId })
                         }), JsonRequestBehavior.AllowGet);
         }
 

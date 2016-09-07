@@ -54,7 +54,7 @@
     </div>
     <div class="row col-lg-12 col-md-12" style="margin: 5px;">
         <input type="submit" value="Search Teachers" class="btn btn-info" />
-        <a class="btn btn-warning right" href="@Url.Action("View", "Event", new { id = Model.Class.Id, eventType = EDR.Enums.EventType.Class })">
+        <a class="btn btn-warning right" href="@Url.Action("Class", "Event", new { id = Model.Class.Id })">
             Cancel
         </a>
     </div>

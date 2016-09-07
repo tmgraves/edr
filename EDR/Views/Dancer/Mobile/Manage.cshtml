@@ -303,7 +303,7 @@
                                                 @@@Convert.ToDateTime(item.Instance.StartTime).ToShortTimeString()
                                             </td>
                                             <td style="max-width: 150px;">
-                                                <a href=@Url.Action("View", "Event", new { id = item.Instance.EventId, eventType = item.Instance.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social }) title="@item.Instance.Event.Name">
+                                                <a href=@Url.Action((item.Instance.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social).ToString(), "Event", new { id = item.Instance.EventId }) title="@item.Instance.Event.Name">
                                                     <div class="oneline">@item.Instance.Event.Name</div>
                                                 </a>
                                                 @*@Html.ActionLink(item.Instance.Event.Name, "View", "Event", new { id = item.Instance.EventId, eventType = item.Instance.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social }, null)*@
@@ -344,7 +344,7 @@
                                                 @@ @Convert.ToDateTime(item.Instance.StartTime).ToShortTimeString()
                                             </td>
                                             <td style="max-width: 200px;">
-                                                <a href=@Url.Action("View", "Event", new { id = item.Instance.EventId, eventType = item.Instance.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social }) title="@item.Instance.Event.Name">
+                                                <a href=@Url.Action((item.Instance.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social).ToString(), "Event", new { id = item.Instance.EventId }) title="@item.Instance.Event.Name">
                                                     <div class="oneline">@item.Instance.Event.Name</div>
                                                 </a>
                                                 @*@Html.ActionLink(item.Instance.Event.Name, "View", "Event", new { id = item.Instance.EventId, eventType = item.Instance.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social }, null)*@
@@ -385,7 +385,7 @@
                                             <p>
                                                 @if (item.Ticket.EventId != null)
                                                 {
-                                                    <a href="@Url.Action("View", "Event", new { id = item.Ticket.EventId, eventType = item.Ticket.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social })">
+                                                    <a href="@Url.Action((item.Ticket.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social).ToString(), "Event", new { id = item.Ticket.EventId })">
                                                         @item.Ticket.Event.Name
                                                     </a>
                                                 }
@@ -426,7 +426,7 @@
                                             <p>
                                                 @if (item.Ticket.EventId != null)
                                                 {
-                                                    <a href="@Url.Action("View", "Event", new { id = item.Ticket.EventId, eventType = item.Ticket.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social })">
+                                                    <a href="@Url.Action((item.Ticket.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social).ToString(), "Event", new { id = item.Ticket.EventId })">
                                                         @item.Ticket.Event.Name
                                                     </a>
                                                 }

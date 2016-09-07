@@ -4765,7 +4765,7 @@ namespace EDR.Controllers
                 }
             }
             var evt = DataContext.Events.Where(e => e.Id == id).FirstOrDefault();
-            return RedirectToAction("View", "Event", new { id = id, eventType = evt is Class ? EventType.Class : EventType.Social });
+            return RedirectToAction(evt is Class ? EventType.Class.ToString() : EventType.Social.ToString(), "Event", new { id = id });
         }
 
         [Authorize]
@@ -4791,7 +4791,7 @@ namespace EDR.Controllers
                 }
             }
             var evt = DataContext.Events.Where(e => e.Id == id).FirstOrDefault();
-            return RedirectToAction("View", "Event", new { id = id, eventType = evt is Class ? EventType.Class : EventType.Social });
+            return RedirectToAction(evt is Class ? EventType.Class.ToString() : EventType.Social.ToString(), "Event", new { id = id });
         }
 
         //[Authorize]
@@ -4944,7 +4944,7 @@ namespace EDR.Controllers
                 }
             }
 
-            return RedirectToAction("View", "Event", new { id = id, eventType = EventType.Class });
+            return RedirectToAction("Class", "Event", new { id = id });
         }
 
         [Authorize]
@@ -4959,7 +4959,7 @@ namespace EDR.Controllers
                 DataContext.SaveChanges();
             }
 
-            return RedirectToAction("View", "Event", new { id = id, eventType = EventType.Class });
+            return RedirectToAction("Class", "Event", new { id = id });
         }
 
         [Authorize]
@@ -5083,7 +5083,7 @@ namespace EDR.Controllers
         [HttpPost]
         public ActionResult EditFees(Event evnt)
         {
-            return RedirectToAction("View", "Event", new { id = evnt.Id, eventType = (evnt is Class ? EventType.Class : EventType.Social) });
+            return RedirectToAction((evnt is Class ? EventType.Class : EventType.Social).ToString(), "Event", new { id = evnt.Id });
         }
 
         [Authorize(Roles = "Teacher,Owner,Admin")]

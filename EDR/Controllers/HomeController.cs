@@ -666,7 +666,7 @@ namespace EDR.Controllers
                             end = s.EndTime.Value.ToString("o"),
                             lat = s.Event.Place.Latitude,
                             lng = s.Event.Place.Longitude,
-                            url = Url.Action("View", "Event", new { id = s.EventId, eventType = EventType.Class })
+                            url = Url.Action("Class", "Event", new { id = s.EventId })
                         }), JsonRequestBehavior.AllowGet);
 
             //var evnts = DataContext.Classes.Include("EventInstances").AsEnumerable();
@@ -701,7 +701,7 @@ namespace EDR.Controllers
                             end = s.EndTime.Value.ToString("o"),
                             lat = s.Event.Place.Latitude,
                             lng = s.Event.Place.Longitude,
-                            url = Url.Action("View", "Event", new { id = s.EventId, eventType = EventType.Social })
+                            url = Url.Action("Social", "Event", new { id = s.EventId })
                         }), JsonRequestBehavior.AllowGet);
         }
         #endregion

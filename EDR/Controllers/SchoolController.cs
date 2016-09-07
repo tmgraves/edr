@@ -443,7 +443,7 @@ namespace EDR.Controllers
                             end = s.EndTime.Value.ToString("o"),
                             lat = s.Event.Place.Latitude,
                             lng = s.Event.Place.Longitude,
-                            url = Url.Action("View", "Event", new { id = s.EventId, eventType = EventType.Class })
+                            url = Url.Action("Class", "Event", new { id = s.EventId })
                         }), JsonRequestBehavior.AllowGet);
         }
 

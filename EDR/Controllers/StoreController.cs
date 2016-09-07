@@ -183,7 +183,7 @@ namespace EDR.Controllers
                 }
             }
 
-            return RedirectToAction("View", "Event", new { id = instance.EventId, eventtype = instance.Event is Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social, instanceId = attendeemodel.EventInstance.Id });
+            return RedirectToAction((instance.Event is Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social).ToString(), "Event", new { id = instance.EventId, instanceId = attendeemodel.EventInstance.Id });
         }
 
         [Authorize]

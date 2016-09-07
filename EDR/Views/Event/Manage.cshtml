@@ -18,13 +18,13 @@
 <ol class="breadcrumb">
     @if (eventType == EDR.Enums.EventType.Class)
     {
-        <li>@Html.ActionLink("All Classes", "Learn", "Home")</li>
+        <li>@Html.ActionLink("All Classes", "Classes", "Event")</li>
     }
     else
     {
-        <li>@Html.ActionLink("All Socials", "Social", "Home")</li>
+        <li>@Html.ActionLink("All Socials", "Socials", "Event")</li>
     }
-    <li>@Html.ActionLink("View " + Model.EventType, "View", "Event", new { id = Model.Event.Id, eventType = eventType }, null)</li>
+    <li>@Html.ActionLink("View " + Model.EventType, eventType.ToString(), "Event", new { id = Model.Event.Id }, null)</li>
     <li class="active">Manage @Model.EventType</li>
 </ol>
 <h1>Manage @Model.Event.Name</h1>

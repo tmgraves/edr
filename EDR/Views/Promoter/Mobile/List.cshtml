@@ -1,12 +1,15 @@
-﻿@model EDR.Models.ViewModels.ListSchoolViewModel
+﻿@model EDR.Models.ViewModels.PromoterListViewModel
 
 @{
-    ViewBag.Title = "Search Dance Schools";
-    ViewBag.Keywords = "Dance Schools " + String.Join(" ", Model.DanceStyles);
-    ViewBag.Description = "Find dance schools for " + String.Join(", ", Model.DanceStyles) + ".";
+    ViewBag.Title = "All Social Dance Promoters";
+    ViewBag.Keywords = "Promoters " + String.Join(" ", Model.DanceStyles);
+    ViewBag.Description = "All social dance promoters for " + String.Join(" ", Model.DanceStyles) + ".";
 }
 
-<h1 class="text-left">Dance Schools</h1>
+<ol class="breadcrumb">
+    <li class="active">All Promoters</li>
+</ol>
+<h1 class="text-center">Promoters</h1>
 
 <div class="container">
     <div class="center-block col-md-6 nospace" style="float: none;">
@@ -19,7 +22,7 @@
             <div class="panel panel-default">
                 <div class="panel-body bg-info">
                     <section id="searchForm">
-                        @using (Html.BeginForm("List", "School", FormMethod.Post, new { @class = "formmain" }))
+                        @using (Html.BeginForm("List", "Promoter", FormMethod.Post, new { @class = "formmain" }))
                         {
                             @Html.HiddenFor(m => m.SearchAddress.Latitude, new { Name = "lat", @class = "latfield" })
                             @Html.HiddenFor(m => m.SearchAddress.Longitude, new { Name = "lng", @class = "lngfield" })
@@ -30,9 +33,10 @@
                             @Html.HiddenFor(m => m.CenterLat, new { @class = "clatfield" })
                             @Html.HiddenFor(m => m.CenterLng, new { @class = "clngfield" })
                             @Html.HiddenFor(m => m.Zoom, new { @class = "czoomfield" })
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                             <div class="form-group">
                                 <div class="col-lg-8 center-block" style="float: none;">
-                                    @Html.TextBoxFor(m => m.Location, new { placeholder = "Location", @class = "form-control locationsearch" })
+                                    @Html.TextBoxFor(m => m.Location, new { placeholder = "Location", @class = "form-control locationsearch", @style = "width: 100% !important; max-width: 100% !important;" })
                                 </div>
                             </div>
                             <div class="form-group">
@@ -43,13 +47,13 @@
                             </div>
                             <div class="form-group">
                                 <div class="col-lg-8 center-block" style="float: none;">
-                                    @Html.HiddenFor(m => m.TeacherId, new { @class = "teachersearchid" })
-                                    @Html.TextBoxFor(m => m.Teacher, new { placeholder = "Teacher", @class = "form-control teachersearch" })
+                                    @Html.HiddenFor(m => m.PromoterId, new { @class = "promotersearchid" })
+                                    @Html.TextBoxFor(m => m.PromoterName, new { placeholder = "Promoter Name", @class = "form-control promotersearch", @style = "width: 100% !important; max-width: 100% !important;" })
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="col-lg-8 center-block" style="float: none;">
-                                    <input type="submit" value="Search Schools" class="btn btn-warning" style="max-width: 100% !important; width: 100% !important;" />
+                                    <input type="submit" value="Search Promoters" class="btn btn-warning" style="max-width: 100% !important; width: 100% !important;" />
                                 </div>
                             </div>
                         }
@@ -66,17 +70,17 @@
             <div class="panel with-nav-tabs panel-default">
                 <div class="panel-heading nospace" style="border-bottom: none !important;">
                     <ul class="nav nav-tabs nav-tabs-justified nospace">
-                        <li class="nospace active"><a href="#tabmap" data-toggle="tab">Map</a></li>
-                        <li class="nospace"><a href="#tablist" data-toggle="tab">List</a></li>
+                        <li class="nospace active"><a href="#tab1default" data-toggle="tab">Map</a></li>
+                        <li class="nospace"><a href="#tab3default" data-toggle="tab">List</a></li>
                     </ul>
                 </div>
                 <div class="panel-body">
                     <div class="tab-content">
-                        <div class="tab-pane fade in active" id="tabmap">
+                        <div class="tab-pane fade in active" id="tab1default">
                             <div class="map_canvas" style="height: 400px;"></div>
                         </div>
-                        <div class="tab-pane fade nospace" id="tablist">
-                            @Html.DisplayFor(m => m.Schools, "Schools")
+                        <div class="tab-pane fade" id="tab3default">
+                            @Html.DisplayFor(m => m.Promoters, "Promoters")
                         </div>
                     </div>
                 </div>
@@ -84,9 +88,6 @@
         </div>
     </div>
 </div>
-
-
-
 
 @section Scripts
 {
@@ -99,40 +100,40 @@
     <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places&key=@System.Configuration.ConfigurationManager.AppSettings["GoogleAPIKey"]"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="../../Scripts/jquery.geocomplete.js"></script>
-    <link rel="stylesheet" href="~/Content/jquery.rateyo.css" />
-    <script src="~/Scripts/jquery.rateyo.js"></script>
 
-    <link href="~/Content/fullcalendar/fullcalendar.css" rel="stylesheet" />
-    <link href="~/Content/fullcalendar/fullcalendar.print.css" rel="stylesheet" media="print" />
-    <script src="~/Scripts/fullcalendar/moment.min.js"></script>
-    @*<script src="~/Scripts/fullcalendar/jquery.min.js"></script>*@
-    <script src="~/Scripts/fullcalendar/fullcalendar.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $(window).resize(function() {
+                var bodyheight = $(this).height() - 550;
+                //alert($(this).height());
+                //alert(bodyheight);
+                $("#listdiv").height(bodyheight);
+            }).resize();
+        });
 
-    <script>
         //  Map Marker Containers
         var markers = [];
         var infowindows = [];
-
         $(function () {
             //  Map Marker Containers
             //  Build up the Markers
             var map = $("#Location").geocomplete("map");
-            @foreach(var s in Model.Schools.OrderBy(s => s.Name))
+            @foreach(var s in Model.Promoters.OrderBy(m => m.ApplicationUser.FullName))
     {
         <text>
             var marker = new google.maps.Marker({
-                position: new google.maps.LatLng('@s.Latitude', @s.Longitude),
+                position: new google.maps.LatLng('@s.ApplicationUser.Latitude', @s.ApplicationUser.Longitude),
                 map: map,
-                title: '@s.Name',
+                title: '@s.ApplicationUser.FullName',
                 icon: "../../Content/images/MapMarker.png"
             });
 
-            attachMessage(map, marker, '@s.Id', '@s.Name', '@s.Address', '@(s.City + ", " + s.State + " " + s.Zip)', '<a href="@Url.Action("View", "School", new { id = s.Id, school = EDR.Utilities.ApplicationUtility.ToUrlSlug(s.Name), location = EDR.Utilities.ApplicationUtility.ToUrlSlug(s.City) })">' + '@s.Name' + '</a>');
+            attachMessage(map, marker, '@s.Id', '@s.ApplicationUser.FullName', '@(s.ApplicationUser.City + ", " + s.ApplicationUser.State + " " + s.ApplicationUser.ZipCode)', '<a href="@Url.Action("Home", "Promoter", new { username = s.ApplicationUser.UserName })">' + '@s.ApplicationUser.FullName' + '</a>');
             markers.push(marker);
             </text>
     }
 
-            function attachMessage(map, marker, num, placeName, address, address2, link) {
+            function attachMessage(map, marker, num, placeName, address2, link) {
                 var message = marker.title;
                 var infowindow = new google.maps.InfoWindow({
                     disableAutoPan: false,
@@ -145,7 +146,6 @@
                     '</div>' +
                     '<div id="bodyContent">' +
                     '<p>' +
-                    address + '<br>' +
                     address2 +
                     '</p>' +
                     '</div>' +
@@ -166,7 +166,7 @@
             for (var i = 0; i < infowindows.length; i++) {
                 infowindows[i].close();
             }
-        }
+        };
 
         function openEvent(id, lati, long) {
             var latLng = new google.maps.LatLng(lati, long); //Makes a latlng
@@ -177,17 +177,5 @@
             infowindows[id].open(map, markers[id]);
             return false;
         };
-        $(function () {
-
-            $(".rateYo").rateYo({
-                starWidth: "15px",
-                onInit: function (rating, rateYoInstance) {
-                    //  alert("init");
-                    var t = $(this);
-                    $(this).rateYo("option", "rating", t.parent('div').find('.ratingval').prop('value'));
-                    $(this).rateYo("option", "readOnly", true);
-                }
-            });
-        });
     </script>
 }

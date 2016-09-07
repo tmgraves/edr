@@ -267,7 +267,7 @@
             icon: "../../Content/images/MapMarker.png"
         });
 
-        attachMessage(@s.Id, map, marker, '@s.Id', '@s.Name', '@s.Place.Address', '@(s.Place.City + ", " + s.Place.State + " " + s.Place.Zip)', '<a href="@Url.Action("View", "Event", new { id = s.Id, eventType = EDR.Enums.EventType.Class })">' + '@s.Name' + '</a>');
+        attachMessage(@s.Id, map, marker, '@s.Id', '@s.Name', '@s.Place.Address', '@(s.Place.City + ", " + s.Place.State + " " + s.Place.Zip)', '<a href="@Url.Action("Class", "Event", new { id = s.Id })">' + '@s.Name' + '</a>');
         markers.push({
             id: @s.Id,
             marker: marker
