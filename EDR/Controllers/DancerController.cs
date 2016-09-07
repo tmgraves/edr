@@ -148,7 +148,6 @@ namespace EDR.Controllers
         private DancerViewViewModel LoadDancerModel(string username)
         {
             var viewModel = new DancerViewViewModel();
-            var userid = User.Identity.GetUserId();
 
             if (String.IsNullOrWhiteSpace(username))
             {
@@ -158,11 +157,13 @@ namespace EDR.Controllers
                 }
             }
 
+            var user = DataContext.Users.Where(u => u.UserName == username).FirstOrDefault();
+
             var dancer = DataContext.Users.Where(x => x.UserName == username)
                                 .Include("DanceStyles")
                                 .Include("UserPictures")
                                 .FirstOrDefault();
-            viewModel.Teachers = DataContext.Teachers.Where(t => t.Classes.Any(c => c.EventInstances.Any(i => i.EventRegistrations.Any(r => r.UserId == userid)))).Distinct().ToList();
+            viewModel.Teachers = DataContext.Teachers.Where(t => t.Classes.Any(c => c.EventInstances.Any(i => i.EventRegistrations.Any(r => r.UserId == user.Id)))).Distinct().ToList();
 
             if (dancer != null)
             {

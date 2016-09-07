@@ -12,7 +12,10 @@
     <li class="active">Manage School</li>
 </ol>
 
-<h1><span class="text-info">@Model.School.Name</span></h1>
+<div class="buttoncontainer">
+    <h1><span class="text-info">@Model.School.Name</span></h1>
+    @Html.ActionLink("Delete", "Delete", "School", new { id = Model.School.Id }, new { @class = "btn btn-danger actionbutton", @style = "display: block;", onclick = "return confirm('Are you sure you want to DELETE this School?')" })
+</div>
 @if (Model.School.PayeeName == null || Model.School.PayeeAddress == null || Model.School.PayeeCity == null || Model.School.PayeeState == null || Model.School.PayeeZip == null || Model.School.BankName == null || Model.School.BankAccount == null || Model.School.RoutingNumber == null)
 {
     <h4 class="bg-danger">**Please fill in your Financial information so you can get paid for your Ticket Sales</h4>
@@ -419,6 +422,7 @@
                                             <th>Class</th>
                                             <th>Registrations</th>
                                             <th></th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                     @foreach (var item in Model.School.Classes.Where(c => c.EventInstances.Where(i => i.DateTime >= DateTime.Today).Count() > 0).Select(i => new { i.Name, i.Id, NextDate = i.EventInstances.Where(ei => ei.DateTime >= DateTime.Today).OrderBy(ei => ei.DateTime).FirstOrDefault(), Registrations = i.EventInstances.Sum(ei => ei.EventRegistrations.Count()) }).OrderBy(x => x.NextDate.DateTime))
@@ -438,6 +442,9 @@
                                             <td>
                                                 @Html.ActionLink("Next Date", "ManageInstance", "Event", new { id = item.NextDate.Id }, new { @class = "btn btn-primary" })
                                             </td>
+                                            <td>
+                                                @Html.ActionLink("Delete", "Delete", "Event", new { id = item.Id }, new { @class = "btn btn-danger" })
+                                            </td>
                                         </tr>
                                     }
                                 </table>
@@ -448,6 +455,7 @@
                                         <tr>
                                             <th>Class</th>
                                             <th>Registrations</th>
+                                            <th></th>
                                             <th></th>
                                         </tr>
                                     </thead>
@@ -467,6 +475,9 @@
                                             </td>
                                             <td>
                                                 @Html.ActionLink("Next Date", "ManageInstance", "Event", new { id = item.NextDate.Id }, new { @class = "btn btn-primary" })
+                                            </td>
+                                            <td>
+                                                @Html.ActionLink("Delete", "Delete", "Event", new { id = item.Id }, new { @class = "btn btn-danger" })
                                             </td>
                                         </tr>
                                     }
@@ -555,7 +566,7 @@
                                         </td>
                                         <td>
                                             @Html.ActionLink("Details", "ViewTicket", new { id = item.Id }) |
-                                            @Html.ActionLink("Delete", "DeleteTicket", new { id = item.Id })
+                                            @Html.ActionLink("Delete", "DeleteTicket", new { id = Model.School.Id, ticketId = item.Id })
                                         </td>
                                     </tr>
                                 }

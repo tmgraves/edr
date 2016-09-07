@@ -141,6 +141,10 @@ namespace EDR.Data
             //Organizations
             modelBuilder.Entity<Organization>().ToTable("Organizations");
             modelBuilder.Entity<OrganizationMember>().ToTable("OrganizationMembers");
+            modelBuilder.Entity<OrganizationMember>()
+                        .HasRequired(f => f.Organization)
+                        .WithMany(f => f.Members)
+                        .WillCascadeOnDelete(true);
 
             //  Email
             modelBuilder.Entity<Email>().ToTable("Emails");

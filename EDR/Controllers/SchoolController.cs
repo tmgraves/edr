@@ -197,20 +197,42 @@ namespace EDR.Controllers
         [Authorize(Roles = "Teacher,Owner")]
         public ActionResult Delete(int id)
         {
-            var model = DataContext.Schools.Where(s => s.Id == id).FirstOrDefault();
-            return View(model);
+            try
+            {
+                //Save School
+                DataContext.Schools.Remove(DataContext.Schools.Single(s => s.Id == id));
+                DataContext.SaveChanges();
+                return RedirectToAction("Manage", "Teacher");
+            }
+            catch(Exception ex)
+            {
+                return RedirectToAction("Manage", new { id = id });
+            }
         }
 
-        // GET: School
-        [Authorize(Roles = "Teacher,Owner")]
-        [HttpPost]
-        public ActionResult Delete(School school)
-        {
-            //Save School
-            DataContext.Schools.Remove(DataContext.Schools.Single(s => s.Id == school.Id));
-            DataContext.SaveChanges();
+        //// GET: School
+        //[Authorize(Roles = "Teacher,Owner")]
+        //[HttpPost]
+        //public ActionResult Delete(School school)
+        //{
+        //    //Save School
+        //    DataContext.Schools.Remove(DataContext.Schools.Single(s => s.Id == school.Id));
+        //    DataContext.SaveChanges();
 
-            return RedirectToAction("List");
+        //    return RedirectToAction("List");
+        //}
+
+        [Authorize(Roles = "Owner,Teacher")]
+        public ActionResult DeleteTicket(int id, int ticketId)
+        {
+            var ticket = DataContext.Tickets.Include("UserTickets").Where(t => t.Id == ticketId).FirstOrDefault();
+            if (ticket.UserTickets.Count() == 0)
+            {
+                DataContext.Tickets.Remove(ticket);
+                DataContext.SaveChanges();
+            }
+
+            return RedirectToAction("Manage", new { id = id });
         }
 
         // GET: School
