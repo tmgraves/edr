@@ -11,7 +11,9 @@ input[type="number"].securitycode::-webkit-inner-spin-button {
     margin: 0;
 }
 </style>
-@using (Html.BeginForm(null, null, FormMethod.Post, new { @class = "form-horizontal", id = "buyticketform", onsubmit = "submitorder()" }))
+
+@*@using (Html.BeginForm(null, null, FormMethod.Post, new { @class = "form-horizontal", id = "buyticketform", onsubmit = "submitorder()" }))*@
+@using (Html.BeginForm(null, null, FormMethod.Post, new { @class = "form-horizontal", id = "buyticketform" }))
 {
     @Html.HiddenFor(m => m.Order.Id, new { Value = Model.Order.Id })
     @Html.HiddenFor(m => m.EventInstanceId)
@@ -31,56 +33,45 @@ input[type="number"].securitycode::-webkit-inner-spin-button {
             </div>
         </div>
     </div>*@
-    
-    <div class="container-fluid">
-        <div class="container">
-            <div class="col-lg-6 col-md-6 col-lg-offset-3 col-md-offset-3">
-                <h1 class="text-center">Your Order</h1>
-            </div>
-            <div class="col-lg-6 col-md-6 col-lg-offset-3 col-md-offset-3 bg-info">
-                <div class="col-lg-8 col-md-8 col-lg-offset-2 col-md-offset-2 text-center">
-                    @*@Html.ValidationSummary(false, "", new { @class = "text-danger" })*@
-                    @if(Model.Result != "" && Model.Result != null)
-                    {
-                        <span class="text-danger">@Model.Message</span>
-                    }
+    <h1 class="text-center">Your Order</h1>
+    <div class="text-center">
+        <div class="center-block col-lg-6 col-md-6 col-sm-12 col-xs-12 text-center" style="float: none;">
+            <div class="panel panel-default">
+                <div class="panel-body bg-info">
+                    @*@Html.ValidationSummary("", new { @class = "text-danger" })*@
+                    <div class="form-horizontal centerform">
+                        <div class="form-group">
+                            <div class="col-lg-10 col-md-10 center-block text-info">
+                                @if (Model.Result != "" && Model.Result != null)
+                                {
+                                    <span class="text-danger">@Model.Message</span>
+                                }
 
-                    @if (Model.EventInstance != null)
-                    {
-                        <h4 class="text-center">@Model.EventInstance.Event.Name</h4>
-                        <text>@@</text> @Model.EventInstance.Event.Place.Name<br />
-                        @Model.EventInstance.DateTime.ToLongDateString()<br />
-                        <text>@@</text> @(((DateTime)Model.EventInstance.Event.StartTime).ToString("h:mm tt"))
-                    }
-                    else
-                    {
-                        <h4 class="text-center">@Model.School.Name</h4>
-                        @Model.School.Address<br />
-                        @Model.School.City<text>, </text>@Model.School.State<text> </text>@Model.School.Zip
-                    }
-                    @*@if (Model.Attendees != null)
-                    {
-                        <input type="hidden" name="attendeecount" />
-                        <h4>Attendees</h4>
-                        foreach(var a in Model.Attendees)
-                        {
-                            <div>
-                                @a.LastName<text>, </text>@a.FirstName
+                                @if (Model.EventInstance != null)
+                                {
+                                    <h4 class="text-center">@Model.EventInstance.Event.Name</h4>
+                                    <text>@@</text> @Model.EventInstance.Event.Place.Name<br />
+                                    @Model.EventInstance.DateTime.ToLongDateString()<br />
+                                    <text>@@</text> @(((DateTime)Model.EventInstance.Event.StartTime).ToString("h:mm tt"))
+                                }
+                                else
+                                {
+                                    <h4 class="text-center">@Model.School.Name</h4>
+                                    @Model.School.Address<br />
+                                    @Model.School.City<text>, </text>@Model.School.State<text> </text>@Model.School.Zip
+                                }
                             </div>
-                        }
-                    }
-                    else
-                    {
-                        <input type="hidden" name="attendeecount" value="0" />
-                    }*@
-                    <h4 class="text-center">Order Details</h4>
-                    <div class="form-group form-group-sm">
-                        <div class="row">
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                <div class="col-xs-7 col-sm-7 col-md-8 col-lg-8 nospace">
-                                    @Html.DropDownListFor(m => m.TicketId, Model.Tickets.OrderBy(t => t.Quantity).Select(t => new SelectListItem() { Value = t.Id.ToString(), Text = String.Format("{0:N0}", t.Quantity) + " @ " + String.Format("{0:C0}", t.Price) + (t.Limit != null ? " (Limit " + t.Limit + "/Person)" : "") }).ToList(), "Select a Ticket", new { @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <h4 class="text-center">Order Details</h4>
+                            <div class="col-lg-10 col-md-10 center-block text-info">
+                                <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8 nospace">
+                                    @Html.DropDownListFor(m => m.TicketId,
+                                                        Model.Tickets.OrderBy(t => t.Quantity).Select(t => new SelectListItem() { Value = t.Id.ToString(), Text = (t.Description ?? String.Format("{0:N0}", t.Quantity)) + " @ " + String.Format("{0:C0}", t.Price) + (t.Limit != null ? " (Limit " + t.Limit + "/Person)" : "") }).ToList(),
+                                                        "Select a Ticket",
+                                                        new { @class = "form-control" })
                                 </div>
-                                <div class="col-xs-5 col-sm-5 col-md-4 col-lg-4 input-group nospace">
+                                <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 input-group nospace">
                                     <div class="input-group-addon">Qty</div>
                                     @Html.DropDownListFor(m => m.Quantity,
                                                                 new SelectList(new List<SelectListItem> {
@@ -104,27 +95,46 @@ input[type="number"].securitycode::-webkit-inner-spin-button {
                                                                     new SelectListItem() { Text = "18", Value = "18" },
                                                                     new SelectListItem() { Text = "19", Value = "19" },
                                                                     new SelectListItem() { Text = "20", Value = "20" },
-                                                                }, "Value", "Text"), new { @class = "form-control" })
-                                    @*@Html.TextBoxFor(t => t.Quantity, htmlAttributes: new { @class = "form-control text-right", @type = "number", @min = "1", @autocomplete = "off" })*@
+                                                                }, "Value", "Text"), new { @class = "form-control" })<SelectListItem>
+                                        <SelectListItem>
+                                            <SelectListItem>
+                                                @*@Html.TextBoxFor(t => t.Quantity, htmlAttributes: new { @class = "form-control text-right", @type = "number", @min = "1", @autocomplete = "off" })*@
                                 </div>
                                 <div>
                                     @Html.ValidationMessageFor(model => model.TicketId, "", new { @class = "text-danger" })
                                     @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
                                 </div>
                             </div>
-                            <div>
-                                <div id="ticketdiv"></div>
+                            <div class="col-lg-10 col-md-10 center-block text-left">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                    <h4 id="ticdescription"></h4>
+                                </div>
+                            </div>
+                            <div class="col-lg-10 col-md-10 center-block text-info">
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                    <h4 class="text-left">Total:</h4>
+                                </div>
+                                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                                    <h4 id="total" class="text-right"></h4>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <h4 class="text-center">Billing Info</h4>
-                    <div class="form-group form-group-sm">
-                        @Html.TextBoxFor(m => m.CCNumber, htmlAttributes: new { @class = "form-control", @size = "20", @autocomplete = "off", @placeholder = "Card Number" })
-                        @Html.ValidationMessageFor(model => model.CCNumber, "", new { @class = "text-danger" })
-                    </div>
-                    <div class="form-group form-group-sm">
-                        <div class="row">
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                        <div class="form-group">
+                            <div class="row">
+                                <div>
+                                    <div id="ticketdiv"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-8 col-md-8 center-block text-info">
+                                <h4 class="text-center">Payment Info</h4>
+                                @Html.TextBoxFor(m => m.CCNumber, htmlAttributes: new { @class = "form-control", @size = "20", @autocomplete = "off", @placeholder = "Card Number" })
+                                @Html.ValidationMessageFor(model => model.CCNumber, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-8 col-md-8 center-block col-sm-12 col-xs-12">
                                 <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4 nospace">
                                     @*@Html.TextBoxFor(m => m.CCMonth, htmlAttributes: new { @class = "form-control", @size = "2", @placeholder = "Exp Date(YY)" })*@
                                     @Html.DropDownListFor(m => m.CCMonth, new SelectList(new List<SelectListItem>
@@ -158,79 +168,116 @@ input[type="number"].securitycode::-webkit-inner-spin-button {
                                 @Html.ValidationMessageFor(model => model.SecurityCode, "", new { @class = "text-danger" })
                             </div>
                         </div>
-                    </div>
-                    <div class="form-group form-group-sm">
-                        @Html.TextBoxFor(m => m.Order.FirstName, htmlAttributes: new { @class = "form-control", @placeholder = "First Name" })
-                        @Html.ValidationMessageFor(model => model.Order.FirstName, "", new { @class = "text-danger" })
-                    </div>
-                    <div class="form-group form-group-sm">
-                        @Html.TextBoxFor(m => m.Order.LastName, htmlAttributes: new { @class = "form-control", @placeholder = "Last Name" })
-                        @Html.ValidationMessageFor(model => model.Order.LastName, "", new { @class = "text-danger" })
-                    </div>
-                    <div class="form-group form-group-sm">
-                        @Html.TextBoxFor(m => m.Order.Address, htmlAttributes: new { @class = "form-control", @placeholder = "Address" })
-                        @Html.ValidationMessageFor(model => model.Order.Address, "", new { @class = "text-danger" })
-                    </div>
-                    <div class="form-group form-group-sm">
-                        @Html.TextBoxFor(m => m.Order.City, htmlAttributes: new { @class = "form-control", @placeholder = "City" })
-                        @Html.ValidationMessageFor(model => model.Order.City, "", new { @class = "text-danger" })
-                    </div>
-                    <div class="form-group form-group-sm">
-                        @Html.TextBoxFor(m => m.Order.State, htmlAttributes: new { @class = "form-control", @placeholder = "State" })
-                        @Html.ValidationMessageFor(model => model.Order.State, "", new { @class = "text-danger" })
-                    </div>
-                    <div class="form-group form-group-sm">
-                        @Html.TextBoxFor(m => m.Order.PostalCode, htmlAttributes: new { @class = "form-control", @placeholder = "Zipcode" })
-                        @Html.ValidationMessageFor(model => model.Order.PostalCode, "", new { @class = "text-danger" })
-                    </div>
-                    <div class="form-group form-group-sm">
-                        @Html.TextBoxFor(m => m.Order.Country, htmlAttributes: new { @class = "form-control", @placeholder = "Country" })
-                        @Html.ValidationMessageFor(model => model.Order.Country, "", new { @class = "text-danger" })
-                    </div>
-                    <div class="form-group form-group-sm">
-                        @Html.TextBoxFor(m => m.Email, htmlAttributes: new { @class = "form-control", @placeholder = "Email" })
-                        @Html.HiddenFor(m => m.Order.Email)
-                        @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
-                    </div>
-                    <div class="form-group form-group-sm">
-                        @Html.TextBoxFor(m => m.ConfirmEmail, htmlAttributes: new { @class = "form-control", @placeholder = "Confirm Email" })
-                        @Html.ValidationMessageFor(model => model.ConfirmEmail, "", new { @class = "text-danger" })
-                    </div>
-                    @Html.HiddenFor(m => m.Lat)
-                    @Html.HiddenFor(m => m.Lng)
-                </div>
-            </div>
-            <div class="col-lg-6 col-md-6 col-lg-offset-3 col-md-offset-3">
-                <div class="row" style="margin-top: 10px;">
-                    <div class="form-group">
-                        <div class="col-sm-6 text-left">
-                            @if (Model.EventInstance != null)
-                            {
-                                @Html.ActionLink("Cancel Order", "View", "Event", new { id = Model.EventInstance.EventId, eventType = Model.EventInstance.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social }, new { @class = "btn btn-warning" })
-                            }
-                            else
-                            {
-                                @Html.ActionLink("Cancel Order", "View", "School", new { id = Model.School.Id, school = EDR.Utilities.ApplicationUtility.ToUrlSlug(Model.School.Name), location = EDR.Utilities.ApplicationUtility.ToUrlSlug(Model.School.City) }, new { @class = "btn btn-warning" })
-                            }
-                        </div>
-                        <div class="col-sm-6 text-right">
-                            <input class="btn btn-primary" type="submit" value="Submit Order" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6 col-lg-offset-3">
-                <div class="row" style="margin-top: 10px;">
-                    <div class="form-group">
-                        <div class="col-sm-6 text-left">
-                            <!-- (c) 2005, 2016. Authorize.Net is a registered trademark of CyberSource Corporation --> <div class="AuthorizeNetSeal">
-                                <script type="text/javascript" language="javascript">var ANS_customer_id="2b7fc3e6-1313-4039-a9df-09b00f9f3a81";</script>
-                                <script type="text/javascript" language="javascript" src="//verify.authorize.net/anetseal/seal.js"></script> <a rel="nofollow" href="http://www.authorize.net/" id="AuthorizeNetText" target="_blank">Credit Card Processing</a>
+                        <div class="form-group">
+                            <div class="col-lg-8 col-md-8 center-block col-sm-12 col-xs-12 text-info">
+                                @*@if (Model.Attendees != null)
+                                {
+                                    <input type="hidden" name="attendeecount" />
+                                    <h4>Attendees</h4>
+                                    foreach(var a in Model.Attendees)
+                                    {
+                                        <div>
+                                            @a.LastName<text>, </text>@a.FirstName
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <input type="hidden" name="attendeecount" value="0" />
+                                }*@
+                                <input type="hidden" name="attendeecount" value="0" />
                             </div>
                         </div>
-                        <div class="col-sm-6 text-right">
-                            <script type='text/javascript' src='https://www.rapidscansecure.com/siteseal/siteseal.js?code=65,C8E0AAAAB0B0308D8ECEAFBDDAC2194C8E0613FF'></script>
+                        <h4 class="text-center">Billing Info</h4>
+                        <div class="form-group form-group-sm">
+                            <div class="col-lg-8 col-md-8 center-block col-sm-12 col-xs-12 text-info">
+                                @Html.TextBoxFor(m => m.Order.FirstName, htmlAttributes: new { @class = "form-control", @placeholder = "First Name" })
+                                @Html.ValidationMessageFor(model => model.Order.FirstName, "", new { @class = "text-danger" })
+                            </div>
                         </div>
+                        <div class="form-group form-group-sm">
+                            <div class="col-lg-8 col-md-8 center-block col-sm-12 col-xs-12 text-info">
+                                @Html.TextBoxFor(m => m.Order.LastName, htmlAttributes: new { @class = "form-control", @placeholder = "Last Name" })
+                                @Html.ValidationMessageFor(model => model.Order.LastName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group form-group-sm">
+                            <div class="col-lg-8 col-md-8 center-block col-sm-12 col-xs-12 text-info">
+                                @Html.TextBoxFor(m => m.Order.Address, htmlAttributes: new { @class = "form-control", @placeholder = "Address" })
+                                @Html.ValidationMessageFor(model => model.Order.Address, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group form-group-sm">
+                            <div class="col-lg-8 col-md-8 center-block col-sm-12 col-xs-12 text-info">
+                                @Html.TextBoxFor(m => m.Order.City, htmlAttributes: new { @class = "form-control", @placeholder = "City" })
+                                @Html.ValidationMessageFor(model => model.Order.City, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group form-group-sm">
+                            <div class="col-lg-8 col-md-8 center-block col-sm-12 col-xs-12 text-info">
+                                @Html.TextBoxFor(m => m.Order.State, htmlAttributes: new { @class = "form-control", @placeholder = "State" })
+                                @Html.ValidationMessageFor(model => model.Order.State, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group form-group-sm">
+                            <div class="col-lg-8 col-md-8 center-block col-sm-12 col-xs-12 text-info">
+                                @Html.TextBoxFor(m => m.Order.PostalCode, htmlAttributes: new { @class = "form-control", @placeholder = "Zipcode" })
+                                @Html.ValidationMessageFor(model => model.Order.PostalCode, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group form-group-sm">
+                            <div class="col-lg-8 col-md-8 center-block col-sm-12 col-xs-12 text-info">
+                                @Html.TextBoxFor(m => m.Order.Country, htmlAttributes: new { @class = "form-control", @placeholder = "Country" })
+                                @Html.ValidationMessageFor(model => model.Order.Country, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group form-group-sm">
+                            <div class="col-lg-8 col-md-8 center-block col-sm-12 col-xs-12 text-info">
+                                @Html.TextBoxFor(m => m.Email, htmlAttributes: new { @class = "form-control", @placeholder = "Email" })
+                                @Html.HiddenFor(m => m.Order.Email)
+                                @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group form-group-sm">
+                            <div class="col-lg-8 col-md-8 center-block col-sm-12 col-xs-12 text-info">
+                                @Html.TextBoxFor(m => m.ConfirmEmail, htmlAttributes: new { @class = "form-control", @placeholder = "Confirm Email" })
+                                @Html.ValidationMessageFor(model => model.ConfirmEmail, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        @Html.HiddenFor(m => m.Lat)
+                        @Html.HiddenFor(m => m.Lng)
+                        <div class="form-group">
+                            <div class="col-lg-8 col-md-8 center-block col-sm-12 col-xs-12 text-info">
+                                <div class="col-sm-6 col-md-6 col-lg-6 col-xs-6 text-left nospace">
+                                    <input class="btn btn-primary" type="submit" value="Submit Order" />
+                                </div>
+                                <div class="col-sm-6 col-md-6 col-lg-6 col-xs-6 text-right nospace">
+                                    @if (Model.EventInstance != null)
+                                    {
+                                        @Html.ActionLink("Cancel Order", (Model.EventInstance.Event is EDR.Models.Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social).ToString(), "Event", new { id = Model.EventInstance.EventId }, new { @class = "btn btn-warning" })
+                                    }
+                                    else
+                                    {
+                                        @Html.ActionLink("Cancel Order", "View", "School", new { id = Model.School.Id, school = EDR.Utilities.ApplicationUtility.ToUrlSlug(Model.School.Name), location = EDR.Utilities.ApplicationUtility.ToUrlSlug(Model.School.City) }, new { @class = "btn btn-warning" })
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="center-block col-lg-6 col-md-6 text-center" style="float: none;">
+            <div style="margin-top: 10px;">
+                <div class="form-group">
+                    <div class="col-sm-6 text-left">
+                        <!-- (c) 2005, 2016. Authorize.Net is a registered trademark of CyberSource Corporation --> <div class="AuthorizeNetSeal">
+                            <script type="text/javascript" language="javascript">var ANS_customer_id = "2b7fc3e6-1313-4039-a9df-09b00f9f3a81";</script>
+                            <script type="text/javascript" language="javascript" src="//verify.authorize.net/anetseal/seal.js"></script> <a rel="nofollow" href="http://www.authorize.net/" id="AuthorizeNetText" target="_blank">Credit Card Processing</a>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 text-right">
+                        <script type='text/javascript' src='https://www.rapidscansecure.com/siteseal/siteseal.js?code=65,C8E0AAAAB0B0308D8ECEAFBDDAC2194C8E0613FF'></script>
                     </div>
                 </div>
             </div>
@@ -242,6 +289,7 @@ input[type="number"].securitycode::-webkit-inner-spin-button {
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/GeoComplete")
     <script src="https://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places&key=@System.Configuration.ConfigurationManager.AppSettings["GoogleAPIKey"]"></script>
+    <script src="~/Scripts/jquery.formatCurrency-1.4.0.min.js"></script>
 
     <script type="text/javascript">
         //$(function () {
@@ -256,45 +304,75 @@ input[type="number"].securitycode::-webkit-inner-spin-button {
             $('#Order_Email').val($(this).val());
         });
 
-        $(function () {
-            $("#Order_Address").geocomplete({
-                details: "form",
-                types: ["geocode", "establishment"],
-            })
-            .bind("geocode:result", function (event, result) {
-                //$.each(result.reviews, function (i, review) {
-                //    alert(review.text);
-                //});
-                var street_num;
-                var street_name;
-                $.each(result.address_components, function (i, address_component) {
-                    $('#Lat').prop("value", result.geometry.location.lat());
-                    $('#Lng').prop("value", result.geometry.location.lng());
-                    //alert(address_component.types[0]);
-                    //alert(address_component.long_name);
-                    if (address_component.types[0] == "street_number") {
-                        street_num = address_component.long_name;
-                    }
-                    else if (address_component.types[0] == "route") {
-                        street_name = address_component.long_name;
-                    }
-                    else if (address_component.types[0] == "locality") {
-                        $('#Order_City').prop("value", address_component.long_name);
-                    }
-                    else if (address_component.types[0] == "administrative_area_level_1") {
-                        $('#Order_State').prop("value", address_component.long_name);
-                    }
-                    else if (address_component.types[0] == "postal_code") {
-                        $('#Order_PostalCode').prop("value", address_component.long_name);
-                    }
-                    else if (address_component.types[0] == "country") {
-                        $('#Order_Country').prop("value", address_component.long_name);
-                    }
-                });
-                //alert(street_num + " " + street_name);
-                $('#Order_Address').prop("value", street_num + " " + street_name);
-                //  console.log(result);
-            });
+        $("#TicketId").change(function () {
+            CalcTotal();
         });
+        $("#Quantity").change(function () {
+            CalcTotal();
+        });
+
+        function CalcTotal() {
+            var ticketid = $("#TicketId").val();
+            $.ajax({
+                url: '@Url.Action("GetTicketJSON", "Store", new { Area = "" })',
+                data: { id: ticketid },
+                dataType: 'json',
+                type: 'GET',
+                success: function (data) {
+                    var total = data[0].Price * $('#Quantity').val();
+                    //  $('#total').html("Total: " + total);
+                    $('#total').html("Total: " + total);
+                    $('#total').formatCurrency();
+                    $('#ticdescription').html($("#TicketId :selected").text());
+                    //response($.map(data, function (item) {
+                    //    return {
+                    //        label: item.Description,
+                    //        value: item.Id
+                    //    }
+                    //}));
+                }
+            })
+        };
+
+        //$(function () {
+        //    $("#Order_Address").geocomplete({
+        //        details: "form",
+        //        types: ["geocode", "establishment"],
+        //    })
+        //    .bind("geocode:result", function (event, result) {
+        //        //$.each(result.reviews, function (i, review) {
+        //        //    alert(review.text);
+        //        //});
+        //        var street_num;
+        //        var street_name;
+        //        $.each(result.address_components, function (i, address_component) {
+        //            $('#Lat').prop("value", result.geometry.location.lat());
+        //            $('#Lng').prop("value", result.geometry.location.lng());
+        //            //alert(address_component.types[0]);
+        //            //alert(address_component.long_name);
+        //            if (address_component.types[0] == "street_number") {
+        //                street_num = address_component.long_name;
+        //            }
+        //            else if (address_component.types[0] == "route") {
+        //                street_name = address_component.long_name;
+        //            }
+        //            else if (address_component.types[0] == "locality") {
+        //                $('#Order_City').prop("value", address_component.long_name);
+        //            }
+        //            else if (address_component.types[0] == "administrative_area_level_1") {
+        //                $('#Order_State').prop("value", address_component.long_name);
+        //            }
+        //            else if (address_component.types[0] == "postal_code") {
+        //                $('#Order_PostalCode').prop("value", address_component.long_name);
+        //            }
+        //            else if (address_component.types[0] == "country") {
+        //                $('#Order_Country').prop("value", address_component.long_name);
+        //            }
+        //        });
+        //        //alert(street_num + " " + street_name);
+        //        $('#Order_Address').prop("value", street_num + " " + street_name);
+        //        //  console.log(result);
+        //    });
+        //});
     </script>
 }

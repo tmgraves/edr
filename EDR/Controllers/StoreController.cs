@@ -262,6 +262,17 @@ namespace EDR.Controllers
             }
         }
 
+        public JsonResult GetTicketJSON(int id)
+        {
+            var ticket = DataContext.Tickets.Where(t => t.Id == id).Select(t => new { Id = t.Id, Price = t.Price, Description = t.Description }).ToList();
+
+            if (ticket.Count() == 0)
+            {
+                ticket.Add(new { Id = 0, Price = Convert.ToDecimal(0.0), Description = "No results" });
+            }
+            return Json(ticket, JsonRequestBehavior.AllowGet);
+        }
+
         //[HttpPost]
         //public ActionResult PostTransaction(OrderViewModel model)
         //{
@@ -290,7 +301,7 @@ namespace EDR.Controllers
                         {
                             Random r = new Random();
                             var pwd = "Password" + r.Next().ToString();
-                            user = new ApplicationUser() { UserName = model.Order.Email, Email = model.Order.Email, FirstName = model.Order.FirstName, LastName = model.Order.LastName, Location = model.Order.City + ", " + model.Order.State, Latitude = model.Lat, Longitude = model.Lng, NewPassword = true };
+                            user = new ApplicationUser() { UserName = Utilities.ApplicationUtility.ToUrlSlug(model.Order.Email), Email = model.Order.Email, FirstName = model.Order.FirstName, LastName = model.Order.LastName, Location = model.Order.City + ", " + model.Order.State, Latitude = model.Lat, Longitude = model.Lng, NewPassword = true };
                             IdentityResult result = UserManager.Create(user, pwd);
                             string code = UserManager.GenerateEmailConfirmationToken(user.Id);
                             var emailresult = EmailProcess.NewAccount(user.Id, code);
@@ -322,7 +333,7 @@ namespace EDR.Controllers
                     //  Create Order and Details
 
                     //  Post Transaction
-                    if (PostTransaction(model).messages.resultCode == messageTypeEnum.Ok)
+                    if (PostTransaction(model) == "Approved")
                     {
                         var now = DateTime.Now;
                         //  Create Financial Record
@@ -424,7 +435,7 @@ namespace EDR.Controllers
         //}
         //  Event Ticket?
 
-        public static ANetApiResponse PostTransaction(OrderViewModel model)
+        public static string PostTransaction(OrderViewModel model)
         {
             //  Console.WriteLine("Charge Credit Card Sample");
 
@@ -458,6 +469,7 @@ namespace EDR.Controllers
                 lastName = model.Order.LastName, //    "Doe",
                 address = model.Order.Address, //  "123 My St",
                 city = model.Order.City, //  "OurTown",
+                state = model.Order.State,
                 zip = model.Order.PostalCode, //  "98004"
             };
 
@@ -495,11 +507,27 @@ namespace EDR.Controllers
             // get the response from the service (errors contained if any)
             var response = controller.GetApiResponse();
 
+            var result = "";
             model.Order.OrderTransactions = new List<OrderTransaction>();
             if (response != null && response.messages.resultCode == messageTypeEnum.Ok)
             {
-                if (response.transactionResponse != null)
+                if (response.transactionResponse.avsResultCode != "Y")
                 {
+                    result = "Declined";
+                    model.Result = response.transactionResponse.avsResultCode;
+                    model.Message = "Address and/or ZipCode did not match";
+                    model.Order.OrderTransactions.Add(new OrderTransaction() { Success = false, ResponseCode = response.transactionResponse.avsResultCode, ResponseMessage = "Address and/or ZipCode did not match" });
+                }
+                else if (response.transactionResponse.cvvResultCode != "M")
+                {
+                    result = "Declined";
+                    model.Result = response.transactionResponse.cvvResultCode;
+                    model.Message = "Incorrect CVV Code";
+                    model.Order.OrderTransactions.Add(new OrderTransaction() { Success = false, ResponseCode = response.transactionResponse.cvvResultCode, ResponseMessage = "Incorrect CVV Code" });
+                }
+                else if (response.transactionResponse != null)
+                {
+                    result = "Approved";
                     model.Order.OrderTransactionId = response.transactionResponse.transId;
                     model.Order.OrderTransactions.Add(new OrderTransaction() { Success = true, ResponseCode = response.messages.message[0].code, ResponseMessage = response.messages.message[0].text, TransactionId = response.transactionResponse.transId });
                     //  Console.WriteLine("Success, Auth Code : " + response.transactionResponse.authCode);
@@ -509,6 +537,7 @@ namespace EDR.Controllers
             }
             else if (response != null)
             {
+                result = "Declined";
                 // Console.WriteLine("Error: " + response.messages.message[0].code + "  " + response.messages.message[0].text);
                 if (response.transactionResponse != null)
                 {
@@ -522,7 +551,7 @@ namespace EDR.Controllers
             var context = new Data.ApplicationDbContext();
             context.SaveChanges();
 
-            return response;
+            return result;
         }
     }
 }

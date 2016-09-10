@@ -512,6 +512,7 @@
     <Content Include="Content\images\email.png" />
     <Content Include="Content\images\facebooklogin.png" />
     <Content Include="Content\images\facebookSmall.png" />
+    <Content Include="Content\images\FindUsonFacebook.png" />
     <Content Include="Content\images\indicator.white.gif" />
     <Content Include="Content\images\instagram.png" />
     <Content Include="Content\images\loadinggears.gif" />
@@ -654,6 +655,7 @@
     <None Include="Properties\PublishProfiles\SmarterASP.pubxml" />
     <None Include="Properties\PublishProfiles\SmarterASP_FTP.pubxml" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
+    <Content Include="googlec5ad5b5c27d30925.html" />
     <Content Include="Library\DayPilot.Web.Mvc.dll" />
     <Content Include="Media\elements.css" />
     <Content Include="Media\layout.css" />
