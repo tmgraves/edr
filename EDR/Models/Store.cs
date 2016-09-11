@@ -166,7 +166,7 @@ namespace EDR.Models
         {
             get
             {
-                if (TranType == "Purchase Order" && Committed != null && SettlementDate != null && SettlementDate <= DateTime.Today.AddDays(-GlobalVariables.SettlementPeriod))
+                if (TranType == "Purchase Order" && Committed != null && SettlementStatus == "settledSuccessfully" && SettlementDate != null && SettlementDate <= DateTime.Today.AddDays(-GlobalVariables.SettlementPeriod))
                 {
                     return true;
                 }
