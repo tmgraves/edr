@@ -67,7 +67,7 @@ namespace EDR.Controllers
             }
             if (model.SkillLevel != null)
             {
-                model.Classes = model.Classes.Where(x => model.SkillLevel.Contains(x.SkillLevel));
+                model.Classes = model.Classes.Where(x => model.SkillLevel.Contains((int)x.SkillLevel));
             }
             if (model.Days != null)
             {
@@ -400,6 +400,7 @@ namespace EDR.Controllers
                     .Include("LinkedMedia")
                     .SingleOrDefault(e => e.Id == id && (e.Teachers.Any(t => t.ApplicationUser.Id == userid) || e.Owners.Any(t => t.ApplicationUser.Id == userid) || e.School.Members.Any(m => m.UserId == userid && m.Admin) || admin));
                 model.Event = cls;
+                model.SkillLevel = cls.SkillLevel;
                 model.ClassType = cls.ClassType;
             }
             else
@@ -456,6 +457,14 @@ namespace EDR.Controllers
             }
 
             return View(model);
+        }
+
+        [Authorize]
+        public ActionResult GetRegistrants(int id)
+        {
+            var registrants = DataContext.EventRegistrations.Where(r => r.EventInstanceId == id).ToList();
+
+            return PartialView("~/Views/Shared/_EventRegistrationsPartial.cshtml", registrants);
         }
 
         [Authorize(Roles = "Owner,Promoter,Teacher")]
@@ -2527,7 +2536,7 @@ namespace EDR.Controllers
                     {
                         evnt = new Class();
                         ((Class)evnt).SchoolId = (int)model.SchoolId;
-                        ((Class)evnt).SkillLevel = (int)model.SkillLevel;
+                        ((Class)evnt).SkillLevel = (SkillLevel)model.SkillLevel;
                         //  Add Teachers for Class
                         if (model.Role == RoleName.Teacher)
                         {
@@ -2693,50 +2702,50 @@ namespace EDR.Controllers
             return RedirectToAction("Create", model);
         }
 
-        [Authorize]
-        public ActionResult Edit(int? id, EventType eventType, int? placeId)
-        {
-            var model = new EventEditViewModel();
-            model.EventType = eventType;
+        //[Authorize]
+        //public ActionResult Edit(int? id, EventType eventType, int? placeId)
+        //{
+        //    var model = new EventEditViewModel();
+        //    model.EventType = eventType;
 
-            if (id != null)
-            {
-                var ev = DataContext.Events.Where(e => e.Id == id).Include("Creator").FirstOrDefault();
+        //    if (id != null)
+        //    {
+        //        var ev = DataContext.Events.Where(e => e.Id == id).Include("Creator").FirstOrDefault();
 
-                if (ev is Class)
-                {
-                    var cls = DataContext.Events.OfType<Class>().Where(e => e.Id == id).Include("DanceStyles").Include("Place").FirstOrDefault();
-                    model.Event = cls;
-                    model.ClassType = cls.ClassType;
-                    model.SkillLevel = cls.SkillLevel;
-                }
-                else
-                {
-                    var soc = DataContext.Events.OfType<Social>().Where(e => e.Id == id).Include("DanceStyles").Include("Place").FirstOrDefault();
-                    model.Event = soc;
-                    model.SocialType = soc.SocialType;
-                }
+        //        if (ev is Class)
+        //        {
+        //            var cls = DataContext.Events.OfType<Class>().Where(e => e.Id == id).Include("DanceStyles").Include("Place").FirstOrDefault();
+        //            model.Event = cls;
+        //            model.ClassType = cls.ClassType;
+        //            model.SkillLevel = cls.SkillLevel;
+        //        }
+        //        else
+        //        {
+        //            var soc = DataContext.Events.OfType<Social>().Where(e => e.Id == id).Include("DanceStyles").Include("Place").FirstOrDefault();
+        //            model.Event = soc;
+        //            model.SocialType = soc.SocialType;
+        //        }
 
-                //  Update Facebook Details
-                if (ev.FacebookId != null)
-                {
-                    var fbev = FacebookHelper.GetEvent(ev.FacebookId, ev.Creator.FacebookToken, "id,cover,description,end_time,is_date_only,location,name,owner,privacy,start_time,ticket_uri,timezone,updated_time,venue,parent_group");
-                    model.Event.Name = fbev.Name;
-                    model.Event.Description = fbev.Description;
-                    model.Event.PhotoUrl = fbev.CoverPhoto.LargeSource;
-                    model.Event.StartDate = fbev.StartTime;
-                    model.Event.StartTime = fbev.StartTime;
-                    model.Event.EndTime = fbev.EndTime;
-                }
+        //        //  Update Facebook Details
+        //        if (ev.FacebookId != null)
+        //        {
+        //            var fbev = FacebookHelper.GetEvent(ev.FacebookId, ev.Creator.FacebookToken, "id,cover,description,end_time,is_date_only,location,name,owner,privacy,start_time,ticket_uri,timezone,updated_time,venue,parent_group");
+        //            model.Event.Name = fbev.Name;
+        //            model.Event.Description = fbev.Description;
+        //            model.Event.PhotoUrl = fbev.CoverPhoto.LargeSource;
+        //            model.Event.StartDate = fbev.StartTime;
+        //            model.Event.StartTime = fbev.StartTime;
+        //            model.Event.EndTime = fbev.EndTime;
+        //        }
 
-                //  Update Facebook Details
+        //        //  Update Facebook Details
 
-            }
+        //    }
 
-            BuildEditModel(model);
+        //    BuildEditModel(model);
 
-            return View(model);
-        }
+        //    return View(model);
+        //}
 
         [Authorize(Roles = "Owner,Promoter,Teacher")]
         public PartialViewResult AddStyle(EventManageViewModel model)
@@ -3076,6 +3085,7 @@ namespace EDR.Controllers
                     else
                     {
                         ((Class)evnt).ClassType = model.ClassType;
+                        ((Class)evnt).SkillLevel = model.SkillLevel;
                     }
 
                     if (model.NewPlace.GooglePlaceId != null)

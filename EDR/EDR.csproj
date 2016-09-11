@@ -1051,6 +1051,7 @@
     <Content Include="Views\Event\Mobile\Socials.cshtml" />
     <Content Include="Views\Teacher\Mobile\List.cshtml" />
     <Content Include="Views\Promoter\Mobile\List.cshtml" />
+    <Content Include="Views\Shared\_EventRegistrationsPartial.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>
     </None>

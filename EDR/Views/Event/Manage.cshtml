@@ -150,6 +150,14 @@
                         </dl>
                         <dl class="dl-horizontal">
                             <dt>
+                                @Html.DisplayNameFor(model => (Model.Event as Class).SkillLevel)
+                            </dt>
+                            <dd>
+                                @EDR.Utilities.ApplicationUtility.GetDisplayName((EDR.Enums.SkillLevel)(Model.Event as Class).SkillLevel)
+                            </dd>
+                        </dl>
+                        <dl class="dl-horizontal">
+                            <dt>
                                 School:
                             </dt>
                             <dd>
@@ -336,14 +344,14 @@
                                     @Html.ValidationMessageFor(m => m.PromoterGroupId, "", new { @class = "text-danger" })
                                 </dd>
                             </dl>
-                        <dl class="dl-horizontal">
-                            <dt>
-                                @Html.DisplayName("Music Type:")
-                            </dt>
-                            <dd>
-                                @Html.EnumDropDownListFor(model => ((EDR.Models.Social)model.Event).MusicType, new { @class = "form-control" })
-                            </dd>
-                        </dl>
+                            <dl class="dl-horizontal">
+                                <dt>
+                                    @Html.DisplayName("Music Type:")
+                                </dt>
+                                <dd>
+                                    @Html.EnumDropDownListFor(model => ((Social)model.Event).MusicType, new { @class = "form-control" })
+                                </dd>
+                            </dl>
                         }
                         else
                         {
@@ -354,6 +362,15 @@
                                 <dd>
                                     @Html.EnumDropDownListFor(model => model.ClassType, htmlAttributes: new { @class = "form-control" })
                                     @Html.ValidationMessageFor(m => m.ClassType, "", new { @class = "text-danger" })
+                                </dd>
+                            </dl>
+                            <dl class="dl-horizontal">
+                                <dt>
+                                    @Html.DisplayNameFor(model => (model.Event as Class).SkillLevel)
+                                </dt>
+                                <dd>
+                                    @Html.EnumDropDownListFor(model => ((Class)model.Event).SkillLevel, htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => ((Class)model.Event).SkillLevel, "", new { @class = "text-danger" })
                                 </dd>
                             </dl>
                         }
@@ -654,7 +671,10 @@
         <div class="panel panel-default">
             <div class="panel-body ">
                 <h3>Registrations</h3>
-                @foreach (var i in Model.Event.EventInstances.OrderByDescending(i => i.DateTime))
+                @Html.DropDownList("EventInstanceId", new SelectList(Model.Event.EventInstances.OrderByDescending(i => i.DateTime), "Id", "DateTime"), "-- Select an Instance --", new { @class = "form-control" })
+                <div id="registrationsdiv">
+                </div>
+                @*@foreach (var i in Model.Event.EventInstances.OrderByDescending(i => i.DateTime))
                 {
                     @i.DateTime.ToShortDateString()
                     <table class="table table-condensed">
@@ -669,7 +689,7 @@
                         {
                             <tr>
                                 <td>
-                                    @r.User.FullName
+                                    @r.FirstName @r.LastName
                                 </td>
                             </tr>
                         }
@@ -681,7 +701,7 @@
                             </tr>
                         </tfoot>
                     </table>
-                }
+                }*@
             </div>
         </div>
         <div class="panel panel-default">
@@ -1148,6 +1168,13 @@
     $('#eventCount').spinner({
         min: 1,
         max: 10
+    });
+
+    $('#EventInstanceId').change(function () {
+        $.get('@Url.Action("GetRegistrants", "Event")', { 'id': $('#EventInstanceId').val() }, function (data) {
+            $("#registrationsdiv").empty();
+            $("#registrationsdiv").html(data);
+        });
     });
 
     uploadImageUrl = "../../Event/UploadImageAsync";

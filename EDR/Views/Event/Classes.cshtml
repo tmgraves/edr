@@ -230,16 +230,15 @@
         $('#Days').multiselect({
             nonSelectedText: 'Day of Week',
             buttonClass: 'multiselectbutton form-control',
-            buttonText: function(options, select) {
-                return 'Day of Week';
-            }
+            numberDisplayed: 1
+            //buttonText: function(options, select) {
+            //    return 'Day of Week';
+            //}
         });
         $('#SkillLevel').multiselect({
             nonSelectedText: 'Skill Level',
             buttonClass: 'multiselectbutton form-control',
-            buttonText: function(options, select) {
-                return 'Skill Level';
-            }
+            numberDisplayed: 1
         });
         $('#Days').show();
         $('#SkillLevel').show();

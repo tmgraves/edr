@@ -10,7 +10,7 @@ namespace EDR.Models
 {
     public class Class : Event
     {
-        public int SkillLevel { get; set; }
+        public SkillLevel SkillLevel { get; set; }
         public string Prerequisite { get; set; }
         public ClassType ClassType { get; set; }
         [Required]

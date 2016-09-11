@@ -373,6 +373,13 @@ namespace EDR.Controllers
                         if (model.EventInstanceId != null)
                         {
                             RegisterDancer(userid, (int)model.EventInstanceId, uticket.Id, user.FirstName, user.LastName);
+                            if (model.Quantity > 1)
+                            {
+                                for (int i = 1; i < model.Quantity; i++)
+                                {
+                                    RegisterDancer(userid, (int)model.EventInstanceId, uticket.Id, user.FirstName + " " + user.LastName, "Guest " + i.ToString());
+                                }
+                            }
                             //DataContext.EventRegistrations.Add(new EventRegistration() { UserId = userid, EventInstanceId = (int)model.EventInstanceId, UserTicketId = uticket.Id, FirstName = user.FirstName, LastName = user.LastName });
                             //DataContext.SaveChanges();
 

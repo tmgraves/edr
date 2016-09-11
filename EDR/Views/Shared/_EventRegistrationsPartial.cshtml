@@ -1,0 +1,26 @@
+﻿@model List<EDR.Models.EventRegistration>
+
+<table class="table table-condensed">
+    <thead>
+        <tr>
+            <th>
+                Name
+            </th>
+        </tr>
+    </thead>
+    @foreach (var r in Model)
+    {
+        <tr>
+            <td>
+                @r.FirstName @r.LastName
+            </td>
+        </tr>
+    }
+    <tfoot>
+        <tr>
+            <td>
+                <b>Total: @Model.Count()</b>
+            </td>
+        </tr>
+    </tfoot>
+</table>

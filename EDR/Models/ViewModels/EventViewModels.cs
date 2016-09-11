@@ -299,6 +299,7 @@ namespace EDR.Models.ViewModels
         public int? PromoterGroupId { get; set; }
         public SocialType SocialType { get; set; }
         public ClassType ClassType { get; set; }
+        public SkillLevel SkillLevel { get; set; }
 
         public EventManageViewModel()
         {

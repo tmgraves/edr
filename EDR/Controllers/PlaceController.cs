@@ -457,7 +457,7 @@ namespace EDR.Controllers
 
             if (model.SkillLevel != null && model.SkillLevel != 0)
             {
-                classes = classes.Where(x => x.SkillLevel == (int)model.SkillLevel).ToList();
+                classes = classes.Where(x => x.SkillLevel == model.SkillLevel).ToList();
             }
 
             if (classdays != null)
