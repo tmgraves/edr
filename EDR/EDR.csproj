@@ -422,6 +422,7 @@
     <Compile Include="Startup.cs" />
     <Compile Include="Utilities\ApplicationUtility.cs" />
     <Compile Include="Utilities\Attributes.cs" />
+    <Compile Include="Utilities\CalendarHelper.cs" />
     <Compile Include="Utilities\EventHelper.cs">
       <SubType>Code</SubType>
     </Compile>

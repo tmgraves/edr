@@ -10,7 +10,6 @@
     ViewBag.Keywords = String.Join(" ", Model.Event.DanceStyles.Select(s => s.Name).ToArray()) + " " + Model.Event.Place.City + ", " + Model.Event.Place.StateName;
     ViewBag.Description = Model.Event.Description;
 }
-
 <style>
     .verticaljustify {
         height: 220px;
@@ -145,38 +144,45 @@
                         }
                     </div>
                 </div>
-                @if (Model.EventType == EventType.Class)
-                {
-                    <h3>
-                        <span class="label label-success">
-                            @EDR.Utilities.ApplicationUtility.GetDisplayName((EDR.Enums.SkillLevel)((Class)Model.Event).SkillLevel)
-                            @*@{
-                                switch (((Class)Model.Event).SkillLevel)
-                                {
-                                    case 1:
-                                        <text>Beginner</text>;
-                                        break;
-                                    case 2:
-                                        <text>Beginner/Intermediate</text>;
-                                        break;
-                                    case 3:
-                                        <text>Intermediate</text>;
-                                        break;
-                                    case 4:
-                                        <text>Intermediate/Advanced</text>;
-                                        break;
-                                    case 5:
-                                        <text>Advanced</text>;
-                                        break;
-                                }
-                            }*@
-                        </span>
-                    </h3>
-                    <p>
-                    </p>
-                    }
+                <div class="row">
+                    <div class="col-lg-9 col-md-9 text-left nospace">
+                        @if (Model.EventType == EventType.Class)
+                        {
+                            <h3>
+                                <span class="label label-success input-lg">
+                                    @EDR.Utilities.ApplicationUtility.GetDisplayName((EDR.Enums.SkillLevel)((Class)Model.Event).SkillLevel)
+                                </span>
+                            </h3>
+                        }
+                    </div>
+                    <div class="col-lg-2 col-md-2">
+                        <div class="dropdown">
+                            <button class="btn btn-warning dropdown-toggle" type="button" data-toggle="dropdown">
+                                <i class="glyphicon glyphicon-calendar"></i> Add to Calendar
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a id="fl_ical" href="http://addtocalendar.com/atc/ical?f=m&e[0][date_start]=2016-05-04%2012%3A00%3A00&e[0][date_end]=2016-05-04%2018%3A00%3A00&e[0][timezone]=Pacific%2FMidway&e[0][title]=Star%20Wars%20Day%20Party&e[0][description]=May%20the%20force%20be%20with%20you&e[0][location]=Tatooine&e[0][organizer]=Luke%20Skywalker&e[0][organizer_email]=luke%40starwars.com&e[0][privacy]=public" target="_blank">iCalendar</a>
+                                </li>
+                                <li>
+                                    <a href='http://www.google.com/calendar/event?action=TEMPLATE&text=@Model.Event.Name!&dates=@Convert.ToDateTime(Model.CurrentInstance.StartTime).ToString("yyyyMMddTHHmmss")/@Convert.ToDateTime(Model.CurrentInstance.EndTime).ToString("yyyyMMddTHHmmss")&details=@(Model.Event.Description + "%0A%0A" + Url.Encode(Url.Action("View", "Event", new { id = Model.Event.Id, eventType = Model.EventType, Area = "" }, protocol: HttpContext.Current.Request.Url.Scheme)))&location=@Model.Event.Place.Address+@Model.Event.Place.City,+@(Model.Event.Place.State != null ? Model.Event.Place.State.ToString() : Model.Event.Place.StateName)+@Model.Event.Place.Zip&trp=false&sprop=website&sprop=@Url.Encode(Url.Action("View", "Event", new { id = Model.Event.Id, eventType = Model.EventType, Area = "" }, protocol: HttpContext.Current.Request.Url.Scheme))' target='_blank'>Google</a>
+                                </li>
+                                <li>
+                                    <a id="fl_outlook" href="http://addtocalendar.com/atc/outlook?f=m&e[0][date_start]=2016-05-04%2012%3A00%3A00&e[0][date_end]=2016-05-04%2018%3A00%3A00&e[0][timezone]=Pacific%2FMidway&e[0][title]=Star%20Wars%20Day%20Party&e[0][description]=May%20the%20force%20be%20with%20you&e[0][location]=Tatooine&e[0][organizer]=Luke%20Skywalker&e[0][organizer_email]=luke%40starwars.com&e[0][privacy]=public" target="_blank">Outlook</a>
+                                </li>
+                                <li>
+                                    <a id="fl_outlookonline" href="http://addtocalendar.com/atc/outlookonline?f=m&e[0][date_start]=2016-05-04%2012%3A00%3A00&e[0][date_end]=2016-05-04%2018%3A00%3A00&e[0][timezone]=Pacific%2FMidway&e[0][title]=Star%20Wars%20Day%20Party&e[0][description]=May%20the%20force%20be%20with%20you&e[0][location]=Tatooine&e[0][organizer]=Luke%20Skywalker&e[0][organizer_email]=luke%40starwars.com&e[0][privacy]=public" target="_blank">Outlook Online</a>
+                                </li>
+                                <li>
+                                    @*<a id="fl_yahoo" href="http://addtocalendar.com/atc/yahoo?f=m&e[0][date_start]=2016-05-04%2012%3A00%3A00&e[0][date_end]=2016-05-04%2018%3A00%3A00&e[0][timezone]=Pacific%2FMidway&e[0][title]=Star%20Wars%20Day%20Party&e[0][description]=May%20the%20force%20be%20with%20you&e[0][location]=Tatooine&e[0][organizer]=Luke%20Skywalker&e[0][organizer_email]=luke%40starwars.com&e[0][privacy]=public" target="_blank">Yahoo! Calendar</a>*@
+                                    <a href='http://calendar.yahoo.com/?v=60&view=d&type=10&title=@Model.Event.Name&st=@Convert.ToDateTime(Model.CurrentInstance.StartTime).ToString("yyyyMMddTHHmmss")&dur=@(((TimeSpan)(Model.CurrentInstance.EndTime - Model.CurrentInstance.StartTime)).ToString("hhmm"))&desc=@(Model.Event.Description + "%0A%0A" + Url.Encode(Url.Action("View", "Event", new { id = Model.Event.Id, eventType = Model.EventType, Area = "" }, protocol: HttpContext.Current.Request.Url.Scheme)))&in_loc=@Model.Event.Place.Address+@Model.Event.Place.City,+@(Model.Event.Place.State != null ? Model.Event.Place.State.ToString() : Model.Event.Place.StateName)+@Model.Event.Place.Zip&in_st=websitename&in_csz=@Url.Encode(Url.Action("View", "Event", new { id = Model.Event.Id, eventType = Model.EventType, Area = "" }, protocol: HttpContext.Current.Request.Url.Scheme))' target='_blank'>Yahoo</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
-
             <div class="col-lg-8 col-md-8 attachbottom bg-success">
                 @{
                     <div style="width: 100%;">
@@ -648,6 +654,8 @@
 
 <link href="~/Content/YouTubePopUp.css" rel="stylesheet" />
 <script src="~/Scripts/YouTubePopUp.jquery.js"></script>
+@*<script src="https://addtocalendar.com/atc/1.5/atc.min.js"></script>
+<link href="https://addtocalendar.com/atc/1.5/atc-style-blue.css" rel="stylesheet" type="text/css">*@
 
 <script>
     $(document).ready(function () {
