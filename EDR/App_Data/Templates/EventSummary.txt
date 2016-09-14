@@ -32,9 +32,6 @@ If you don't see the button above, please paste this link into your browser to a
 	<a href='https://www.eatdancerepeat.com/'>www.EatDanceRepeat.com</a>
 </p>
 <p>
-	(323) 940-3377
-</p>
-<p>
 	<a href='mailto:info@eatdancerepeat.com'>info@eatdancerepeat.com</a>
 </p>
 </div>

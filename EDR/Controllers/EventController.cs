@@ -48,6 +48,15 @@ namespace EDR.Controllers
                                 .Include("EventInstances")
                                 .Where(c => c.EventInstances.Any(i => i.DateTime >= DateTime.Today))
                                 .AsQueryable();
+            if (model.Style != null)
+            {
+                var style = DataContext.DanceStyles.Where(s => s.Name == model.Style).FirstOrDefault();
+                if (style != null)
+                {
+                    model.DanceStyleId = style.Id;
+                }
+            }
+
             if (model.DanceStyleId != null)
             {
                 model.Classes = model.Classes.Where(c => c.DanceStyles.Select(st => st.Id).Contains((int)model.DanceStyleId));
@@ -107,6 +116,15 @@ namespace EDR.Controllers
                                 .Include("EventInstances")
                                 .Where(c => c.EventInstances.Any(i => i.DateTime >= DateTime.Today))
                                 .AsQueryable();
+            if (model.Style != null)
+            {
+                var style = DataContext.DanceStyles.Where(s => s.Name == model.Style).FirstOrDefault();
+                if (style != null)
+                {
+                    model.DanceStyleId = style.Id;
+                }
+            }
+
             if (model.DanceStyleId != null)
             {
                 model.Socials = model.Socials.Where(c => c.DanceStyles.Select(st => st.Id).Contains((int)model.DanceStyleId));
@@ -1283,7 +1301,8 @@ namespace EDR.Controllers
             {
                 model.CurrentInstance = model.Event.EventInstances.Where(i => i.Id == instanceId).FirstOrDefault();
             }
-            else
+
+            if (model.CurrentInstance == null)
             {
                 model.CurrentInstance = model.Event.EventInstances.Where(i => i.DateTime >= DateTime.Today).OrderBy(i => i.DateTime).FirstOrDefault();
                 if (model.CurrentInstance == null)

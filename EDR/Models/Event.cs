@@ -114,6 +114,12 @@ namespace EDR.Models
 
         public string PhotoUrl { get; set; }
         public string VideoUrl { get; set; }
+        private string _timezone = System.TimeZone.CurrentTimeZone.StandardName;
+        public string TimeZone
+        {
+            get { return _timezone; }
+            set { _timezone = value; }
+        }
 
         //[Index("IX_Events_ChildEvents")]
         //public int? ParentEventId { get; set; }

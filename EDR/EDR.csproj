@@ -442,6 +442,7 @@
     <Content Include="App_Data\Templates\ExpiringEvent.txt" />
     <Content Include="App_Data\Templates\EventSummary.txt" />
     <Content Include="App_Data\Templates\DailyDancerSummary.txt" />
+    <Content Include="App_Data\Templates\NewUserEventRegistration.txt" />
     <Content Include="App_Data\Templates\NewEventRegistration.txt" />
     <Content Include="App_Data\Templates\NewVideo.txt" />
     <Content Include="App_Data\Templates\NewRoleUser.txt" />

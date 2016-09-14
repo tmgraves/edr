@@ -604,13 +604,13 @@ namespace EDR.Controllers
             {
                 pages.Add(Url.Action("Home", "Owner", new { username = t.ApplicationUser.UserName }));
             }
-            foreach (var c in DataContext.Classes.Select(c => c.Place.City + ", " + c.Place.State).Distinct())
+            foreach (var c in DataContext.Classes.SelectMany(c => c.DanceStyles.Select(s => new { City = c.Place.City + ", " + c.Place.State, Style = s.Name })).Distinct().ToList())
             {
-                pages.Add(Url.Action("Classes", "Event", new { Location = ApplicationUtility.ToUrlSlug(c) }));
+                pages.Add(Url.Action("Classes", "Event", new { Location = ApplicationUtility.ToUrlSlug(c.City), Style = ApplicationUtility.ToUrlSlug(c.Style) }));
             }
-            foreach (var c in DataContext.Classes.Select(e => e.Place.City + ", " + e.Place.State).Distinct())
+            foreach (var s in DataContext.Socials.SelectMany(c => c.DanceStyles.Select(s => new { City = c.Place.City + ", " + c.Place.State, Style = s.Name })).Distinct().ToList())
             {
-                pages.Add(Url.Action("Socials", "Event", new { Location = ApplicationUtility.ToUrlSlug(c) }));
+                pages.Add(Url.Action("Socials", "Event", new { Location = ApplicationUtility.ToUrlSlug(s.City), Style = ApplicationUtility.ToUrlSlug(s.Style) }));
             }
             foreach (var c in DataContext.Schools.Select(e => e.City + ", " + e.State).Distinct())
             {

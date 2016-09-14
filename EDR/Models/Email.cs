@@ -180,9 +180,12 @@ namespace EDR.Models
 
                 var registration = context.EventRegistrations.Single(r => r.Id == id);
 
+                var contact = new ApplicationUser();
+
                 if (registration.Instance.Event is Class)
                 {
                     var teachers = context.Teachers.Where(t => t.Classes.Any(c => c.Id == registration.Instance.EventId)).ToList();
+                    contact = teachers.FirstOrDefault().ApplicationUser;
                     var skilllevel = string.Format("<p><b>Skill Level:</b> {0} years</ p>", registration.User.Experience.ToString());
 
                     foreach (var t in teachers)
@@ -196,6 +199,7 @@ namespace EDR.Models
                 else
                 {
                     var promoters = context.Promoters.Where(t => t.Socials.Any(c => c.Id == registration.Instance.EventId)).ToList();
+                    contact = promoters.FirstOrDefault().ApplicationUser;
                     var skilllevel = "";
 
                     foreach (var p in promoters)
@@ -206,6 +210,55 @@ namespace EDR.Models
                     }
                     context.SaveChanges();
                 }
+
+                var evntlink = requestContext.HttpContext.Server.UrlEncode(new UrlHelper(requestContext).Action("View", "Event", new { id = registration.Instance.Event.Id, eventType = registration.Instance.Event is Class ? EDR.Enums.EventType.Class : EDR.Enums.EventType.Social, Area = "" }, protocol: HttpContext.Current.Request.Url.Scheme));
+
+                var ical = String.Format("http://addtocalendar.com/atc/ical?f=m&e[0][date_start]={0}&e[0][date_end]={1}&e[0][timezone]={2}&e[0][title]={3}&e[0][description]={4}&e[0][location]={5}&e[0][organizer]={6}&e[0][organizer_email]={7}&e[0][privacy]=public",
+                        Convert.ToDateTime(registration.Instance.StartTime).ToString("yyyy-MM-dd HH:mm:ss"),
+                        Convert.ToDateTime(registration.Instance.EndTime).ToString("yyyy-MM-dd HH:mm:ss"),
+                        TimeZoneInfo.FindSystemTimeZoneById(TimeZone.CurrentTimeZone.StandardName).DisplayName,
+                        registration.Instance.Event.Name,
+                        registration.Instance.Event.Description + "%0A%0A" + evntlink, 
+                        registration.Instance.Place.Address + registration.Instance.Place.City + "," + (registration.Instance.Place.State != null ? registration.Instance.Place.State.ToString() : registration.Instance.Place.StateName) + registration.Instance.Place.Zip,
+                        contact.FullName,
+                        contact.Email);
+                var google = String.Format("http://www.google.com/calendar/event?action=TEMPLATE&text={0}!&dates={1}/{2}&details={3}&location={4}&trp=false&sprop=website&sprop={5}",
+                        registration.Instance.Event.Name,
+                        Convert.ToDateTime(registration.Instance.StartTime).ToString("yyyyMMddTHHmmss"),
+                        Convert.ToDateTime(registration.Instance.EndTime).ToString("yyyyMMddTHHmmss"),
+                        registration.Instance.Event.Description + "%0A%0A" + evntlink,
+                        registration.Instance.Place.Address + registration.Instance.Place.City + "," + (registration.Instance.Place.State != null ? registration.Instance.Place.State.ToString() : registration.Instance.Place.StateName) + registration.Instance.Place.Zip,
+                        evntlink);
+                var outlook = String.Format("http://addtocalendar.com/atc/outlook?f=m&e[0][date_start]={0}&e[0][date_end]={1}&e[0][timezone]={2}&e[0][title]={3}&e[0][description]={4}&e[0][location]={5}&e[0][organizer]={6}&e[0][organizer_email]={7}&e[0][privacy]=public",
+                        Convert.ToDateTime(registration.Instance.StartTime).ToString("yyyy-MM-dd HH:mm:ss"),
+                        Convert.ToDateTime(registration.Instance.EndTime).ToString("yyyy-MM-dd HH:mm:ss"),
+                        TimeZoneInfo.FindSystemTimeZoneById(TimeZone.CurrentTimeZone.StandardName).DisplayName,
+                        registration.Instance.Event.Name,
+                        registration.Instance.Event.Description + "%0A%0A" + evntlink,
+                        registration.Instance.Place.Address + registration.Instance.Place.City + "," + (registration.Instance.Place.State != null ? registration.Instance.Place.State.ToString() : registration.Instance.Place.StateName) + registration.Instance.Place.Zip,
+                        contact.FullName,
+                        contact.Email);
+                var outlookonline = String.Format("http://addtocalendar.com/atc/outlookonline?f=m&e[0][date_start]={0}&e[0][date_end]={1}&e[0][timezone]={2}&e[0][title]={3}&e[0][description]={4}&e[0][location]={5}&e[0][organizer]={6}&e[0][organizer_email]={7}&e[0][privacy]=public",
+                        Convert.ToDateTime(registration.Instance.StartTime).ToString("yyyy-MM-dd HH:mm:ss"),
+                        Convert.ToDateTime(registration.Instance.EndTime).ToString("yyyy-MM-dd HH:mm:ss"),
+                        TimeZoneInfo.FindSystemTimeZoneById(TimeZone.CurrentTimeZone.StandardName).DisplayName,
+                        registration.Instance.Event.Name,
+                        registration.Instance.Event.Description + "%0A%0A" + evntlink,
+                        registration.Instance.Place.Address + registration.Instance.Place.City + "," + (registration.Instance.Place.State != null ? registration.Instance.Place.State.ToString() : registration.Instance.Place.StateName) + registration.Instance.Place.Zip,
+                        contact.FullName,
+                        contact.Email);
+                var yahoo = String.Format("http://calendar.yahoo.com/?v=60&view=d&type=10&title={0}&st={1}&dur={2}&desc={3}&in_loc={4}&in_st=websitename&in_csz={5}",
+                        registration.Instance.Event.Name,
+                        Convert.ToDateTime(registration.Instance.StartTime).ToString("yyyyMMddTHHmmss"),
+                        (((TimeSpan)(registration.Instance.EndTime - registration.Instance.StartTime)).ToString("hhmm")),
+                        registration.Instance.Event.Description + "%0A%0A" + evntlink,
+                        registration.Instance.Place.Address + registration.Instance.Place.City + "," + (registration.Instance.Place.State != null ? registration.Instance.Place.State.ToString() : registration.Instance.Place.StateName) + registration.Instance.Place.Zip,
+                        evntlink);
+
+                var codestring = new UrlHelper(requestContext).Action("CheckinByCode", "Event", new { id = registration.Id, Area = "" }, protocol: HttpContext.Current.Request.Url.Scheme);
+                var msg = LoadTemplate("NewUserEventRegistration.txt", registration.FirstName, registration.Instance.Event.Name, registration.Instance.DateTime.ToLongDateString(), "<img src='https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=" + codestring + "' />", ical, google, outlook, outlookonline, yahoo);
+                context.Emails.Add(new Email() { ToEmail = registration.User.Email, Subject = "You are registered for " + registration.Instance.Event.Name, Body = msg });
+                context.SaveChanges();
 
                 return "success";
             }
@@ -223,8 +276,6 @@ namespace EDR.Models
                 ApplicationDbContext context = new ApplicationDbContext();
                 var date = DateTime.Today.AddDays(7);
 
-                var requestContext = HttpContext.Current.Request.RequestContext;
-
                 var classes = context.Classes.Where(e => e.EventInstances.Max(i => i.DateTime) == date && e.Recurring).ToList();
                 foreach (var c in classes)
                 {
@@ -232,7 +283,7 @@ namespace EDR.Models
                     {
                         foreach (var t in c.Teachers)
                         {
-                            var eventstring = new UrlHelper(requestContext).Action("Manage", "Event", new { id = c.Id, eventType = EDR.Enums.EventType.Class, Area = "" }, protocol: HttpContext.Current.Request.Url.Scheme);
+                            var eventstring = ConfigurationManager.AppSettings["Domain"] + "/Class/Manage/" + c.Id.ToString();
                             var messagebody = LoadTemplate("ExpiringEvent.txt", t.ApplicationUser.FullName, "Class", c.Name, c.EventInstances.Max(i => i.DateTime).ToLongDateString(), eventstring, eventstring);
                             context.Emails.Add(new Email() { ToEmail = t.ApplicationUser.Email, Subject = "Your Class is about to Expire", Body = messagebody });
                             //  var result = LoadTemplateSend("ExpiringEvent.txt", t.ApplicationUser.Email, "Your Class is about to Expire", t.ApplicationUser.FullName, "Class", c.Name, c.EventInstances.Max(i => i.DateTime).ToLongDateString(), eventstring, eventstring);
@@ -248,7 +299,7 @@ namespace EDR.Models
                     {
                         foreach (var p in s.Promoters)
                         {
-                            var eventstring = new UrlHelper(requestContext).Action("Manage", "Event", new { id = s.Id, eventType = EDR.Enums.EventType.Social, Area = "" }, protocol: HttpContext.Current.Request.Url.Scheme);
+                            var eventstring = ConfigurationManager.AppSettings["Domain"] + "/Social/Manage/" + s.Id.ToString();
                             var messagebody = LoadTemplate("ExpiringEvent.txt", p.ApplicationUser.FullName, "Social", s.Name, s.EventInstances.Max(i => i.DateTime).ToLongDateString(), eventstring, eventstring);
                             context.Emails.Add(new Email() { ToEmail = p.ApplicationUser.Email, Subject = "Your Social is about to Expire", Body = messagebody });
                             //  var result = LoadTemplateSend("ExpiringEvent.txt", p.ApplicationUser.Email, "Your Social is about to Expire", p.ApplicationUser.FullName, "Social", s.Name, s.EventInstances.Max(i => i.DateTime).ToLongDateString(), eventstring, eventstring);
@@ -264,7 +315,7 @@ namespace EDR.Models
                     {
                         foreach (var t in r.Team.Teachers)
                         {
-                            var eventstring = new UrlHelper(requestContext).Action("Manage", "Team", new { id = r.TeamId, Area = "" }, protocol: HttpContext.Current.Request.Url.Scheme);
+                            var eventstring = ConfigurationManager.AppSettings["Domain"] + "/Team/Manage/" + r.Team.Id.ToString();
                             var messagebody = LoadTemplate("ExpiringEvent.txt", t.ApplicationUser.FullName, "Rehearsal", "for " + r.Team.Name, r.EventInstances.Max(i => i.DateTime).ToLongDateString(), eventstring, eventstring);
                             context.Emails.Add(new Email() { ToEmail = t.ApplicationUser.Email, Subject = "Your Rehearsal is about to Expire", Body = messagebody });
                             //  var result = LoadTemplateSend("ExpiringEvent.txt", t.ApplicationUser.Email, "Your Rehearsal is about to Expire", t.ApplicationUser.FullName, "Rehearsal", "for " + r.Team.Name, r.EventInstances.Max(i => i.DateTime).ToLongDateString(), eventstring, eventstring);
@@ -287,7 +338,6 @@ namespace EDR.Models
             try
             {
                 ApplicationDbContext context = new ApplicationDbContext();
-                var requestContext = HttpContext.Current.Request.RequestContext;
                 var today = DateTime.Today;
 
                 var users = context.Users.Include("EventRegistrations").Where(u => u.EventRegistrations.Any(r => r.Instance.DateTime == today)).ToList();
@@ -310,7 +360,7 @@ namespace EDR.Models
 
                     evntlist += "</table>";
 
-                    var userpage = new UrlHelper(requestContext).Action("Manage", "Dancer", new { Area = "" }, protocol: HttpContext.Current.Request.Url.Scheme);
+                    var userpage = ConfigurationManager.AppSettings["Domain"] + "/Dancer/Manage";
                     var messagebody = LoadTemplate("DailyDancerSummary.txt", u.FullName, today.ToLongDateString(), evntlist, userpage, userpage);
                     context.Emails.Add(new Email() { ToEmail = u.Email, Subject = "Your Daily Events", Body = messagebody });
                 }
@@ -331,7 +381,7 @@ namespace EDR.Models
             try
             {
                 ApplicationDbContext context = new ApplicationDbContext();
-                var requestContext = HttpContext.Current.Request.RequestContext;
+                //  var requestContext = HttpContext.Current.Request.RequestContext;
                 var date = DateTime.Today;
 
                 var instances =
@@ -344,7 +394,7 @@ namespace EDR.Models
                     on i.EventId equals s.Id
                     into sres
                     from soc in sres.DefaultIfEmpty()
-                    where i.DateTime <= DateTime.Today
+                    where i.DateTime == DateTime.Today
                     select new
                     {
                         i,
@@ -360,7 +410,8 @@ namespace EDR.Models
                     {
                         foreach (var t in c.cls.Teachers)
                         {
-                            var eventstring = new UrlHelper(requestContext).Action("Manage", "Event", new { id = c.cls.Id, eventType = EDR.Enums.EventType.Class, Area = "" }, protocol: HttpContext.Current.Request.Url.Scheme);
+                            var eventstring = ConfigurationManager.AppSettings["Domain"] + "/Class/Manage/" + c.cls.Id.ToString();
+                            //  var eventstring = new UrlHelper(requestContext).Action("Manage", "Event", new { id = c.cls.Id, eventType = EDR.Enums.EventType.Class, Area = "" }, protocol: HttpContext.Current.Request.Url.Scheme);
 
                             var attendees = "<table>" +
                                             "<thead>" +
@@ -390,7 +441,8 @@ namespace EDR.Models
                     {
                         foreach (var pro in soc.soc.Promoters)
                         {
-                            var eventstring = new UrlHelper(requestContext).Action("Manage", "Event", new { id = soc.soc.Id, eventType = EDR.Enums.EventType.Social, Area = "" }, protocol: HttpContext.Current.Request.Url.Scheme);
+                            var eventstring = ConfigurationManager.AppSettings["Domain"] + "/Social/Manage/" + soc.soc.Id.ToString();
+                            //  var eventstring = new UrlHelper(requestContext).Action("Manage", "Event", new { id = soc.soc.Id, eventType = EDR.Enums.EventType.Social, Area = "" }, protocol: HttpContext.Current.Request.Url.Scheme);
 
                             var attendees = "<thead>" +
                                                 "<tr>" +
@@ -480,7 +532,7 @@ namespace EDR.Models
 
             string body;
             //Read template file from the App_Data folder
-            using (var sr = new StreamReader(HttpContext.Current.Server.MapPath("\\App_Data\\Templates\\" + template)))
+            using (var sr = new StreamReader(System.AppDomain.CurrentDomain.BaseDirectory + "App_Data\\Templates\\" + template))
             {
                 body = sr.ReadToEnd();
             }

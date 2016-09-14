@@ -31,15 +31,15 @@ namespace EDR
 
             routes.MapRoute(
                 name: "ClassesRoute",
-                url: "Classes/{Location}",
-                defaults: new { controller = "Event", action = "Classes", Location = UrlParameter.Optional },
+                url: "Classes/{Location}/{Style}",
+                defaults: new { controller = "Event", action = "Classes", Location = UrlParameter.Optional, Style = UrlParameter.Optional },
                 namespaces: new[] { "EDR.Controllers" }
             );
 
             routes.MapRoute(
                 name: "EventsRoute",
-                url: "Events/{Location}",
-                defaults: new { controller = "Event", action = "Socials", Location = UrlParameter.Optional },
+                url: "Events/{Location}/{Style}",
+                defaults: new { controller = "Event", action = "Socials", Location = UrlParameter.Optional, Style = UrlParameter.Optional },
                 namespaces: new[] { "EDR.Controllers" }
             );
 

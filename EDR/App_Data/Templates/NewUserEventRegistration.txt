@@ -12,11 +12,32 @@
 <p>Hello {0},
 </p>
 <p>
-Your {1}, {2}, is about to expire.  The last date is {3}.  Please click this button to add more dates for your event.
+Congratulations, you are registered for {1}.
 </p>
 <p>
-If you don't see the button above, please paste this link into your browser to add Dates for this Event:<br/> {4}
+<b>Date:</b> {2}
 </p>
+<p>
+Your registration code:
+</p>
+<p>
+{3}
+</p>
+<p>
+Add to Calendar:
+</p>
+<p>
+    <a id="fl_ical" href="{4}" target="_blank">iCalendar</a>
+ &nbsp;•&nbsp; 
+    <a href='{5}' target='_blank'>Google</a>
+ &nbsp;•&nbsp; 
+    <a id="fl_outlook" href="{6}" target="_blank">Outlook</a>
+ &nbsp;•&nbsp; 
+    <a id="fl_outlookonline" href="{7}" target="_blank">Outlook Online</a>
+ &nbsp;•&nbsp; 
+    <a href='{8}' target='_blank'>Yahoo</a>
+</p>
+<br/>
 <p>Thank you</p>
 <p>
 	Eat.Dance.Repeat.
